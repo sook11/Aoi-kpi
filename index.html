@@ -8,6 +8,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="AOI KPI">
 <title>AOI KPI</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap">
 <style>
 :root{
@@ -313,6 +316,23 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
   #app{padding-left:248px} nav.tabs{width:248px} #toast{left:264px}
   nav.tabs button span{white-space:nowrap;text-align:left}
 }
+/* ---------- รายชื่อแผนกใต้เมนูพนักงาน ---------- */
+nav.tabs .navsub{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chipsel{border-radius:99px;padding:6px 12px;font-size:13.5px;font-weight:500;gap:6px}
+.chipsel b{background:var(--off-bg);color:var(--muted);border-radius:99px;padding:0 7px;font-size:12px;font-weight:600}
+.chipsel.on,.chipsel.on:hover{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
+.chipsel.on b{background:rgba(255,255,255,.22);color:#fff}
+@media (min-width:900px){
+  nav.tabs .navsub{display:flex;flex-direction:column;gap:2px;padding-left:22px;max-width:none}
+  nav.tabs .navsub button{font-size:13px;padding:6px 10px;gap:9px;align-items:flex-start;color:var(--nav-muted)}
+  nav.tabs .navsub button .ico{width:15px;height:15px;margin-top:2px}
+  nav.tabs .navsub button span{white-space:normal;line-height:1.35}
+  nav.tabs .navsub button[aria-current="page"]{background:rgba(255,255,255,.1);color:#fff}
+}
+.applogo{display:flex;align-items:center;gap:14px}
+.applogo img{width:64px;height:64px;border-radius:15px;flex:none;box-shadow:0 6px 16px rgba(11,29,54,.28)}
+.brandimg{width:36px;height:36px;border-radius:9px;flex:none}
 </style>
 </head>
 <body>
@@ -320,7 +340,7 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
 <!-- ============ LOGIN ============ -->
 <div id="auth" hidden>
   <div class="card">
-    <div><h1>AOI KPI</h1><p class="sub">บันทึกและติดตามยอดผลิตรายวัน</p></div>
+    <div class="applogo"><img src="icon-192.png" alt="" onerror="this.hidden=true"><div><h1>AOI KPI</h1><p class="sub">บันทึกและติดตามยอดผลิตรายวัน</p></div></div>
     <div class="seg" role="group" aria-label="โหมด">
       <button type="button" id="mode-in" aria-pressed="true">เข้าสู่ระบบ</button>
       <button type="button" id="mode-up" aria-pressed="false">สมัครใช้งาน</button>
@@ -342,7 +362,7 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-03</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-04</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -370,7 +390,7 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
 <div id="app" hidden>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><i>KPI</i><div><b>AOI KPI</b><small id="hdate"></small></div></div>
+    <div class="brand"><img class="brandimg" src="icon-192.png" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><i hidden>KPI</i><div><b>AOI KPI</b><small id="hdate"></small></div></div>
     <div class="who"><b id="who"></b><span id="whorole"></span></div>
   </header>
 
@@ -459,6 +479,7 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
       <label class="searchbox">ค้นหา<input type="search" id="s-q" placeholder="ค้นหาชื่อหรือรหัสพนักงาน..."></label>
       <label>แผนก<select id="s-dept"></select></label>
     </div>
+    <div class="chips" id="s-chips"></div>
     <p class="sub">Import Excel: หัวคอลัมน์ รหัสพนักงาน, ชื่อ-นามสกุล, แผนก, กะ (A, B หรือ เช้าตลอด) รหัสที่มีอยู่แล้วจะถูกข้าม</p>
     <div class="panel"><div id="s-rows"></div></div>
   </section>
@@ -531,7 +552,7 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
   <section class="view g2" id="v-install" hidden>
     <div><h2>ติดตั้งแอปลงมือถือ</h2><p class="sub">เพิ่มไอคอน AOI KPI บนหน้าจอหลักเพื่อเปิดใช้ได้เร็ว</p></div>
     <div class="alert" id="in-note" hidden>ตอนนี้แอปเปิดจากไฟล์ในเครื่อง ยังติดตั้งบนมือถือไม่ได้ ต้องนำแอปขึ้นเว็บก่อน แล้วหน้านี้จะแสดง QR code ให้สแกน</div>
-    <div class="panel half"><h3>สแกนเพื่อเปิดแอปบนมือถือ</h3><div id="in-qr" class="qr"></div><p class="sub" id="in-url" style="overflow-wrap:anywhere"></p><button type="button" id="in-copy">คัดลอกลิงก์</button></div>
+    <div class="panel half"><div class="applogo"><img src="icon-192.png" alt="" onerror="this.hidden=true"><div><h3>AOI KPI</h3><p class="sub">ไอคอนนี้จะขึ้นบนหน้าจอหลักหลังติดตั้ง</p></div></div><h3>สแกนเพื่อเปิดแอปบนมือถือ</h3><div id="in-qr" class="qr"></div><p class="sub" id="in-url" style="overflow-wrap:anywhere"></p><button type="button" id="in-copy">คัดลอกลิงก์</button></div>
     <div class="panel half">
       <h3>Android (Chrome)</h3>
       <ol class="steps"><li>เปิดลิงก์แอปด้วย Chrome</li><li>แตะปุ่ม ⋮ มุมขวาบน</li><li>เลือก “เพิ่มลงในหน้าจอหลัก” หรือ “ติดตั้งแอป”</li><li>แตะ “เพิ่ม”</li></ol>
@@ -669,7 +690,7 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-03 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-04 · 11/10/2569</p>
   </section>
 </div>
 
@@ -679,6 +700,7 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
   <button data-tab="daily">รายวัน</button>
   <button data-tab="monthly">รายเดือน</button>
   <button data-tab="staff" class="mgr navx">พนักงาน</button>
+  <div class="navsub mgr" id="nav-depts"></div>
   <button data-tab="top" class="navx">Top 5 ยอดผลิต</button>
   <button data-tab="allowance" class="navx">KPI / Allowance</button>
   <button data-tab="install" class="navx">ติดตั้งแอปลงมือถือ</button>
@@ -770,6 +792,7 @@ var ICON={
   telegram:'<path d="M21 3L3 10.500l6.500 2.500L12 20l3-5.500zM9.500 13L21 3"/>',
   settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.900 4.900l2.100 2.100M17 17l2.100 2.100M4.900 19.100L7 17M17 7l2.100-2.100"/>',
   menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  dept:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>',
   download:'<path d="M12 4v11M7 11l5 5 5-5M4 20h16"/>',
   upload:'<path d="M12 16V5M7 9l5-5 5 5M4 20h16"/>',
   check:'<path d="M5 12.500l4.500 4.500L19 7.500"/>',
@@ -951,8 +974,18 @@ async function renderMonthly(){
 }
 
 /* ---------- หน้า: พนักงาน (ผู้ดูแล) ---------- */
+/* รายชื่อแผนกใต้เมนูพนักงาน (คอม) และแถบเลือกแผนกในหน้าพนักงาน (มือถือ) */
+function renderDeptNav(){
+  if(!S.mgr)return;
+  var cur=$("s-dept").value,on=S.tab==="staff";
+  $("nav-depts").innerHTML=S.myDepts.map(function(d){return '<button type="button" data-sdept="'+d.id+'"'+(on&&cur===d.id?' aria-current="page"':'')+'>'+ico("dept")+'<span>'+esc(d.name)+'</span></button>'}).join("");
+  var mine=S.emps.filter(function(e){return S.myDepts.some(function(d){return d.id===e.department_id})||S.admin});
+  $("s-chips").innerHTML=(S.myDepts.length>1?'<button type="button" class="chipsel'+(cur?"":" on")+'" data-sdept="">ทั้งหมด <b>'+mine.length+'</b></button>':'')+
+    S.myDepts.map(function(d){return '<button type="button" class="chipsel'+(cur===d.id?" on":"")+'" data-sdept="'+d.id+'">'+esc(d.name)+' <b>'+S.emps.filter(function(e){return e.department_id===d.id}).length+'</b></button>'}).join("");
+}
 async function renderStaff(){
   if(!S.mgr)return;
+  renderDeptNav();
   var dept=$("s-dept").value,qq=$("s-q").value.trim().toLowerCase(),now=new Date(),y=now.getFullYear(),mo=now.getMonth(),n=new Date(y,mo+1,0).getDate(),td=now.getDate();
   var logs=await month(today().slice(0,7)),sum={};
   logs.forEach(function(r){var h=sum[r.employee_id]||(sum[r.employee_id]={});h[r.work_date]=(h[r.work_date]||0)+(+r.output||0)});
@@ -1265,6 +1298,7 @@ function show(tab){
   S.tab=tab;
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
   document.querySelectorAll("nav.tabs button").forEach(function(b){if(b.dataset.tab===(tab==="emp"?"staff":tab)||(b.dataset.tab==="menu"&&MAIN.indexOf(tab)<0))b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  renderDeptNav();
   try{localStorage.setItem("aoi-tab",tab)}catch(e){}
   window.scrollTo(0,0);refresh();
 }
@@ -1448,6 +1482,7 @@ function armed(btn,label){
 document.addEventListener("click",function(ev){
   var head=ev.target.closest(".emphead[data-open]");if(head&&!ev.target.closest("button,label")){S.empId=head.dataset.open;show("emp");return}
   var b=ev.target.closest("button");if(!b)return;var d=b.dataset;
+  if(b.hasAttribute("data-sdept")){$("s-dept").value=d.sdept;if(S.tab==="staff"){refresh();window.scrollTo(0,0)}else show("staff");return}
   if(d.close){closeModal(d.close);return}
   if(d.newemp){empModal(null);return}
   if(d.open){S.empId=d.open;show("emp");return}
