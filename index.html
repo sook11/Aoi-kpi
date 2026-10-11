@@ -242,6 +242,37 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
   nav.tabs .navmore{display:none}
   .menugrid{grid-template-columns:repeat(4,1fr)}
 }
+/* ---------- Admin Dashboard / ตาราง / ตารางเป้าหมาย ---------- */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{font-weight:500;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:13px}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl td.nm{min-width:150px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.hbars{display:flex;flex-direction:column;gap:8px}
+.hb{display:grid;grid-template-columns:minmax(90px,150px) 1fr auto;gap:10px;align-items:center;font-size:13.5px}
+.hb span{overflow-wrap:anywhere}.hb b{font-variant-numeric:tabular-nums;font-weight:600}
+.hb .track{background:var(--off-bg);border-radius:99px;height:10px;overflow:hidden}
+.hb .track i{display:block;height:100%;background:var(--bar);border-radius:99px;transform-origin:left;animation:growx .6s ease both}
+@keyframes growx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.depthead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.pill.pass{color:var(--good)}.pill.fail{color:var(--bad)}.pill.none{color:var(--muted)}
+.tgrid{border-collapse:separate;border-spacing:0;font-size:13.5px}
+.tgrid th,.tgrid td{padding:4px 3px;text-align:center;white-space:nowrap}
+.tgrid th{color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.tgrid th.we{color:var(--bad)}
+.tgrid .wsn{position:sticky;left:0;background:var(--surface);text-align:left;padding-right:12px;min-width:130px;max-width:160px;white-space:normal;z-index:1;font-weight:500}
+.tgrid input{width:62px;padding:6px 4px;text-align:center;font-size:14px;border-radius:6px}
+.amgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px}
+.amgrid label{font-size:12px;color:var(--muted)}
+.amgrid input{padding:7px 9px;text-align:right}
+.amgrid output{display:block;padding:7px 9px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;background:var(--off-bg);border-radius:8px}
+#ad-chart svg,#m-chart svg{display:block;max-width:760px;margin-inline:auto}
+#restform .check{flex:none}
+@media (min-width:900px){nav.tabs button{padding:10px 16px}}
 </style>
 </head>
 <body>
@@ -271,6 +302,7 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-02</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -335,7 +367,7 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
         <label>หน้างาน / KPI<select id="f-kpi" required></select></label>
         <div class="grid2">
           <label>ยอดผลงาน<input type="number" id="f-out" min="0" step="any" inputmode="decimal" placeholder="จำนวน" required></label>
-          <label>เป้าหมาย (ชิ้น/HR)<output class="target" id="f-target">—</output></label>
+          <label>เป้าหมาย (ชิ้น/กะ)<output class="target" id="f-target">—</output></label>
         </div>
         <label>หมายเหตุ<textarea id="f-note" rows="2" maxlength="200" placeholder="รายละเอียดเพิ่มเติม (ไม่บังคับ)"></textarea></label>
         <button class="primary" type="submit">บันทึกผลงาน</button>
@@ -406,7 +438,9 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
       <button data-tab="top">Top 5 ยอดผลิต</button>
       <button data-tab="allowance">KPI / Allowance</button>
       <button data-tab="install">ติดตั้งแอปลงมือถือ</button>
+      <button data-tab="admin" class="mgr">Admin Dashboard</button>
       <button data-tab="targets" class="mgr">กำหนดเป้าหมายรายวัน</button>
+      <button data-tab="kpis" class="adm">จัดการหน้างาน</button>
       <button data-tab="allowmgr" class="mgr">จัดการ KPI/Allowance</button>
       <button data-tab="telegram" class="adm">แจ้งเตือน Telegram</button>
       <button data-tab="settings">ตั้งค่า</button>
@@ -447,19 +481,63 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
     </div>
   </section>
 
+  <!-- ADMIN DASHBOARD (ผู้ดูแล) -->
+  <section class="view" id="v-admin" hidden>
+    <div><h2>Admin Dashboard</h2><p class="sub">ภาพรวมผลงานพนักงานทั้งหมด</p></div>
+    <div class="filters"><label>เดือน<input type="month" id="ad-month"></label></div>
+    <div class="panel adm">
+      <h3>ห้ามลงยอดย้อนหลัง</h3>
+      <p class="sub">เมื่อเปิด พนักงานจะลงยอดย้อนหลังเกินจำนวนวันที่กำหนดไม่ได้ (ผู้ดูแลยกเว้น)</p>
+      <form id="restform" class="inline">
+        <label class="check"><input type="checkbox" id="r-on"> เปิดใช้</label>
+        <label class="check">ย้อนหลังได้ไม่เกิน <input type="number" id="r-days" min="0" step="1" inputmode="numeric" value="3" style="width:80px"> วัน</label>
+        <button type="submit">บันทึก</button>
+      </form>
+    </div>
+    <div class="stats">
+      <div class="stat"><small>ผลงานรวมเดือนนี้</small><b id="ad-total">–</b><small>ชิ้น</small></div>
+      <div class="stat"><small>รายการทั้งหมด</small><b id="ad-count">–</b><small>รายการ</small></div>
+      <div class="stat"><small>พนักงานที่บันทึก</small><b id="ad-people">–</b><small>คน</small></div>
+    </div>
+    <div class="panel"><h3>ผลงานรายวัน แยกตามแผนก</h3><div id="ad-chart"></div><div class="legend" id="ad-legend"></div></div>
+    <div class="panel"><h3>ผลงานตามประเภท KPI (เดือนนี้)</h3><div class="hbars" id="ad-kpi"></div></div>
+    <h3>สรุปยอดงานรวมของทั้งแผนก</h3>
+    <div class="view" id="ad-depts"></div>
+  </section>
+
   <!-- DAILY TARGETS (ผู้ดูแล) -->
   <section class="view" id="v-targets" hidden>
-    <div><h2>กำหนดเป้าหมายรายวัน</h2><p class="sub">ใส่เฉพาะหน้างานที่ต้องการเป้าต่างจากค่าตั้งต้นในวันนั้น ช่องว่างจะใช้เป้าตั้งต้น</p></div>
+    <div><h2>กำหนดเป้าหมายรายวัน</h2><p class="sub">ตั้งค่าเป้าหมายผลงานแต่ละหน้างานล่วงหน้าทั้งเดือน ช่องว่างจะใช้เป้าตั้งต้นของหน้างาน</p></div>
     <div class="filters">
-      <label>วันที่<input type="date" id="tg-date"></label>
-      <label>แผนก<select id="tg-dept"></select></label>
+      <label>เดือน<input type="month" id="tg-month"></label>
+      <label style="justify-content:flex-end"><button class="primary" type="button" id="tg-save">บันทึกทั้งหมด</button></label>
     </div>
-    <div class="panel"><div class="rows" id="tg-rows"></div><button class="primary" type="button" id="tg-save">บันทึกเป้าหมาย</button></div>
+    <div class="view" id="tg-grids"></div>
+  </section>
+
+  <!-- WORKSTATIONS (Admin) -->
+  <section class="view" id="v-kpis" hidden>
+    <div><h2>จัดการหน้างาน</h2><p class="sub">เพิ่ม แก้ไข และตั้งเป้าหมายรายวันให้แต่ละหน้างาน</p></div>
+    <div class="panel">
+      <h3 id="k-title">เพิ่มหน้างาน</h3>
+      <form id="kpiform">
+        <div class="grid2">
+          <label>ชื่อหน้างาน<input type="text" id="k-name" maxlength="80" required></label>
+          <label>แผนก<select id="k-dept"></select></label>
+        </div>
+        <div class="grid2">
+          <label>เป้าหมายรายวัน/กะ<input type="number" id="k-target" min="0" step="any" inputmode="decimal" placeholder="เว้นว่างได้"></label>
+          <label>หน่วย<input type="text" id="k-unit" maxlength="20" value="ชิ้น"></label>
+        </div>
+        <div class="inline"><button class="primary" type="submit" id="k-submit">เพิ่มหน้างาน</button><button type="button" id="k-cancel" hidden>ยกเลิกการแก้ไข</button></div>
+      </form>
+    </div>
+    <div class="panel"><div class="scroll"><table class="tbl"><thead><tr><th>ชื่อหน้างาน</th><th>แผนก</th><th class="n">เป้าหมายรายวัน/กะ</th><th>หน่วย</th><th>จัดการ</th></tr></thead><tbody id="k-rows"></tbody></table></div></div>
   </section>
 
   <!-- MANAGE ALLOWANCE (ผู้ดูแล) -->
   <section class="view" id="v-allowmgr" hidden>
-    <div><h2>จัดการ KPI/Allowance</h2><p class="sub">กรอกจำนวนเงินรายคนของเดือนที่เลือก ช่องว่างคือไม่มีรายการ</p></div>
+    <div><h2>จัดการ KPI / Allowance</h2><p class="sub">Import ข้อมูลการหัก/จ่าย Allowance รายเดือน และจัดการรายการ</p></div>
     <div class="filters">
       <label>เดือน<input type="month" id="am-month"></label>
       <label>แผนก<select id="am-dept"></select></label>
@@ -468,9 +546,13 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
       <label class="filebtn">Import Excel<input type="file" id="am-file" accept=".xlsx,.xls,.csv" hidden></label>
       <button type="button" id="am-export">Export Excel</button>
     </div>
-    <p class="sub">ไฟล์ Import ต้องมีหัวคอลัมน์: รหัสพนักงาน, จำนวนเงิน, หมายเหตุ ระบบจะเติมลงช่องให้ตรวจก่อน แล้วกดบันทึกเอง</p>
-    <div class="panel"><div class="row"><div class="l"><b id="am-label">รวม</b></div><div class="r" id="am-total">–</div></div></div>
-    <div class="panel"><div class="rows" id="am-rows"></div><button class="primary" type="button" id="am-save">บันทึก Allowance</button></div>
+    <p class="sub">ไฟล์ Import ต้องมีหัวคอลัมน์: รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ ระบบจะเติมลงช่องให้ตรวจก่อน แล้วกดบันทึกเอง</p>
+    <div class="stats">
+      <div class="stat"><small>ยอดจ่ายจริงรวม</small><b id="am-net">–</b><small>บาท</small></div>
+      <div class="stat"><small>ยอดเต็มรวม</small><b id="am-base">–</b><small>บาท</small></div>
+      <div class="stat"><small>ยอดหักรวม</small><b id="am-ded">–</b><small>บาท</small></div>
+    </div>
+    <div class="panel"><p class="sub" id="am-label"></p><div class="rows" id="am-rows"></div><button class="primary" type="button" id="am-save">บันทึก Allowance</button></div>
   </section>
 
   <!-- TELEGRAM (Admin) -->
@@ -521,27 +603,14 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
         <form id="deptform" class="inline"><input type="text" id="a-dname" placeholder="ชื่อแผนกใหม่" maxlength="80" required><button type="submit">เพิ่ม</button></form>
       </div>
       <div class="panel half">
-        <h3>จัดการหน้างาน / KPI</h3>
-        <p class="sub">พิมพ์ชื่อหน้างานเดิมพร้อมเป้าใหม่ เพื่อแก้เป้าของหน้างานนั้น</p>
-        <div class="rows" id="a-kpi"></div>
-        <form id="kpiform" class="inline"><input type="text" id="a-kname" placeholder="ชื่อหน้างาน" maxlength="80" required><input type="number" id="a-ktarget" placeholder="เป้า ชิ้น/HR" min="0" step="any" inputmode="decimal"><button type="submit">บันทึก</button></form>
-      </div>
-      <div class="panel half">
         <h3>การสมัครใช้งาน</h3>
         <label class="check"><input type="checkbox" id="sr-on"> ให้พนักงานสมัครเองได้ด้วยรหัสพนักงาน (ปิดแล้วจะสมัครได้เฉพาะรหัสที่ผู้ดูแลเพิ่มไว้)</label>
         <p class="sub">ล้างบัญชีค้าง: ใช้เมื่อมีคนสมัครด้วยรหัสของคนอื่น หรือสมัครแล้วไม่ได้กรอกโปรไฟล์</p>
         <form id="clearform" class="inline"><input type="text" id="cl-no" placeholder="รหัสพนักงาน" inputmode="numeric" required><button type="submit" class="danger">ล้างบัญชี</button></form>
       </div>
-      <div class="panel half">
-        <h3>จำกัดการบันทึกย้อนหลัง</h3>
-        <form id="restform">
-          <label class="check"><input type="checkbox" id="r-on"> เปิดใช้ (ผู้ดูแลบันทึกย้อนหลังได้เสมอ)</label>
-          <label>ย้อนหลังได้ไม่เกิน (วัน)<input type="number" id="r-days" min="0" step="1" inputmode="numeric" value="3"></label>
-          <button type="submit">บันทึก</button>
-        </form>
-      </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-02 · 11/10/2569</p>
   </section>
 </div>
 
@@ -555,7 +624,9 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
   <button data-tab="allowance" class="navx">KPI / Allowance</button>
   <button data-tab="install" class="navx">ติดตั้งแอปลงมือถือ</button>
   <span class="navlabel mgr">ADMIN</span>
+  <button data-tab="admin" class="mgr navx">Admin Dashboard</button>
   <button data-tab="targets" class="mgr navx">กำหนดเป้าหมายรายวัน</button>
+  <button data-tab="kpis" class="adm navx">จัดการหน้างาน</button>
   <button data-tab="allowmgr" class="mgr navx">จัดการ KPI/Allowance</button>
   <button data-tab="telegram" class="adm navx">แจ้งเตือน Telegram</button>
   <button data-tab="settings" class="navx">ตั้งค่า</button>
@@ -660,12 +731,14 @@ function fillSelects(){
   var d=S.myDepts.map(function(x){return {v:x.id,t:x.name}}),all=S.myDepts.length>1?"ทุกแผนกที่ดูแล":null;
   if(S.admin)all="ทุกแผนก";
   ["h-dept","d-dept","m-dept","s-dept","am-dept","tl-dept"].forEach(function(id){setOptions($(id),d,all)});
-  setOptions($("tg-dept"),d,null);
+  setOptions($("k-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   setOptions($("t-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   var yy=new Date().getFullYear();setOptions($("al-year"),[yy,yy-1,yy-2].map(function(v){return {v:String(v),t:String(v+543)+" ("+v+")"}}),null);
   setOptions($("e-dept"),d,d.length>1?"เลือกแผนก":null);
   var ko=S.kpis.map(function(k){return {v:k.id,t:k.name}});
-  setOptions($("f-kpi"),ko,"เลือกหน้างาน");setOptions($("p-kpi"),ko,"ยังไม่ระบุ");
+  /* ฟอร์มบันทึก: พนักงานเห็นเฉพาะหน้างานของแผนกตัวเองกับหน้างานที่ใช้ได้ทุกแผนก */
+  var mineK=S.kpis.filter(function(k){return S.mgr||!k.department_id||k.department_id===S.me.department_id}).map(function(k){return {v:k.id,t:k.name}});
+  setOptions($("f-kpi"),mineK,"เลือกหน้างาน");setOptions($("p-kpi"),ko,"ยังไม่ระบุ");
   showTarget();
 }
 function showTarget(){var k=S.kpis.filter(function(x){return x.id===$("f-kpi").value})[0];$("f-target").textContent=k&&k.target_per_hour!=null?num(k.target_per_hour):"—"}
@@ -699,7 +772,7 @@ async function renderHome(){
 /* ---------- หน้า: บันทึก ---------- */
 function logRow(r,o){
   var canMgr=S.admin||(S.mgr&&(S.me.allowed_departments||[]).indexOf(r.department_id)>=0),own=r.employee_id===S.me.id;
-  var sub=[o.name?empName(r.employee_id):dmy(r.work_date),SHIFT[r.shift],o.name?deptName(r.department_id):null,r.target==null?null:"เป้า "+num(r.target)+" ชิ้น/HR",r.note].filter(Boolean).join(" · ");
+  var sub=[o.name?empName(r.employee_id):dmy(r.work_date),SHIFT[r.shift],o.name?deptName(r.department_id):null,r.target==null?null:"เป้า "+num(r.target)+" ชิ้น/กะ",r.note].filter(Boolean).join(" · ");
   var b="";
   if(o.review&&canMgr){
     if(r.status!=="approved")b+='<button class="sm good" data-st="approved" data-id="'+r.id+'" data-d="'+r.work_date+'">อนุมัติ</button>';
@@ -796,8 +869,6 @@ function renderSettings(){
   if(!S.admin)return;
   $("a-depts").innerHTML=S.depts.length?S.depts.map(function(d){
     return '<div class="row"><div class="l"><b>'+esc(d.name)+'</b><small>'+activeEmps(d.id).length+' คน</small></div><button class="sm danger" data-rmdept="'+d.id+'">ลบ</button></div>'}).join(""):emptyRow("ยังไม่มีแผนก");
-  $("a-kpi").innerHTML=S.kpis.length?S.kpis.map(function(k){
-    return '<div class="row"><div class="l"><b>'+esc(k.name)+'</b><small>'+(k.target_per_hour==null?"ยังไม่กำหนดเป้า":"เป้า "+num(k.target_per_hour)+" ชิ้น/HR")+'</small></div><button class="sm danger" data-rmkpi="'+k.id+'">ลบ</button></div>'}).join(""):emptyRow("ยังไม่มีหน้างาน");
 }
 
 
@@ -810,7 +881,7 @@ function exportXlsx(file,sheets){
 }
 function logSheet(rows){
   return rows.slice().sort(function(a,b){return a.work_date<b.work_date?-1:a.work_date>b.work_date?1:0}).map(function(r){var e=empOf(r.employee_id)||{};
-    return {"วันที่":r.work_date,"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(r.department_id),"กะ":SHIFT[r.shift]||r.shift,"หน้างาน / KPI":r.kpi_name,"ยอดงาน":+r.output||0,"เป้าหมาย (ชิ้น/HR)":r.target==null?"":+r.target,"สถานะ":STATUS[r.status]||r.status,"หมายเหตุ":r.note||""}});
+    return {"วันที่":r.work_date,"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(r.department_id),"กะ":SHIFT[r.shift]||r.shift,"หน้างาน / KPI":r.kpi_name,"ยอดงาน":+r.output||0,"เป้าหมาย (ชิ้น/กะ)":r.target==null?"":+r.target,"สถานะ":STATUS[r.status]||r.status,"หมายเหตุ":r.note||""}});
 }
 $("d-export").addEventListener("click",async function(){
   try{
@@ -853,7 +924,7 @@ async function renderAllowance(){
   rows.forEach(function(r){by[+r.month.slice(5,7)]=r;tot+=+r.amount||0});
   $("al-total").textContent=num(tot)+" บาท";
   $("al-rows").innerHTML=MONTHS.map(function(mn,i){var r=by[i+1];
-    return '<div class="row"><div class="l"><b>'+mn+'</b>'+(r&&r.note?'<small>'+esc(r.note)+'</small>':'')+'</div><div class="r">'+(r?num(r.amount)+'<small>บาท</small>':'<small>ยังไม่มีรายการ</small>')+'</div></div>'}).join("");
+    return '<div class="row"><div class="l"><b>'+mn+'</b>'+(r?'<small>'+esc(["ยอดเต็ม "+num((+r.amount||0)+(+r.deduction||0)),+r.deduction?"หัก "+num(r.deduction):null,r.note].filter(Boolean).join(" · "))+'</small>':'')+'</div><div class="r">'+(r?num(r.amount)+'<small>บาท (จ่ายจริง)</small>':'<small>ยังไม่มีรายการ</small>')+'</div></div>'}).join("");
 }
 
 /* ---------- หน้า: ติดตั้งแอป ---------- */
@@ -865,40 +936,119 @@ function renderInstall(){
 }
 $("in-copy").addEventListener("click",function(){var u=location.href.split("#")[0];(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){toast("คัดลอกลิงก์แล้ว")},function(){toast("คัดลอกไม่ได้ ให้กดค้างที่ลิงก์แล้วเลือกคัดลอก")})});
 
-/* ---------- หน้า: กำหนดเป้าหมายรายวัน ---------- */
-var TG={rows:[]};
-async function renderTargets(){
-  var date=$("tg-date").value||today(),dept=$("tg-dept").value;
-  if(!dept){$("tg-rows").innerHTML=emptyRow("ยังไม่ได้รับมอบหมายแผนก ให้ Admin กำหนดสิทธิ์ก่อน");$("tg-save").hidden=true;return}
-  $("tg-save").hidden=false;
-  TG.rows=await q(db.from("daily_targets").select("*").eq("target_date",date).eq("department_id",dept));
-  var by={};TG.rows.forEach(function(r){by[r.workstation_id]=r});
-  $("tg-rows").innerHTML=S.kpis.map(function(k){var r=by[k.id];
-    return '<div class="row"><div class="l"><b>'+esc(k.name)+'</b><small>'+(k.target_per_hour==null?"ไม่มีเป้าตั้งต้น":"เป้าตั้งต้น "+num(k.target_per_hour)+" ชิ้น/HR")+'</small></div><input class="amt tgv" type="number" min="0" step="any" inputmode="decimal" data-ws="'+k.id+'" value="'+(r?esc(r.target):"")+'" placeholder="ใช้ค่าตั้งต้น" aria-label="เป้าหมายของ '+esc(k.name)+'"></div>'}).join("");
+/* ---------- หน้า: Admin Dashboard ---------- */
+async function renderAdmin(){
+  if(!S.mgr)return;
+  var m=$("ad-month").value||today().slice(0,7),rows=await month(m),p=m.split("-"),n=new Date(+p[0],+p[1],0).getDate();
+  var people={};rows.forEach(function(r){people[r.employee_id]=1});
+  countTo($("ad-total"),total(rows));countTo($("ad-count"),rows.length);countTo($("ad-people"),Object.keys(people).length);
+  /* stacked bars: one colour per department, shared scale with the axis */
+  var depts=S.myDepts.filter(function(d){return rows.some(function(r){return r.department_id===d.id})});
+  var per=[];for(var i=0;i<n;i++)per.push({});
+  rows.forEach(function(r){var o=per[+r.work_date.slice(8)-1];o[r.department_id]=(o[r.department_id]||0)+(+r.output||0)});
+  var tops=per.map(function(o){var t=0;depts.forEach(function(d){t+=o[d.id]||0});return t});
+  var max=niceMax(Math.max.apply(null,tops.concat([0]))),W=330,H=160,L=38,top=10,base=136,step=(W-L-6)/n,bw=Math.max(3,step-2);
+  var y=function(v){return base-(v/max)*(base-top)};
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="ผลงานรายวันแยกตามแผนก">';
+  [0,.5,1].forEach(function(f){var v=max*f;svg+='<line x1="'+L+'" x2="'+(W-4)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)" stroke-width="1"'+(f?' stroke-dasharray="3 3"':'')+'/><text x="'+(L-4)+'" y="'+(y(v)+3)+'" text-anchor="end">'+num(v)+'</text>'});
+  per.forEach(function(o,i){var x=L+2+i*step,acc=0,d=i+1;
+    depts.forEach(function(dp,j){var v=o[dp.id]||0;if(!v)return;
+      svg+='<rect x="'+x+'" y="'+(y(acc+v)+(acc?0.6:0))+'" width="'+bw+'" height="'+Math.max(0.5,y(acc)-y(acc+v)-(acc?0.6:0))+'" fill="var(--c'+(j%6+1)+')"><title>วันที่ '+d+' · '+esc(dp.name)+': '+num(v)+' ชิ้น</title></rect>';acc+=v});
+    if(d===1||d%5===0)svg+='<text x="'+(x+bw/2)+'" y="'+(base+12)+'" text-anchor="middle">'+d+'</text>'});
+  $("ad-chart").innerHTML=svg+'</svg>';
+  $("ad-legend").innerHTML=depts.map(function(d,j){return '<span><i class="dot" style="background:var(--c'+(j%6+1)+')"></i>'+esc(d.name)+'</span>'}).join("")||'<span>ยังไม่มีผลงานในเดือนนี้</span>';
+  var kp=byKpi(rows),kmax=kp.length?kp[0].o:1;
+  $("ad-kpi").innerHTML=kp.length?kp.map(function(a){return '<div class="hb"><span>'+esc(a.k)+'</span><div class="track"><i style="width:'+Math.max(1,a.o/kmax*100)+'%"></i></div><b>'+num(a.o)+'</b></div>'}).join(""):emptyRow("ยังไม่มีผลงานในเดือนนี้");
+  /* per-department summary: total vs summed targets of each entry */
+  $("ad-depts").innerHTML=S.myDepts.map(function(dp){
+    var by={},dO=0,dT=0;
+    rows.filter(function(r){return r.department_id===dp.id}).forEach(function(r){var a=by[r.employee_id]||(by[r.employee_id]={id:r.employee_id,o:0,t:0});a.o+=+r.output||0;a.t+=r.target==null?0:+r.target});
+    var list=Object.keys(by).map(function(k){var a=by[k];a.p=a.t>0?Math.round(a.o/a.t*100):null;dO+=a.o;dT+=a.t;return a}).sort(function(a,b){return b.o-a.o});
+    var pass=list.filter(function(a){return a.p!=null&&a.p>=100}).length,dp100=dT>0?Math.round(dO/dT*100):null;
+    return '<div class="panel"><div class="depthead"><h3>สรุปยอดงานรวม — '+esc(dp.name)+'</h3><span>ผ่าน <b>'+pass+'</b>/'+list.length+' คน '+(dp100==null?'':'<span class="pill '+(dp100>=100?"pass":"fail")+'">ทำได้ '+dp100+'% ของเป้าหมาย</span>')+'</span></div>'+
+      (list.length?'<div class="scroll"><table class="tbl"><thead><tr><th>ชื่อพนักงาน</th><th>รหัส</th><th class="n">ยอดรวม</th><th class="n">เป้าหมายรวม</th><th class="n">% ทำได้</th><th>สถานะ</th></tr></thead><tbody>'+
+        list.map(function(a){var e=empOf(a.id)||{};return '<tr><td class="nm">'+esc(e.display_name||"(ไม่ทราบชื่อ)")+'</td><td>'+esc(e.employee_no||"")+'</td><td class="n">'+num(a.o)+'</td><td class="n">'+(a.t?num(a.t):"–")+'</td><td class="n">'+(a.p==null?"–":a.p+"%")+'</td><td><span class="pill '+(a.p==null?"none":a.p>=100?"pass":"fail")+'">'+(a.p==null?"ไม่มีเป้า":a.p>=100?"ผ่าน":"ไม่ผ่าน")+'</span></td></tr>'}).join("")+
+        '</tbody></table></div>':emptyRow("ยังไม่มีผลงานของแผนกนี้ในเดือนที่เลือก"))+'</div>';
+  }).join("")||emptyRow("ยังไม่ได้รับมอบหมายแผนก ให้ Admin กำหนดสิทธิ์ก่อน");
 }
-$("tg-save").addEventListener("click",function(){
-  var date=$("tg-date").value||today(),dept=$("tg-dept").value,up=[],del=[],by={};
-  TG.rows.forEach(function(r){by[r.workstation_id]=r});
-  document.querySelectorAll(".tgv").forEach(function(i){var v=parseFloat(i.value),ws=i.dataset.ws;
-    if(!isNaN(v))up.push({target_date:date,department_id:dept,workstation_id:ws,target:v});else if(by[ws])del.push(by[ws].id)});
+
+/* ---------- หน้า: จัดการหน้างาน ---------- */
+var KE=null;
+function renderKpis(){
+  if(!S.admin)return;
+  $("k-rows").innerHTML=S.kpis.length?S.kpis.map(function(k){
+    return '<tr><td class="nm">'+esc(k.name)+'</td><td>'+esc(deptName(k.department_id)||"ทุกแผนก")+'</td><td class="n"><b>'+(k.target_per_hour==null?"–":num(k.target_per_hour))+'</b></td><td>'+esc(k.unit||"ชิ้น")+'</td><td><div class="acts" style="margin:0"><button class="sm" data-edkpi="'+k.id+'">แก้ไข</button><button class="sm danger" data-rmkpi="'+k.id+'">ลบ</button></div></td></tr>'}).join(""):'<tr><td colspan="5">'+emptyRow("ยังไม่มีหน้างาน")+'</td></tr>';
+}
+function kpiEdit(k){
+  KE=k?k.id:null;$("k-title").textContent=k?"แก้ไขหน้างาน: "+k.name:"เพิ่มหน้างาน";$("k-submit").textContent=k?"บันทึกการแก้ไข":"เพิ่มหน้างาน";$("k-cancel").hidden=!k;
+  $("k-name").value=k?k.name:"";$("k-dept").value=k&&k.department_id?k.department_id:"";$("k-target").value=k&&k.target_per_hour!=null?k.target_per_hour:"";$("k-unit").value=k?(k.unit||"ชิ้น"):"ชิ้น";
+  if(k)window.scrollTo(0,0);
+}
+$("k-cancel").addEventListener("click",function(){kpiEdit(null)});
+$("kpiform").addEventListener("submit",function(ev){
+  ev.preventDefault();var n=$("k-name").value.trim(),t=parseFloat($("k-target").value);if(!n)return;
+  var row={name:n,department_id:$("k-dept").value||null,target_per_hour:isNaN(t)?null:t,unit:$("k-unit").value.trim()||"ชิ้น",active:true};
   act(async function(){
-    if(up.length)await q(db.from("daily_targets").upsert(up,{onConflict:"target_date,department_id,workstation_id"}));
-    if(del.length)await q(db.from("daily_targets").delete().in("id",del));
-  },"บันทึกเป้าหมายวันที่ "+dmy(date)+" แล้ว").then(function(ok){if(ok)refresh()});
+    if(KE)await q(db.from("workstations").update(row).eq("id",KE));else await q(db.from("workstations").upsert(row,{onConflict:"name"}));
+    await loadBase();fillSelects()},KE?"บันทึกการแก้ไขแล้ว":"เพิ่มหน้างานแล้ว").then(function(ok){if(ok){kpiEdit(null);refresh()}});
 });
 
-/* ---------- หน้า: จัดการ KPI/Allowance ---------- */
+/* ---------- หน้า: กำหนดเป้าหมายรายวัน (ทั้งเดือน) ---------- */
+var TG={map:{}};
+async function renderTargets(){
+  if(!S.mgr)return;
+  var m=$("tg-month").value||today().slice(0,7),p=m.split("-"),n=new Date(+p[0],+p[1],0).getDate();
+  var rows=await fetchAll(function(){return db.from("daily_targets").select("*").gte("target_date",m+"-01").lt("target_date",nextMonth(m)+"-01").order("id")});
+  TG.map={};rows.forEach(function(r){TG.map[r.department_id+"|"+r.workstation_id+"|"+r.target_date]=r});
+  var head='<tr><th class="wsn">วันที่</th>';
+  for(var d=1;d<=n;d++){var wd=new Date(+p[0],+p[1]-1,d).getDay();head+='<th'+(wd===0||wd===6?' class="we"':'')+'>'+d+'</th>'}
+  head+='</tr>';
+  $("tg-save").hidden=!S.myDepts.length;
+  $("tg-grids").innerHTML=S.myDepts.map(function(dp){
+    var ks=S.kpis.filter(function(k){return !k.department_id||k.department_id===dp.id});
+    return '<div class="panel"><h3>'+esc(dp.name)+'</h3>'+(ks.length?'<div class="scroll"><table class="tgrid"><thead>'+head+'</thead><tbody>'+ks.map(function(k){
+      var tr='<tr><td class="wsn">'+esc(k.name)+'</td>';
+      for(var d=1;d<=n;d++){var date=m+"-"+pad(d),r=TG.map[dp.id+"|"+k.id+"|"+date];
+        tr+='<td><input class="tgc" type="number" min="0" step="any" inputmode="decimal" data-k="'+dp.id+"|"+k.id+"|"+date+'" value="'+(r?esc(r.target):"")+'" placeholder="—" aria-label="'+esc(k.name)+' วันที่ '+d+'"></td>'}
+      return tr+'</tr>'}).join("")+'</tbody></table></div>':emptyRow("ยังไม่มีหน้างานของแผนกนี้ เพิ่มได้ที่เมนูจัดการหน้างาน"))+'</div>';
+  }).join("")||emptyRow("ยังไม่ได้รับมอบหมายแผนก ให้ Admin กำหนดสิทธิ์ก่อน");
+}
+$("tg-save").addEventListener("click",function(){
+  var up=[],del=[];
+  document.querySelectorAll(".tgc").forEach(function(i){
+    var old=TG.map[i.dataset.k],v=parseFloat(i.value),k=i.dataset.k.split("|");
+    if(isNaN(v)){if(old)del.push(old.id)}
+    else if(!old||+old.target!==v)up.push({department_id:k[0],workstation_id:k[1],target_date:k[2],target:v});
+  });
+  if(!up.length&&!del.length){toast("ไม่มีรายการที่เปลี่ยนแปลง");return}
+  act(async function(){
+    for(var i=0;i<up.length;i+=500)await q(db.from("daily_targets").upsert(up.slice(i,i+500),{onConflict:"target_date,department_id,workstation_id"}));
+    for(var j=0;j<del.length;j+=200)await q(db.from("daily_targets").delete().in("id",del.slice(j,j+200)));
+  },"บันทึกเป้าหมาย "+up.length+" ช่อง"+(del.length?" · ลบ "+del.length+" ช่อง":"")+" แล้ว").then(function(ok){if(ok)refresh()});
+});
+
+/* ---------- หน้า: จัดการ KPI/Allowance (ยอดเต็ม − ยอดหัก = ยอดจ่ายจริง) ---------- */
 var AM={rows:[]};
-function amTotal(){var t=0;document.querySelectorAll(".amv").forEach(function(i){t+=parseFloat(i.value)||0});$("am-total").textContent=num(t)+" บาท"}
+function amRow(id){var b=parseFloat(document.querySelector('.amb[data-emp="'+id+'"]').value),d=parseFloat(document.querySelector('.amd[data-emp="'+id+'"]').value)||0;return {b:b,d:d,net:isNaN(b)?null:Math.max(0,b-d)}}
+function amTotal(){
+  var tb=0,td=0,tn=0;
+  document.querySelectorAll(".amb").forEach(function(i){var r=amRow(i.dataset.emp),o=document.querySelector('.amo[data-emp="'+i.dataset.emp+'"]');
+    o.textContent=r.net==null?"–":num(r.net);if(r.net!=null){tb+=r.b;td+=Math.min(r.d,r.b);tn+=r.net}});
+  $("am-net").textContent=num(tn);$("am-base").textContent=num(tb);$("am-ded").textContent=num(td);
+}
 async function renderAllowMgr(){
+  if(!S.mgr)return;
   var m=$("am-month").value||today().slice(0,7),dept=$("am-dept").value;
   AM.rows=await q(db.from("kpi_allowances").select("*").eq("month",m+"-01"));
   var by={};AM.rows.forEach(function(r){by[r.employee_id]=r});
   var list=activeEmps(dept).filter(function(e){return S.admin||(S.me.allowed_departments||[]).indexOf(e.department_id)>=0});
-  $("am-label").textContent="รวม "+MONTHS[+m.slice(5,7)-1]+" "+(+m.slice(0,4)+543)+" · "+list.length+" คน";
-  $("am-rows").innerHTML=list.length?list.map(function(e){var r=by[e.id];
-    return '<div class="row"><div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small><input class="nt amn" type="text" maxlength="120" data-emp="'+e.id+'" value="'+esc(r?r.note:"")+'" placeholder="หมายเหตุ (ไม่บังคับ)" aria-label="หมายเหตุของ '+esc(e.display_name)+'"></div>'+
-      '<input class="amt amv" type="number" min="0" step="any" inputmode="decimal" data-emp="'+e.id+'" data-no="'+esc(e.employee_no)+'" value="'+(r?esc(r.amount):"")+'" placeholder="บาท" aria-label="จำนวนเงินของ '+esc(e.display_name)+'"></div>'}).join(""):emptyRow("ไม่มีพนักงานในแผนกที่เลือก");
+  $("am-label").textContent=MONTHS[+m.slice(5,7)-1]+" "+(+m.slice(0,4)+543)+" · "+list.length+" คน · มีรายการแล้ว "+list.filter(function(e){return by[e.id]}).length+" คน";
+  $("am-rows").innerHTML=list.length?list.map(function(e){var r=by[e.id],base=r?(+r.amount||0)+(+r.deduction||0):"",id=e.id,nm=esc(e.display_name);
+    return '<div class="row"><div class="l"><b>'+nm+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small>'+
+      '<div class="amgrid"><label>ยอดเต็ม<input class="amb" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" data-no="'+esc(e.employee_no)+'" value="'+base+'" aria-label="ยอดเต็มของ '+nm+'"></label>'+
+      '<label>ยอดหัก<input class="amd" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" value="'+(r&&+r.deduction?esc(r.deduction):"")+'" aria-label="ยอดหักของ '+nm+'"></label>'+
+      '<label>จ่ายจริง<output class="amo" data-emp="'+id+'">–</output></label></div>'+
+      '<input class="nt amn" type="text" maxlength="120" data-emp="'+id+'" value="'+esc(r?r.note:"")+'" placeholder="หมายเหตุ (ไม่บังคับ)" aria-label="หมายเหตุของ '+nm+'"></div></div>'}).join(""):emptyRow("ไม่มีพนักงานในแผนกที่เลือก");
   amTotal();
 }
 $("am-rows").addEventListener("input",amTotal);
@@ -906,8 +1056,8 @@ $("am-save").addEventListener("click",function(){
   var m=($("am-month").value||today().slice(0,7))+"-01",up=[],del=[],by={},notes={};
   AM.rows.forEach(function(r){by[r.employee_id]=r});
   document.querySelectorAll(".amn").forEach(function(i){notes[i.dataset.emp]=i.value.trim()});
-  document.querySelectorAll(".amv").forEach(function(i){var v=parseFloat(i.value),id=i.dataset.emp;
-    if(!isNaN(v))up.push({employee_id:id,month:m,amount:v,note:notes[id]||""});else if(by[id])del.push(by[id].id)});
+  document.querySelectorAll(".amb").forEach(function(i){var id=i.dataset.emp,r=amRow(id);
+    if(r.net!=null)up.push({employee_id:id,month:m,amount:r.net,deduction:Math.min(r.d,r.b),note:notes[id]||""});else if(by[id])del.push(by[id].id)});
   act(async function(){
     if(up.length)await q(db.from("kpi_allowances").upsert(up,{onConflict:"employee_id,month"}));
     if(del.length)await q(db.from("kpi_allowances").delete().in("id",del));
@@ -916,8 +1066,8 @@ $("am-save").addEventListener("click",function(){
 $("am-export").addEventListener("click",function(){
   var m=$("am-month").value||today().slice(0,7),notes={};
   document.querySelectorAll(".amn").forEach(function(i){notes[i.dataset.emp]=i.value.trim()});
-  var rows=[];document.querySelectorAll(".amv").forEach(function(i){var e=empOf(i.dataset.emp)||{};
-    rows.push({"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(e.department_id),"เดือน":m,"จำนวนเงิน":i.value===""?"":+i.value,"หมายเหตุ":notes[i.dataset.emp]||""})});
+  var rows=[];document.querySelectorAll(".amb").forEach(function(i){var e=empOf(i.dataset.emp)||{},r=amRow(i.dataset.emp);
+    rows.push({"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(e.department_id),"เดือน":m,"ยอดเต็ม":r.net==null?"":r.b,"ยอดหัก":r.net==null?"":Math.min(r.d,r.b),"ยอดจ่ายจริง":r.net==null?"":r.net,"หมายเหตุ":notes[i.dataset.emp]||""})});
   exportXlsx("AOI-KPI-Allowance-"+m+".xlsx",[{name:"Allowance",rows:rows}]);
 });
 $("am-file").addEventListener("change",async function(ev){
@@ -925,13 +1075,14 @@ $("am-file").addEventListener("change",async function(ev){
   if(!window.XLSX){toast("โหลดตัวอ่าน Excel ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วเปิดแอปใหม่");return}
   try{
     var wb=XLSX.read(await f.arrayBuffer(),{type:"array",codepage:65001}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:false});
-    var pick=function(o,re){for(var k in o)if(re.test(k))return String(o[k]).trim();return ""},hit=0,miss=0;
+    var pick=function(o,re){for(var k in o)if(re.test(k))return String(o[k]).trim();return ""},nump=function(v){return parseFloat(String(v).replace(/,/g,""))},hit=0,miss=0;
     rows.forEach(function(o){
-      var no=pick(o,/รหัสพนักงาน|รหัส|employee.?(no|id)|^id$/i),amt=parseFloat(pick(o,/จำนวนเงิน|เงิน|amount|allowance/i).replace(/,/g,"")),note=pick(o,/หมายเหตุ|note|remark/i);
-      var inp=null;document.querySelectorAll(".amv").forEach(function(i){if(i.dataset.no===no)inp=i});
-      if(!inp||isNaN(amt)){miss++;return}
-      inp.value=amt;hit++;
-      if(note)document.querySelectorAll(".amn").forEach(function(i){if(i.dataset.emp===inp.dataset.emp)i.value=note});
+      var no=pick(o,/รหัสพนักงาน|รหัส|employee.?(no|id)|^id$/i),base=nump(pick(o,/ยอดเต็ม|เต็ม|จำนวนเงิน|^amount|allowance|full/i)),ded=nump(pick(o,/ยอดหัก|หัก|deduct/i)),note=pick(o,/หมายเหตุ|note|remark/i);
+      var inp=null;document.querySelectorAll(".amb").forEach(function(i){if(i.dataset.no===no)inp=i});
+      if(!inp||isNaN(base)){miss++;return}
+      var id=inp.dataset.emp;inp.value=base;hit++;
+      document.querySelector('.amd[data-emp="'+id+'"]').value=isNaN(ded)||!ded?"":ded;
+      if(note)document.querySelector('.amn[data-emp="'+id+'"]').value=note;
     });
     amTotal();toast("เติมข้อมูล "+hit+" คน"+(miss?" · ข้าม "+miss+" แถวที่ไม่พบรหัสในรายการนี้":"")+" ตรวจแล้วกดบันทึก Allowance");
   }catch(e){toast(thErr(e))}
@@ -977,14 +1128,14 @@ $("tl-send").addEventListener("click",async function(ev){
   btn.disabled=false;
 });
 
-var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,telegram:renderTelegram,menu:function(){}};
+var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,telegram:renderTelegram,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["home","log","daily","monthly","staff","top","allowance","install","targets","allowmgr","telegram","settings","menu"];
+var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
-  if((tab==="staff"||tab==="targets"||tab==="allowmgr")&&!S.mgr)tab="home";
-  if(tab==="telegram"&&!S.admin)tab="home";
+  if((tab==="staff"||tab==="targets"||tab==="allowmgr"||tab==="admin")&&!S.mgr)tab="home";
+  if((tab==="telegram"||tab==="kpis")&&!S.admin)tab="home";
   S.tab=tab;
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
   document.querySelectorAll("nav.tabs button").forEach(function(b){if(b.dataset.tab===tab||(b.dataset.tab==="menu"&&MAIN.indexOf(tab)<0))b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
@@ -1084,13 +1235,9 @@ $("deptform").addEventListener("submit",function(ev){
   ev.preventDefault();var n=$("a-dname").value.trim();if(!n)return;
   act(async function(){await q(db.from("departments").insert({name:n,sort_order:S.depts.length+1}));await loadBase();fillSelects()},"เพิ่มแผนกแล้ว").then(function(ok){if(ok){$("a-dname").value="";refresh()}});
 });
-$("kpiform").addEventListener("submit",function(ev){
-  ev.preventDefault();var n=$("a-kname").value.trim(),t=parseFloat($("a-ktarget").value);if(!n)return;
-  act(async function(){await q(db.from("workstations").upsert({name:n,target_per_hour:isNaN(t)?null:t,active:true},{onConflict:"name"}));await loadBase();fillSelects()},"บันทึกหน้างานแล้ว").then(function(ok){if(ok){$("a-kname").value="";$("a-ktarget").value="";refresh()}});
-});
 $("restform").addEventListener("submit",function(ev){
   ev.preventDefault();var v={enabled:$("r-on").checked,max_backdate_days:Math.max(0,parseInt($("r-days").value,10)||0)};
-  act(function(){return q(db.from("app_settings").upsert({key:"log_restriction",value:v}))},"บันทึกการตั้งค่าแล้ว");
+  act(async function(){await q(db.from("app_settings").upsert({key:"log_restriction",value:v}));S.settings.log_restriction=v},v.enabled?"เปิดห้ามลงยอดย้อนหลังเกิน "+v.max_backdate_days+" วันแล้ว":"ปิดการห้ามลงยอดย้อนหลังแล้ว");
 });
 $("logout").addEventListener("click",function(){db.auth.signOut().then(function(){location.reload()})});
 
@@ -1116,11 +1263,12 @@ document.addEventListener("click",function(ev){
     if(d.saverole===S.me.id&&role!=="admin"){toast("ลดสิทธิ์ Admin ของตัวเองไม่ได้ ให้ Admin คนอื่นทำแทน");return}
     act(async function(){await q(db.from("employees").update({role:role,allowed_departments:role==="dept_admin"?allowed:[]}).eq("id",d.saverole));await loadBase();S.editRole=null},"บันทึกสิทธิ์แล้ว").then(refresh);return}
   if(d.rmdept){if(!armed(b,"แตะอีกครั้งเพื่อลบ"))return;act(async function(){await q(db.from("departments").delete().eq("id",d.rmdept));await loadBase();fillSelects()},"ลบแผนกแล้ว").then(refresh);return}
+  if(d.edkpi){kpiEdit(S.kpis.filter(function(k){return k.id===d.edkpi})[0]||null);return}
   if(d.rmkpi){if(!armed(b,"แตะอีกครั้งเพื่อลบ"))return;act(async function(){await q(db.from("workstations").update({active:false}).eq("id",d.rmkpi));await loadBase();fillSelects()},"ลบหน้างานแล้ว").then(refresh);return}
 });
 ["h-date","h-dept"].forEach(function(id){$(id).addEventListener("change",renderHomeSafe)});
 function renderHomeSafe(){refresh()}
-["d-date","d-dept","m-month","m-dept","s-dept","t-mode","t-month","t-date","t-dept","t-n","al-year","tg-date","tg-dept","am-month","am-dept","tl-date","tl-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
+["d-date","d-dept","m-month","m-dept","s-dept","t-mode","t-month","t-date","t-dept","t-n","al-year","tg-month","ad-month","am-month","am-dept","tl-date","tl-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
 $("s-q").addEventListener("input",refresh);
 
 /* ---------- เข้าสู่ระบบ ---------- */
@@ -1198,7 +1346,7 @@ async function start(){
   var lr=S.settings.log_restriction||{};$("r-on").checked=!!lr.enabled;if(lr.max_backdate_days!=null)$("r-days").value=lr.max_backdate_days;
   $("hdate").textContent=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
   $("f-date").value=today();$("f-date").max=today();$("h-date").value=today();$("d-date").value=today();$("m-month").value=today().slice(0,7);
-  ["t-date","tg-date","tl-date"].forEach(function(id){$(id).value=today()});["t-month","am-month"].forEach(function(id){$(id).value=today().slice(0,7)});
+  ["t-date","tl-date"].forEach(function(id){$(id).value=today()});["t-month","am-month","tg-month","ad-month"].forEach(function(id){$(id).value=today().slice(0,7)});
   $("auth").hidden=true;$("app").hidden=false;
   var t0="home";try{t0=localStorage.getItem("aoi-tab")||"home"}catch(e){}
   show(TABS.indexOf(t0)>=0?t0:"home");
