@@ -370,6 +370,18 @@ nav.tabs .navsub{display:none}
 .whobox{display:flex;align-items:center;gap:10px;min-width:0}
 .avatar.hdr{width:38px;height:38px;border:2px solid rgba(255,255,255,.7);cursor:pointer;font-size:15px}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+/* ---------- ดูรูปสินค้าเต็มจอ ---------- */
+.pdmain{cursor:zoom-in;position:relative}
+.pdmain::after{content:"แตะเพื่อดูรูปเต็ม";position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;padding:2px 9px;border-radius:99px;pointer-events:none}
+.pdmain:has(.ico)::after{display:none}
+.modal.viewer{background:rgba(0,0,0,.94);z-index:30;padding:0;place-items:center}
+.viewer img{max-width:100vw;max-height:calc(100vh - 70px);object-fit:contain;display:block;animation:popin .25s ease both}
+.viewer .iconbtn{position:fixed;background:rgba(255,255,255,.14);color:#fff;border:0;width:46px;height:46px}
+.viewer .iconbtn:hover{background:rgba(255,255,255,.28);color:#fff}
+.viewer .vclose{top:calc(12px + env(safe-area-inset-top,0px));right:12px}
+.viewer .vnav{top:50%;transform:translateY(-50%)}
+.viewer .vprev{left:10px}.viewer .vnext{right:10px}.viewer .vnext .ico{transform:scaleX(-1)}
+.viewer .vcount{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:#fff;font-size:14px}
 </style>
 </head>
 <body>
@@ -837,7 +849,7 @@ nav.tabs .navsub{display:none}
 <div class="modal" id="m-prod" hidden>
   <div class="box wide" role="dialog" aria-modal="true" aria-labelledby="pd-title">
     <div class="headrow"><span class="pill" id="pd-cat"></span><button type="button" class="iconbtn" data-close="m-prod" data-ico="x" aria-label="ปิด"></button></div>
-    <div class="pdgal"><div class="pdmain" id="pd-main"></div><div class="pdthumbs" id="pd-thumbs"></div></div>
+    <div class="pdgal"><div class="pdmain" id="pd-main" role="button" tabindex="0" title="แตะเพื่อดูรูปเต็ม"></div><div class="pdthumbs" id="pd-thumbs"></div></div>
     <div><h3 id="pd-title" style="font-size:19px"></h3><div class="pdprice" id="pd-price"></div><p class="sub" id="pd-meta"></p></div>
     <p id="pd-desc" class="pddesc"></p>
     <div class="sellerbox"><span class="avatar" id="pd-av"></span><div><b id="pd-seller"></b><small id="pd-sdept"></small><small id="pd-contact"></small></div></div>
@@ -852,6 +864,13 @@ nav.tabs .navsub{display:none}
       <button type="button" class="danger" id="pd-del" data-ico="trash">ลบสินค้า</button>
     </div>
   </div>
+</div>
+<div class="modal viewer" id="m-img" hidden>
+  <button type="button" class="iconbtn vclose" data-close="m-img" data-ico="x" aria-label="ปิดรูป"></button>
+  <button type="button" class="iconbtn vnav vprev" id="v-prev" data-ico="back" aria-label="รูปก่อนหน้า"></button>
+  <img id="v-img" alt="รูปสินค้า">
+  <button type="button" class="iconbtn vnav vnext" id="v-next" data-ico="back" aria-label="รูปถัดไป"></button>
+  <div class="vcount" id="v-count"></div>
 </div>
 <div id="toast" role="status" hidden></div>
 
@@ -1489,6 +1508,18 @@ async function openProduct(id){
   $("pd-qty").value=1;$("pd-qty").max=p.stock;$("pd-note").value="";$("pd-sum").textContent=baht(p.price);
   openModal("m-prod");
 }
+/* ดูรูปเต็มจอ: แตะรูปใหญ่, เลื่อนซ้ายขวาด้วยปุ่ม ลูกศร หรือปัดนิ้ว */
+var VW={i:0};
+function viewerImgs(){return SH.cur?(SH.cur.images||[]).filter(okImg):[]}
+function showViewer(i){var imgs=viewerImgs();if(!imgs.length)return;VW.i=(i+imgs.length)%imgs.length;$("v-img").src=imgs[VW.i];
+  $("v-count").textContent=imgs.length>1?(VW.i+1)+" / "+imgs.length:"";$("v-prev").hidden=$("v-next").hidden=imgs.length<2;$("m-img").hidden=false}
+$("pd-main").addEventListener("click",function(){showViewer(SH.img)});
+$("pd-main").addEventListener("keydown",function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();showViewer(SH.img)}});
+$("v-prev").addEventListener("click",function(){showViewer(VW.i-1)});
+$("v-next").addEventListener("click",function(){showViewer(VW.i+1)});
+document.addEventListener("keydown",function(ev){if($("m-img").hidden)return;if(ev.key==="ArrowLeft")showViewer(VW.i-1);if(ev.key==="ArrowRight")showViewer(VW.i+1)});
+(function(){var x0=null;$("m-img").addEventListener("touchstart",function(ev){x0=ev.touches.length===1?ev.touches[0].clientX:null},{passive:true});
+  $("m-img").addEventListener("touchend",function(ev){if(x0==null)return;var dx=ev.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>50)showViewer(VW.i+(dx<0?1:-1))})})();
 $("pd-qty").addEventListener("input",function(){var n=parseInt($("pd-qty").value,10)||0;$("pd-sum").textContent=SH.cur?baht(SH.cur.price*n):"–"});
 $("buyform").addEventListener("submit",function(ev){
   ev.preventDefault();var p=SH.cur,n=parseInt($("pd-qty").value,10);if(!p||!(n>=1)){toast("ใส่จำนวนอย่างน้อย 1");return}
@@ -1532,7 +1563,7 @@ $("f-kpi").addEventListener("change",showTarget);
 /* ---------- ป๊อปอัป ---------- */
 function openModal(id){$(id).hidden=false;var f=$(id).querySelector("input:not([type=file]),select");if(f)setTimeout(function(){f.focus()},50)}
 function closeModal(id){$(id).hidden=true}
-document.addEventListener("keydown",function(ev){if(ev.key==="Escape")document.querySelectorAll(".modal:not([hidden])").forEach(function(m){m.hidden=true})});
+document.addEventListener("keydown",function(ev){if(ev.key!=="Escape")return;if(!$("m-img").hidden){$("m-img").hidden=true;return}document.querySelectorAll(".modal:not([hidden])").forEach(function(m){m.hidden=true})});
 document.querySelectorAll(".modal").forEach(function(m){m.addEventListener("mousedown",function(ev){if(ev.target===m)m.hidden=true})});
 var EM=null;                                   /* null = เพิ่มใหม่, id = แก้ไขคนนี้ */
 function empModal(e){
