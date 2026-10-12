@@ -482,7 +482,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-12</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-13</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -848,7 +848,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-12 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-13 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1737,9 +1737,9 @@ function ttPlay(v){
   if(pr&&pr.catch)pr.catch(function(){if(!v.muted){v.muted=true;TT.muted=true;TT.autoMuted=true;ttMuteIcons();var p2=v.play();if(p2&&p2.catch)p2.catch(function(){})}});
 }
 function ttUnmute(){TT.muted=false;TT.autoMuted=false;document.querySelectorAll("#tt-feed video").forEach(function(v){v.muted=false});ttMuteIcons()}
-/* นับยอดเข้าชม: ดูเกิน 1.5 วินาที นับคนละครั้งต่อโพสต์ (ไม่นับโพสต์ตัวเอง) */
+/* นับยอดเข้าชม: ดูเกิน 1.5 วินาที นับคนละครั้งต่อโพสต์ (รวมเจ้าของโพสต์) */
 function ttSeen(id){
-  if(TT.seen[id])return;TT.seen[id]=1;var p=ttPost(id);if(!p||p.author_id===S.me.id)return;
+  if(TT.seen[id])return;TT.seen[id]=1;var p=ttPost(id);if(!p)return;
   db.rpc("view_post",{p_post:id}).then(function(r){if(r.error||r.data==null)return;p.view_count=r.data;ttPaint(p)});
 }
 function ttPaint(p){var it=document.querySelector('.ttitem[data-pid="'+p.id+'"]');if(!it)return;
