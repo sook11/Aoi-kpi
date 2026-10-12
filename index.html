@@ -482,7 +482,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-13</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-14</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -848,7 +848,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-13 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-14 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1609,7 +1609,9 @@ $("sellform").addEventListener("submit",function(ev){
   act(async function(){
     var cover=SH.photos[0]?await resizeImg(SH.photos[0],320,.7):null;
     var row={title:$("sl-name").value.trim(),price:price,stock:isNaN(stock)?1:Math.max(0,stock),category:$("sl-cat").value,condition:$("sl-cond").value,description:$("sl-desc").value.trim(),contact:$("sl-contact").value.trim(),cover:cover,images:SH.photos};
-    if(SH.edit)await q(db.from("products").update(row).eq("id",SH.edit));
+    if(SH.edit){var cur=SH.list.filter(function(x){return x.id===SH.edit})[0]||SH.cur||{};          /* เติมสต็อกแล้วกลับมาวางขาย / สต็อก 0 = ขายแล้ว */
+      if(row.stock>0&&cur.status==="sold")row.status="active";else if(row.stock===0&&cur.status==="active")row.status="sold";
+      await q(db.from("products").update(row).eq("id",SH.edit))}
     else{row.seller_id=S.me.id;row.status="active";await q(db.from("products").insert(row))}
   },SH.edit?"บันทึกการแก้ไขแล้ว":"ลงขายสินค้าแล้ว").then(function(ok){btn.disabled=false;if(ok){closeModal("m-sell");closeModal("m-prod");if(!SH.edit)SH.mode="mine";refresh()}});
 });
@@ -1667,7 +1669,7 @@ $("rv-del").addEventListener("click",function(ev){var p=SH.cur;if(!p||!RV.mine||
 var VW={i:0};
 function viewerImgs(){return SH.cur?(SH.cur.images||[]).filter(okImg):[]}
 function showViewer(i){var imgs=viewerImgs();if(!imgs.length)return;VW.i=(i+imgs.length)%imgs.length;$("v-img").src=imgs[VW.i];
-  $("v-count").textContent=imgs.length>1?(VW.i+1)+" / "+imgs.length:"";$("v-prev").hidden=$("v-next").hidden=imgs.length<2;$("m-img").hidden=false}
+  $("v-count").textContent=imgs.length>1?(VW.i+1)+" / "+imgs.length:"";$("v-prev").hidden=$("v-next").hidden=imgs.length<2;$("m-img").style.zIndex=++MZ;$("m-img").hidden=false}
 $("pd-main").addEventListener("click",function(){showViewer(SH.img)});
 $("pd-main").addEventListener("keydown",function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();showViewer(SH.img)}});
 $("v-prev").addEventListener("click",function(){showViewer(VW.i-1)});
@@ -1681,7 +1683,7 @@ $("buyform").addEventListener("submit",function(ev){
   act(function(){return q(db.from("product_orders").insert({product_id:p.id,buyer_id:S.me.id,qty:n,note:$("pd-note").value.trim()}))},"สั่งซื้อแล้ว จองสินค้าไว้ให้แล้ว รอผู้ขายยืนยัน")
     .then(function(ok){if(ok){closeModal("m-prod");SH.mode="orders";refresh()}});
 });
-$("pd-edit").addEventListener("click",function(){if(SH.cur)sellModal(SH.cur)});
+$("pd-edit").addEventListener("click",function(){if(SH.cur){closeModal("m-prod");sellModal(SH.cur)}});
 $("pd-toggle").addEventListener("click",function(){var p=SH.cur;if(!p)return;var st=p.status==="active"?"hidden":"active";
   act(function(){return q(db.from("products").update({status:st,stock:st==="active"&&p.stock<1?1:p.stock}).eq("id",p.id))},st==="active"?"วางขายอีกครั้งแล้ว":"ซ่อนสินค้าแล้ว").then(function(ok){if(ok){closeModal("m-prod");refresh()}})});
 $("pd-del").addEventListener("click",function(ev){var p=SH.cur;if(!p||!armed(ev.currentTarget,"แตะอีกครั้งเพื่อลบ"))return;
@@ -1858,7 +1860,7 @@ $("logform").addEventListener("submit",function(ev){
 $("f-kpi").addEventListener("change",showTarget);
 
 /* ---------- ป๊อปอัป ---------- */
-function openModal(id){$(id).hidden=false;var f=$(id).querySelector("input:not([type=file]),select");if(f)setTimeout(function(){f.focus()},50)}
+var MZ=40;function openModal(id){$(id).style.zIndex=++MZ;$(id).hidden=false;var f=$(id).querySelector("input:not([type=file]),select");if(f)setTimeout(function(){f.focus()},50)}
 function closeModal(id){$(id).hidden=true}
 document.addEventListener("keydown",function(ev){if(ev.key!=="Escape")return;if(!$("m-img").hidden){$("m-img").hidden=true;return}document.querySelectorAll(".modal:not([hidden])").forEach(function(m){m.hidden=true})});
 document.querySelectorAll(".modal").forEach(function(m){m.addEventListener("mousedown",function(ev){if(ev.target===m)m.hidden=true})});
