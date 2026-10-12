@@ -413,6 +413,23 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
 .tcrow b{font-size:13.5px}.tcrow small{color:var(--muted);font-size:12px;margin-left:6px}.tcrow p{margin:2px 0 0;font-size:14.5px;overflow-wrap:anywhere}
 #tc-list{max-height:50vh;overflow:auto}
 @media (min-width:900px){.ttfeed{height:calc(100vh - 210px)}}
+/* ติ่งต๊องบนมือถือ: เต็มจอแบบติ๊กต็อก ปัดขึ้นดูคลิปถัดไป */
+.ttend{background:#0b1426}
+@media (max-width:899px){
+  body.tt-full #v-tt{position:fixed;left:0;right:0;top:0;bottom:var(--navh,64px);z-index:8;background:#000;margin:0;padding:0;display:block;gap:0}
+  body.tt-full #v-tt>*{animation:none}
+  body.tt-full #v-tt .ttfeed{height:100%;min-height:0;max-width:none;border-radius:0}
+  body.tt-full #v-tt .headrow{position:absolute;top:0;left:0;right:0;z-index:4;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 26px;background:linear-gradient(rgba(0,0,0,.55),transparent);pointer-events:none;color:#fff}
+  body.tt-full #v-tt .headrow>*{pointer-events:auto}
+  body.tt-full #v-tt .headrow h2{color:#fff;font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  body.tt-full #v-tt .headrow .sub{display:none}
+  body.tt-full #v-tt .chips{position:absolute;top:calc(env(safe-area-inset-top,0px) + 54px);left:14px;z-index:4;margin:0}
+  body.tt-full #v-tt .chipsel{background:rgba(0,0,0,.35);color:#fff;border-color:rgba(255,255,255,.35)}
+  body.tt-full #v-tt .chipsel.on{background:#fff;color:#12284c;border-color:#fff}
+  body.tt-full .ttmute{top:calc(env(safe-area-inset-top,0px) + 56px);right:14px}
+  body.tt-full .ttside{bottom:110px}
+  body.tt-full .ttinfo{padding-bottom:22px}
+}
 </style>
 </head>
 <body>
@@ -442,7 +459,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-08</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-09</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -808,7 +825,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-08 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-09 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1602,7 +1619,7 @@ $("pd-del").addEventListener("click",function(ev){var p=SH.cur;if(!p||!armed(ev.
   act(function(){return q(db.from("products").delete().eq("id",p.id))},"ลบสินค้าแล้ว").then(function(ok){if(ok){closeModal("m-prod");refresh()}})});
 
 /* ---------- หน้า: ติ่งต๊อง (คลิป/รูปของพนักงาน แบบเลื่อนดูทีละโพสต์) ---------- */
-var TT={mode:"all",list:[],liked:{},urls:{},urlsAt:0,muted:true,obs:null,file:null,kind:null,thumb:null,cur:null,busy:false};
+var TT={mode:"all",list:[],liked:{},urls:{},urlsAt:0,muted:false,autoMuted:false,obs:null,file:null,kind:null,thumb:null,cur:null,busy:false};
 function ago(t){var s=(Date.now()-new Date(t).getTime())/1000;if(s<60)return "เมื่อสักครู่";if(s<3600)return Math.floor(s/60)+" นาทีที่แล้ว";if(s<86400)return Math.floor(s/3600)+" ชม.ที่แล้ว";if(s<604800)return Math.floor(s/86400)+" วันที่แล้ว";return new Date(t).toLocaleDateString("th-TH",{day:"numeric",month:"short"})}
 function avHtml(src,name){var a=okImg(src);return '<span class="ttav">'+(a?'<img alt="" src="'+a+'">':esc(String(name||"?").trim().charAt(0)))+'</span>'}
 async function renderTT(){
@@ -1628,13 +1645,21 @@ function drawTT(){
   document.querySelectorAll("[data-ttmode]").forEach(function(b){b.classList.toggle("on",b.dataset.ttmode===TT.mode)});
   var list=TT.list.filter(function(p){return TT.mode!=="mine"||p.author_id===S.me.id});
   if(TT.obs)TT.obs.disconnect();
-  $("tt-feed").innerHTML=list.length?list.map(ttItem).join(""):'<div class="ttempty"><div>'+(TT.mode==="mine"?"คุณยังไม่มีโพสต์":"ยังไม่มีโพสต์")+'<br><small>กดปุ่ม “โพสต์” เพื่อลงคลิปหรือรูปแรก</small></div></div>';
+  $("tt-feed").innerHTML=list.length?list.map(ttItem).join("")+'<div class="ttitem ttend"><div class="ttempty"><div><b style="font-size:18px">ดูครบทุกโพสต์แล้ว</b><br><small>กดปุ่ม “โพสต์” เพื่อลงคลิปของคุณ</small></div></div></div>':'<div class="ttempty"><div>'+(TT.mode==="mine"?"คุณยังไม่มีโพสต์":"ยังไม่มีโพสต์")+'<br><small>กดปุ่ม “โพสต์” เพื่อลงคลิปหรือรูปแรก</small></div></div>';
   /* เล่นเฉพาะคลิปที่อยู่บนจอ */
   if("IntersectionObserver" in window){
-    TT.obs=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting&&S.tab==="tt"){v.muted=TT.muted;var pr=v.play();if(pr&&pr.catch)pr.catch(function(){})}else v.pause()})},{root:$("tt-feed"),threshold:.6});
+    TT.obs=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting&&S.tab==="tt"){ttPlay(v)}else{v.pause();try{v.currentTime=0}catch(x){}}})},{root:$("tt-feed"),threshold:.6});
     document.querySelectorAll("#tt-feed video").forEach(function(v){TT.obs.observe(v)});
   }
 }
+function ttVisible(){var f=$("tt-feed"),r=f.getBoundingClientRect(),best=null;f.querySelectorAll("video").forEach(function(v){var b=v.getBoundingClientRect();if(b.top<r.top+r.height/2&&b.bottom>r.top+r.height/2)best=v});return best}
+function ttMuteIcons(){document.querySelectorAll("[data-ttmute]").forEach(function(x){x.innerHTML=ico(TT.muted?"mute":"vol")})}
+/* เล่นแบบมีเสียง ถ้าเบราว์เซอร์ไม่ยอมให้เล่นมีเสียงเอง จะเล่นแบบปิดเสียงก่อน แล้วแตะจอครั้งแรกเพื่อเปิดเสียง */
+function ttPlay(v){
+  v.muted=TT.muted;var pr=v.play();
+  if(pr&&pr.catch)pr.catch(function(){if(!v.muted){v.muted=true;TT.muted=true;TT.autoMuted=true;ttMuteIcons();var p2=v.play();if(p2&&p2.catch)p2.catch(function(){})}});
+}
+function ttUnmute(){TT.muted=false;TT.autoMuted=false;document.querySelectorAll("#tt-feed video").forEach(function(v){v.muted=false});ttMuteIcons()}
 function ttPost(id){return TT.list.filter(function(p){return p.id===id})[0]}
 async function ttLike(id,btn){
   var p=ttPost(id);if(!p||TT.busy)return;TT.busy=true;var was=!!TT.liked[id];
@@ -1650,9 +1675,10 @@ $("tt-feed").addEventListener("click",function(ev){
     var id=item.dataset.pid;if(!TT.liked[id])ttLike(id,item.querySelector("[data-ttlike]"));
     item.insertAdjacentHTML("beforeend",'<div class="ttbig">'+ico("heart")+'</div>');setTimeout(function(){var h=item.querySelector(".ttbig");if(h)h.remove()},800);return}
   item._last=now;
+  if(v.tagName==="VIDEO"&&TT.autoMuted){ttUnmute();if(v.paused)ttPlay(v);return}
   if(v.tagName==="VIDEO")item._t=setTimeout(function(){                             /* แตะครั้งเดียว = หยุด/เล่น */
     var old=item.querySelector(".ttpause");if(old)old.remove();
-    if(v.paused){var pr=v.play();if(pr&&pr.catch)pr.catch(function(){})}else{v.pause();item.insertAdjacentHTML("beforeend",'<div class="ttpause">'+ico("playf")+'</div>')}
+    if(v.paused){ttPlay(v)}else{v.pause();item.insertAdjacentHTML("beforeend",'<div class="ttpause">'+ico("playf")+'</div>')}
   },280);
 });
 $("tt-feed").addEventListener("play",function(ev){var p=ev.target.closest(".ttitem");var o=p&&p.querySelector(".ttpause");if(o)o.remove()},true);
@@ -1720,6 +1746,8 @@ function show(tab){
   document.querySelectorAll("nav.tabs button").forEach(function(b){if(b.dataset.tab===(tab==="emp"?"staff":tab)||(b.dataset.tab==="menu"&&MAIN.indexOf(tab)<0))b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   renderDeptNav();
   if(tab!=="tt")document.querySelectorAll("#tt-feed video").forEach(function(v){v.pause()});
+  document.body.classList.toggle("tt-full",tab==="tt");
+  if(tab==="tt"){var nv=document.querySelector("nav.tabs");document.documentElement.style.setProperty("--navh",(nv?nv.offsetHeight:64)+"px")}
   try{localStorage.setItem("aoi-tab",tab)}catch(e){}
   window.scrollTo(0,0);refresh();
 }
@@ -1911,7 +1939,7 @@ document.addEventListener("click",function(ev){
   if(d.ttmode){TT.mode=d.ttmode;drawTT();$("tt-feed").scrollTop=0;return}
   if(d.ttlike){ttLike(d.ttlike,b);return}
   if(d.ttcom){$("tc-list").innerHTML=emptyRow("กำลังโหลด...");openModal("m-ttcom");ttComments(d.ttcom).catch(function(e){toast(thErr(e))});return}
-  if(d.ttmute){TT.muted=!TT.muted;document.querySelectorAll("#tt-feed video").forEach(function(v){v.muted=TT.muted});document.querySelectorAll("[data-ttmute]").forEach(function(x){x.innerHTML=ico(TT.muted?"mute":"vol")});return}
+  if(d.ttmute){if(TT.muted){ttUnmute();var cv=ttVisible();if(cv&&cv.paused)ttPlay(cv)}else{TT.muted=true;document.querySelectorAll("#tt-feed video").forEach(function(v){v.muted=true});ttMuteIcons()}return}
   if(d.ttdel){if(!armed(b,"แตะอีกครั้ง"))return;var tp=ttPost(d.ttdel);if(!tp)return;
     act(async function(){await q(db.from("posts").delete().eq("id",tp.id));await db.storage.from("tingtong").remove([tp.media_path])},"ลบโพสต์แล้ว").then(function(ok){if(ok)refresh()});return}
   if(d.tcdel){if(!armed(b,"แตะอีกครั้ง"))return;act(function(){return q(db.from("post_comments").delete().eq("id",d.tcdel))},"ลบความคิดเห็นแล้ว").then(function(ok){if(ok)ttComments(TT.cur)});return}
