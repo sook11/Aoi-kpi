@@ -367,6 +367,9 @@ nav.tabs .navsub{display:none}
 @media (min-width:600px){.pgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:1100px){.pgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .pdmain .ico{width:56px;height:56px}
+.whobox{display:flex;align-items:center;gap:10px;min-width:0}
+.avatar.hdr{width:38px;height:38px;border:2px solid rgba(255,255,255,.7);cursor:pointer;font-size:15px}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
 </style>
 </head>
 <body>
@@ -396,7 +399,7 @@ nav.tabs .navsub{display:none}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-06</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-07</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -425,7 +428,7 @@ nav.tabs .navsub{display:none}
 <div class="wrap">
   <header class="top">
     <div class="brand"><img class="brandimg" src="icon-192.png?v=5" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><i hidden>KPI</i><div><b>AOI KPI</b><small id="hdate"></small></div></div>
-    <div class="who"><b id="who"></b><span id="whorole"></span></div>
+    <div class="whobox"><div class="who"><b id="who"></b><span id="whorole"></span></div><span class="avatar hdr" id="who-av" data-tab="settings" role="button" tabindex="0" title="โปรไฟล์ของฉัน"></span></div>
   </header>
 
   <!-- HOME -->
@@ -751,7 +754,7 @@ nav.tabs .navsub{display:none}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-06 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-07 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1479,7 +1482,7 @@ async function openProduct(id){
   $("pd-cat").textContent=p.category;$("pd-title").textContent=p.title;$("pd-price").textContent=baht(p.price);
   $("pd-meta").textContent=[p.condition,p.status==="active"?"เหลือ "+p.stock+" ชิ้น":p.status==="sold"?"ขายแล้ว":"ซ่อนอยู่"].join(" · ");
   $("pd-desc").textContent=p.description||"";$("pd-desc").hidden=!p.description;
-  $("pd-av").textContent=String(p.seller_name).trim().charAt(0);$("pd-seller").textContent=p.seller_name;$("pd-sdept").textContent=p.seller_dept;$("pd-contact").textContent=p.contact?"ติดต่อ: "+p.contact:"";
+  var sa=okImg(p.seller_avatar);$("pd-av").innerHTML=sa?'<img alt="" src="'+sa+'">':esc(String(p.seller_name).trim().charAt(0));$("pd-seller").textContent=p.seller_name;$("pd-sdept").textContent=p.seller_dept;$("pd-contact").textContent=p.contact?"ติดต่อ: "+p.contact:"";
   var mine=p.seller_id===S.me.id;
   $("buyform").hidden=mine||p.status!=="active";$("pd-own").hidden=!(mine||S.admin);$("pd-edit").hidden=!mine;
   $("pd-toggle").textContent=p.status==="active"?"ซ่อนสินค้า":"วางขายอีกครั้ง";
@@ -1692,6 +1695,7 @@ function armed(btn,label){
   return false;
 }
 document.addEventListener("click",function(ev){
+  if(ev.target.closest("#who-av")){show("settings");return}
   var head=ev.target.closest(".emphead[data-open]");if(head&&!ev.target.closest("button,label")){S.empId=head.dataset.open;show("emp");return}
   var b=ev.target.closest("button");if(!b)return;var d=b.dataset;
   if(b.hasAttribute("data-sdept")){$("s-dept").value=d.sdept;if(S.tab==="staff"){refresh();window.scrollTo(0,0)}else show("staff");return}
@@ -1778,7 +1782,10 @@ $("authform").addEventListener("submit",async function(ev){
   btn.disabled=false;
 });
 
-function paintWho(){$("who").textContent=S.me.display_name;$("whorole").textContent=ROLE[S.me.role]}
+function paintWho(){
+  $("who").textContent=S.me.display_name;$("whorole").textContent=ROLE[S.me.role];
+  var a=okAvatar(S.me.avatar);$("who-av").innerHTML=a?'<img alt="" src="'+a+'">':esc(String(S.me.display_name||"?").trim().charAt(0));
+}
 async function start(){
   var u=(await db.auth.getUser()).data.user;
   if(!u){$("auth").hidden=false;$("app").hidden=true;return}
