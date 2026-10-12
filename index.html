@@ -333,6 +333,40 @@ nav.tabs .navsub{display:none}
 .applogo{display:flex;align-items:center;gap:14px}
 .applogo img{width:64px;height:64px;border-radius:15px;flex:none;box-shadow:0 6px 16px rgba(11,29,54,.28)}
 .brandimg{width:36px;height:36px;border-radius:9px;flex:none}
+/* ---------- ร้านค้า ---------- */
+.shopseg{grid-template-columns:repeat(3,1fr)}
+.pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pcard{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:0;border-radius:14px;overflow:hidden;text-align:left;font-weight:400;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);position:relative}
+.pcard:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(18,40,76,.16)}
+.pimg{aspect-ratio:1/1;width:100%;max-width:100%;background:var(--off-bg);display:grid;place-items:center;color:var(--off-ink);overflow:hidden}
+.pimg img{width:100%;height:100%;object-fit:cover;display:block}
+.pimg .ico{width:40px;height:40px}
+.pbody{padding:9px 10px 11px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.pt{font-size:14px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em;color:var(--ink)}
+.pp{font-family:var(--display);font-weight:700;font-size:17px;color:#e8590c}
+.ps{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbadge{position:absolute;top:8px;left:8px;background:rgba(20,36,61,.82);color:#fff;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px}
+.pbadge.sold{background:#c0392b}
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.photos .ph{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;background:var(--off-bg)}
+.photos .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.photos .ph button{position:absolute;top:3px;right:3px;width:22px;height:22px;padding:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:0;font-size:13px}
+.photos .ph i{position:absolute;left:0;right:0;bottom:0;background:rgba(29,78,216,.85);color:#fff;font-size:11px;text-align:center;font-style:normal}
+.modal .box.wide{max-width:560px}
+.pdmain{aspect-ratio:1/1;width:100%;max-width:100%;border-radius:12px;overflow:hidden;background:var(--off-bg);display:grid;place-items:center;color:var(--off-ink)}
+.pdmain img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.pdthumbs{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.pdthumbs button{width:56px;height:56px;padding:0;border-radius:8px;overflow:hidden;border:2px solid transparent}
+.pdthumbs button[aria-current="true"]{border-color:var(--accent)}
+.pdthumbs img{width:100%;height:100%;object-fit:cover}
+.pdprice{font-family:var(--display);font-size:24px;font-weight:700;color:#e8590c}
+.pddesc{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14.5px}
+.sellerbox{display:flex;align-items:center;gap:10px;background:var(--off-bg);border-radius:12px;padding:10px 12px}
+.sellerbox small{display:block;color:var(--muted);font-size:12.5px}
+.ostat.pending{color:var(--warn)}.ostat.confirmed{color:var(--accent)}.ostat.done{color:var(--good)}.ostat.cancelled{color:var(--bad)}
+@media (min-width:600px){.pgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1100px){.pgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.pdmain .ico{width:56px;height:56px}
 </style>
 </head>
 <body>
@@ -362,7 +396,7 @@ nav.tabs .navsub{display:none}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-05</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-06</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -516,6 +550,7 @@ nav.tabs .navsub{display:none}
     <div class="menugrid">
       <button data-tab="staff" class="mgr">พนักงาน</button>
       <button data-tab="top">Top 5 ยอดผลิต</button>
+      <button data-tab="shop">สินค้า</button>
       <button data-tab="allowance">KPI / Allowance</button>
       <button data-tab="install">ติดตั้งแอปลงมือถือ</button>
       <button data-tab="admin" class="mgr">Admin Dashboard</button>
@@ -538,6 +573,32 @@ nav.tabs .navsub{display:none}
       <label>จำนวน<select id="t-n"><option value="5">Top 5</option><option value="10">Top 10</option><option value="20">Top 20</option></select></label>
     </div>
     <div class="panel"><div class="rows" id="t-rows"></div></div>
+  </section>
+
+  <!-- SHOP -->
+  <section class="view" id="v-shop" hidden>
+    <div class="headrow">
+      <div><h2>สินค้า</h2><p class="sub">ตลาดซื้อขายสินค้าของพนักงาน</p></div>
+      <button type="button" class="primary slim" data-sell="1" data-ico="plus">ลงขายสินค้า</button>
+    </div>
+    <div class="seg shopseg" role="group" aria-label="มุมมองร้านค้า">
+      <button type="button" data-shopmode="browse" aria-pressed="true">เลือกซื้อ</button>
+      <button type="button" data-shopmode="mine" aria-pressed="false">ร้านของฉัน</button>
+      <button type="button" data-shopmode="orders" aria-pressed="false">คำสั่งซื้อของฉัน</button>
+    </div>
+    <div id="sh-browse" class="view">
+      <div class="filters"><label class="searchbox">ค้นหา<input type="search" id="sh-q" placeholder="ค้นหาชื่อสินค้าหรือผู้ขาย..."></label></div>
+      <div class="chips" id="sh-cats"></div>
+      <div class="pgrid" id="sh-grid"></div>
+    </div>
+    <div id="sh-mine" class="view" hidden>
+      <div class="panel"><h3>คำสั่งซื้อที่ได้รับ</h3><div class="rows" id="sh-in"></div></div>
+      <h3>สินค้าของฉัน</h3>
+      <div class="pgrid" id="sh-my"></div>
+    </div>
+    <div id="sh-orders" class="view" hidden>
+      <div class="panel"><h3>คำสั่งซื้อของฉัน</h3><div class="rows" id="sh-out"></div></div>
+    </div>
   </section>
 
   <!-- MY ALLOWANCE -->
@@ -690,7 +751,7 @@ nav.tabs .navsub{display:none}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-05 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-06 · 11/10/2569</p>
   </section>
 </div>
 
@@ -703,6 +764,7 @@ nav.tabs .navsub{display:none}
   <div class="navsub mgr" id="nav-depts"></div>
   <button data-tab="top" class="navx">Top 5 ยอดผลิต</button>
   <button data-tab="allowance" class="navx">KPI / Allowance</button>
+  <button data-tab="shop" class="navx">สินค้า</button>
   <button data-tab="install" class="navx">ติดตั้งแอปลงมือถือ</button>
   <span class="navlabel mgr">ADMIN</span>
   <button data-tab="admin" class="mgr navx">Admin Dashboard</button>
@@ -746,6 +808,46 @@ nav.tabs .navsub{display:none}
       <label>หมายเหตุ<input type="text" id="lg-note" maxlength="200"></label>
       <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-log">ยกเลิก</button><button class="primary slim" type="submit">บันทึกการแก้ไข</button></div>
     </form>
+  </div>
+</div>
+<div class="modal" id="m-sell" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="sl-head">
+    <div class="headrow"><h3 id="sl-head" style="font-size:18px">ลงขายสินค้า</h3><button type="button" class="iconbtn" data-close="m-sell" data-ico="x" aria-label="ปิด"></button></div>
+    <div class="photos" id="sl-photos"></div>
+    <label class="filebtn" data-ico="camera">เพิ่มรูปสินค้า (สูงสุด 4 รูป)<input type="file" id="sl-file" accept="image/*" multiple hidden></label>
+    <form id="sellform">
+      <label>ชื่อสินค้า *<input type="text" id="sl-name" maxlength="120" placeholder="เช่น ขนมเปี๊ยะไส้ถั่ว" required></label>
+      <div class="grid2">
+        <label>ราคา (บาท) *<input type="number" id="sl-price" min="0" step="any" inputmode="decimal" required></label>
+        <label>จำนวนที่มี<input type="number" id="sl-stock" min="0" step="1" inputmode="numeric" value="1"></label>
+      </div>
+      <div class="grid2">
+        <label>หมวดหมู่<select id="sl-cat"></select></label>
+        <label>สภาพ<select id="sl-cond"><option>ใหม่</option><option>มือสอง</option><option>ทำเอง</option></select></label>
+      </div>
+      <label>รายละเอียด<textarea id="sl-desc" rows="3" maxlength="2000" placeholder="ขนาด สี วิธีรับของ ฯลฯ"></textarea></label>
+      <label>ช่องทางติดต่อ<input type="text" id="sl-contact" maxlength="120" placeholder="เบอร์โทร หรือ LINE ID"></label>
+      <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-sell">ยกเลิก</button><button class="primary slim" type="submit" id="sl-submit">ลงขาย</button></div>
+    </form>
+  </div>
+</div>
+<div class="modal" id="m-prod" hidden>
+  <div class="box wide" role="dialog" aria-modal="true" aria-labelledby="pd-title">
+    <div class="headrow"><span class="pill" id="pd-cat"></span><button type="button" class="iconbtn" data-close="m-prod" data-ico="x" aria-label="ปิด"></button></div>
+    <div class="pdgal"><div class="pdmain" id="pd-main"></div><div class="pdthumbs" id="pd-thumbs"></div></div>
+    <div><h3 id="pd-title" style="font-size:19px"></h3><div class="pdprice" id="pd-price"></div><p class="sub" id="pd-meta"></p></div>
+    <p id="pd-desc" class="pddesc"></p>
+    <div class="sellerbox"><span class="avatar" id="pd-av"></span><div><b id="pd-seller"></b><small id="pd-sdept"></small><small id="pd-contact"></small></div></div>
+    <form id="buyform">
+      <div class="grid2"><label>จำนวน<input type="number" id="pd-qty" min="1" step="1" value="1" inputmode="numeric"></label><label>รวม<output class="target" id="pd-sum">–</output></label></div>
+      <label>ข้อความถึงผู้ขาย<input type="text" id="pd-note" maxlength="500" placeholder="เช่น รับของที่ไลน์ 2 ช่วงพักเที่ยง"></label>
+      <button class="primary" type="submit" data-ico="shop">สั่งซื้อ</button>
+    </form>
+    <div class="inline" id="pd-own" hidden>
+      <button type="button" data-ico="edit" id="pd-edit">แก้ไขสินค้า</button>
+      <button type="button" id="pd-toggle"></button>
+      <button type="button" class="danger" id="pd-del" data-ico="trash">ลบสินค้า</button>
+    </div>
   </div>
 </div>
 <div id="toast" role="status" hidden></div>
@@ -792,6 +894,9 @@ var ICON={
   telegram:'<path d="M21 3L3 10.500l6.500 2.500L12 20l3-5.500zM9.500 13L21 3"/>',
   settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.900 4.900l2.100 2.100M17 17l2.100 2.100M4.900 19.100L7 17M17 7l2.100-2.100"/>',
   menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  shop:'<path d="M5 8h14l-1.200 12H6.200z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  camera:'<path d="M4 8h3l1.500-2.500h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.500"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
   dept:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>',
   download:'<path d="M12 4v11M7 11l5 5 5-5M4 20h16"/>',
   upload:'<path d="M12 16V5M7 9l5-5 5 5M4 20h16"/>',
@@ -1286,10 +1391,117 @@ $("tl-send").addEventListener("click",async function(ev){
   btn.disabled=false;
 });
 
-var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,telegram:renderTelegram,menu:function(){}};
+/* ---------- หน้า: สินค้า (ตลาดซื้อขายของพนักงาน) ---------- */
+var CATS=["อาหาร/ขนม","เครื่องดื่ม","เสื้อผ้า/แฟชั่น","ของใช้","ความงาม","อิเล็กทรอนิกส์","อื่นๆ"];
+var OSTAT={pending:"รอผู้ขายยืนยัน",confirmed:"ยืนยันแล้ว",done:"สำเร็จ",cancelled:"ยกเลิก"};
+var SH={mode:"browse",cat:"",list:[],orders:[],photos:[],edit:null,cur:null,img:0};
+function baht(n){return "฿"+num(n)}
+function okImg(a){return okAvatar(a)}
+function pimg(src){var a=okImg(src);return a?'<img alt="" loading="lazy" src="'+a+'">':ico("shop")}
+setOptions($("sl-cat"),CATS.map(function(c){return {v:c,t:c}}),null);
+async function renderShop(){
+  var r=await Promise.all([
+    q(db.from("products").select("id,seller_id,seller_name,seller_dept,title,price,stock,category,condition,contact,cover,status,created_at").order("created_at",{ascending:false}).limit(400)),
+    q(db.from("product_orders").select("*").order("created_at",{ascending:false}).limit(300))
+  ]);
+  SH.list=r[0];SH.orders=r[1];drawShop();
+}
+function card(p){
+  var badge=p.status==="sold"?'<span class="pbadge sold">ขายแล้ว</span>':p.status==="hidden"?'<span class="pbadge">ซ่อนอยู่</span>':"";
+  return '<button type="button" class="pcard" data-prod="'+p.id+'">'+badge+'<div class="pimg">'+pimg(p.cover)+'</div><div class="pbody"><div class="pt">'+esc(p.title)+'</div><div class="pp">'+baht(p.price)+'</div><div class="ps">'+esc(p.seller_name)+(p.status==="active"?' · เหลือ '+p.stock:'')+'</div></div></button>';
+}
+function orderRow(o,asSeller){
+  var b="";
+  if(asSeller){
+    if(o.status==="pending")b='<button class="sm good" data-ordst="confirmed" data-id="'+o.id+'">'+ico("check")+'ยืนยัน</button><button class="sm danger" data-ordst="cancelled" data-id="'+o.id+'">ยกเลิก</button>';
+    else if(o.status==="confirmed")b='<button class="sm good" data-ordst="done" data-id="'+o.id+'">'+ico("check")+'ส่งของแล้ว</button><button class="sm danger" data-ordst="cancelled" data-id="'+o.id+'">ยกเลิก</button>';
+  }else if(o.status==="pending")b='<button class="sm danger" data-ordst="cancelled" data-id="'+o.id+'">ยกเลิกคำสั่งซื้อ</button>';
+  var who=asSeller?(o.buyer_name+(o.buyer_dept?" · "+o.buyer_dept:"")+(o.buyer_contact?" · โทร "+o.buyer_contact:"")):(function(){var p=SH.list.filter(function(x){return x.id===o.product_id})[0];return p?"ผู้ขาย: "+p.seller_name+(p.contact?" · "+p.contact:""):""})();
+  return '<div class="row"><div class="l"><b>'+esc(o.product_title)+' × '+o.qty+'</b><small>'+esc([who,o.note?"“"+o.note+"”":null,new Date(o.created_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"})].filter(Boolean).join(" · "))+'</small>'+(b?'<div class="acts">'+b+'</div>':'')+'</div><div class="r">'+baht(o.unit_price*o.qty)+'<small class="ostat '+esc(o.status)+'">'+esc(OSTAT[o.status]||o.status)+'</small></div></div>';
+}
+function drawShop(){
+  ["browse","mine","orders"].forEach(function(m){$("sh-"+m).hidden=SH.mode!==m});
+  document.querySelectorAll("[data-shopmode]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.shopmode===SH.mode)});
+  var qq=$("sh-q").value.trim().toLowerCase();
+  var vis=SH.list.filter(function(p){return p.status!=="hidden"});
+  $("sh-cats").innerHTML=['<button type="button" class="chipsel'+(SH.cat?"":" on")+'" data-cat="">ทั้งหมด <b>'+vis.filter(function(p){return p.status==="active"}).length+'</b></button>'].concat(CATS.map(function(c){var n=vis.filter(function(p){return p.category===c&&p.status==="active"}).length;return n||SH.cat===c?'<button type="button" class="chipsel'+(SH.cat===c?" on":"")+'" data-cat="'+esc(c)+'">'+esc(c)+' <b>'+n+'</b></button>':""})).join("");
+  var list=vis.filter(function(p){return (!SH.cat||p.category===SH.cat)&&(!qq||p.title.toLowerCase().indexOf(qq)>=0||p.seller_name.toLowerCase().indexOf(qq)>=0)})
+    .sort(function(a,b){return (a.status==="sold")-(b.status==="sold")});
+  $("sh-grid").innerHTML=list.length?list.map(card).join(""):emptyRow(SH.list.length?"ไม่พบสินค้าที่ค้นหา":"ยังไม่มีสินค้า กด “ลงขายสินค้า” เพื่อเป็นคนแรก");
+  var mine=SH.list.filter(function(p){return p.seller_id===S.me.id}),myIds={};mine.forEach(function(p){myIds[p.id]=1});
+  $("sh-my").innerHTML=mine.length?mine.map(card).join(""):emptyRow("ยังไม่มีสินค้าที่ลงขาย");
+  var inc=SH.orders.filter(function(o){return myIds[o.product_id]});
+  $("sh-in").innerHTML=inc.length?inc.map(function(o){return orderRow(o,true)}).join(""):emptyRow("ยังไม่มีคำสั่งซื้อ");
+  var out=SH.orders.filter(function(o){return o.buyer_id===S.me.id});
+  $("sh-out").innerHTML=out.length?out.map(function(o){return orderRow(o,false)}).join(""):emptyRow("ยังไม่มีคำสั่งซื้อ");
+}
+/* รูปสินค้า: ย่อด้านยาวไม่เกิน 800px, หน้าปกย่อเหลือ 320px */
+function resizeImg(src,max,q){return new Promise(function(res,rej){var img=new Image();img.onload=function(){var k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",q))};img.onerror=rej;img.src=src})}
+async function fileToPhoto(f){
+  var url=URL.createObjectURL(f);
+  try{var d=await resizeImg(url,800,.72);if(d.length>190000)d=await resizeImg(url,640,.6);return d}finally{URL.revokeObjectURL(url)}
+}
+function drawPhotos(){
+  $("sl-photos").innerHTML=SH.photos.map(function(p,i){return '<div class="ph"><img alt="" src="'+okImg(p)+'"><button type="button" data-rmphoto="'+i+'" aria-label="ลบรูปที่ '+(i+1)+'">×</button>'+(i===0?'<i>ปก</i>':'')+'</div>'}).join("")||'<p class="sub">ยังไม่มีรูป รูปแรกจะเป็นหน้าปก</p>';
+}
+$("sl-file").addEventListener("change",async function(ev){
+  var files=[].slice.call(ev.target.files);ev.target.value="";
+  for(var i=0;i<files.length&&SH.photos.length<4;i++){try{SH.photos.push(await fileToPhoto(files[i]))}catch(e){toast("เปิดรูปบางรูปไม่ได้")}}
+  if(files.length&&SH.photos.length>=4)toast("ใส่รูปได้สูงสุด 4 รูป");
+  drawPhotos();
+});
+function sellModal(p){
+  SH.edit=p?p.id:null;$("sl-head").textContent=p?"แก้ไขสินค้า":"ลงขายสินค้า";$("sl-submit").textContent=p?"บันทึกการแก้ไข":"ลงขาย";
+  $("sl-name").value=p?p.title:"";$("sl-price").value=p?p.price:"";$("sl-stock").value=p?p.stock:1;$("sl-cat").value=p?p.category:CATS[0];
+  $("sl-cond").value=p?p.condition:"ใหม่";$("sl-desc").value=p?p.description:"";$("sl-contact").value=p?p.contact:(S.me.phone||"");
+  SH.photos=p?(p.images||[]).filter(okImg):[];drawPhotos();openModal("m-sell");
+}
+$("sellform").addEventListener("submit",function(ev){
+  ev.preventDefault();var price=parseFloat($("sl-price").value),stock=parseInt($("sl-stock").value,10);
+  if(!$("sl-name").value.trim()||isNaN(price)){toast("กรอกชื่อสินค้าและราคา");return}
+  var btn=$("sl-submit");btn.disabled=true;
+  act(async function(){
+    var cover=SH.photos[0]?await resizeImg(SH.photos[0],320,.7):null;
+    var row={title:$("sl-name").value.trim(),price:price,stock:isNaN(stock)?1:Math.max(0,stock),category:$("sl-cat").value,condition:$("sl-cond").value,description:$("sl-desc").value.trim(),contact:$("sl-contact").value.trim(),cover:cover,images:SH.photos};
+    if(SH.edit)await q(db.from("products").update(row).eq("id",SH.edit));
+    else{row.seller_id=S.me.id;row.status="active";await q(db.from("products").insert(row))}
+  },SH.edit?"บันทึกการแก้ไขแล้ว":"ลงขายสินค้าแล้ว").then(function(ok){btn.disabled=false;if(ok){closeModal("m-sell");closeModal("m-prod");if(!SH.edit)SH.mode="mine";refresh()}});
+});
+function showImg(i){
+  var imgs=(SH.cur.images||[]).filter(okImg);SH.img=i;
+  $("pd-main").innerHTML=imgs[i]?'<img alt="" src="'+imgs[i]+'">':ico("shop");
+  $("pd-thumbs").innerHTML=imgs.length>1?imgs.map(function(src,j){return '<button type="button" data-pimg="'+j+'" aria-current="'+(j===i)+'" aria-label="รูปที่ '+(j+1)+'"><img alt="" src="'+src+'"></button>'}).join(""):"";
+}
+async function openProduct(id){
+  var p=await q(db.from("products").select("*").eq("id",id).maybeSingle());
+  if(!p){toast("ไม่พบสินค้านี้แล้ว");refresh();return}
+  SH.cur=p;showImg(0);
+  $("pd-cat").textContent=p.category;$("pd-title").textContent=p.title;$("pd-price").textContent=baht(p.price);
+  $("pd-meta").textContent=[p.condition,p.status==="active"?"เหลือ "+p.stock+" ชิ้น":p.status==="sold"?"ขายแล้ว":"ซ่อนอยู่"].join(" · ");
+  $("pd-desc").textContent=p.description||"";$("pd-desc").hidden=!p.description;
+  $("pd-av").textContent=String(p.seller_name).trim().charAt(0);$("pd-seller").textContent=p.seller_name;$("pd-sdept").textContent=p.seller_dept;$("pd-contact").textContent=p.contact?"ติดต่อ: "+p.contact:"";
+  var mine=p.seller_id===S.me.id;
+  $("buyform").hidden=mine||p.status!=="active";$("pd-own").hidden=!(mine||S.admin);$("pd-edit").hidden=!mine;
+  $("pd-toggle").textContent=p.status==="active"?"ซ่อนสินค้า":"วางขายอีกครั้ง";
+  $("pd-qty").value=1;$("pd-qty").max=p.stock;$("pd-note").value="";$("pd-sum").textContent=baht(p.price);
+  openModal("m-prod");
+}
+$("pd-qty").addEventListener("input",function(){var n=parseInt($("pd-qty").value,10)||0;$("pd-sum").textContent=SH.cur?baht(SH.cur.price*n):"–"});
+$("buyform").addEventListener("submit",function(ev){
+  ev.preventDefault();var p=SH.cur,n=parseInt($("pd-qty").value,10);if(!p||!(n>=1)){toast("ใส่จำนวนอย่างน้อย 1");return}
+  act(function(){return q(db.from("product_orders").insert({product_id:p.id,buyer_id:S.me.id,qty:n,note:$("pd-note").value.trim()}))},"สั่งซื้อแล้ว รอผู้ขายยืนยัน")
+    .then(function(ok){if(ok){closeModal("m-prod");SH.mode="orders";refresh()}});
+});
+$("pd-edit").addEventListener("click",function(){if(SH.cur)sellModal(SH.cur)});
+$("pd-toggle").addEventListener("click",function(){var p=SH.cur;if(!p)return;var st=p.status==="active"?"hidden":"active";
+  act(function(){return q(db.from("products").update({status:st,stock:st==="active"&&p.stock<1?1:p.stock}).eq("id",p.id))},st==="active"?"วางขายอีกครั้งแล้ว":"ซ่อนสินค้าแล้ว").then(function(ok){if(ok){closeModal("m-prod");refresh()}})});
+$("pd-del").addEventListener("click",function(ev){var p=SH.cur;if(!p||!armed(ev.currentTarget,"แตะอีกครั้งเพื่อลบ"))return;
+  act(function(){return q(db.from("products").delete().eq("id",p.id))},"ลบสินค้าแล้ว").then(function(ok){if(ok){closeModal("m-prod");refresh()}})});
+
+var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,telegram:renderTelegram,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp"];
+var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
@@ -1484,6 +1696,14 @@ document.addEventListener("click",function(ev){
   var b=ev.target.closest("button");if(!b)return;var d=b.dataset;
   if(b.hasAttribute("data-sdept")){$("s-dept").value=d.sdept;if(S.tab==="staff"){refresh();window.scrollTo(0,0)}else show("staff");return}
   if(d.close){closeModal(d.close);return}
+  if(d.sell){sellModal(null);return}
+  if(d.prod){openProduct(d.prod).catch(function(e){toast(thErr(e))});return}
+  if(d.pimg){showImg(+d.pimg);return}
+  if(d.shopmode){SH.mode=d.shopmode;drawShop();return}
+  if(b.hasAttribute("data-cat")){SH.cat=d.cat;drawShop();return}
+  if(d.rmphoto){SH.photos.splice(+d.rmphoto,1);drawPhotos();return}
+  if(d.ordst){if(d.ordst==="cancelled"&&!armed(b,"แตะอีกครั้งเพื่อยกเลิก"))return;
+    act(function(){return q(db.from("product_orders").update({status:d.ordst}).eq("id",d.id))},{confirmed:"ยืนยันคำสั่งซื้อแล้ว ตัดสต็อกให้แล้ว",done:"บันทึกว่าส่งของแล้ว",cancelled:"ยกเลิกคำสั่งซื้อแล้ว"}[d.ordst]).then(function(ok){if(ok)refresh()});return}
   if(d.newemp){empModal(null);return}
   if(d.open){S.empId=d.open;show("emp");return}
   if(d.editlog){logModal(d.editlog,d.d).catch(function(e){toast(thErr(e))});return}
@@ -1507,6 +1727,7 @@ document.addEventListener("click",function(ev){
 function renderHomeSafe(){refresh()}
 ["d-date","d-dept","m-month","m-dept","s-dept","t-mode","t-month","t-date","t-dept","t-n","al-year","tg-month","ad-month","ed-month","am-month","am-dept","tl-date","tl-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
 $("s-q").addEventListener("input",refresh);
+$("sh-q").addEventListener("input",function(){if(S.tab==="shop")drawShop()});
 
 /* ---------- เข้าสู่ระบบ ---------- */
 var mode="in";
