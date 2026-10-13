@@ -530,6 +530,10 @@ video.cmedia{cursor:default}
 #nt-prefs{display:flex;flex-direction:column;gap:6px;margin-top:8px}#nt-rooms{display:flex;flex-direction:column;gap:4px}
 .chrow{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.chrow .chips{flex:1}
 #ch-bell{white-space:nowrap}#ch-bell.muted{color:var(--muted)}
+.ntask{position:fixed;left:12px;right:12px;bottom:calc(var(--navh,64px) + 12px);z-index:30;background:var(--surface);border-radius:16px;box-shadow:0 12px 40px rgba(10,20,40,.3);padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;animation:popin .3s ease both;max-width:520px;margin-inline:auto}
+.ntask-ic{font-size:30px}.ntask-tx{flex:1;min-width:180px;display:flex;flex-direction:column;gap:2px}.ntask-tx small{color:var(--muted);font-size:13px;line-height:1.4}
+.ntask-bt{display:flex;gap:8px;margin-left:auto}
+@media (min-width:900px){.ntask{left:auto;right:24px;bottom:24px}}
 </style>
 </head>
 <body>
@@ -559,7 +563,7 @@ video.cmedia{cursor:default}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-20</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-21</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -982,7 +986,7 @@ video.cmedia{cursor:default}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-20 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-21 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1129,6 +1133,11 @@ video.cmedia{cursor:default}
     <p class="sub" id="pay-st"></p>
     <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-pay">ไว้ทีหลัง</button><button type="button" class="primary slim" id="pay-send">แจ้งชำระเงินแล้ว</button></div>
   </div>
+</div>
+<div class="ntask" id="nt-ask" hidden role="dialog" aria-labelledby="nt-ask-t">
+  <div class="ntask-ic">🔔</div>
+  <div class="ntask-tx"><b id="nt-ask-t">เปิดรับแจ้งเตือนไหม?</b><small id="nt-ask-s">เด้งเตือนเมื่อมีแชตใหม่หรือสินค้าลงขายใหม่ แม้ปิดแอปอยู่</small></div>
+  <div class="ntask-bt"><button type="button" class="primary slim" id="nt-ask-yes">เปิดเลย</button><button type="button" class="sm" id="nt-ask-no">ไว้ทีหลัง</button></div>
 </div>
 <div id="toast" role="status" hidden></div>
 
@@ -2345,6 +2354,17 @@ $("ch-bell").addEventListener("click",function(){var m=NT.set.muted_rooms,i=m.in
 function ntRoute(u){var h=String(u||"").split("#")[1];if(h==="chat"||h==="shop")show(h)}
 if(NT.ok)navigator.serviceWorker.addEventListener("message",function(e){if(e.data&&e.data.open)ntRoute(e.data.open)});
 
+/* ถามเปิดแจ้งเตือนตอนเปิดแอป (เบราว์เซอร์ให้ขอสิทธิ์ได้ต่อเมื่อผู้ใช้กดปุ่มเอง) */
+function ntAsk(){
+  var ask=$("nt-ask"),snooze=0;try{snooze=+localStorage.getItem("aoi-nt-snooze")||0}catch(e){}
+  if(Date.now()<snooze)return;
+  if(NT.ok&&Notification.permission==="default"&&!NT.sub){$("nt-ask-t").textContent="เปิดรับแจ้งเตือนไหม?";$("nt-ask-s").textContent="เด้งเตือนเมื่อมีแชตใหม่หรือสินค้าลงขายใหม่ แม้ปิดแอปอยู่";$("nt-ask-yes").hidden=false;ask.hidden=false}
+  else if(NT.ok&&Notification.permission==="granted"&&!NT.sub){$("nt-ask-t").textContent="เปิดรับแจ้งเตือนบนเครื่องนี้";$("nt-ask-s").textContent="อนุญาตไว้แล้ว กดอีกครั้งเพื่อเริ่มรับแจ้งเตือน";$("nt-ask-yes").hidden=false;ask.hidden=false}
+  else if(!NT.ok&&ntIOS()){$("nt-ask-t").textContent="อยากได้แจ้งเตือนบน iPhone?";$("nt-ask-s").textContent="กดปุ่มแชร์ ⬆️ ด้านล่าง > “เพิ่มไปยังหน้าจอโฮม” แล้วเปิดแอปจากไอคอนใหม่ จะมีปุ่มให้เปิดแจ้งเตือน";$("nt-ask-yes").hidden=true;ask.hidden=false}
+}
+$("nt-ask-yes").addEventListener("click",async function(){$("nt-ask").hidden=true;await ntEnable()});
+$("nt-ask-no").addEventListener("click",function(){$("nt-ask").hidden=true;try{localStorage.setItem("aoi-nt-snooze",String(Date.now()+3*864e5))}catch(e){}});
+
 var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
@@ -2689,7 +2709,7 @@ async function start(){
   $("auth").hidden=true;$("app").hidden=false;
   var t0=me.kpi_required===false?"tt":"home";try{t0=localStorage.getItem("aoi-tab")||t0}catch(e){}
   show(TABS.indexOf(t0)>=0?t0:"home");
-  loadMarquee().catch(function(){});chatLive();ntReg().then(function(){ntLoad()});
+  loadMarquee().catch(function(){});chatLive();ntReg().then(ntLoad).then(function(){setTimeout(ntAsk,1500)});
   if(/^#(chat|shop)$/.test(location.hash)){show(location.hash.slice(1));history.replaceState(null,"",location.pathname)}
 }
 start().catch(function(e){$("auth").hidden=false;$("a-msg").textContent=thErr(e)});
