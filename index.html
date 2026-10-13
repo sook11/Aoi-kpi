@@ -897,7 +897,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 
   <!-- ATTENDANCE: เช็คชื่อ -->
   <section class="view" id="v-att" hidden>
-    <div><h2>เช็ครายชื่อ</h2><p class="sub">เช็คชื่อพนักงานเข้างาน · สแกน QR หรือกดเลือกสถานะ แล้วกดบันทึก</p></div>
+    <div><h2>เช็ครายชื่อ</h2><p class="sub">เช็คชื่อพนักงานเข้างาน · สแกน QR หรือกดเลือกสถานะ แล้วกดบันทึก · ไม่แสดงหัวหน้า/ผู้ได้รับสิทธิ์</p></div>
     <div class="filters">
       <label>วันที่<input type="date" id="at-date"></label>
       <label>แผนก<select id="at-dept"></select></label>
@@ -3046,7 +3046,7 @@ function mEnd(m){var p=m.split("-");return m+"-"+pad(new Date(+p[0],+p[1],0).get
 function shiftTxt(s){return s?"กะ "+s:"-"}
 /* พนักงานที่ผู้ใช้นี้ดูแลได้ (Admin = ทุกคน) */
 function mgrEmps(dept){var ids=permDepts().map(function(d){return d.id});
-  return S.emps.filter(function(e){return e.active&&(S.admin||ids.indexOf(e.department_id)>=0)&&(!dept||e.department_id===dept)})
+  return S.emps.filter(function(e){return e.active&&e.role==="employee"&&(S.admin||ids.indexOf(e.department_id)>=0)&&(!dept||e.department_id===dept)})
     .sort(function(a,b){return String(a.employee_no).localeCompare(String(b.employee_no))})}
 function matchQ(e,qq){qq=String(qq||"").trim().toLowerCase();return !qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0}
 async function attRange(from,to){return fetchAll(function(){return db.from("attendance").select("*").gte("work_date",from).lte("work_date",to).order("work_date").order("id")})}
