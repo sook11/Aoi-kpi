@@ -512,6 +512,19 @@ body.tt-full .marquee{display:none}
 .paybadge{font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:6px;white-space:nowrap}
 .paybadge.unpaid{background:#fee2e2;color:#b91c1c}.paybadge.reported{background:#fef3c7;color:#92400e}.paybadge.paid{background:#dcfce7;color:#166534}
 .sellerbox .paywith{display:block;color:var(--good);font-size:12.5px;font-weight:600}
+/* แชต: รูป/วิดีโอ */
+.chattach{flex:none;width:46px;height:46px;border-radius:12px;display:grid!important;place-items:center;background:var(--off-bg);border:1px solid var(--line);cursor:pointer;margin:0;padding:0}
+.chattach .ico{width:22px;height:22px}
+.chattach.busy{opacity:.5;pointer-events:none;animation:pulse 1s infinite}.chattach.off{opacity:.4;pointer-events:none}
+@keyframes pulse{50%{opacity:.25}}
+.cmedia{display:block;max-width:min(260px,60vw);max-height:320px;border-radius:12px;margin:4px 0;background:#000;cursor:zoom-in}
+video.cmedia{cursor:default}
+.csave{display:flex;align-items:center;gap:8px;margin-top:2px}
+.csave button,.csave button:hover{background:none!important;border:0!important;padding:0;min-height:0;font-size:12.5px;font-weight:600;color:var(--accent)!important;gap:3px;box-shadow:none}
+.csave button .ico{width:14px;height:14px}
+.csave small{font-size:11px;color:var(--muted)}
+.cmsg.me .csave button{color:#fff!important}.cmsg.me .csave small{color:rgba(255,255,255,.8)}
+.cexp{font-size:13px;opacity:.8;font-style:italic;margin:2px 0}
 </style>
 </head>
 <body>
@@ -541,7 +554,7 @@ body.tt-full .marquee{display:none}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-17</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-18</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -730,7 +743,7 @@ body.tt-full .marquee{display:none}
     <div class="chips" id="ch-rooms"></div>
     <div class="chatbox">
       <div class="chatlist" id="ch-list"></div>
-      <form id="chform" class="chatform"><input type="text" id="ch-body" maxlength="1000" placeholder="พิมพ์ข้อความ..." autocomplete="off" aria-label="ข้อความ"><button class="primary" type="submit" data-ico="send" aria-label="ส่ง"></button></form>
+      <form id="chform" class="chatform"><label class="chattach" id="ch-attach" title="ส่งรูปหรือวิดีโอ (ไม่เกิน 15 วินาที)" aria-label="แนบรูปหรือวิดีโอ" data-ico="camera"><input type="file" id="ch-file" accept="image/*,video/*" hidden></label><input type="text" id="ch-body" maxlength="1000" placeholder="พิมพ์ข้อความ..." autocomplete="off" aria-label="ข้อความ"><button class="primary" type="submit" data-ico="send" aria-label="ส่ง"></button></form>
     </div>
   </section>
 
@@ -952,7 +965,7 @@ body.tt-full .marquee{display:none}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-17 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-18 · 11/10/2569</p>
   </section>
 </div>
 
@@ -2082,19 +2095,20 @@ async function renderChat(){
   $("ch-rooms").innerHTML=chRooms().map(function(r){return '<button type="button" class="chipsel'+(r.id===CH.room?" on":"")+'" data-chroom="'+esc(r.id)+'">'+esc(r.t)+'</button>'}).join("");
   var qq=db.from("chat_messages").select("*");if(CH.room!=="*")qq=qq.eq("room",CH.room);
   var rows=await q(qq.order("created_at",{ascending:false}).limit(CH.room==="*"?300:150));
-  var all=CH.room==="*";$("ch-body").disabled=all;$("ch-body").placeholder=all?"ห้องรวมดูอย่างเดียว เลือกห้องด้านบนเพื่อพิมพ์ตอบ":"พิมพ์ข้อความ...";$("chform").querySelector("button").disabled=all;
-  CH.list=rows.reverse();drawChat(true);chatLive();
+  var all=CH.room==="*";$("ch-body").disabled=all;$("ch-body").placeholder=all?"ห้องรวมดูอย่างเดียว เลือกห้องด้านบนเพื่อพิมพ์ตอบ":"พิมพ์ข้อความ...";$("chform").querySelector("button").disabled=all;$("ch-attach").classList.toggle("off",all);
+  CH.list=rows.reverse();await chUrls(CH.list);drawChat(true);chatLive();chCleanup();
 }
 function drawChat(stick){
   var el=$("ch-list"),near=el.scrollHeight-el.scrollTop-el.clientHeight<120,day="";
   el.innerHTML=CH.list.length?CH.list.map(function(m){var me=m.sender_id===S.me.id,d=new Date(m.created_at),dd=d.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"}),a=okImg(m.sender_avatar),out="";
     if(dd!==day){day=dd;out+='<div class="cday">'+dd+'</div>'}
-    return out+'<div class="cmsg'+(me?" me":"")+'">'+(me?'':'<span class="avatar">'+(a?'<img alt="" src="'+a+'">':esc(String(m.sender_name||"?").trim().charAt(0)))+'</span>')+'<div class="cb">'+(CH.room==="*"?'<div class="cn"><button type="button" class="croom" data-chroom="'+esc(m.room)+'" title="ไปที่ห้องนี้">ห้อง '+esc(chRoomName(m.room))+'</button>'+(me?'':' '+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):''))+'</div>':(me?'':'<div class="cn">'+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):'')+'</div>'))+'<div class="ct">'+esc(m.body)+'</div><div class="cm">'+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})+(me||S.admin?'<button type="button" data-chdel="'+m.id+'">ลบ</button>':'')+'</div></div></div>'}).join(""):'<div class="cday">ยังไม่มีข้อความ เริ่มทักทายกันเลย</div>';
-  if(stick||near)el.scrollTop=el.scrollHeight;
+    return out+'<div class="cmsg'+(me?" me":"")+'">'+(me?'':'<span class="avatar">'+(a?'<img alt="" src="'+a+'">':esc(String(m.sender_name||"?").trim().charAt(0)))+'</span>')+'<div class="cb">'+(CH.room==="*"?'<div class="cn"><button type="button" class="croom" data-chroom="'+esc(m.room)+'" title="ไปที่ห้องนี้">ห้อง '+esc(chRoomName(m.room))+'</button>'+(me?'':' '+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):''))+'</div>':(me?'':'<div class="cn">'+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):'')+'</div>'))+chMedia(m)+(m.body?'<div class="ct">'+esc(m.body)+'</div>':'')+'<div class="cm">'+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})+(me||S.admin?'<button type="button" data-chdel="'+m.id+'">ลบ</button>':'')+'</div></div></div>'}).join(""):'<div class="cday">ยังไม่มีข้อความ เริ่มทักทายกันเลย</div>';
+  if(stick||near){el.scrollTop=el.scrollHeight;
+    el.querySelectorAll(".cmedia").forEach(function(x){x.addEventListener(x.tagName==="VIDEO"?"loadedmetadata":"load",function(){el.scrollTop=el.scrollHeight},{once:true})})}
 }
 function chatAdd(m){
   if(!m||CH.list.some(function(x){return x.id===m.id}))return;
-  if(S.tab==="chat"&&(m.room===CH.room||CH.room==="*")){CH.list.push(m);drawChat(m.sender_id===S.me.id)}
+  if(S.tab==="chat"&&(m.room===CH.room||CH.room==="*")){CH.list.push(m);chUrls([m]).then(function(){drawChat(m.sender_id===S.me.id)})}
   else if(m.sender_id!==S.me.id){$("chat-dot").hidden=false;$("chat-dot2").hidden=false}
 }
 /* ข้อความใหม่เด้งทันที (Realtime) + เช็กซ้ำทุก 8 วินาทีกันพลาด */
@@ -2191,6 +2205,63 @@ $("payform").addEventListener("submit",function(ev){ev.preventDefault();
   if(!pp&&!PYF.qr){toast("ใส่เบอร์พร้อมเพย์ หรือรูป QR อย่างใดอย่างหนึ่ง");return}
   act(function(){return q(db.from("seller_payment").upsert({employee_id:S.me.id,promptpay:pp,account_name:$("py-name").value.trim(),qr_image:PYF.qr||null}))},"บันทึกช่องทางรับเงินแล้ว").then(function(ok){if(ok)refresh()});
 });
+
+/* ---------- แชต: รูป / วิดีโอ (ไม่เกิน 15 วินาที) เก็บไว้ 7 วัน ---------- */
+CH.urls={};CH.busy=false;CH.cleaned=false;
+async function chUrls(list){
+  var need=list.filter(function(m){return m.media_path&&!CH.urls[m.media_path]&&!chExpired(m)}).map(function(m){return m.media_path});
+  if(!need.length)return;
+  try{var r=await db.storage.from("chat").createSignedUrls(need,3600);(r.data||[]).forEach(function(x){if(x.signedUrl)CH.urls[x.path]=x.signedUrl})}catch(e){}
+}
+function chExpired(m){return !m.media_path||(m.media_expires_at&&new Date(m.media_expires_at)<new Date())}
+function chMedia(m){
+  if(!m.media_type)return "";
+  if(chExpired(m))return '<div class="cexp">🕓 '+(m.media_type==="video"?"วิดีโอ":"รูป")+'นี้หมดอายุแล้ว (เก็บไว้ 7 วัน)</div>';
+  var u=CH.urls[m.media_path]||"",th=okImg(m.thumb),exp=new Date(m.media_expires_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"});
+  var el=m.media_type==="video"?'<video class="cmedia" src="'+esc(u)+'" controls playsinline preload="metadata"'+(th?' poster="'+th+'"':'')+'></video>':'<img class="cmedia" alt="รูปในแชต" src="'+esc(u||th||"")+'" data-chimg="'+m.id+'">';
+  return el+'<div class="csave"><button type="button" data-chsave="'+m.id+'">'+ico("download")+'บันทึก</button><small>หมดอายุ '+exp+'</small></div>';
+}
+/* ล้างไฟล์ที่เกิน 7 วัน (ทำครั้งเดียวต่อการเปิดแอป) */
+async function chCleanup(){
+  if(CH.cleaned)return;CH.cleaned=true;
+  try{var r=await db.rpc("chat_expired_media",{p_limit:50});var paths=(r.data||[]).map(function(x){return typeof x==="string"?x:x.chat_expired_media}).filter(Boolean);
+    if(!paths.length)return;var del=await db.storage.from("chat").remove(paths);
+    var gone=(del.data||[]).map(function(o){return o.name});if(gone.length)await db.rpc("chat_clear_media",{p_paths:gone})}catch(e){}
+}
+async function chSave(m){
+  var u=CH.urls[m.media_path];if(!u){await chUrls([m]);u=CH.urls[m.media_path]}if(!u){toast("ไฟล์นี้เปิดไม่ได้แล้ว");return}
+  toast("กำลังบันทึก...");
+  try{var b=await (await fetch(u)).blob(),ext=(m.media_path.split(".").pop()||"jpg"),a=document.createElement("a"),ou=URL.createObjectURL(b);
+    a.href=ou;a.download="AOI-chat-"+new Date(m.created_at).toISOString().slice(0,10)+"-"+m.id.slice(0,6)+"."+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(ou)},4000);toast("บันทึกแล้ว")}
+  catch(e){window.open(u,"_blank")}
+}
+$("ch-file").addEventListener("change",async function(ev){
+  var f=ev.target.files[0];ev.target.value="";if(!f||CH.busy)return;
+  if(CH.room==="*"){toast("เลือกห้องก่อนส่งไฟล์");return}
+  var isV=/^video\//.test(f.type)||/\.(mp4|mov|webm|m4v)$/i.test(f.name),isI=/^image\//.test(f.type);
+  if(!isV&&!isI){toast("ส่งได้เฉพาะรูปหรือวิดีโอ");return}
+  CH.busy=true;$("ch-attach").classList.add("busy");var url=URL.createObjectURL(f),blob=f,type=f.type,ext,thumb=null;
+  try{
+    if(isV){
+      var info=await videoThumb(url);thumb=info.thumb;
+      if(info.bad)throw new Error("เครื่องนี้เปิดวิดีโอนี้ไม่ได้");
+      if(info.dur>15.5)throw new Error("วิดีโอยาว "+Math.round(info.dur)+" วินาที ส่งได้ไม่เกิน 15 วินาที ตัดคลิปให้สั้นลงก่อน");
+      var codec=await videoCodec(f);
+      if((codec==="hevc"||f.size>15*1024*1024)&&canConvert()){var cv=await convertVideo(f,function(p){toast("กำลังแปลงวิดีโอ "+Math.round(p*100)+"%")});blob=cv.blob;type=cv.type;ext=cv.ext}
+      else{ext=(f.name.split(".").pop()||"mp4").toLowerCase();if(!/^(mp4|mov|webm|m4v)$/.test(ext))ext="mp4";if(ext==="m4v")ext="mp4";if(!type)type=ext==="mov"?"video/quicktime":ext==="webm"?"video/webm":"video/mp4"}
+      if(blob.size>20*1024*1024)throw new Error("วิดีโอใหญ่เกิน 20 MB");
+    }else{blob=await toBlob(url,1600,.82);type="image/jpeg";ext="jpg";try{thumb=await resizeImg(url,320,.6)}catch(e){}}
+    toast("กำลังส่ง...");
+    var path=S.uid+"/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+    var up=await db.storage.from("chat").upload(path,blob,{contentType:type,upsert:false});if(up.error)throw up.error;
+    var body=$("ch-body").value.trim();
+    var r=await db.from("chat_messages").insert({room:CH.room,sender_id:S.me.id,body:body,media_type:isV?"video":"image",media_path:path,thumb:thumb}).select().single();
+    if(r.error){await db.storage.from("chat").remove([path]);throw r.error}
+    $("ch-body").value="";CH.urls[path]=URL.createObjectURL(blob);chatAdd(r.data);toast("ส่งแล้ว");
+  }catch(e){toast(e.message&&/[ก-๙]/.test(e.message)?e.message:thErr(e))}
+  finally{URL.revokeObjectURL(url);CH.busy=false;$("ch-attach").classList.remove("busy")}
+});
+$("ch-list").addEventListener("click",function(ev){var im=ev.target.closest("[data-chimg]");if(!im)return;VW.list=[im.src];showViewer(0)});
 
 var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
@@ -2405,6 +2476,7 @@ document.addEventListener("click",function(ev){
     act(async function(){
       var ps=await q(db.from("posts").select("media_path").eq("author_id",de.id));if(ps.length)await db.storage.from("tingtong").remove(ps.map(function(x){return x.media_path}));
       await q(db.rpc("admin_delete_employee",{p_employee:de.id}));await loadBase()},"ลบ "+de.display_name+" แล้ว").then(refresh);return}
+  if(d.chsave){var cm=CH.list.filter(function(x){return x.id===d.chsave})[0];if(cm)chSave(cm);return}
   if(d.chroom){CH.room=d.chroom;CH.list=[];renderChat().catch(function(e){toast(thErr(e))});return}
   if(d.chdel){if(!armed(b,"ลบ?"))return;act(function(){return q(db.from("chat_messages").delete().eq("id",d.chdel))},"ลบข้อความแล้ว").then(function(ok){if(ok){CH.list=CH.list.filter(function(m){return m.id!==d.chdel});drawChat(false)}});return}
   if(d.anon){var an=d.anon;act(function(){return q(db.from("announcements").update({active:d.v==="1"}).eq("id",an))},null).then(function(ok){if(ok){renderAnnounce();loadMarquee()}});return}
