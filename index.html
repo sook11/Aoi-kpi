@@ -572,7 +572,7 @@ video.cmedia{cursor:default}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-22</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-23</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -666,7 +666,7 @@ video.cmedia{cursor:default}
       <label>เลือกเดือน<input type="month" id="m-month"></label>
       <label class="mgr">แผนก<select id="m-dept"></select></label>
     </div>
-    <div class="inline"><button type="button" id="m-export" data-ico="download">Export Excel</button></div>
+    <div class="inline"><button type="button" id="m-export" data-ico="download">Export Excel</button><button type="button" class="mgr primary" id="m-kpix" data-ico="download" title="ตารางรายวันแยกแผนก รูปแบบ KPI &amp; Allowance">Export KPI (ตาราง)</button></div>
     <div class="stats">
       <div class="stat"><small>ยอดรวมทั้งเดือน</small><b id="m-total">–</b><small>ชิ้น</small></div>
       <div class="stat"><small>จำนวนรายการ</small><b id="m-count">–</b><small>รายการ</small></div>
@@ -996,7 +996,7 @@ video.cmedia{cursor:default}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-22 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-23 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1476,6 +1476,76 @@ $("m-export").addEventListener("click",async function(){
     var people=Object.keys(by).map(function(k){var a=by[k],e=empOf(a.id)||{};return {"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(e.department_id),"ยอดรวม":a.o,"จำนวนรายการ":a.n,"จำนวนวันที่ลง":Object.keys(a.d).length}}).sort(function(a,b){return b["ยอดรวม"]-a["ยอดรวม"]});
     exportXlsx("AOI-KPI-monthly-"+m+".xlsx",[{name:"สรุปรายคน",rows:people},{name:"สรุปตาม KPI",rows:byKpi(rows).map(function(a){return {"หน้างาน / KPI":a.k,"ยอดรวม":a.o,"จำนวนรายการ":a.n}})},{name:"รายการทั้งหมด",rows:logSheet(rows)}]);
   }catch(e){toast(thErr(e))}
+});
+
+/* ---------- Export KPI ตารางรายเดือน (รูปแบบ KPI & Allowance: 1 ชีตต่อแผนก, 2 แถวต่อคน) ---------- */
+var EXCELJS_URL="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+function loadJs(src){return new Promise(function(ok,no){var t=document.createElement("script");t.src=src;t.onload=ok;t.onerror=function(){no(new Error("โหลดตัวเขียน Excel ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่"))};document.head.appendChild(t)})}
+/* sheets: [{dept, emps:[{no,name,out:{วัน:ยอด},note:{วัน:"หมายเหตุ"}}]}] */
+function kpiBook(ExcelJS,m,sheets,company){
+  var p=m.split("-"),wb=new ExcelJS.Workbook(),used={};wb.creator="AOI KPI";
+  var thin={style:"thin"},box={top:thin,left:thin,bottom:thin,right:thin};
+  sheets.forEach(function(sh){
+    var nm=String(sh.dept||"แผนก").replace(/[\\\/?*\[\]:]/g," ").trim().slice(0,31)||"แผนก",b=nm,k=2;
+    while(used[nm.toLowerCase()])nm=b.slice(0,26)+" ("+(k++)+")";used[nm.toLowerCase()]=1;
+    var ws=wb.addWorksheet(nm,{views:[{state:"frozen",xSplit:3,ySplit:5}]});
+    ws.getColumn(1).width=14;ws.getColumn(2).width=28;ws.getColumn(3).width=18;
+    for(var c=4;c<=34;c++)ws.getColumn(c).width=6.5;ws.getColumn(35).width=9;ws.getColumn(36).width=12;
+    ws.getCell("A1").value=company;ws.getCell("A2").value="KPI & Allowance";
+    ws.getCell("A3").value="แผนก : "+(sh.dept||"");ws.getCell("A4").value="Mount :";
+    var mc=ws.getCell("B4");mc.value=new Date(Date.UTC(+p[0],+p[1]-1,1));mc.numFmt="mmmm yyyy";mc.alignment={horizontal:"right"};
+    var head=["Emp.No","Name","Date"];for(var d=1;d<=31;d++)head.push(d);head.push("รวม");
+    var hr=ws.getRow(5);hr.values=head;
+    for(c=1;c<=35;c++){var hc=hr.getCell(c);hc.font={bold:true};hc.alignment={horizontal:"center",vertical:"middle"};hc.border=box;hc.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFF8CBAD"}}}
+    var r=6;
+    sh.emps.forEach(function(e){
+      var a=ws.getRow(r),o=ws.getRow(r+1),days=0,sum=0;
+      a.getCell(1).value=o.getCell(1).value=String(e.no||"");
+      a.getCell(2).value=e.name||"";a.getCell(3).value="การมาทำงาน";o.getCell(3).value="Output to day";
+      for(var d=1;d<=31;d++){
+        var ca=a.getCell(d+3),co=o.getCell(d+3);
+        if(d in e.out){ca.value=0;co.value=e.out[d];days++;sum+=e.out[d];if(e.note[d])co.note=e.note[d]}
+        ca.alignment=co.alignment={horizontal:"center"};
+      }
+      a.getCell(35).value={formula:"COUNT(D"+r+":AH"+r+")",result:days};
+      o.getCell(35).value={formula:"SUM(D"+(r+1)+":AH"+(r+1)+")",result:sum};o.getCell(35).font={bold:true};
+      a.getCell(36).value="วันทำงาน";o.getCell(36).value="Board";
+      for(var c=1;c<=36;c++){a.getCell(c).border=box;o.getCell(c).border=box}
+      ws.mergeCells(r,2,r+1,2);a.getCell(2).alignment={vertical:"middle"};
+      r+=2;
+    });
+  });
+  return wb;
+}
+function kpiSheets(m,dept,rows){
+  var list=dept?S.depts.filter(function(d){return d.id===dept}):S.myDepts;
+  return list.map(function(d){
+    var lg=rows.filter(function(x){return x.department_id===d.id}),by={};
+    S.emps.forEach(function(e){if(e.department_id===d.id&&e.active&&e.kpi_required!==false)by[e.id]={out:{},note:{}}});
+    lg.forEach(function(x){
+      var a=by[x.employee_id]||(by[x.employee_id]={out:{},note:{}}),dd=+x.work_date.slice(8),n=String(x.note||"").trim();
+      a.out[dd]=(a.out[dd]||0)+(+x.output||0);
+      if(n&&String(a.note[dd]||"").split("\n").indexOf(n)<0)a.note[dd]=(a.note[dd]?a.note[dd]+"\n":"")+n;
+    });
+    var emps=Object.keys(by).map(function(id){var e=empOf(id)||{},a=by[id];return {no:e.employee_no||"",name:e.display_name||"",out:a.out,note:a.note}})
+      .sort(function(x,y){return x.no<y.no?-1:x.no>y.no?1:0});
+    return {dept:d.name,emps:emps};
+  }).filter(function(sh){return sh.emps.length||dept});
+}
+$("m-kpix").addEventListener("click",async function(){
+  var btn=this;btn.disabled=true;
+  try{
+    var m=$("m-month").value||today().slice(0,7),dept=$("m-dept").value;
+    var sheets=kpiSheets(m,dept,await month(m));
+    if(!sheets.length){toast("ไม่มีพนักงานในแผนกที่เลือก");return}
+    if(!window.ExcelJS)await loadJs(EXCELJS_URL);
+    var wb=kpiBook(window.ExcelJS,m,sheets,(S.settings.company_name&&S.settings.company_name.name)||"Apex Circuit (Thailand) Co., Ltd.");
+    var buf=await wb.xlsx.writeBuffer(),file="KPI_Allowance_"+m+".xlsx";
+    var url=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})),lk=document.createElement("a");
+    lk.href=url;lk.download=file;document.body.appendChild(lk);lk.click();lk.remove();setTimeout(function(){URL.revokeObjectURL(url)},4000);
+    toast("บันทึกไฟล์ "+file+" แล้ว ("+sheets.length+" แผนก)");
+  }catch(e){toast(thErr(e))}
+  finally{btn.disabled=false}
 });
 
 /* ---------- หน้า: Top ยอดผลิต ---------- */
