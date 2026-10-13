@@ -546,6 +546,136 @@ video.cmedia{cursor:default}
 /* ติ่งต๊อง: ตะกร้าสินค้า */
 .ttcart{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:0 0 8px;padding:7px 11px;border-radius:9px;border:0;background:rgba(255,255,255,.94);color:#161616;font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .ttcart svg{width:17px;height:17px;flex:none;color:#e8384f}.ttcart span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;max-width:52vw}.ttcart b{flex:none;color:#e8384f;font-weight:800}
+/* ===== ระบบเช็คชื่อ ===== */
+.s0{--sc:#16a34a}.s1{--sc:#d97706}.s2{--sc:#dc2626}.s3{--sc:#9333ea}.s4{--sc:#2563eb}.s5{--sc:#0284c7}
+.s6{--sc:#4f46e5}.s7{--sc:#ea580c}.s8{--sc:#a855f7}.s9{--sc:#e11d48}.s10{--sc:#475569}.s11{--sc:#7c3aed}
+@media (prefers-color-scheme: dark){.s0{--sc:#4ade80}.s1{--sc:#fbbf24}.s2{--sc:#f87171}.s3{--sc:#c084fc}.s4{--sc:#60a5fa}.s5{--sc:#38bdf8}.s6{--sc:#818cf8}.s7{--sc:#fb923c}.s8{--sc:#d8b4fe}.s9{--sc:#fb7185}.s10{--sc:#94a3b8}.s11{--sc:#a78bfa}}
+.stb{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:2px 10px;font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--sc,var(--muted));background:color-mix(in srgb,var(--sc,var(--muted)) 14%,transparent)}
+.stb.none{--sc:var(--muted)}
+.atchips{display:flex;gap:6px;flex-wrap:wrap}
+.atc{border-radius:99px;padding:4px 12px;font-size:13px;background:var(--surface);border:1px solid var(--line)}
+.atc b{font-family:var(--display)}.atc.g{color:var(--good)}.atc.w{color:#d97706}.atc.p{color:#9333ea}.atc.r{color:var(--bad)}.atc.v{color:#7c3aed}.atc.n{color:var(--muted)}.atc.d{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.atall{display:flex;flex-direction:column;gap:6px}.atall>div{display:flex;flex-wrap:wrap;gap:6px}
+button.atall{color:var(--sc);border-color:color-mix(in srgb,var(--sc) 40%,transparent)}
+.atrow{display:grid;grid-template-columns:1fr;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.atrow:first-child{border-top:0}
+.atrow.dirty{background:linear-gradient(90deg,var(--warn-bg),transparent 70%);margin-inline:-16px;padding-inline:16px}
+.atwho{display:flex;align-items:center;gap:10px;min-width:0}
+.atwho b{display:block;line-height:1.3}.atwho small{color:var(--muted);font-size:12.5px;display:block}
+.atn{color:var(--muted);font-size:12px;min-width:20px;text-align:right}
+.avatar.sm{width:34px;height:34px;font-size:14px;flex:none}
+.scantag,.dirtytag{display:inline-block;margin-top:3px;margin-right:4px;font-size:11.5px;font-weight:600;border-radius:99px;padding:1px 8px;background:var(--tint);color:var(--good)}
+.scantag.late{background:#ffedd5;color:#c2410c}.dirtytag{background:var(--warn-bg);color:var(--warn)}
+.atbtns{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.atb{padding:7px 2px;font-size:12.5px;font-weight:600;border-radius:10px;min-width:0;color:var(--sc);background:var(--surface);border:1.5px solid var(--line);justify-content:center}
+.atb.on{background:var(--sc);border-color:var(--sc);color:#fff}
+.atnote{font-size:13.5px;padding:7px 10px}
+@media (min-width:900px){
+  .atrow{grid-template-columns:minmax(210px,1fr) minmax(560px,2.6fr) minmax(120px,.6fr);align-items:center}
+  .atbtns{grid-template-columns:repeat(12,minmax(0,1fr));gap:4px}.atb{font-size:12px;padding:8px 0;white-space:nowrap;letter-spacing:-.2px}
+}
+.scanbox{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:4/3}
+.scanbox video{width:100%;height:100%;object-fit:cover;display:block}
+.scanframe{position:absolute;inset:18% 22%;border:3px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 0 0 999px rgba(0,0,0,.25);pointer-events:none}
+.scanmsg{position:absolute;inset:auto 0 0;margin:0;padding:12px;background:rgba(0,0,0,.65);color:#fff;font-size:13.5px;text-align:center}
+.scres{border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.scres b{font-size:15px}.scres small{opacity:.8}
+.scres.ok{background:var(--tint);color:var(--good)}.scres.late{background:#ffedd5;color:#c2410c}.scres.dup{background:var(--off-bg);color:var(--ink)}.scres.bad{background:var(--miss-bg);color:var(--miss-ink)}
+.stats.st4{grid-template-columns:repeat(2,1fr)}
+@media (min-width:700px){.stats.st4{grid-template-columns:repeat(4,1fr)}}
+.r.bad,td.bad{color:var(--bad)}.stats .stat:nth-child(4){background:#172554}
+.stat b.sm{font-size:16px}
+.shiftgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.shiftcard{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;border-left:4px solid #d97706}
+.shiftcard.done{border-left-color:var(--good)}
+.sg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}.sg3 b{font-family:var(--display);font-size:22px;display:block}.sg3 small{font-size:11.5px;color:var(--muted)}
+.g2c{display:grid;grid-template-columns:1fr;gap:14px}@media (min-width:900px){.g2c{grid-template-columns:1fr 1fr}}
+.tbl tr.tot td{font-weight:700;background:var(--off-bg)}
+.qrgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.qrcard{background:#fff;color:#111;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:2px;break-inside:avoid}
+.qrcard svg{width:100%;max-width:150px;height:auto;margin:0 auto 4px}.qrcard b{font-size:13px;line-height:1.3}.qrcard small{font-size:11px;color:#555}
+.myqr{align-items:center;text-align:center}.myqr #my-qr{background:#fff;padding:10px;border-radius:14px;width:min(260px,70vw)}.myqr svg{width:100%;height:auto;display:block}.myqr small{color:var(--muted)}
+@media print{
+  body.printqr header.top,body.printqr nav.tabs,body.printqr .noprint,body.printqr .view:not(#v-attqr)>*:not(.qrgrid),body.printqr #v-attqr>div:first-child,body.printqr .marquee,body.printqr #toast{display:none!important}
+  body.printqr{background:#fff}body.printqr .wrap{max-width:none;padding:0}
+  body.printqr .qrgrid{grid-template-columns:repeat(4,1fr);gap:6px}body.printqr .qrcard{border:1px dashed #999}
+}
+.gamegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.gcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;position:relative}
+.gcard.first{border:2px solid #f59e0b;box-shadow:0 6px 20px rgba(245,158,11,.18)}.gcard.me{outline:2px solid var(--accent)}
+.crown{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#f59e0b;color:#fff;font-size:11.5px;font-weight:700;border-radius:99px;padding:1px 10px}
+.gtop{display:flex;align-items:center;gap:10px}.gtop .l{min-width:0;flex:1}.gtop b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gtop small{color:var(--muted);font-size:12px}
+.grank{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--off-bg);flex:none}
+.grank.r1{background:#fde68a;color:#92400e}.grank.r2{background:#e2e8f0;color:#334155}.grank.r3{background:#fed7aa;color:#9a3412}
+.glv{display:flex;justify-content:space-between;font-size:12.5px}.glv b{font-size:13px}
+.gbar{height:8px;border-radius:99px;background:var(--off-bg);overflow:hidden}.gbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.lv1{color:#64748b}.lv2{color:#3b82f6}.lv3{color:#10b981}.lv4{color:#f59e0b}.lv5{color:#a855f7}
+.gbar i.lv1{background:#94a3b8}.gbar i.lv3{background:linear-gradient(90deg,#10b981,#34d399)}.gbar i.lv4{background:linear-gradient(90deg,#f59e0b,#fbbf24)}.gbar i.lv5{background:linear-gradient(90deg,#a855f7,#c084fc)}
+.streak{color:#ea580c;font-weight:600}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}.g3>div{border-radius:10px;padding:6px 2px;background:var(--off-bg)}.g3 b{display:block;font-family:var(--display);font-size:16px}.g3 small{font-size:10.5px;color:var(--muted)}
+.g3 .gg{background:color-mix(in srgb,#10b981 12%,transparent)}.g3 .gg b{color:#059669}.g3 .gw{background:color-mix(in srgb,#f59e0b 12%,transparent)}.g3 .gw b{color:#d97706}.g3 .gr{background:color-mix(in srgb,#ef4444 12%,transparent)}.g3 .gr b{color:#dc2626}
+.gtime{text-align:right}.gtime b{font-family:var(--display);font-size:20px}.gtime small{display:block;font-size:11px;color:var(--muted)}
+.dkwho{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--off-bg)}.dkwho b{display:block}.dkwho small{color:var(--muted);font-size:12.5px}
+.amtgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.amtgrid button{height:52px;font-size:18px;font-weight:700;border-radius:12px;justify-content:center}
+.amtgrid button.on{background:var(--bad);border-color:var(--bad);color:#fff}
+/* TV */
+body.tvmode{background:#0f172a}
+body.tvmode header.top,body.tvmode nav.tabs,body.tvmode .marquee{display:none!important}
+body.tvmode .wrap{max-width:none;padding:16px}body.tvmode #app{padding-left:0!important}
+.tvbox{background:#0f172a;color:#e2e8f0;border-radius:18px;padding:clamp(14px,3vw,36px);display:flex;flex-direction:column;gap:18px;min-height:calc(100vh - 32px)}
+.tvhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.tvhead h2{font-size:clamp(22px,3.2vw,44px);color:#fff}.tvhead p{margin:4px 0 0;color:#94a3b8;font-size:clamp(14px,1.5vw,20px)}
+.tvclock{text-align:right}.tvclock b{font-family:var(--display);font-size:clamp(32px,5vw,72px);color:#fff;line-height:1}.tvclock small{display:block;color:#94a3b8}
+.tvstats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media (min-width:900px){.tvstats{grid-template-columns:repeat(6,1fr)}}
+.tvstat{background:#1e293b;border-radius:16px;padding:16px}.tvstat small{color:#94a3b8;display:block;font-size:clamp(13px,1.2vw,17px)}.tvstat b{font-family:var(--display);font-size:clamp(32px,4vw,60px);color:#fff;line-height:1.1}
+.tvstat.g b{color:#34d399}.tvstat.w b{color:#fbbf24}.tvstat.p b{color:#a78bfa}.tvstat.r b{color:#f87171}.tvstat.n b{color:#94a3b8}
+.tvgrid{display:grid;grid-template-columns:1fr;gap:14px}@media (min-width:900px){.tvgrid{grid-template-columns:1fr 1.2fr}}
+.tvpanel{background:#1e293b;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}.tvpanel h3{color:#fff;font-size:clamp(16px,1.6vw,22px)}
+.donut{width:min(300px,70vw);margin:0 auto;display:block}.donut .dn1{fill:#fff;font-size:30px;font-weight:700;font-family:var(--display)}.donut .dn2{fill:#94a3b8;font-size:13px}
+.tvlegend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;font-size:15px}.tvlegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px}
+.tvnone{text-align:center;color:#94a3b8;margin:0}
+.tvrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #334155}.tvrow:first-child{border-top:0}.tvrow div{flex:1;min-width:0}.tvrow b{color:#fff;font-size:clamp(15px,1.4vw,20px);display:block}.tvrow small{color:#94a3b8}
+.tvn{font-family:var(--display);font-size:clamp(22px,2.4vw,34px);color:#34d399}.tvn small{font-size:13px;margin-left:4px}
+.tvfoot{text-align:center;color:#64748b;margin:0}
+/* ===== ระบบลา ===== */
+.lvform{display:flex;flex-direction:column;gap:12px}
+.lvwho{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--off-bg)}.lvwho b{display:block}.lvwho small{color:var(--muted);font-size:12.5px}
+.balmini{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;padding:10px 14px;border-radius:12px;background:var(--tint);color:var(--good)}.balmini b{font-family:var(--display);font-size:24px}.balmini small{color:var(--muted);flex-basis:100%}
+.balmini.out{background:var(--miss-bg);color:var(--miss-ink)}
+.lvdays{display:flex;gap:10px;align-items:baseline}.lvn{font-family:var(--display);font-size:22px;font-weight:700;color:var(--accent)}.lvdays small{color:var(--muted)}
+#lv-subs{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.subrow{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;padding:6px 8px;border-radius:10px;background:var(--off-bg)}
+.subrow .sd{font-weight:600;font-size:13.5px;line-height:1.25}.subrow .sd small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
+.subrow .soff{color:var(--muted);font-size:13px}.subrow.k-rot{background:#fef9c3}.subrow.k-rot .soff{color:#854d0e;font-weight:600}.subrow.k-co{background:var(--miss-bg)}
+@media (prefers-color-scheme: dark){.subrow.k-rot{background:#3a3214}.subrow.k-rot .soff{color:#fde68a}}
+.lvwarn{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;margin:0;font-weight:600;font-size:14px}
+.tchip{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px}.tchip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.balgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.balcard{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--tc);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.balcard .bnum{font-family:var(--display);font-size:24px;font-weight:700;color:var(--tc)}.balcard .bnum small{font-size:13px;color:var(--muted);font-weight:500}.balcard>small{color:var(--muted)}
+.lvrow{align-items:flex-start}.lvrow .l small{display:block}.lvact{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+small.subs{display:block;color:var(--muted);font-size:12.5px}
+.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.calgrid .cw{text-align:center;font-size:12px;font-weight:600;color:var(--muted);padding:4px 0}
+.calgrid .cd{min-height:88px;border:1px solid var(--line);border-radius:10px;padding:4px;display:flex;flex-direction:column;gap:2px;overflow:hidden;background:var(--surface)}
+.calgrid .cd.empty{border:0;background:none}.calgrid .cd.today{outline:2px solid var(--accent)}
+.calgrid .cd.k-sun,.calgrid .cd.k-co{background:var(--miss-bg)}.calgrid .cd.k-rot{background:#fef9c3}
+@media (prefers-color-scheme: dark){.calgrid .cd.k-rot{background:#3a3214}}
+.cdh{display:flex;justify-content:space-between;align-items:center;gap:2px}.cdh b{font-size:13px}
+.rotb{background:#facc15;color:#422006;font-size:9.5px;font-weight:700;border-radius:4px;padding:0 4px}
+.cds{font-size:9.5px;color:var(--muted);line-height:1.2}.hol{font-size:9.5px;color:#c2410c;line-height:1.2}.hol.co{color:var(--bad);font-weight:600}
+.cev{display:block;font-size:10.5px;line-height:1.3;border-radius:4px;padding:1px 4px;background:color-mix(in srgb,var(--tc) 18%,transparent);border-left:3px solid var(--tc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cev.pend{border-left-style:dashed;opacity:.75}
+@media (min-width:900px){.calgrid .cd{min-height:110px;padding:6px}.cdh b{font-size:15px}.cev{font-size:12px}.cds,.hol{font-size:11px}}
+.callegend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted)}.callegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.lg-co{background:var(--miss-bg);border:1px solid var(--bad)}.lg-pu{background:#ffedd5}.lg-rot{background:#facc15}.lg-pend{border:2px dashed var(--muted)}
+.lvcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+.lvcard{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--tc);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.lvline{font-size:15px}.lvl1{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-weight:600;font-size:14px}.lvreason{margin:0;font-size:14px;background:var(--off-bg);border-radius:8px;padding:8px 10px}
+.lvbtns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.lvnote{flex:1;min-width:140px;padding:6px 10px;font-size:13.5px}
+.ltrow{flex-wrap:wrap}.ltrow label.mini{display:flex;align-items:center;gap:6px;font-size:13px}.ltrow label.mini input{width:70px;padding:4px 6px}
+.lbtot{width:80px;text-align:right;padding:4px 6px}
+.navdot.num{position:static;display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:99px;background:var(--bad);color:#fff;font-size:11px;font-weight:700;font-style:normal;margin-left:6px;padding:0 5px}
 </style>
 </head>
 <body>
@@ -575,7 +705,7 @@ video.cmedia{cursor:default}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-24</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-26</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -724,6 +854,219 @@ video.cmedia{cursor:default}
       <div class="scroll"><table class="tbl"><thead><tr><th>วันที่</th><th>ประเภท KPI</th><th>กะ</th><th class="n">ผลงาน</th><th class="n">เป้าหมาย</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="ed-rows"></tbody></table></div></div>
   </section>
 
+
+  <!-- ATTENDANCE: เช็คชื่อ -->
+  <section class="view" id="v-att" hidden>
+    <div><h2>เช็ครายชื่อ</h2><p class="sub">เช็คชื่อพนักงานเข้างาน · สแกน QR หรือกดเลือกสถานะ แล้วกดบันทึก</p></div>
+    <div class="filters">
+      <label>วันที่<input type="date" id="at-date"></label>
+      <label>แผนก<select id="at-dept"></select></label>
+      <label>กะ<select id="at-shift"><option value="">ทุกกะ</option><option value="A">กะ A</option><option value="B">กะ B</option><option value="D">กะ D</option></select></label>
+      <label>ค้นหา<input type="search" id="at-q" placeholder="ชื่อหรือรหัสพนักงาน" autocomplete="off"></label>
+    </div>
+    <div class="inline">
+      <button type="button" class="primary" id="at-scan" data-ico="qr">สแกน QR</button>
+      <button type="button" id="at-auto" data-ico="x">ขาดงานอัตโนมัติ</button>
+      <button type="button" id="at-shuffle" data-ico="shuffle">สุ่มลำดับ</button>
+      <button type="button" class="primary" id="at-save" data-ico="check">บันทึก</button>
+    </div>
+    <div class="atchips" id="at-sum"></div>
+    <div class="panel">
+      <div class="atall"><small>ตั้งค่าทั้งหมด (คนที่แสดงอยู่):</small><div id="at-allbtns"></div></div>
+      <div id="at-rows"></div>
+    </div>
+  </section>
+
+  <!-- ATTENDANCE: แดชบอร์ด -->
+  <section class="view" id="v-attdash" hidden>
+    <div><h2>แดชบอร์ดเช็คชื่อ</h2><p class="sub" id="ad2-sub">ภาพรวมการเข้างานวันนี้</p></div>
+    <div class="filters"><label>วันที่<input type="date" id="ad2-date"></label><label>แผนก<select id="ad2-dept"></select></label></div>
+    <div class="stats st4">
+      <div class="stat"><small>พนักงานทั้งหมด</small><b id="ad2-all">–</b></div>
+      <div class="stat good"><small>มาทำงาน</small><b id="ad2-in">–</b><small id="ad2-inp"></small></div>
+      <div class="stat bad"><small>ขาดงาน</small><b id="ad2-ab">–</b></div>
+      <div class="stat warn"><small>เข้าสาย/ต่อกะสาย</small><b id="ad2-late">–</b></div>
+    </div>
+    <div class="panel"><h3>สรุปตามกะ</h3><div class="shiftgrid" id="ad2-shift"></div></div>
+    <div class="panel"><h3>สรุปตามแผนก × กะ (วันที่เลือก)</h3><div class="scroll"><table class="tbl"><thead><tr><th>แผนก</th><th>กะ</th><th class="n">ทั้งหมด</th><th class="n">มาทำงาน</th><th class="n">ไม่มา (ลา+ขาด)</th><th class="n">ยังไม่เช็ค</th><th>สถานะ</th></tr></thead><tbody id="ad2-ds"></tbody></table></div></div>
+    <div class="panel"><h3>สรุปสถานะรายแผนก (ทั้งเดือน)</h3><div class="scroll"><table class="tbl"><thead><tr><th>แผนก</th><th class="n">มาทำงาน</th><th class="n">สาย/ต่อกะสาย</th><th class="n">ลา</th><th class="n">ขาดงาน</th><th class="n">อื่นๆ</th><th class="n">รวม</th></tr></thead><tbody id="ad2-dm"></tbody></table></div></div>
+    <div class="g2c">
+      <div class="panel"><h3>Top 5 มาทำงานเดือนนี้</h3><div class="rows" id="ad2-top"></div></div>
+      <div class="panel"><h3>Top 5 ขาดงานเดือนนี้</h3><div class="rows" id="ad2-abs"></div></div>
+    </div>
+    <div class="panel"><div class="depthead"><h3>หัก KPI เดือนนี้</h3><button type="button" class="sm" data-tab="dedrep">ดูรายงาน</button></div><div class="stats" id="ad2-ded"></div></div>
+  </section>
+
+  <!-- ATTENDANCE: ประวัติย้อนหลัง -->
+  <section class="view" id="v-atthist" hidden>
+    <div><h2>ประวัติย้อนหลัง</h2><p class="sub">ดูข้อมูลเช็คชื่อตามวันที่ และส่งออกรายงานรายเดือน</p></div>
+    <div class="filters">
+      <label>วันที่<input type="date" id="ah-date"></label>
+      <label>แผนก<select id="ah-dept"></select></label>
+      <label>สถานะ<select id="ah-status"><option value="">ทุกสถานะ</option></select></label>
+      <label>ค้นหา<input type="search" id="ah-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label>
+    </div>
+    <div class="atchips" id="ah-sum"></div>
+    <div class="panel"><div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>แผนก</th><th>กะ</th><th>เวลา</th><th>สถานะ</th><th>หมายเหตุ</th></tr></thead><tbody id="ah-rows"></tbody></table></div></div>
+    <div class="panel"><h3>ส่งออกรายงาน Excel</h3><p class="sub">ไฟล์มี 2 ชีต: สรุป (จำนวนตามแผนกและสถานะ) และ ปฏิทิน (ตารางรายวันทั้งเดือน)</p>
+      <div class="filters"><label>เดือน<input type="month" id="ah-month"></label></div>
+      <div class="inline"><button type="button" class="primary" id="ah-export" data-ico="download">ส่งออกรายงาน Excel</button></div></div>
+  </section>
+
+  <!-- ATTENDANCE: QR Code พนักงาน -->
+  <section class="view" id="v-attqr" hidden>
+    <div><h2>QR Code พนักงาน</h2><p class="sub">พิมพ์ QR Code แจกพนักงานเพื่อสแกนเช็คชื่อ (QR = รหัสพนักงาน ใช้กับบัตรเดิมได้)</p></div>
+    <div class="filters noprint">
+      <label>แผนก<select id="aq-dept"></select></label>
+      <label>ค้นหา<input type="search" id="aq-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label>
+    </div>
+    <div class="inline noprint"><button type="button" class="primary" id="aq-print" data-ico="download">พิมพ์</button></div>
+    <div class="qrgrid" id="aq-grid"></div>
+  </section>
+
+  <!-- ATTENDANCE: ของฉัน -->
+  <section class="view" id="v-myatt" hidden>
+    <div><h2>เช็คชื่อของฉัน</h2><p class="sub">ยื่น QR นี้ให้หัวหน้าสแกนตอนเข้างาน</p></div>
+    <div class="panel myqr"><div id="my-qr"></div><b id="my-qrname"></b><small id="my-qrsub"></small></div>
+    <div class="filters"><label>เดือน<input type="month" id="my-month"></label></div>
+    <div class="stats st4" id="my-stats"></div>
+    <div class="panel"><h3>ประวัติการเข้างาน</h3><div class="rows" id="my-rows"></div></div>
+    <div class="panel"><h3>รายการหัก KPI</h3><div class="rows" id="my-ded"></div></div>
+  </section>
+
+  <!-- ATTENDANCE: เกมพนักงาน -->
+  <section class="view" id="v-game" hidden>
+    <div><h2>🏆 เกมพนักงาน</h2><p class="sub" id="gm-sub">คะแนนและอันดับจากข้อมูลการเข้างานจริง</p></div>
+    <div class="filters">
+      <label>เดือน<input type="month" id="gm-month"></label>
+      <label>แผนก<select id="gm-dept"></select></label>
+      <label>ค้นหา<input type="search" id="gm-q" placeholder="ชื่อพนักงาน" autocomplete="off"></label>
+    </div>
+    <div class="chips"><button type="button" class="chipsel on" data-gmode="xp">🏆 คะแนนเข้างาน</button><button type="button" class="chipsel" data-gmode="fast">⚡ มาต่อกะเร็ว</button></div>
+    <div class="stats" id="gm-stats"></div>
+    <div class="gamegrid" id="gm-rows"></div>
+    <p class="sub">คะแนน: มาทำงาน +10 · เข้างานสาย −5 · ต่อกะสาย −3 · ลาป่วย/ลากิจ/ลาอื่นๆ −5 · ลาพักร้อน/สิทธิ์อื่น/แต่งงาน/ฌาปณกิจ −3 · ขาดงาน −10</p>
+  </section>
+
+  <!-- ATTENDANCE: หัก KPI -->
+  <section class="view" id="v-deduct" hidden>
+    <div><h2>บันทึกหัก KPI</h2><p class="sub">หักเงินพนักงานที่ทำผิดกฎระเบียบ — กดชื่อพนักงานเพื่อบันทึกยอดหัก</p></div>
+    <div class="filters"><label>แผนก<select id="dd-dept"></select></label><label>ค้นหา<input type="search" id="dd-q" placeholder="ชื่อหรือรหัสพนักงาน" autocomplete="off"></label></div>
+    <div class="panel"><div class="rows" id="dd-rows"></div></div>
+    <div class="panel"><h3>รายการหักล่าสุด</h3><div class="rows" id="dd-recent"></div></div>
+  </section>
+
+  <!-- ATTENDANCE: รายงานหัก KPI -->
+  <section class="view" id="v-dedrep" hidden>
+    <div><h2>รายงานหัก KPI</h2><p class="sub">สรุปยอดหักเงินสะสมรายบุคคล</p></div>
+    <div class="filters">
+      <label>เดือน<select id="dr-month"></select></label>
+      <label>แผนก<select id="dr-dept"></select></label>
+      <label>ค้นหา<input type="search" id="dr-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label>
+    </div>
+    <div class="inline"><button type="button" id="dr-export" data-ico="download">Export Excel</button></div>
+    <div class="stats st4">
+      <div class="stat"><small>ยอดหักรวม</small><b id="dr-sum">–</b></div>
+      <div class="stat"><small>พนักงานที่ถูกหัก</small><b id="dr-n">–</b></div>
+      <div class="stat"><small>เฉลี่ยต่อคน</small><b id="dr-avg">–</b></div>
+      <div class="stat bad"><small>หักสูงสุด</small><b id="dr-max">–</b></div>
+    </div>
+    <div class="panel"><div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>พนักงาน</th><th>แผนก</th><th class="n">ครั้ง</th><th>ล่าสุด</th><th class="n">ยอดหักสะสม</th></tr></thead><tbody id="dr-rows"></tbody></table></div></div>
+  </section>
+
+  <!-- ATTENDANCE: หน้าจอ TV -->
+  <section class="view" id="v-tv" hidden>
+    <div class="tvbox">
+      <div class="tvhead"><div><h2>ระบบเช็คชื่อพนักงาน</h2><p id="tv-date"></p></div><div class="tvclock"><b id="tv-clock">--:--</b><small id="tv-sec"></small></div></div>
+      <div class="tvstats" id="tv-stats"></div>
+      <div class="tvgrid"><div class="tvpanel"><h3>สัดส่วนวันนี้</h3><div id="tv-donut"></div></div><div class="tvpanel"><h3>Top 5 มาทำงานเดือนนี้</h3><div id="tv-top"></div></div></div>
+      <p class="tvfoot">อัปเดตอัตโนมัติทุก 30 วินาที · <button type="button" class="sm" id="tv-full">เต็มจอ</button> <button type="button" class="sm" data-tab="attdash">ออกจากหน้าจอ TV</button></p>
+    </div>
+  </section>
+
+
+  <!-- LEAVE: ขอลา -->
+  <section class="view" id="v-leave" hidden>
+    <div><h2>ขอลางาน</h2><p class="sub">กรอกข้อมูลเพื่อยื่นคำขอลา · วันอาทิตย์และวันหยุดโรงงานไม่นับเป็นวันลา</p></div>
+    <div class="panel">
+      <form id="lvform" class="lvform">
+        <label class="lva">คีย์ลาให้ (หัวหน้า)<select id="lv-emp"></select></label>
+        <div class="lvwho" id="lv-who"></div>
+        <label>ประเภทการลา *<select id="lv-type" required></select></label>
+        <div class="lvbal" id="lv-bal"></div>
+        <label>กะการทำงาน *<select id="lv-shift"><option value="A">กะ A</option><option value="B">กะ B</option><option value="D">กะ AA (เช้าตลอด)</option></select></label>
+        <label class="check"><input type="checkbox" id="lv-half"> ลาครึ่งวัน</label>
+        <div class="filters" id="lv-halfp" hidden><label class="check"><input type="radio" name="lvhp" value="am" checked> ครึ่งเช้า</label><label class="check"><input type="radio" name="lvhp" value="pm"> ครึ่งบ่าย</label></div>
+        <div class="filters"><label>วันที่เริ่มต้น *<input type="date" id="lv-from" required></label><label id="lv-towrap">วันที่สิ้นสุด *<input type="date" id="lv-to" required></label></div>
+        <div class="lvdays" id="lv-days"></div>
+        <div><b>ผู้มาแทน (คู่กะ เข้า OT แทน) — ระบุเป็นรายวัน *</b><p class="sub">เลือกวันที่ลาก่อน แล้วใส่คู่กะที่มาแทนแต่ละวัน (วันควงกะ / วันหยุด ไม่ต้องใส่)</p><div id="lv-subs"></div></div>
+        <label>เหตุผลการลา — ลาเพราะอะไร *<textarea id="lv-reason" rows="2" maxlength="500" required></textarea></label>
+        <div class="filters"><label>สถานที่ไป<input type="text" id="lv-dest" maxlength="120"></label><label>จังหวัด<select id="lv-prov"></select></label></div>
+        <p class="lvwarn" id="lv-warn" hidden></p>
+        <div class="inline" style="justify-content:flex-end"><button type="reset" id="lv-reset">ล้าง</button><button class="primary" type="submit" id="lv-submit" data-ico="send">ส่งคำขอลา</button></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- LEAVE: ของฉัน (วันคงเหลือ + ประวัติ) -->
+  <section class="view" id="v-myleave" hidden>
+    <div><h2>วันลาของฉัน</h2><p class="sub">วันลาคงเหลือ และประวัติคำขอลา</p></div>
+    <div class="filters"><label>ปี<select id="ml-year"></select></label></div>
+    <div class="balgrid" id="ml-bal"></div>
+    <div class="panel"><div class="depthead"><h3>ประวัติการลา</h3><button type="button" class="primary sm" data-tab="leave">+ ขอลา</button></div><div class="rows" id="ml-rows"></div></div>
+  </section>
+
+  <!-- LEAVE: ปฏิทิน -->
+  <section class="view" id="v-leavecal" hidden>
+    <div><h2>ปฏิทินลา</h2><p class="sub">ใครลาวันไหน · เช้า/ดึก ของแต่ละกะ · วันควงกะ · วันหยุดโรงงาน</p></div>
+    <div class="filters"><label>เดือน<input type="month" id="lc-month"></label><label>แผนก<select id="lc-dept"></select></label></div>
+    <div class="panel"><div class="calgrid" id="lc-grid"></div>
+      <div class="callegend"><span><i class="lg-co"></i>วันหยุดโรงงาน</span><span><i class="lg-pu"></i>วันหยุดราชการ (โรงงานทำงาน)</span><span><i class="lg-rot"></i>วันควงกะ</span><span><i class="lg-pend"></i>รออนุมัติ</span></div></div>
+    <div class="panel"><h3>รายการลาเดือนนี้</h3><div class="rows" id="lc-list"></div></div>
+  </section>
+
+  <!-- LEAVE: อนุมัติ -->
+  <section class="view" id="v-leaveappr" hidden>
+    <div><h2>อนุมัติการลา</h2><p class="sub">จัดการคำขอลาของพนักงานในแผนกที่ดูแล</p></div>
+    <div class="filters">
+      <label>สถานะ<select id="la-st"><option value="pending">รออนุมัติ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ไม่อนุมัติ</option><option value="cancelled">ยกเลิก</option><option value="">ทั้งหมด</option></select></label>
+      <label>แผนก<select id="la-dept"></select></label>
+      <label>ค้นหา<input type="search" id="la-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label>
+    </div>
+    <div class="lvcards" id="la-rows"></div>
+  </section>
+
+  <!-- LEAVE: จัดการวันลา -->
+  <section class="view" id="v-leaveadmin" hidden>
+    <div><h2>จัดการวันลา</h2><p class="sub">ตั้งสิทธิ์วันลารายคน · วันหยุด · ประเภทการลา · วันควงกะ · ส่งออกรายงาน</p></div>
+    <div class="panel">
+      <h3>สิทธิ์วันลารายคน</h3>
+      <div class="filters"><label>ปี<select id="lb-year"></select></label><label>ประเภท<select id="lb-type"></select></label><label>แผนก<select id="lb-dept"></select></label><label>ค้นหา<input type="search" id="lb-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label></div>
+      <div class="scroll"><table class="tbl"><thead><tr><th>รหัส</th><th>ชื่อ</th><th class="n">สิทธิ์ (วัน)</th><th class="n">ใช้ไป</th><th class="n">รออนุมัติ</th><th class="n">คงเหลือ</th><th></th></tr></thead><tbody id="lb-rows"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <h3>ส่งออกรายงานการลา (Excel)</h3>
+      <div class="filters"><label>ตั้งแต่<input type="date" id="lx-from"></label><label>ถึง<input type="date" id="lx-to"></label></div>
+      <div class="inline"><button type="button" class="primary" id="lx-go" data-ico="download">ส่งออก Excel</button></div>
+    </div>
+    <div class="adm view g2">
+      <div class="panel half">
+        <h3>วันหยุด</h3>
+        <div class="filters"><label>ปี<select id="lh-year"></select></label></div>
+        <form id="lh-form" class="filters"><label>วันที่<input type="date" id="lh-date" required></label><label>ชื่อวันหยุด<input type="text" id="lh-name" maxlength="80" required></label><label>ประเภท<select id="lh-type"><option value="company">วันหยุดโรงงาน (ไม่นับวันลา)</option><option value="public">วันหยุดราชการ (โรงงานทำงาน)</option></select></label><button type="submit" class="primary slim">เพิ่ม</button></form>
+        <div class="rows" id="lh-rows"></div>
+      </div>
+      <div class="panel half">
+        <h3>วันควงกะ</h3>
+        <p class="sub">สลับกะเช้า/ดึกทุก ๆ กี่วัน (วันอาทิตย์ที่ควงกะ)</p>
+        <form id="lr-form" class="filters"><label>วันควงกะอ้างอิง<input type="date" id="lr-anchor" required></label><label>กะเช้าหลังวันอ้างอิง<select id="lr-day"><option value="A">กะ A</option><option value="B">กะ B</option></select></label><label>ทุก (วัน)<input type="number" id="lr-int" min="1" max="60" required></label><button type="submit" class="primary slim">บันทึก</button></form>
+        <label class="check"><input type="checkbox" id="lt-on"> แจ้งเตือน Telegram เมื่อมีคำขอลา / อนุมัติ</label>
+        <h3>ประเภทการลา</h3>
+        <div class="rows" id="lt-rows"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- MENU (มือถือ) -->
   <section class="view" id="v-menu" hidden>
     <div><h2>เมนู</h2><p class="sub">เลือกหน้าที่ต้องการ</p></div>
@@ -735,6 +1078,20 @@ video.cmedia{cursor:default}
       <button data-tab="shop">สินค้า</button>
       <button data-tab="allowance">KPI / Allowance</button>
       <button data-tab="install">ติดตั้งแอปลงมือถือ</button>
+      <button data-tab="leave">ขอลางาน</button>
+      <button data-tab="myleave">วันลาของฉัน</button>
+      <button data-tab="leavecal">ปฏิทินลา</button>
+      <button data-tab="leaveappr" class="lva">อนุมัติการลา<i class="navdot num" id="lv-dot2" hidden></i></button>
+      <button data-tab="leaveadmin" class="lva">จัดการวันลา</button>
+      <button data-tab="myatt">เช็คชื่อของฉัน / QR</button>
+      <button data-tab="game">เกมพนักงาน</button>
+      <button data-tab="att" class="mgr">เช็ครายชื่อ</button>
+      <button data-tab="attdash" class="mgr">แดชบอร์ดเช็คชื่อ</button>
+      <button data-tab="atthist" class="mgr">ประวัติย้อนหลัง</button>
+      <button data-tab="attqr" class="mgr">QR Code พนักงาน</button>
+      <button data-tab="deduct" class="mgr">หัก KPI</button>
+      <button data-tab="dedrep" class="mgr">รายงานหัก KPI</button>
+      <button data-tab="tv" class="mgr">หน้าจอ TV</button>
       <button data-tab="admin" class="mgr">Admin Dashboard</button>
       <button data-tab="targets" class="mgr">กำหนดเป้าหมายรายวัน</button>
       <button data-tab="kpis" class="adm">จัดการหน้างาน</button>
@@ -992,6 +1349,14 @@ video.cmedia{cursor:default}
         <form id="deptform" class="inline"><input type="text" id="a-dname" placeholder="ชื่อแผนกใหม่" maxlength="80" required><button type="submit">เพิ่ม</button></form>
       </div>
       <div class="panel half">
+        <h3>นำเข้าข้อมูลจากแอปเดิม (AttendCheck)</h3>
+        <p class="sub">เลือกไฟล์ในโฟลเดอร์ old-data: AttendCheck_Employee / Attendance / Deduction (.csv) และ LeaveSystem_export.json (ระบบจองลาเดิม) เลือกพร้อมกันได้ แล้วตรวจตัวเลขก่อนกดนำเข้า · กดนำเข้าซ้ำได้ ไม่เกิดรายการซ้อน</p>
+        <label class="filebtn" data-ico="upload">เลือกไฟล์ CSV<input type="file" id="im-files" accept=".csv,text/csv,.json,application/json" multiple hidden></label>
+        <div id="im-prev"></div>
+        <button type="button" class="primary" id="im-go" hidden>เริ่มนำเข้า</button>
+        <p class="sub" id="im-msg" role="status"></p>
+      </div>
+      <div class="panel half">
         <h3>การสมัครใช้งาน</h3>
         <label class="check"><input type="checkbox" id="sr-on"> ให้พนักงานสมัครเองได้ด้วยรหัสพนักงาน (ปิดแล้วจะสมัครได้เฉพาะรหัสที่ผู้ดูแลเพิ่มไว้)</label>
         <p class="sub">ล้างบัญชีค้าง: ใช้เมื่อมีคนสมัครด้วยรหัสของคนอื่น หรือสมัครแล้วไม่ได้กรอกโปรไฟล์</p>
@@ -999,7 +1364,7 @@ video.cmedia{cursor:default}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-24 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-26 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1016,6 +1381,22 @@ video.cmedia{cursor:default}
   <button data-tab="tt" class="navx">ติ่งต๊อง</button>
   <button data-tab="chat" class="navx">แชต<i class="navdot" id="chat-dot" hidden></i></button>
   <button data-tab="install" class="navx">ติดตั้งแอปลงมือถือ</button>
+  <span class="navlabel">การลา</span>
+  <button data-tab="leave" class="navx">ขอลางาน</button>
+  <button data-tab="myleave" class="navx">วันลาของฉัน</button>
+  <button data-tab="leavecal" class="navx">ปฏิทินลา</button>
+  <button data-tab="leaveappr" class="lva navx">อนุมัติการลา<i class="navdot num" id="lv-dot" hidden></i></button>
+  <button data-tab="leaveadmin" class="lva navx">จัดการวันลา</button>
+  <span class="navlabel">เช็คชื่อ</span>
+  <button data-tab="myatt" class="navx">เช็คชื่อของฉัน / QR</button>
+  <button data-tab="game" class="navx">เกมพนักงาน</button>
+  <button data-tab="att" class="mgr navx">เช็ครายชื่อ</button>
+  <button data-tab="attdash" class="mgr navx">แดชบอร์ดเช็คชื่อ</button>
+  <button data-tab="atthist" class="mgr navx">ประวัติย้อนหลัง</button>
+  <button data-tab="attqr" class="mgr navx">QR Code พนักงาน</button>
+  <button data-tab="deduct" class="mgr navx">หัก KPI</button>
+  <button data-tab="dedrep" class="mgr navx">รายงานหัก KPI</button>
+  <button data-tab="tv" class="mgr navx">หน้าจอ TV</button>
   <span class="navlabel mgr">ADMIN</span>
   <button data-tab="admin" class="mgr navx">Admin Dashboard</button>
   <button data-tab="targets" class="mgr navx">กำหนดเป้าหมายรายวัน</button>
@@ -1132,6 +1513,32 @@ video.cmedia{cursor:default}
     </form>
   </div>
 </div>
+
+<div class="modal" id="m-scan" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="sc-head">
+    <div class="headrow"><h3 id="sc-head" style="font-size:18px">สแกน QR Code พนักงาน</h3><button type="button" class="iconbtn" data-close="m-scan" data-ico="x" aria-label="ปิด"></button></div>
+    <label>รอบสแกน<select id="sc-round"></select></label>
+    <div class="scanbox"><video id="sc-video" playsinline muted></video><div class="scanframe"></div><p id="sc-msg" class="scanmsg">กำลังเปิดกล้อง...</p></div>
+    <p class="sub" style="text-align:center">สแกนหลังเวลาที่กำหนด → สถานะ <b style="color:var(--bad)">ต่อกะสาย</b> · วันที่ <b id="sc-date"></b></p>
+    <div id="sc-result"></div>
+    <div class="rows" id="sc-log"></div>
+    <div class="inline" style="justify-content:flex-end"><button type="button" id="sc-retry" hidden>ลองเปิดกล้องอีกครั้ง</button><button type="button" data-close="m-scan">ปิด</button></div>
+  </div>
+</div>
+<div class="modal" id="m-deduct" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="dk-head">
+    <div class="headrow"><h3 id="dk-head" style="font-size:18px">บันทึกหัก KPI</h3><button type="button" class="iconbtn" data-close="m-deduct" data-ico="x" aria-label="ปิด"></button></div>
+    <div class="dkwho" id="dk-who"></div>
+    <small class="sub">ยอดหัก KPI</small>
+    <div class="amtgrid" id="dk-amts"></div>
+    <label>หรือกรอกเอง (บาท)<input type="number" id="dk-amt" min="1" step="1" inputmode="numeric"></label>
+    <label>วันที่<input type="date" id="dk-date"></label>
+    <label>หมวด<select id="dk-cat"></select></label>
+    <label>หมายเหตุ<input type="text" id="dk-remark" maxlength="300" placeholder="(ไม่บังคับ)"></label>
+    <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-deduct">ยกเลิก</button><button type="button" class="primary slim" id="dk-save">บันทึกหัก</button></div>
+    <h3>ประวัติการหักของคนนี้</h3><div class="rows" id="dk-hist"></div>
+  </div>
+</div>
 <div class="modal" id="m-ttcom" hidden>
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="tc-head">
     <div class="headrow"><h3 id="tc-head" style="font-size:18px">ความคิดเห็น</h3><button type="button" class="iconbtn" data-close="m-ttcom" data-ico="x" aria-label="ปิด"></button></div>
@@ -1223,6 +1630,22 @@ var ICON={
   userplus:'<circle cx="10" cy="8" r="3.500"/><path d="M3 20c.7-3.400 3.400-5.500 7-5.500s6.300 2.100 7 5.500M19 7v6M16 10h6"/>',
   eye:'<path d="M2 12s3.600-7 10-7 10 7 10 7-3.600 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>',
+  att:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 13l2 2 4-4"/>',
+  attdash:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  atthist:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>',
+  attqr:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M21 14v7h-4M14 18v3"/>',
+  qr:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M21 14v7h-4M14 18v3"/>',
+  myatt:'<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17c1-2 2.500-3 4-3s3 1 4 3"/>',
+  game:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+  deduct:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',minus:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+  dedrep:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3 3 3-3"/>',
+  tv:'<rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8M12 18v3"/>',
+  shuffle:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+  leave:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/>',
+  myleave:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  leavecal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h2M14 14h2M8 18h2"/>',
+  leaveappr:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>',
+  leaveadmin:'<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   shield:'<path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6z"/>'
 };
 function ico(n){return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICON[n]||"")+'</svg>'}
@@ -1238,7 +1661,8 @@ function countTo(el,v){
 function emptyRow(t){return '<div class="empty">'+esc(t)+'</div>'}
 function deptName(id){var d=S.depts.filter(function(x){return x.id===id})[0];return d?d.name:""}
 function kpiName(id){var k=S.kpis.filter(function(x){return x.id===id})[0];return k?k.name:null}
-function empOf(id){if(S.me&&id===S.me.id)return S.me;return S.emps.filter(function(e){return e.id===id})[0]||null}
+function empOf(id){if(S.me&&id===S.me.id)return S.me;var e=S.emps.filter(function(e){return e.id===id})[0];if(e)return e;
+  var d=(S.dir||[]).filter(function(x){return x.id===id})[0];return d?{id:d.id,employee_no:d.employee_no,display_name:d.display_name,department_id:d.department_id,shift:d.shift,avatar:d.avatar,position:d.job,active:d.active}:null}
 function empName(id){var e=empOf(id);return e?e.display_name:"(ไม่ทราบชื่อ)"}
 var toastT;
 function toast(m){var t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},3800)}
@@ -1289,6 +1713,7 @@ async function loadBase(){
     q(db.from("app_settings").select("*"))
   ]);
   S.depts=r[0];S.kpis=r[1];S.emps=r[2];S.settings={};r[3].forEach(function(x){S.settings[x.key]=x.value});
+  try{S.dir=await q(db.rpc("staff_directory"))}catch(e){S.dir=[]}
   S.myDepts=S.admin?S.depts:S.mgr?S.depts.filter(function(d){return (S.me.allowed_departments||[]).indexOf(d.id)>=0}):S.depts.filter(function(d){return d.id===S.me.department_id});
 }
 function setOptions(el,opts,placeholder){
@@ -1299,7 +1724,11 @@ function setOptions(el,opts,placeholder){
 function fillSelects(){
   var d=S.myDepts.map(function(x){return {v:x.id,t:x.name}}),all=S.myDepts.length>1?"ทุกแผนกที่ดูแล":null;
   if(S.admin)all="ทุกแผนก";
-  ["h-dept","d-dept","m-dept","s-dept","am-dept","tl-dept"].forEach(function(id){setOptions($(id),d,all)});
+  ["h-dept","d-dept","m-dept","s-dept","am-dept","tl-dept","at-dept","ad2-dept","ah-dept","aq-dept","dd-dept","dr-dept"].forEach(function(id){setOptions($(id),d,all)});
+  setOptions($("gm-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
+  setOptions($("lc-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
+  var la=lvApprDepts().map(function(id){return {v:id,t:deptName(id)}}).filter(function(o){return o.t});
+  ["la-dept","lb-dept"].forEach(function(id){setOptions($(id),la,la.length>1?"ทุกแผนกที่ดูแล":null)});
   setOptions($("k-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   setOptions($("t-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   var yy=new Date().getFullYear();setOptions($("al-year"),[yy,yy-1,yy-2].map(function(v){return {v:String(v),t:String(v+543)+" ("+v+")"}}),null);
@@ -2476,14 +2905,697 @@ function chReply(id){
 function chJump(id){var el=document.querySelector('#ch-list [data-mid="'+id+'"]');if(!el){toast("ข้อความเดิมอยู่ไกลเกินไป หรือถูกลบแล้ว");return}
   el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}
 
-var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,menu:function(){}};
+/* =====================================================================
+   ระบบเช็คชื่อ (รวมจาก AttendCheck): เช็ครายชื่อ / สแกน QR / ประวัติ / แดชบอร์ด / TV / เกม / หัก KPI
+   ===================================================================== */
+var AST=[
+  {v:"มาทำงาน",s:"มา"},{v:"เข้างานสาย",s:"สาย"},{v:"ขาดงาน",s:"ขาด"},{v:"ลาป่วย",s:"ป่วย"},{v:"ลากิจ",s:"กิจ"},{v:"ลาพักร้อน",s:"พักร้อน"},
+  {v:"ลาตามสิทธิ์อื่น",s:"สิทธิ์อื่น"},{v:"ต่อกะสาย",s:"ต่อกะ"},{v:"ลาอื่นๆ",s:"อื่นๆ"},{v:"ลาแต่งงาน",s:"แต่งงาน"},{v:"ลาฌาปณกิจ",s:"ฌาปณ"},{v:"หยุด (วันอาทิตย์, วันหยุดนักขัตฤกษ์)",s:"หยุด"}];
+var ST_LEAVE=["ลาป่วย","ลากิจ","ลาพักร้อน","ลาตามสิทธิ์อื่น","ลาอื่นๆ","ลาแต่งงาน","ลาฌาปณกิจ"],ST_LATE=["เข้างานสาย","ต่อกะสาย"],ST_HOLI=AST[11].v;
+var DED_AMTS=[5,10,20,50,100,500],DED_CATS=["มาสาย","ขาดงาน","ลืมแสกน","ไม่ใส่เครื่องแบบ","ทำงานไม่เสร็จ","ผิดกฎระเบียบ","ต่อกะสาย","อื่นๆ"];
+var LEVELS=[{min:0,n:"เริ่มต้น"},{min:100,n:"ดาวรุ่ง"},{min:300,n:"ฮีโร่"},{min:600,n:"มืออาชีพ"},{min:1000,n:"ตำนาน"}];
+function stIdx(v){for(var i=0;i<AST.length;i++)if(AST[i].v===v)return i;return -1}
+function stShort(v){var i=stIdx(v);return i<0?v:AST[i].s}
+function stBadge(v,long){var i=stIdx(v);return v?'<span class="stb s'+i+'">'+esc(long?(i===11?"หยุด":v):stShort(v))+'</span>':'<span class="stb none">ยังไม่เช็ค</span>'}
+function stGroup(v){return !v?"none":v==="มาทำงาน"?"in":ST_LATE.indexOf(v)>=0?"late":v==="ขาดงาน"?"absent":v===ST_HOLI?"holi":"leave"}
+function isPresent(v){return v==="มาทำงาน"||ST_LATE.indexOf(v)>=0}
+function attRounds(){var a=S.settings.attendance&&S.settings.attendance.rounds;return a&&a.length?a:[{v:"morning",t:"รอบกะเช้า",end:"07:55"},{v:"switch",t:"รอบควงกะ",end:"12:55"},{v:"night",t:"รอบกะดึก",end:"19:55"}]}
+function hhmm(d){d=d||new Date();return pad(d.getHours())+":"+pad(d.getMinutes())}
+function mEnd(m){var p=m.split("-");return m+"-"+pad(new Date(+p[0],+p[1],0).getDate())}
+function shiftTxt(s){return s?"กะ "+s:"-"}
+/* พนักงานที่ผู้ใช้นี้ดูแลได้ (Admin = ทุกคน) */
+function mgrEmps(dept){var ids=S.myDepts.map(function(d){return d.id});
+  return S.emps.filter(function(e){return e.active&&(S.admin||ids.indexOf(e.department_id)>=0)&&(!dept||e.department_id===dept)})
+    .sort(function(a,b){return String(a.employee_no).localeCompare(String(b.employee_no))})}
+function matchQ(e,qq){qq=String(qq||"").trim().toLowerCase();return !qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0}
+async function attRange(from,to){return fetchAll(function(){return db.from("attendance").select("*").gte("work_date",from).lte("work_date",to).order("work_date").order("id")})}
+async function dedRange(from,to){return fetchAll(function(){var b=db.from("kpi_deductions").select("*");if(from)b=b.gte("work_date",from).lte("work_date",to);return b.order("work_date",{ascending:false}).order("id")})}
+function avatarHtml(e){var a=okAvatar(e&&e.avatar);return '<span class="avatar sm">'+(a?'<img alt="" src="'+a+'">':esc(String(e&&e.display_name||"?").trim().charAt(0)))+'</span>'}
+function beep(ok){try{var A=window.AudioContext||window.webkitAudioContext;BEEP.ctx=BEEP.ctx||new A();var c=BEEP.ctx,o=c.createOscillator(),g=c.createGain();o.frequency.value=ok?1320:260;o.type=ok?"sine":"square";g.gain.value=.12;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+(ok?.12:.35))}catch(e){}if(navigator.vibrate)navigator.vibrate(ok?60:[80,60,80])}
+var BEEP={};
+
+/* ---------- เช็ครายชื่อ ---------- */
+var AT={date:null,map:{},order:null};
+function atList(){
+  var dept=$("at-dept").value,sh=$("at-shift").value,qq=$("at-q").value,list=mgrEmps(dept).filter(function(e){return (!sh||e.shift===sh)&&matchQ(e,qq)});
+  if(AT.order){var pos={};AT.order.forEach(function(id,i){pos[id]=i});list.sort(function(a,b){return (pos[a.id]==null?1e9:pos[a.id])-(pos[b.id]==null?1e9:pos[b.id])})}
+  return list;
+}
+async function atLoad(date){
+  var rows=await q(db.from("attendance").select("*").eq("work_date",date));AT.map={};AT.date=date;
+  rows.forEach(function(r){AT.map[r.employee_id]={status:r.status,time:r.check_in_time,scanned:r.scanned,note:r.note||"",saved:r.status,savedNote:r.note||""}});
+}
+async function renderAtt(){
+  if(!S.mgr)return;
+  var date=$("at-date").value||today();$("at-date").value=date;
+  if(AT.date!==date){AT.order=null;await atLoad(date)}
+  if(!$("at-allbtns").innerHTML)$("at-allbtns").innerHTML=AST.map(function(s,i){return '<button type="button" class="sm atall s'+i+'" data-atall="'+i+'">'+esc(i===11?"หยุด (อาทิตย์/นักขัตฯ)":s.v)+'</button>'}).join("");
+  drawAtt();
+}
+function atRow(e,i){
+  var a=AT.map[e.id]||{},dirty=(a.status||"")!==(a.saved||"")||(a.note||"")!==(a.savedNote||"");
+  return '<div class="atrow'+(dirty?" dirty":"")+'" data-emp="'+e.id+'"><div class="atwho"><span class="atn">'+(i+1)+'</span>'+avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].filter(Boolean).join(" · "))+'</small>'+
+    (a.time?'<span class="scantag'+(a.status==="ต่อกะสาย"?" late":"")+'">สแกน '+esc(a.time)+'</span>':'')+(dirty?'<span class="dirtytag">ยังไม่บันทึก</span>':'')+'</div></div>'+
+    '<div class="atbtns">'+AST.map(function(s,k){return '<button type="button" class="atb s'+k+(a.status===s.v?" on":"")+'" data-ats="'+k+'" title="'+esc(s.v)+'">'+esc(s.s)+'</button>'}).join("")+'</div>'+
+    '<input type="text" class="atnote" maxlength="300" placeholder="หมายเหตุ" value="'+esc(a.note||"")+'"></div>';
+}
+function drawAtt(){
+  var list=atList();
+  $("at-rows").innerHTML=list.length?list.map(atRow).join(""):emptyRow("ไม่มีพนักงานในเงื่อนไขที่เลือก");
+  atSummary();
+}
+function atSummary(){
+  var all=mgrEmps($("at-dept").value),c={in:0,late:0,leave:0,absent:0,holi:0,none:0},dirty=0;
+  all.forEach(function(e){var a=AT.map[e.id]||{};c[stGroup(a.status)]++;if((a.status||"")!==(a.saved||"")||(a.note||"")!==(a.savedNote||""))dirty++});
+  $("at-sum").innerHTML='<span class="atc">ทั้งหมด <b>'+all.length+'</b></span><span class="atc g">มา <b>'+c.in+'</b></span><span class="atc w">สาย/ต่อกะ <b>'+c.late+'</b></span><span class="atc p">ลา <b>'+c.leave+'</b></span><span class="atc r">ขาด <b>'+c.absent+'</b></span>'+(c.holi?'<span class="atc v">หยุด <b>'+c.holi+'</b></span>':'')+'<span class="atc n">ยังไม่เช็ค <b>'+c.none+'</b></span>'+(dirty?'<span class="atc d">ยังไม่บันทึก <b>'+dirty+'</b></span>':'');
+}
+function atSet(id,status){var a=AT.map[id]||(AT.map[id]={saved:null,savedNote:""});a.status=status;if(status!=="มาทำงาน"&&status!=="ต่อกะสาย"&&status!=="เข้างานสาย"){/* ไม่ได้มา ไม่ต้องมีเวลาสแกน */}}
+function atRedraw(id){var el=document.querySelector('#at-rows .atrow[data-emp="'+id+'"]'),e=empOf(id);if(el&&e){var i=+el.querySelector(".atn").textContent-1;el.outerHTML=atRow(e,i)}atSummary()}
+$("at-rows").addEventListener("click",function(ev){var b=ev.target.closest("[data-ats]");if(!b)return;var row=b.closest(".atrow"),id=row.dataset.emp,s=AST[+b.dataset.ats].v,a=AT.map[id];
+  atSet(id,a&&a.status===s&&!a.saved?null:s);atRedraw(id)});
+$("at-rows").addEventListener("input",function(ev){if(!ev.target.classList.contains("atnote"))return;var id=ev.target.closest(".atrow").dataset.emp,a=AT.map[id]||(AT.map[id]={saved:null,savedNote:""});a.note=ev.target.value;
+  var row=ev.target.closest(".atrow"),dirty=(a.status||"")!==(a.saved||"")||(a.note||"")!==(a.savedNote||"");row.classList.toggle("dirty",dirty);atSummary()});
+$("at-allbtns").addEventListener("click",function(ev){var b=ev.target.closest("[data-atall]");if(!b)return;var s=AST[+b.dataset.atall].v,list=atList();list.forEach(function(e){atSet(e.id,s)});drawAtt();toast("ตั้ง "+list.length+" คนเป็น “"+s+"” แล้ว กดบันทึกเพื่อยืนยัน")});
+$("at-auto").addEventListener("click",function(){var n=0;atList().forEach(function(e){var a=AT.map[e.id];if(!a||!a.status){atSet(e.id,"ขาดงาน");n++}});drawAtt();toast(n?"ทำเครื่องหมายขาดงาน "+n+" คนที่ยังไม่ได้เช็ค กดบันทึกเพื่อยืนยัน":"ทุกคนถูกเช็คชื่อแล้ว")});
+$("at-shuffle").addEventListener("click",function(){var ids=atList().map(function(e){return e.id});for(var i=ids.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=ids[i];ids[i]=ids[j];ids[j]=t}AT.order=ids;drawAtt()});
+["at-dept","at-shift"].forEach(function(id){$(id).addEventListener("change",drawAtt)});
+$("at-q").addEventListener("input",function(){clearTimeout(AT._qt);AT._qt=setTimeout(drawAtt,150)});
+$("at-date").addEventListener("change",function(){var dirty=Object.keys(AT.map).some(function(k){var a=AT.map[k];return (a.status||"")!==(a.saved||"")});if(dirty&&!confirm("มีรายการที่ยังไม่บันทึก เปลี่ยนวันที่จะไม่บันทึกรายการเหล่านั้น ต้องการเปลี่ยนวันที่?")){$("at-date").value=AT.date;return}refresh()});
+$("at-save").addEventListener("click",async function(){
+  var btn=this,date=AT.date,ups=[],dels=[];
+  Object.keys(AT.map).forEach(function(id){var a=AT.map[id];if((a.status||"")===(a.saved||"")&&(a.note||"")===(a.savedNote||""))return;
+    if(a.status)ups.push({employee_id:id,work_date:date,status:a.status,note:a.note||"",check_in_time:isPresent(a.status)?(a.time||null):null,scanned:!!a.scanned&&isPresent(a.status),source:a.scanned?"qr":"manual"});
+    else if(a.saved)dels.push(id)});
+  if(!ups.length&&!dels.length){toast("ไม่มีรายการที่เปลี่ยนแปลง");return}
+  btn.disabled=true;
+  var ok=await act(async function(){
+    for(var i=0;i<ups.length;i+=200)await q(db.from("attendance").upsert(ups.slice(i,i+200),{onConflict:"employee_id,work_date"}));
+    if(dels.length)await q(db.from("attendance").delete().eq("work_date",date).in("employee_id",dels));
+  },"บันทึกเช็คชื่อ "+(ups.length+dels.length)+" คนแล้ว");
+  btn.disabled=false;if(ok){await atLoad(date);drawAtt()}
+});
+
+/* ---------- สแกน QR ---------- */
+var SC={stream:null,timer:0,det:null,last:{c:"",t:0},log:[]};
+var JSQR_URL="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
+function scDefaultRound(){var h=new Date().getHours();return h>=5&&h<12?"morning":h>=12&&h<17?"switch":"night"}
+$("at-scan").addEventListener("click",async function(){
+  var date=$("at-date").value||today();if(AT.date!==date)await atLoad(date);
+  $("sc-round").innerHTML=attRounds().map(function(r){return '<option value="'+esc(r.v)+'">'+esc(r.t+" (เลิกสแกน "+r.end+")")+'</option>'}).join("");
+  $("sc-round").value=SC.round||scDefaultRound();$("sc-date").textContent=thLong(date);$("sc-result").innerHTML="";SC.log=[];$("sc-log").innerHTML="";
+  openModal("m-scan");scStart();
+});
+$("sc-round").addEventListener("change",function(){SC.round=this.value});
+$("sc-retry").addEventListener("click",scStart);
+async function scStart(){
+  scStop();$("sc-retry").hidden=true;$("sc-msg").hidden=false;$("sc-msg").textContent="กำลังเปิดกล้อง...";
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$("sc-msg").textContent="เครื่องนี้เปิดกล้องผ่านเว็บไม่ได้";return}
+  try{
+    SC.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false});
+    var v=$("sc-video");v.srcObject=SC.stream;await v.play();$("sc-msg").hidden=true;
+    SC.det=null;
+    if("BarcodeDetector" in window){try{var f=await window.BarcodeDetector.getSupportedFormats();if(f.indexOf("qr_code")>=0)SC.det=new window.BarcodeDetector({formats:["qr_code"]})}catch(e){}}
+    if(!SC.det&&!window.jsQR)await loadJs(JSQR_URL);
+    scLoop();
+  }catch(e){
+    $("sc-msg").hidden=false;$("sc-retry").hidden=false;
+    $("sc-msg").textContent=e&&e.name==="NotAllowedError"?"ไม่ได้รับอนุญาตใช้กล้อง — กดอนุญาตกล้องในการตั้งค่าเว็บไซต์ของเบราว์เซอร์ แล้วกดลองอีกครั้ง":"เปิดกล้องไม่ได้ ("+(e&&e.message||e)+")";
+  }
+}
+function scStop(){clearTimeout(SC.timer);if(SC.stream){SC.stream.getTracks().forEach(function(t){t.stop()});SC.stream=null}var v=$("sc-video");if(v)v.srcObject=null}
+var SC_CANVAS=document.createElement("canvas");
+async function scLoop(){
+  if(!SC.stream||$("m-scan").hidden){scStop();return}
+  var v=$("sc-video"),code=null;
+  try{
+    if(v.readyState>=2){
+      if(SC.det){var r=await SC.det.detect(v);if(r&&r.length)code=r[0].rawValue}
+      else if(window.jsQR){var w=Math.min(640,v.videoWidth),h=Math.round(v.videoHeight*w/v.videoWidth);SC_CANVAS.width=w;SC_CANVAS.height=h;var g=SC_CANVAS.getContext("2d",{willReadFrequently:true});g.drawImage(v,0,0,w,h);var img=g.getImageData(0,0,w,h),res=window.jsQR(img.data,w,h,{inversionAttempts:"attemptBoth"});if(res)code=res.data}
+    }
+  }catch(e){}
+  if(code)await scHit(code);
+  SC.timer=setTimeout(scLoop,180);
+}
+async function scHit(raw){
+  var code=String(raw).trim(),now=Date.now();
+  if(code===SC.last.c&&now-SC.last.t<4000)return;SC.last={c:code,t:now};
+  var e=mgrEmps("").filter(function(x){return String(x.employee_no)===code||x.id===code})[0];
+  if(!e){beep(false);scShow(false,"ไม่พบพนักงานรหัสนี้ในแผนกที่คุณดูแล",code);return}
+  var date=AT.date||today(),a=AT.map[e.id];
+  if(a&&a.scanned&&a.time&&a.saved){beep(true);scShow(true,e.display_name+" สแกนแล้วเมื่อ "+a.time+" น. ("+a.status+")",e.employee_no,"dup");return}
+  var round=attRounds().filter(function(r){return r.v===$("sc-round").value})[0]||attRounds()[0],t=hhmm(),late=t>round.end,status=late?"ต่อกะสาย":"มาทำงาน";
+  try{
+    await q(db.from("attendance").upsert({employee_id:e.id,work_date:date,status:status,check_in_time:t,scanned:true,source:"qr",note:(a&&a.note)||""},{onConflict:"employee_id,work_date"}));
+    AT.map[e.id]={status:status,time:t,scanned:true,note:(a&&a.note)||"",saved:status,savedNote:(a&&a.note)||""};
+    beep(!late);scShow(true,e.display_name+" · "+status+" "+t+" น."+(late?" (หลัง "+round.end+" หัก KPI อัตโนมัติ)":""),e.employee_no,late?"late":"ok");
+    if(S.tab==="att")drawAtt();
+  }catch(err){beep(false);scShow(false,"บันทึกไม่สำเร็จ: "+thErr(err),code)}
+}
+function scShow(ok,msg,code,kind){
+  $("sc-result").innerHTML='<div class="scres '+(ok?(kind||"ok"):"bad")+'"><b>'+esc(msg)+'</b><small>รหัส '+esc(code)+'</small></div>';
+  SC.log.unshift({ok:ok,msg:msg,t:hhmm(),kind:kind});SC.log=SC.log.slice(0,8);
+  $("sc-log").innerHTML=SC.log.slice(1).map(function(x){return '<div class="row"><div class="l"><small>'+esc(x.t)+' · '+esc(x.msg)+'</small></div></div>'}).join("");
+}
+
+/* ---------- ประวัติย้อนหลัง + ส่งออก ---------- */
+async function renderAttHist(){
+  if(!S.mgr)return;
+  if($("ah-status").options.length<2)$("ah-status").insertAdjacentHTML("beforeend",AST.map(function(s){return '<option>'+esc(s.v)+'</option>'}).join(""));
+  var date=$("ah-date").value||today();$("ah-date").value=date;if(!$("ah-month").value)$("ah-month").value=date.slice(0,7);
+  var dept=$("ah-dept").value,st=$("ah-status").value,qq=$("ah-q").value;
+  var rows=await q(db.from("attendance").select("*").eq("work_date",date)),by={};rows.forEach(function(r){by[r.employee_id]=r});
+  var emps=mgrEmps(dept).filter(function(e){return matchQ(e,qq)});
+  /* คนที่มีบันทึกแต่ไม่อยู่ในรายชื่อ (เช่นปิดใช้งานแล้ว) */
+  rows.forEach(function(r){if(!emps.some(function(e){return e.id===r.employee_id})){var e=empOf(r.employee_id);if(e&&(!dept||r.department_id===dept)&&matchQ(e,qq)&&(S.admin||S.myDepts.some(function(d){return d.id===r.department_id})))emps.push(e)}});
+  var c={all:0,in:0,late:0,leave:0,absent:0,none:0};
+  emps.forEach(function(e){var r=by[e.id];c.all++;c[{in:"in",late:"late",leave:"leave",absent:"absent",holi:"leave",none:"none"}[stGroup(r&&r.status)]]++});
+  $("ah-sum").innerHTML='<span class="atc">ทั้งหมด <b>'+c.all+'</b></span><span class="atc g">มา <b>'+c.in+'</b></span><span class="atc r">ขาด <b>'+c.absent+'</b></span><span class="atc w">สาย <b>'+c.late+'</b></span><span class="atc p">ลา/หยุด <b>'+c.leave+'</b></span><span class="atc n">ยังไม่เช็ค <b>'+c.none+'</b></span>';
+  var list=emps.filter(function(e){var r=by[e.id];return !st||(r&&r.status===st)});
+  list.sort(function(a,b){var ra=by[a.id],rb=by[b.id];return stIdx(ra&&ra.status)-stIdx(rb&&rb.status)||String(a.employee_no).localeCompare(String(b.employee_no))});
+  $("ah-rows").innerHTML=list.length?list.map(function(e,i){var r=by[e.id]||{};
+    return '<tr><td>'+(i+1)+'</td><td>'+esc(e.employee_no)+'</td><td class="nm">'+esc(e.display_name)+'</td><td>'+esc(deptName(r.department_id||e.department_id))+'</td><td>'+esc(shiftTxt(r.shift||e.shift))+'</td><td>'+esc(r.check_in_time||"–")+'</td><td>'+stBadge(r.status,true)+'</td><td>'+esc(r.note||"–")+'</td></tr>'}).join(""):'<tr><td colspan="8">'+emptyRow("ไม่มีข้อมูล")+'</td></tr>';
+}
+["ah-date","ah-dept","ah-status"].forEach(function(id){$(id).addEventListener("change",refresh)});
+$("ah-q").addEventListener("input",function(){clearTimeout(AT._hq);AT._hq=setTimeout(refresh,200)});
+$("ah-export").addEventListener("click",async function(){
+  if(!window.XLSX){toast("โหลดตัวเขียน Excel ไม่สำเร็จ");return}
+  var m=$("ah-month").value||today().slice(0,7),dept=$("ah-dept").value,btn=this;btn.disabled=true;
+  try{
+    var rows=await attRange(m+"-01",mEnd(m)),n=+mEnd(m).slice(8),emps=mgrEmps(dept),by={};
+    rows.forEach(function(r){(by[r.employee_id]=by[r.employee_id]||{})[+r.work_date.slice(8)]=r});
+    rows.forEach(function(r){if(!emps.some(function(e){return e.id===r.employee_id})){var e=empOf(r.employee_id);if(e&&(!dept||r.department_id===dept))emps.push(e)}});
+    /* ชีตสรุป: แผนก × สถานะ */
+    var head=["แผนก"].concat(AST.map(function(s){return s.v===ST_HOLI?"หยุด":s.v}),["รวม"]),sum=[head],tot=AST.map(function(){return 0});
+    (dept?S.depts.filter(function(d){return d.id===dept}):S.myDepts).forEach(function(d){
+      var c=AST.map(function(){return 0});rows.forEach(function(r){if(r.department_id===d.id){var i=stIdx(r.status);if(i>=0){c[i]++;tot[i]++}}});
+      sum.push([d.name].concat(c,[c.reduce(function(a,b){return a+b},0)]))});
+    sum.push(["รวมทุกแผนก"].concat(tot,[tot.reduce(function(a,b){return a+b},0)]));
+    /* ชีตปฏิทิน: คน × วัน */
+    var ch=["รหัส","ชื่อ-นามสกุล","แผนก","กะ"];for(var d=1;d<=n;d++)ch.push(d);ch=ch.concat(["มา","สาย/ต่อกะ","ลา","ขาด","หยุด"]);
+    var cal=[ch];
+    emps.forEach(function(e){var h=by[e.id]||{},row=[e.employee_no,e.display_name,deptName(e.department_id),e.shift||""],c={in:0,late:0,leave:0,absent:0,holi:0,none:0};
+      for(var d=1;d<=n;d++){var r=h[d];row.push(r?stShort(r.status)+(r.check_in_time?" "+r.check_in_time:""):"");if(r)c[stGroup(r.status)]++}
+      cal.push(row.concat([c.in,c.late,c.leave,c.absent,c.holi]))});
+    var wb=XLSX.utils.book_new(),s1=XLSX.utils.aoa_to_sheet(sum),s2=XLSX.utils.aoa_to_sheet(cal);
+    s1["!cols"]=[{wch:34}].concat(AST.map(function(){return {wch:11}}),[{wch:8}]);
+    s2["!cols"]=[{wch:10},{wch:26},{wch:28},{wch:5}].concat(Array.from({length:n},function(){return {wch:9}}),[{wch:6},{wch:9},{wch:6},{wch:6},{wch:6}]);
+    s2["!freeze"]={xSplit:2,ySplit:1};
+    XLSX.utils.book_append_sheet(wb,s1,"สรุป");XLSX.utils.book_append_sheet(wb,s2,"ปฏิทิน");
+    XLSX.writeFile(wb,"Attendance-"+m+".xlsx");toast("บันทึกไฟล์ Attendance-"+m+".xlsx แล้ว");
+  }catch(e){toast(thErr(e))}
+  btn.disabled=false;
+});
+
+/* ---------- แดชบอร์ดเช็คชื่อ ---------- */
+async function attSnapshot(date,dept){
+  var m=date.slice(0,7),r=await Promise.all([q(db.from("attendance").select("*").eq("work_date",date)),attRange(m+"-01",mEnd(m)),dedRange(m+"-01",mEnd(m))]);
+  var emps=mgrEmps(dept),ids={};emps.forEach(function(e){ids[e.id]=1});
+  var inDept=function(x){return !dept||x.department_id===dept};
+  return {emps:emps,day:r[0].filter(function(x){return ids[x.employee_id]}),month:r[1].filter(inDept),ded:r[2].filter(inDept)};
+}
+function topCount(rows,status,n){var c={};rows.forEach(function(r){if(r.status===status)c[r.employee_id]=(c[r.employee_id]||0)+1});
+  return Object.keys(c).map(function(k){return {id:k,n:c[k]}}).sort(function(a,b){return b.n-a.n}).slice(0,n||5)}
+function topRows(list,unit,none){return list.length?list.map(function(a,i){var e=empOf(a.id)||{};return '<div class="row"><span class="rank'+(i<3?" g"+(i+1):"")+'">'+(i+1)+'</span>'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name||"-")+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div><div class="r">'+a.n+'<small>'+unit+'</small></div></div>'}).join(""):emptyRow(none)}
+async function renderAttDash(){
+  if(!S.mgr)return;
+  var date=$("ad2-date").value||today();$("ad2-date").value=date;var dept=$("ad2-dept").value;
+  $("ad2-sub").textContent="ภาพรวมการเข้างาน · "+thLong(date);
+  var D=await attSnapshot(date,dept),by={};D.day.forEach(function(r){by[r.employee_id]=r});
+  var c={in:0,late:0,leave:0,absent:0,holi:0,none:0};D.emps.forEach(function(e){c[stGroup(by[e.id]&&by[e.id].status)]++});
+  countTo($("ad2-all"),D.emps.length);countTo($("ad2-in"),c.in+c.late);countTo($("ad2-ab"),c.absent);countTo($("ad2-late"),c.late);
+  $("ad2-inp").textContent=D.emps.length?Math.round((c.in+c.late)*100/D.emps.length)+"% · ลา "+c.leave+" คน":"";
+  function grp(list){var g={n:list.length,in:0,out:0,none:0};list.forEach(function(e){var s=by[e.id]&&by[e.id].status,k=stGroup(s);if(k==="in"||k==="late")g.in++;else if(k==="none")g.none++;else g.out++});return g}
+  var shifts=["A","B","D"].filter(function(s){return D.emps.some(function(e){return e.shift===s})});
+  $("ad2-shift").innerHTML=shifts.map(function(s){var g=grp(D.emps.filter(function(e){return e.shift===s}));
+    return '<div class="shiftcard'+(g.none?"":" done")+'"><div class="depthead"><b>กะ '+s+'</b><span class="stb '+(g.none?"s1":"s0")+'">'+(g.none?"ไม่ครบ":"ครบ")+'</span></div><small>พนักงาน '+g.n+' คน</small><div class="sg3"><div><b>'+g.in+'</b><small>มาทำงาน</small></div><div><b>'+g.out+'</b><small>ไม่มา (ลา+ขาด)</small></div><div><b>'+g.none+'</b><small>ยังไม่เช็ค</small></div></div></div>'}).join("")||emptyRow("ไม่มีพนักงาน");
+  var ds=[];(dept?S.depts.filter(function(d){return d.id===dept}):S.myDepts).forEach(function(d){shifts.forEach(function(s){var l=D.emps.filter(function(e){return e.department_id===d.id&&e.shift===s});if(l.length)ds.push({d:d.name,s:s,g:grp(l)})})});
+  $("ad2-ds").innerHTML=ds.length?ds.map(function(x){return '<tr><td class="nm">'+esc(x.d)+'</td><td>กะ '+x.s+'</td><td class="n">'+x.g.n+'</td><td class="n">'+x.g.in+'</td><td class="n">'+x.g.out+'</td><td class="n">'+x.g.none+'</td><td>'+(x.g.none?'<span class="stb s1">ไม่ครบ</span>':'<span class="stb s0">ครบ</span>')+'</td></tr>'}).join(""):'<tr><td colspan="7">'+emptyRow("ไม่มีข้อมูล")+'</td></tr>';
+  var dm=[],tot={in:0,late:0,leave:0,absent:0,holi:0,n:0};
+  (dept?S.depts.filter(function(d){return d.id===dept}):S.myDepts).forEach(function(d){var g={in:0,late:0,leave:0,absent:0,holi:0,n:0};D.month.forEach(function(r){if(r.department_id===d.id){g[stGroup(r.status)]++;g.n++}});if(g.n){dm.push({d:d.name,g:g});Object.keys(tot).forEach(function(k){tot[k]+=g[k]})}});
+  var trow=function(name,g,b){return '<tr'+(b?' class="tot"':'')+'><td class="nm">'+esc(name)+'</td><td class="n">'+g.in+'</td><td class="n">'+g.late+'</td><td class="n">'+g.leave+'</td><td class="n">'+g.absent+'</td><td class="n">'+g.holi+'</td><td class="n"><b>'+g.n+'</b></td></tr>'};
+  $("ad2-dm").innerHTML=dm.length?dm.map(function(x){return trow(x.d,x.g)}).join("")+trow("รวมทุกแผนก",tot,true):'<tr><td colspan="7">'+emptyRow("ยังไม่มีข้อมูลเดือนนี้")+'</td></tr>';
+  $("ad2-top").innerHTML=topRows(topCount(D.month,"มาทำงาน"),"วัน","ยังไม่มีข้อมูล");
+  $("ad2-abs").innerHTML=topRows(topCount(D.month,"ขาดงาน"),"วัน","ไม่มีคนขาดงาน 🎉");
+  var sum=0,pp={},mx=0;D.ded.forEach(function(x){sum+=+x.amount;pp[x.employee_id]=(pp[x.employee_id]||0)+(+x.amount)});Object.keys(pp).forEach(function(k){mx=Math.max(mx,pp[k])});
+  $("ad2-ded").innerHTML='<div class="stat bad"><small>ยอดหักรวม</small><b>'+baht(sum)+'</b></div><div class="stat"><small>คนถูกหัก</small><b>'+Object.keys(pp).length+'</b></div><div class="stat"><small>หักสูงสุด/คน</small><b>'+baht(mx)+'</b></div>';
+}
+["ad2-date","ad2-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
+
+/* ---------- หน้าจอ TV ---------- */
+var TV={tick:0,data:0};
+function donut(parts,total){
+  var R=70,C=2*Math.PI*R,off=0,svg='<svg viewBox="0 0 200 200" class="donut" role="img" aria-label="สัดส่วนสถานะวันนี้"><circle cx="100" cy="100" r="'+R+'" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="26"/>';
+  parts.forEach(function(p){if(!p.n||!total)return;var len=C*p.n/total;svg+='<circle cx="100" cy="100" r="'+R+'" fill="none" stroke="'+p.c+'" stroke-width="26" stroke-dasharray="'+len+' '+(C-len)+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 100 100)"/>';off+=len});
+  return svg+'<text x="100" y="96" text-anchor="middle" class="dn1">'+(total?Math.round((parts[0].n)*100/total):0)+'%</text><text x="100" y="118" text-anchor="middle" class="dn2">มาทำงาน</text></svg>';
+}
+async function renderTV(){
+  if(!S.mgr)return;
+  document.body.classList.add("tvmode");
+  clearInterval(TV.tick);TV.tick=setInterval(function(){if(S.tab!=="tv"){clearInterval(TV.tick);clearInterval(TV.data);document.body.classList.remove("tvmode");return}var d=new Date();$("tv-clock").textContent=hhmm(d);$("tv-sec").textContent=pad(d.getSeconds())+" วินาที"},1000);
+  clearInterval(TV.data);TV.data=setInterval(function(){if(S.tab==="tv")tvDraw().catch(function(){})},30000);
+  await tvDraw();
+}
+async function tvDraw(){
+  var date=today(),D=await attSnapshot(date,""),by={};D.day.forEach(function(r){by[r.employee_id]=r});
+  var c={in:0,late:0,leave:0,absent:0,holi:0,none:0};D.emps.forEach(function(e){c[stGroup(by[e.id]&&by[e.id].status)]++});
+  var n=D.emps.length,d=new Date();
+  $("tv-date").textContent=d.toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long",year:"numeric"});$("tv-clock").textContent=hhmm(d);
+  var card=function(t,v,cls,x){return '<div class="tvstat '+cls+'"><small>'+t+'</small><b>'+v+'</b>'+(x?'<small>'+x+'</small>':'')+'</div>'};
+  $("tv-stats").innerHTML=card("พนักงานทั้งหมด",n,"")+card("มาทำงาน",c.in,"g",n?Math.round(c.in*100/n)+"%":"")+card("สาย/ต่อกะ",c.late,"w")+card("ลา",c.leave+c.holi,"p")+card("ขาดงาน",c.absent,"r")+card("ยังไม่เช็คชื่อ",c.none,"n");
+  var parts=[{n:c.in,c:"#34d399",t:"มาทำงาน"},{n:c.late,c:"#fbbf24",t:"สาย/ต่อกะ"},{n:c.leave+c.holi,c:"#a78bfa",t:"ลา/หยุด"},{n:c.absent,c:"#f87171",t:"ขาดงาน"}],tot=c.in+c.late+c.leave+c.holi+c.absent;
+  $("tv-donut").innerHTML=donut(parts,tot)+'<div class="tvlegend">'+parts.map(function(p){return '<span><i style="background:'+p.c+'"></i>'+p.t+' '+p.n+'</span>'}).join("")+'</div><p class="tvnone">ยังไม่เช็คชื่อ: '+c.none+' คน</p>';
+  var top=topCount(D.month,"มาทำงาน");
+  $("tv-top").innerHTML=top.length?top.map(function(a,i){var e=empOf(a.id)||{};return '<div class="tvrow"><span class="rank g'+Math.min(i+1,3)+'">'+(i+1)+'</span>'+avatarHtml(e)+'<div><b>'+esc(e.display_name||"-")+'</b><small>'+esc(deptName(e.department_id))+'</small></div><span class="tvn">'+a.n+'<small>วัน</small></span></div>'}).join(""):'<p class="tvnone">ยังไม่มีข้อมูลเดือนนี้</p>';
+}
+$("tv-full").addEventListener("click",function(){var el=document.documentElement;if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen().catch(function(){})});
+
+/* ---------- QR Code พนักงาน ---------- */
+function qrSvg(text,cell){if(!window.qrcode)return "";var qr=window.qrcode(0,"M");qr.addData(String(text));qr.make();return qr.createSvgTag({cellSize:cell||4,margin:2,scalable:true})}
+function renderAttQr(){
+  if(!S.mgr)return;
+  var list=mgrEmps($("aq-dept").value).filter(function(e){return matchQ(e,$("aq-q").value)});
+  $("aq-grid").innerHTML=list.length?list.map(function(e){return '<div class="qrcard">'+qrSvg(e.employee_no)+'<b>'+esc(e.display_name)+'</b><small>'+esc(e.employee_no)+'</small><small>'+esc(deptName(e.department_id))+'</small><small>'+esc(shiftTxt(e.shift))+'</small></div>'}).join(""):emptyRow("ไม่พบพนักงาน");
+}
+$("aq-dept").addEventListener("change",refresh);$("aq-q").addEventListener("input",function(){clearTimeout(AT._aq);AT._aq=setTimeout(refresh,200)});
+$("aq-print").addEventListener("click",function(){document.body.classList.add("printqr");setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove("printqr")},500)},50)});
+
+/* ---------- เช็คชื่อของฉัน ---------- */
+async function renderMyAtt(){
+  var me=S.me;$("my-qr").innerHTML=qrSvg(me.employee_no,6);$("my-qrname").textContent=me.display_name;$("my-qrsub").textContent=[me.employee_no,deptName(me.department_id),shiftTxt(me.shift)].join(" · ");
+  var m=$("my-month").value||today().slice(0,7);$("my-month").value=m;
+  var r=await Promise.all([q(db.from("attendance").select("*").eq("employee_id",me.id).gte("work_date",m+"-01").lte("work_date",mEnd(m)).order("work_date",{ascending:false})),
+    q(db.from("kpi_deductions").select("*").eq("employee_id",me.id).gte("work_date",m+"-01").lte("work_date",mEnd(m)).order("work_date",{ascending:false}))]);
+  var c={in:0,late:0,leave:0,absent:0,holi:0,none:0};r[0].forEach(function(x){c[stGroup(x.status)]++});
+  $("my-stats").innerHTML='<div class="stat good"><small>มาทำงาน</small><b>'+c.in+'</b></div><div class="stat warn"><small>สาย/ต่อกะ</small><b>'+c.late+'</b></div><div class="stat"><small>ลา/หยุด</small><b>'+(c.leave+c.holi)+'</b></div><div class="stat bad"><small>ขาดงาน</small><b>'+c.absent+'</b></div>';
+  $("my-rows").innerHTML=r[0].length?r[0].map(function(x){return '<div class="row"><div class="l"><b>'+esc(thLong(x.work_date))+'</b><small>'+esc([x.check_in_time?"สแกน "+x.check_in_time:"",x.note].filter(Boolean).join(" · "))+'</small></div>'+stBadge(x.status,true)+'</div>'}).join(""):emptyRow("ยังไม่มีข้อมูลเดือนนี้");
+  var sum=0;r[1].forEach(function(x){sum+=+x.amount});
+  $("my-ded").innerHTML=r[1].length?r[1].map(function(x){return '<div class="row"><div class="l"><b>'+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark].filter(Boolean).join(" · "))+'</small></div><div class="r bad">−'+baht(x.amount)+'</div></div>'}).join("")+'<div class="row"><div class="l"><b>รวมเดือนนี้</b></div><div class="r bad">−'+baht(sum)+'</div></div>':emptyRow("ไม่มีรายการหัก 👍");
+}
+$("my-month").addEventListener("change",refresh);
+
+/* ---------- เกมพนักงาน ---------- */
+var GM={mode:"xp"};
+function lvOf(p){var l=LEVELS[0],k=0;LEVELS.forEach(function(x,i){if(p>=x.min){l=x;k=i}});return {i:k+1,n:l.n,min:l.min,next:LEVELS[k+1]}}
+async function renderGame(){
+  var m=$("gm-month").value||today().slice(0,7);$("gm-month").value=m;var dept=$("gm-dept").value,qq=$("gm-q").value;
+  var p=m.split("-");$("gm-sub").textContent="คะแนนและอันดับจากข้อมูลการเข้างานจริง — "+MONTHS[+p[1]-1]+" "+(+p[0]+543);
+  document.querySelectorAll("[data-gmode]").forEach(function(b){b.classList.toggle("on",b.dataset.gmode===GM.mode)});
+  var rows=await q(db.rpc("attendance_scores",{p_from:m+"-01",p_to:mEnd(m)}));
+  var list=rows.map(function(r){var e=empOf(r.employee_id);return e?Object.assign({e:e},r):null}).filter(function(x){return x&&(!dept||x.e.department_id===dept)&&matchQ(x.e,qq)});
+  if(GM.mode==="xp"){
+    list.sort(function(a,b){return b.points-a.points||b.present-a.present});
+    var avg=list.length?Math.round(list.reduce(function(s,x){return s+x.points},0)/list.length):0;
+    $("gm-stats").innerHTML='<div class="stat"><small>ผู้เล่น</small><b>'+list.length+'</b></div><div class="stat"><small>คะแนนเฉลี่ย</small><b>'+avg+' XP</b></div><div class="stat"><small>👑 ที่ 1 ตอนนี้</small><b class="sm">'+esc(list[0]?list[0].e.display_name:"-")+'</b></div>';
+    $("gm-rows").innerHTML=list.length?list.map(function(x,i){var lv=lvOf(Math.max(0,x.points)),pc=lv.next?Math.min(100,Math.round((Math.max(0,x.points)-lv.min)*100/(lv.next.min-lv.min))):100,me=x.e.id===S.me.id;
+      return '<div class="gcard'+(i===0?" first":"")+(me?" me":"")+'">'+(i===0?'<span class="crown">👑 แชมป์</span>':'')+'<div class="gtop"><span class="grank r'+Math.min(i+1,4)+'">'+(i+1)+'</span>'+avatarHtml(x.e)+'<div class="l"><b>'+esc(x.e.display_name)+(me?' (คุณ)':'')+'</b><small>'+esc(deptName(x.e.department_id))+'</small></div></div>'+
+        '<div class="glv"><span class="lv'+lv.i+'">Lv.'+lv.i+' '+lv.n+'</span><b>'+x.points+' XP</b></div><div class="gbar"><i class="lv'+lv.i+'" style="width:'+pc+'%"></i></div>'+(x.streak>=3?'<small class="streak">🔥 มาติดต่อกัน '+x.streak+' วัน</small>':'')+
+        '<div class="g3"><div class="gg"><b>'+x.present+'</b><small>มาทำงาน</small></div><div class="gw"><b>'+x.late+'</b><small>สาย/ต่อกะ</small></div><div class="gr"><b>'+x.absent+'</b><small>ขาดงาน</small></div></div></div>'}).join(""):emptyRow("ยังไม่มีข้อมูลการเข้างานเดือนนี้");
+  }else{
+    list=list.filter(function(x){return x.avg_min!=null});
+    list.sort(function(a,b){return a.avg_min-b.avg_min||b.fastest-a.fastest});
+    var tm=function(v){v=Math.round(+v);return pad(Math.floor(v/60))+":"+pad(v%60)};
+    var champ=list.slice().sort(function(a,b){return b.fastest-a.fastest})[0];
+    $("gm-stats").innerHTML='<div class="stat"><small>คนที่มีเวลาสแกน</small><b>'+list.length+'</b></div><div class="stat"><small>⚡ เฉลี่ยเร็วสุด</small><b class="sm">'+esc(list[0]?list[0].e.display_name+" "+tm(list[0].avg_min):"-")+'</b></div><div class="stat"><small>🥇 สแกนคนแรกบ่อยสุด</small><b class="sm">'+esc(champ&&champ.fastest?champ.e.display_name+" ("+champ.fastest+" วัน)":"-")+'</b></div>';
+    $("gm-rows").innerHTML=list.length?list.map(function(x,i){return '<div class="gcard'+(i===0?" first":"")+'"><div class="gtop"><span class="grank r'+Math.min(i+1,4)+'">'+(i+1)+'</span>'+avatarHtml(x.e)+'<div class="l"><b>'+esc(x.e.display_name)+'</b><small>'+esc(deptName(x.e.department_id))+'</small></div><div class="gtime"><b>'+tm(x.avg_min)+'</b><small>เวลาเฉลี่ย</small></div></div><div class="g3"><div class="gg"><b>'+x.fastest+'</b><small>สแกนคนแรก (วัน)</small></div><div><b>'+x.days+'</b><small>วันที่มีข้อมูล</small></div><div class="gw"><b>'+x.late+'</b><small>สาย/ต่อกะ</small></div></div></div>'}).join(""):emptyRow("ยังไม่มีข้อมูลเวลาสแกนเดือนนี้");
+  }
+}
+document.querySelectorAll("[data-gmode]").forEach(function(b){b.addEventListener("click",function(){GM.mode=b.dataset.gmode;refresh()})});
+["gm-month","gm-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("gm-q").addEventListener("input",function(){clearTimeout(GM.t);GM.t=setTimeout(refresh,200)});
+
+/* ---------- หัก KPI ---------- */
+var DK={emp:null,amt:0};
+async function renderDeduct(){
+  if(!S.mgr)return;
+  var list=mgrEmps($("dd-dept").value).filter(function(e){return matchQ(e,$("dd-q").value)});
+  $("dd-rows").innerHTML=list.length?list.map(function(e){return '<div class="row"><div class="atwho">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div></div><button type="button" class="sm danger" data-dk="'+e.id+'">'+ico("minus")+'บันทึกหัก</button></div>'}).join(""):emptyRow("ไม่พบพนักงาน");
+  var rec=await q(db.from("kpi_deductions").select("*").order("created_at",{ascending:false}).limit(10));
+  $("dd-recent").innerHTML=rec.length?rec.map(dedRow).join(""):emptyRow("ยังไม่มีรายการหัก");
+}
+function dedRow(x){var e=empOf(x.employee_id)||{};return '<div class="row"><div class="l"><b>'+esc(e.display_name||"-")+' · '+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark,x.auto?"อัตโนมัติ":""].filter(Boolean).join(" · "))+'</small></div><div class="r bad">−'+baht(x.amount)+'</div><button type="button" class="sm danger" data-dkdel="'+x.id+'" aria-label="ลบรายการหัก">'+ico("trash")+'</button></div>'}
+["dd-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("dd-q").addEventListener("input",function(){clearTimeout(DK.t);DK.t=setTimeout(refresh,200)});
+async function openDeduct(id){
+  var e=empOf(id);if(!e)return;DK.emp=e;DK.amt=0;
+  $("dk-who").innerHTML=avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div>';
+  $("dk-amts").innerHTML=DED_AMTS.map(function(a){return '<button type="button" data-dkamt="'+a+'">฿'+a+'</button>'}).join("");
+  $("dk-amt").value="";$("dk-date").value=today();$("dk-remark").value="";
+  $("dk-cat").innerHTML=DED_CATS.map(function(c){return '<option'+(c==="ผิดกฎระเบียบ"?" selected":"")+'>'+esc(c)+'</option>'}).join("");
+  $("dk-hist").innerHTML=emptyRow("กำลังโหลด...");openModal("m-deduct");
+  try{var h=await q(db.from("kpi_deductions").select("*").eq("employee_id",id).order("work_date",{ascending:false}).limit(20));var s=0;h.forEach(function(x){s+=+x.amount});
+    $("dk-hist").innerHTML=h.length?h.map(dedRow).join("")+'<div class="row"><div class="l"><b>รวม (20 รายการล่าสุด)</b></div><div class="r bad">−'+baht(s)+'</div></div>':emptyRow("ยังไม่เคยถูกหัก")}catch(e){$("dk-hist").innerHTML=emptyRow(thErr(e))}
+}
+$("dk-amts").addEventListener("click",function(ev){var b=ev.target.closest("[data-dkamt]");if(!b)return;DK.amt=+b.dataset.dkamt;$("dk-amt").value="";$("dk-amts").querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b)})});
+$("dk-amt").addEventListener("input",function(){DK.amt=+this.value||0;$("dk-amts").querySelectorAll("button").forEach(function(x){x.classList.remove("on")})});
+$("dk-save").addEventListener("click",async function(){
+  var e=DK.emp,amt=DK.amt;if(!e)return;if(!(amt>0)){toast("เลือกหรือกรอกยอดหักก่อน");return}
+  var btn=this;btn.disabled=true;
+  var ok=await act(function(){return q(db.from("kpi_deductions").insert({employee_id:e.id,work_date:$("dk-date").value||today(),amount:amt,category:$("dk-cat").value,remark:$("dk-remark").value.trim()}))},"บันทึกหัก "+e.display_name+" −฿"+amt+" แล้ว");
+  btn.disabled=false;if(ok){closeModal("m-deduct");refresh()}
+});
+
+/* ---------- รายงานหัก KPI ---------- */
+async function renderDedRep(){
+  if(!S.mgr)return;
+  var sel=$("dr-month");if(!sel.options.length){var o='<option value="">ทุกเดือน</option>',d=new Date();for(var i=0;i<18;i++){var x=new Date(d.getFullYear(),d.getMonth()-i,1),v=x.getFullYear()+"-"+pad(x.getMonth()+1);o+='<option value="'+v+'">'+MONTHS[x.getMonth()]+" "+(x.getFullYear()+543)+'</option>'}sel.innerHTML=o;sel.value=today().slice(0,7)}
+  var m=sel.value,dept=$("dr-dept").value,qq=$("dr-q").value;
+  var rows=(await dedRange(m?m+"-01":null,m?mEnd(m):null)).filter(function(x){return !dept||x.department_id===dept});
+  var by={};rows.forEach(function(x){var a=by[x.employee_id]||(by[x.employee_id]={id:x.employee_id,n:0,sum:0,last:"",dept:x.department_id});a.n++;a.sum+=+x.amount;if(x.work_date>a.last)a.last=x.work_date});
+  var list=Object.keys(by).map(function(k){return by[k]}).filter(function(a){var e=empOf(a.id);return e?matchQ(e,qq):!qq}).sort(function(a,b){return b.sum-a.sum});
+  var sum=list.reduce(function(s,a){return s+a.sum},0);
+  $("dr-sum").textContent=baht(sum);$("dr-n").textContent=list.length+" คน";$("dr-avg").textContent=baht(list.length?Math.round(sum/list.length):0);$("dr-max").textContent=baht(list[0]?list[0].sum:0);
+  $("dr-rows").innerHTML=list.length?list.map(function(a,i){var e=empOf(a.id)||{};return '<tr><td>'+(i+1)+'</td><td class="nm"><b>'+esc(e.display_name||"-")+'</b><br><small class="sub">'+esc(e.employee_no||"")+'</small></td><td>'+esc(deptName(a.dept||e.department_id))+'</td><td class="n">'+a.n+'</td><td>'+esc(a.last?a.last.split("-").reverse().join("/"):"")+'</td><td class="n bad"><b>'+baht(a.sum)+'</b></td></tr>'}).join(""):'<tr><td colspan="6">'+emptyRow("ไม่มีรายการหัก")+'</td></tr>';
+  DK.rep={rows:rows,list:list,m:m};
+}
+["dr-month","dr-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("dr-q").addEventListener("input",function(){clearTimeout(DK.rt);DK.rt=setTimeout(refresh,200)});
+$("dr-export").addEventListener("click",function(){var r=DK.rep;if(!r)return;
+  exportXlsx("KPI-Deduction-"+(r.m||"all")+".xlsx",[
+    {name:"สรุปรายคน",rows:r.list.map(function(a,i){var e=empOf(a.id)||{};return {"#":i+1,"รหัส":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(a.dept||e.department_id),"จำนวนครั้ง":a.n,"ล่าสุด":a.last,"ยอดหักสะสม (บาท)":a.sum}})},
+    {name:"รายการทั้งหมด",rows:r.rows.map(function(x){var e=empOf(x.employee_id)||{};return {"วันที่":x.work_date,"รหัส":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(x.department_id),"หมวด":x.category,"ยอด (บาท)":+x.amount,"หมายเหตุ":x.remark,"อัตโนมัติ":x.auto?"ใช่":""}})}])});
+
+/* ---------- นำเข้าข้อมูลจากแอปเดิม (AttendCheck / Base44: Employee, Attendance, Deduction) ---------- */
+var IM={emp:null,att:null,ded:null,map:{}};
+function imParse(text){
+  var wb=XLSX.read(text.replace(/^﻿/,""),{type:"string",raw:true});
+  return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:false}).map(function(r){var o={};Object.keys(r).forEach(function(k){o[k.trim()]=String(r[k]==null?"":r[k])});return o});
+}
+function imKind(rows){var h=rows[0]||{};if("check_in_time" in h&&"status" in h)return "att";if("amount" in h&&"category" in h)return "ded";if("employee_code" in h&&"full_name" in h)return "emp";return null}
+function imName(s){return String(s||"").replace(/\s+/g," ").trim()}
+function imShift(s){s=String(s||"").replace(/กะ/g,"").trim().toUpperCase();return ["A","B","D"].indexOf(s)>=0?s:null}
+function imStatus(s){s=String(s||"").trim();if(s==="มาสาย")return "เข้างานสาย";if(s.indexOf("หยุด")===0)return ST_HOLI;return stIdx(s)>=0?s:null}
+$("im-files").addEventListener("change",async function(ev){
+  var fs=[].slice.call(ev.target.files||[]);ev.target.value="";if(!fs.length)return;
+  if(!window.XLSX){toast("โหลดตัวอ่านไฟล์ไม่สำเร็จ");return}
+  for(var i=0;i<fs.length;i++){try{var tx=await fs[i].text();if(/\.json$/i.test(fs[i].name)){var o=JSON.parse(tx);if(o&&o.req&&o.users){IM.lv=o;continue}}var rows=imParse(tx),k=imKind(rows);if(k)IM[k]=rows;else toast("ไม่รู้จักไฟล์ "+fs[i].name)}catch(e){toast("อ่านไฟล์ "+fs[i].name+" ไม่ได้")}}
+  imPreview();
+});
+/* รวมรายชื่อพนักงาน: ตาราง Employee + คนที่มีประวัติแต่ถูกลบไปแล้ว (นำเข้าเป็น "ปิดใช้งาน") */
+function imPeople(){
+  var P={};
+  (IM.emp||[]).forEach(function(r){var c=String(r.employee_code).trim();if(!c)return;var cur=P[c],n=imName(r.full_name);
+    if(cur&&cur.name.length>=n.length&&!(r.photo_url&&!cur.photo))return;
+    P[c]={code:c,name:n,dept:imName(r.department),shift:imShift(r.shift),position:imName(r.position),phone:String(r.phone||"").replace(/[^\d+]/g,""),photo:r.photo_url||"",active:String(r.is_active)!=="false",fromEmp:true}});
+  ((IM.lv&&IM.lv.users)||[]).forEach(function(u){var c=String(u[1]||"").trim();if(!c)return;var sh=u[6]==="AA"?"D":imShift(u[6]);
+    if(P[c]){if(!P[c].phone&&u[8])P[c].phone=String(u[8]).replace(/[^\d+]/g,"");if(!P[c].active&&u[9])P[c].active=true;return}
+    P[c]={code:c,name:imName(u[2]),dept:imName(u[4]),shift:sh,position:imName(u[5]),phone:String(u[8]||"").replace(/[^\d+]/g,""),photo:"",active:u[9]!==false,fromEmp:true}});
+  [].concat(IM.att||[],IM.ded||[]).forEach(function(r){var c=String(r.employee_code).trim();if(!c||P[c])return;P[c]={code:c,name:imName(r.employee_name)||c,dept:imName(r.department),shift:imShift(r.shift),position:"",phone:"",photo:"",active:false,fromEmp:false}});
+  return P;
+}
+function imPreview(){
+  var P=imPeople(),codes=Object.keys(P),have={};S.emps.forEach(function(e){have[String(e.employee_no)]=e});
+  var depts={};codes.forEach(function(c){if(P[c].dept)depts[P[c].dept]=1});
+  var dn=Object.keys(depts).sort();
+  dn.forEach(function(n){if(!(n in IM.map)){var ex=S.depts.filter(function(d){return imName(d.name)===n})[0];IM.map[n]=ex?ex.id:"new"}});
+  var opts=function(n){return '<option value="new">➕ สร้างแผนกใหม่ “'+esc(n)+'”</option>'+S.depts.map(function(d){return '<option value="'+d.id+'"'+(IM.map[n]===d.id?" selected":"")+'>'+esc(d.name)+'</option>'}).join("")};
+  var newE=codes.filter(function(c){return !have[c]}),former=newE.filter(function(c){return !P[c].active});
+  var att=imAttRows(),ded=(IM.ded||[]).length;
+  $("im-prev").innerHTML='<div class="rows">'+
+    '<div class="row"><div class="l"><b>ไฟล์ที่อ่านได้</b><small>'+[IM.emp?"Employee "+IM.emp.length+" แถว":"ยังไม่มี Employee",IM.att?"Attendance "+IM.att.length+" แถว":"ยังไม่มี Attendance",IM.ded?"Deduction "+ded+" แถว":"ยังไม่มี Deduction"].join(" · ")+'</small></div></div>'+
+    '<div class="row"><div class="l"><b>พนักงาน '+codes.length+' คน</b><small>มีในแอปนี้แล้ว '+(codes.length-newE.length)+' · เพิ่มใหม่ '+(newE.length-former.length)+' · พนักงานเก่าที่ถูกลบไปแล้ว (นำเข้าแบบปิดใช้งาน เพื่อเก็บประวัติ) '+former.length+'</small></div></div>'+
+    '<div class="row"><div class="l"><b>เช็คชื่อ '+num(att.length)+' รายการ</b><small>'+(att.length?att[0].work_date+" ถึง "+att[att.length-1].work_date:"")+' · รายการซ้ำวันเดียวกันใช้อันที่แก้ล่าสุด · วันที่มีเช็คชื่อในแอปนี้แล้วจะไม่ทับ</small></div></div>'+
+    (IM.lv?'<div class="row"><div class="l"><b>ระบบลาเดิม: ใบลา '+IM.lv.req.length+' ใบ</b><small>ผู้ใช้ '+IM.lv.users.length+' คน · วันหยุด '+(IM.lv.holidays||[]).length+' วัน · สิทธิ์วันลารายคน · ผู้อนุมัติ (Leader/Supervisor) · วันควงกะ</small></div></div>':'')+
+    '<div class="row"><div class="l"><b>หัก KPI '+num(ded)+' รายการ</b><small>ยอดรวม '+baht((IM.ded||[]).reduce(function(s,r){return s+(+r.amount||0)},0))+'</small></div></div></div>'+
+    (dn.length?'<h3>จับคู่แผนก</h3>'+dn.map(function(n){return '<label>'+esc(n)+'<select class="im-dept" data-n="'+esc(n)+'">'+opts(n)+'</select></label>'}).join(""):"");
+  $("im-go").hidden=!(IM.emp||IM.att||IM.ded||IM.lv);
+}
+$("im-prev").addEventListener("change",function(ev){var s=ev.target.closest(".im-dept");if(s)IM.map[s.dataset.n]=s.value});
+function imAttRows(){
+  var best={};
+  (IM.att||[]).forEach(function(r){var c=String(r.employee_code).trim(),d=String(r.date).slice(0,10),st=imStatus(r.status);if(!c||!/^\d{4}-\d\d-\d\d$/.test(d)||!st)return;
+    var k=c+"|"+d,u=r.updated_date||r.created_date||"";if(best[k]&&best[k].u>=u)return;
+    var t=String(r.check_in_time||"").trim();if(!/^[0-2]\d:[0-5]\d$/.test(t))t=null;
+    best[k]={u:u,code:c,work_date:d,status:st,check_in_time:isPresent(st)?t:null,scanned:String(r.scanned)==="true",note:String(r.note||"").slice(0,300),import_id:r.id}});
+  return Object.keys(best).map(function(k){return best[k]}).sort(function(a,b){return a.work_date<b.work_date?-1:1});
+}
+function imProg(t){$("im-msg").textContent=t}
+async function imPhoto(url){try{var r=await fetch(url);if(!r.ok)return null;var b=await r.blob(),u=URL.createObjectURL(b);try{return await resizeImg(u,160,.75)}finally{URL.revokeObjectURL(u)}}catch(e){return null}}
+$("im-go").addEventListener("click",async function(){
+  var btn=this;btn.disabled=true;$("im-files").disabled=true;
+  try{
+    var P=imPeople(),codes=Object.keys(P);
+    /* 1) แผนก */
+    var dmap={};
+    for(var n in IM.map){if(IM.map[n]==="new"){imProg("สร้างแผนก "+n);var ex=S.depts.filter(function(d){return imName(d.name)===n})[0];
+      if(!ex){var nd=await q(db.from("departments").insert({name:n,sort_order:S.depts.length+1}).select().single());S.depts.push(nd);ex=nd}dmap[n]=ex.id}else dmap[n]=IM.map[n]}
+    /* 2) พนักงาน */
+    var have={};S.emps.forEach(function(e){have[String(e.employee_no)]=e});
+    var add=codes.filter(function(c){return !have[c]}),done=0,photos=0;
+    for(var i=0;i<add.length;i++){var p=P[add[i]];imProg("เพิ่มพนักงาน "+(i+1)+"/"+add.length+" · "+p.name);
+      var av=p.photo&&p.active?await imPhoto(p.photo):null;if(av)photos++;
+      await q(db.from("employees").insert({employee_no:p.code,display_name:p.name,department_id:dmap[p.dept]||null,shift:p.shift,position:p.position,phone:p.phone,avatar:av,active:p.active}));done++}
+    /* คนที่มีอยู่แล้ว: เติมตำแหน่ง/เบอร์/รูป ที่ยังว่าง (ไม่ทับข้อมูลเดิม) */
+    var upd=0;
+    for(var c in have){var e=have[c],p2=P[c];if(!p2)continue;var u={};
+      if(!e.position&&p2.position)u.position=p2.position;if(!e.phone&&p2.phone)u.phone=p2.phone;
+      if(!e.avatar&&p2.photo){imProg("ดึงรูป "+e.display_name);var a2=await imPhoto(p2.photo);if(a2){u.avatar=a2;photos++}}
+      if(Object.keys(u).length){await q(db.from("employees").update(u).eq("id",e.id));upd++}}
+    await loadBase();fillSelects();
+    var id={};S.emps.forEach(function(e){id[String(e.employee_no)]=e.id});
+    /* 3) เช็คชื่อ */
+    var att=imAttRows().filter(function(r){return id[r.code]}).map(function(r){return {employee_id:id[r.code],work_date:r.work_date,status:r.status,check_in_time:r.check_in_time,scanned:r.scanned,note:r.note,source:"import",import_id:r.import_id}});
+    for(var j=0;j<att.length;j+=400){imProg("นำเข้าเช็คชื่อ "+Math.min(j+400,att.length)+"/"+att.length);await q(db.from("attendance").upsert(att.slice(j,j+400),{onConflict:"employee_id,work_date",ignoreDuplicates:true}))}
+    /* 4) หัก KPI */
+    var ded=(IM.ded||[]).filter(function(r){return id[String(r.employee_code).trim()]&&+r.amount>0&&/^\d{4}-\d\d-\d\d/.test(r.date)}).map(function(r){return {employee_id:id[String(r.employee_code).trim()],work_date:r.date.slice(0,10),amount:+r.amount,category:(r.category||"อื่นๆ").slice(0,60),remark:String(r.remark||"").slice(0,300),auto:String(r.auto)==="true",import_id:r.id}});
+    for(var k=0;k<ded.length;k+=400){imProg("นำเข้าหัก KPI "+Math.min(k+400,ded.length)+"/"+ded.length);await q(db.from("kpi_deductions").upsert(ded.slice(k,k+400),{onConflict:"import_id",ignoreDuplicates:true}))}
+    /* 5) ระบบลาเดิม */
+    var lvn={req:0,hol:0,bal:0,appr:0};
+    if(IM.lv){var L=IM.lv;await lvMeta(true);
+      var tmap={};(L.types||[]).forEach(function(t){var m=LV.types.filter(function(x){return x.name===t[1]})[0];if(m)tmap[t[0]]=m.id});
+      imProg("นำเข้าวันหยุด");
+      var hol=(L.holidays||[]).filter(function(h){return /^\d{4}-\d\d-\d\d$/.test(h[0])}).map(function(h){return {date:h[0],name:String(h[1]).slice(0,80),type:h[2]==="public"?"public":"company"}});
+      if(hol.length){await q(db.from("holidays").upsert(hol,{onConflict:"date,type",ignoreDuplicates:true}));lvn.hol=hol.length}
+      if(L.rotation&&L.rotation.anchor){var rv={anchor:L.rotation.anchor,day_shift_at_anchor:L.rotation.dayShiftAtAnchor||"A",interval_days:+L.rotation.intervalDays||14,span_days:+L.rotation.spanDays||1};
+        await q(db.from("app_settings").upsert({key:"leave_rotation",value:rv}));S.settings.leave_rotation=rv}
+      /* ผู้อนุมัติ (Leader / Supervisor) */
+      var dByName={};S.depts.forEach(function(d){dByName[imName(d.name)]=d.id});Object.keys(dmap).forEach(function(n){dByName[n]=dmap[n]});
+      for(var ui=0;ui<(L.users||[]).length;ui++){var u=L.users[ui];if(u[3]!=="leader"&&u[3]!=="approver")continue;var emp=S.emps.filter(function(e){return String(e.employee_no)===String(u[1])})[0];if(!emp||emp.role!=="employee")continue;
+        var names=[];try{names=JSON.parse(u[7]||"[]")}catch(e){}if(!names.length&&u[4])names=[u[4]];
+        var ids=names.map(function(n){return dByName[imName(n)]}).filter(Boolean);if(!ids.length)continue;
+        imProg("ตั้งผู้อนุมัติการลา "+emp.display_name);await q(db.from("employees").update({leave_approver_depts:ids}).eq("id",emp.id));lvn.appr++}
+      /* ใบลา */
+      var hp=function(v){return v==="afternoon"||v==="pm"?"pm":v?"am":null};
+      var reqs=(L.req||[]).filter(function(r){return id[String(r[1])]&&tmap[r[2]]}).map(function(r){var subs=[];try{subs=JSON.parse(r[12]||"[]")}catch(e){}
+        return {employee_id:id[String(r[1])],leave_type_id:tmap[r[2]],shift:r[3]==="AA"?"D":(r[3]==="A"||r[3]==="B"?r[3]:null),start_date:r[4],end_date:r[5],total_days:+r[6]||0,half_day:hp(r[7]),status:["pending","approved","rejected","cancelled"].indexOf(r[8])>=0?r[8]:"cancelled",
+          reason:String(r[9]||"").slice(0,500),destination:String(r[10]||"").slice(0,120),province:String(r[11]||"").slice(0,60),created_at:r[15]||null,decision_note:String(r[17]||"").slice(0,300),import_id:"LV"+r[0],
+          substitutes:(Array.isArray(subs)?subs:[]).map(function(s){return {date:s.date,emp_id:id[String(s.employeeId)]||null,emp_no:s.employeeId||null,name:s.name||null,rotation:!!s.rotation,off:!!s.off}})}});
+      if(reqs.length){imProg("นำเข้าใบลา "+reqs.length+" ใบ");await q(db.from("leave_requests").upsert(reqs,{onConflict:"import_id",ignoreDuplicates:true}));lvn.req=reqs.length}
+      /* สิทธิ์วันลา (ปีปัจจุบัน) — ใช้ไปก่อนหน้านี้ = ใช้ไปในระบบเดิม − ใบลาที่นำเข้า */
+      var yr=new Date().getFullYear(),usedImp={};reqs.forEach(function(r){if(r.status==="approved"&&+r.start_date.slice(0,4)===yr){var k=r.employee_id+"|"+r.leave_type_id;usedImp[k]=(usedImp[k]||0)+r.total_days}});
+      var bal=[];Object.keys(L.bal||{}).forEach(function(tid){var t=tmap[+tid];if(!t)return;L.bal[tid].forEach(function(b){var e=id[String(b[0])];if(!e||!b[5])return;
+        bal.push({employee_id:e,leave_type_id:t,year:yr,total:Math.max(0,+b[1]||0),used_offset:Math.max(0,(+b[2]||0)-(usedImp[e+"|"+t]||0))})})});
+      if(bal.length){imProg("นำเข้าสิทธิ์วันลา "+bal.length+" รายการ");await q(db.from("leave_balances").upsert(bal,{onConflict:"employee_id,leave_type_id,year"}));lvn.bal=bal.length}
+      await lvMeta(true);
+    }
+    imProg("✅ นำเข้าเสร็จ: เพิ่มพนักงาน "+done+" คน · เติมข้อมูล "+upd+" คน · รูป "+photos+" รูป · เช็คชื่อ "+num(att.length)+" · หัก KPI "+num(ded.length)+" รายการ"+(IM.lv?" · ใบลา "+lvn.req+" · วันหยุด "+lvn.hol+" · สิทธิ์วันลา "+lvn.bal+" · ผู้อนุมัติ "+lvn.appr+" คน":"")+" (กดซ้ำได้ ไม่เกิดรายการซ้อน)");
+    toast("นำเข้าข้อมูลเสร็จแล้ว");AT.date=null;
+  }catch(e){imProg("❌ หยุดกลางทาง: "+thErr(e)+" — แก้แล้วกดนำเข้าอีกครั้งได้ รายการที่เข้าไปแล้วจะไม่ซ้ำ");toast(thErr(e))}
+  btn.disabled=false;$("im-files").disabled=false;
+});
+
+/* =====================================================================
+   ระบบจองลา (รวมจาก leave-system): ขอลา / วันลาของฉัน / ปฏิทิน / อนุมัติ / จัดการวันลา
+   ===================================================================== */
+var LV={types:[],hol:{},loaded:false,emp:null,days:[],bal:null};
+var PROV=["กรุงเทพมหานคร","กระบี่","กาญจนบุรี","กาฬสินธุ์","กำแพงเพชร","ขอนแก่น","จันทบุรี","ฉะเชิงเทรา","ชลบุรี","ชัยนาท","ชัยภูมิ","ชุมพร","เชียงราย","เชียงใหม่","ตรัง","ตราด","ตาก","นครนายก","นครปฐม","นครพนม","นครราชสีมา","นครศรีธรรมราช","นครสวรรค์","นนทบุรี","นราธิวาส","น่าน","บึงกาฬ","บุรีรัมย์","ปทุมธานี","ประจวบคีรีขันธ์","ปราจีนบุรี","ปัตตานี","พระนครศรีอยุธยา","พะเยา","พังงา","พัทลุง","พิจิตร","พิษณุโลก","เพชรบุรี","เพชรบูรณ์","แพร่","ภูเก็ต","มหาสารคาม","มุกดาหาร","แม่ฮ่องสอน","ยโสธร","ยะลา","ร้อยเอ็ด","ระนอง","ระยอง","ราชบุรี","ลพบุรี","ลำปาง","ลำพูน","เลย","ศรีสะเกษ","สกลนคร","สงขลา","สตูล","สมุทรปราการ","สมุทรสงคราม","สมุทรสาคร","สระแก้ว","สระบุรี","สิงห์บุรี","สุโขทัย","สุพรรณบุรี","สุราษฎร์ธานี","สุรินทร์","หนองคาย","หนองบัวลำภู","อ่างทอง","อำนาจเจริญ","อุดรธานี","อุตรดิตถ์","อุทัยธานี","อุบลราชธานี","ต่างประเทศ"];
+var LST={pending:{t:"รออนุมัติ",c:"s1"},approved:{t:"อนุมัติแล้ว",c:"s0"},rejected:{t:"ไม่อนุมัติ",c:"s2"},cancelled:{t:"ยกเลิก",c:"s10"}};
+function lvStatus(s){var x=LST[s]||{t:s,c:""};return '<span class="stb '+x.c+'">'+x.t+'</span>'}
+function utcMs(s){var p=s.split("-");return Date.UTC(+p[0],+p[1]-1,+p[2])}
+function isoOf(ms){return new Date(ms).toISOString().slice(0,10)}
+function lvRot(){var r=S.settings.leave_rotation||{};return {anchor:r.anchor||"2026-10-11",day:r.day_shift_at_anchor||"A",int:+r.interval_days||14,span:+r.span_days||1}}
+function rotInfo(d){var R=lvRot(),n=Math.round((utcMs(d)-utcMs(R.anchor))/864e5),k=Math.floor(n/R.int),day=((k%2)+2)%2===0?R.day:(R.day==="A"?"B":"A"),s=((n%R.int)+R.int)%R.int;return {day:day,night:day==="A"?"B":"A",rot:s<Math.max(1,R.span)}}
+function isSun(d){return new Date(utcMs(d)).getUTCDay()===0}
+function dayKind(d){var h=LV.hol[d];if(h&&h.co)return "co";if(isSun(d))return rotInfo(d).rot?"rot":"sun";return "work"}
+function datesBetween(a,b){var o=[];if(!a||!b||b<a)return o;for(var t=utcMs(a),e=utcMs(b);t<=e&&o.length<190;t+=864e5)o.push(isoOf(t));return o}
+function shortD(d){var p=d.split("-");return (+p[2])+" "+["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][+p[1]-1]}
+function wdD(d){return new Date(utcMs(d)).toLocaleDateString("th-TH",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"})}
+function rangeTxt(a,b){return a===b?shortD(a)+" "+(+a.slice(0,4)+543):shortD(a)+" – "+shortD(b)+" "+(+b.slice(0,4)+543)}
+function lvType(id){return LV.types.filter(function(t){return t.id===id})[0]||{name:"-",color:"#888"}}
+function typeChip(id){var t=lvType(id);return '<span class="tchip"><i style="background:'+esc(t.color)+'"></i>'+esc(t.name)+'</span>'}
+function shiftLbl(s){return s==="D"?"AA (เช้าตลอด)":s?s:"-"}
+/* หัวหน้าที่อนุมัติการลาได้ */
+function lvApprDepts(){if(S.admin)return S.depts.map(function(d){return d.id});var a=S.myDepts.map(function(d){return d.id});(S.me.leave_approver_depts||[]).forEach(function(x){if(a.indexOf(x)<0)a.push(x)});return S.mgr||(S.me.leave_approver_depts||[]).length?a:[]}
+function lvAppr(){return lvApprDepts().length>0}
+function dirList(){return (S.dir&&S.dir.length?S.dir:S.emps).filter(function(e){return e.active!==false})}
+async function lvMeta(force){
+  if(LV.loaded&&!force)return;
+  var r=await Promise.all([q(db.from("leave_types").select("*").order("sort_order").order("id")),q(db.from("holidays").select("*").order("date"))]);
+  LV.types=r[0];LV.hol={};LV.holList=r[1];
+  r[1].forEach(function(h){var x=LV.hol[h.date]||(LV.hol[h.date]={co:false,pu:false,names:[]});x[h.type==="company"?"co":"pu"]=true;if(x.names.indexOf(h.name)<0)x.names.push(h.name)});
+  LV.loaded=true;
+}
+async function lvPendingDot(){if(!lvAppr())return;try{var r=await db.from("leave_requests").select("id",{count:"exact",head:true}).eq("status","pending");var n=r.count||0;["lv-dot","lv-dot2"].forEach(function(id){var el=$(id);if(el){el.hidden=!n;el.textContent=n}})}catch(e){}}
+
+/* ---------- ขอลา ---------- */
+function lvTarget(){var id=lvAppr()&&$("lv-emp").value||S.me.id;return empOf(id)||S.me}
+async function renderLeave(){
+  await lvMeta();
+  if(!$("lv-prov").options.length)$("lv-prov").innerHTML='<option value="">— ไม่ระบุ —</option>'+PROV.map(function(p){return '<option>'+esc(p)+'</option>'}).join("");
+  var keepT=$("lv-type").value;$("lv-type").innerHTML='<option value="">เลือกประเภทการลา</option>'+LV.types.filter(function(t){return t.active}).map(function(t){return '<option value="'+t.id+'">'+esc(t.name)+'</option>'}).join("");if(keepT)$("lv-type").value=keepT;
+  if(lvAppr()){var keep=$("lv-emp").value,ds=lvApprDepts();
+    $("lv-emp").innerHTML='<option value="">ตัวฉันเอง ('+esc(S.me.display_name)+')</option>'+dirList().filter(function(e){return e.id!==S.me.id&&ds.indexOf(e.department_id)>=0}).sort(function(a,b){return String(a.display_name).localeCompare(String(b.display_name),"th")}).map(function(e){return '<option value="'+e.id+'">'+esc(e.employee_no+" · "+e.display_name)+'</option>'}).join("");$("lv-emp").value=keep}
+  if(!$("lv-from").value){$("lv-from").value=today();$("lv-to").value=today()}
+  lvEmpChanged(true);
+}
+function lvEmpChanged(keepShift){
+  var e=lvTarget();LV.emp=e;
+  $("lv-who").innerHTML=avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),e.phone].filter(Boolean).join(" · "))+'</small></div>';
+  if(!keepShift||!$("lv-shift").dataset.touched)$("lv-shift").value=e.shift||"A";
+  lvBal();lvDays();
+}
+async function lvBal(){
+  var t=+$("lv-type").value,e=LV.emp;$("lv-bal").innerHTML="";LV.bal=null;if(!t||!e)return;
+  var y=+($("lv-from").value||today()).slice(0,4);
+  try{var r=(await q(db.rpc("leave_balance_rows",{p_year:y,p_type:t}))).filter(function(x){return x.employee_id===e.id&&x.leave_type_id===t})[0];LV.bal=r||null;
+    if(r)$("lv-bal").innerHTML='<div class="balmini'+(+r.remaining<=0?" out":"")+'"><b>'+num(r.remaining)+'</b><span>วันคงเหลือ ('+(y+543)+')</span><small>สิทธิ์ '+num(r.total)+' · ใช้ไป '+num(r.used)+(+r.pending?' · รออนุมัติ '+num(r.pending):'')+'</small></div>'}catch(err){}
+}
+function lvDays(){
+  var half=$("lv-half").checked,from=$("lv-from").value,to=half?from:$("lv-to").value;
+  $("lv-towrap").hidden=half;$("lv-halfp").hidden=!half;
+  var ds=datesBetween(from,to),work=ds.filter(function(d){return dayKind(d)==="work"});
+  LV.days=ds;var n=half?(work.length?0.5:0):work.length;LV.n=n;
+  $("lv-days").innerHTML=ds.length?'<span class="lvn">'+num(n)+' วัน</span><small>'+(ds.length>work.length?"ไม่นับวันอาทิตย์/วันหยุดโรงงาน "+(ds.length-work.length)+" วัน":"")+'</small>':'<small class="bad">วันที่สิ้นสุดต้องไม่ก่อนวันเริ่มต้น</small>';
+  var e=LV.emp||S.me,mates=dirList().filter(function(x){return x.id!==e.id&&x.department_id===e.department_id}),my=$("lv-shift").value,opp=my==="A"?"B":my==="B"?"A":null;
+  mates.sort(function(a,b){return (b.shift===opp)-(a.shift===opp)||String(a.display_name).localeCompare(String(b.display_name),"th")});
+  var old={};document.querySelectorAll("#lv-subs select").forEach(function(s){old[s.dataset.d]=s.value});
+  var opts=function(d){return '<option value="">เลือกคู่กะที่มาแทน</option>'+mates.map(function(m){return '<option value="'+m.id+'"'+(old[d]===m.id?" selected":"")+'>'+esc((m.shift===opp?"⭐ ":"")+m.display_name+" (กะ "+shiftLbl(m.shift)+")")+'</option>'}).join("")};
+  $("lv-subs").innerHTML=ds.length>62?'<p class="sub">ช่วงยาวเกิน 62 วัน ไม่ต้องระบุผู้มาแทนรายวัน</p>':ds.map(function(d){var k=dayKind(d),ri=rotInfo(d),sl=my==="D"?"เช้า":my===ri.day?"เช้า":"ดึก";
+    return '<div class="subrow k-'+k+'"><span class="sd">'+esc(wdD(d))+'<small>'+(k==="work"?"กะ"+shiftLbl(my)+" เข้า"+sl:"")+'</small></span>'+(k==="work"?'<select data-d="'+d+'">'+opts(d)+'</select>':'<span class="soff">'+(k==="rot"?"ควงกะ (ไม่ต้องมีผู้มาแทน)":k==="co"?"วันหยุดโรงงาน · "+esc(LV.hol[d].names.join(", ")):"วันหยุด (อาทิตย์)")+'</span>')+'</div>'}).join("");
+  lvConflict();
+}
+async function lvConflict(){
+  var w=$("lv-warn");w.hidden=true;var t=lvType(+$("lv-type").value),e=LV.emp;if(!t.team_limit||!e||!LV.days.length)return;
+  try{var r=(await q(db.rpc("leave_calendar",{p_from:LV.days[0],p_to:LV.days[LV.days.length-1]}))).filter(function(x){return x.employee_id!==e.id&&x.department_id===e.department_id&&x.shift===$("lv-shift").value&&lvType(x.leave_type_id).team_limit});
+    if(r.length){w.hidden=false;w.textContent="⚠️ มีเพื่อนแผนกและกะเดียวกันลาช่วงนี้แล้ว: "+r.map(function(x){return x.name+" ("+rangeTxt(x.start_date,x.end_date)+")"}).join(", ")+" — ระบบจะไม่รับคำขอ ให้เลือกวันอื่น"}}catch(err){}
+}
+$("lv-emp").addEventListener("change",function(){$("lv-shift").dataset.touched="";lvEmpChanged(false)});
+$("lv-type").addEventListener("change",function(){lvBal();lvConflict()});
+$("lv-shift").addEventListener("change",function(){this.dataset.touched="1";lvDays()});
+$("lv-half").addEventListener("change",lvDays);
+$("lv-from").addEventListener("change",function(){if(!$("lv-to").value||$("lv-to").value<this.value)$("lv-to").value=this.value;lvBal();lvDays()});
+$("lv-to").addEventListener("change",lvDays);
+$("lv-reset").addEventListener("click",function(){setTimeout(function(){$("lv-from").value=today();$("lv-to").value=today();lvEmpChanged(false)},0)});
+$("lvform").addEventListener("submit",async function(ev){
+  ev.preventDefault();
+  var e=LV.emp,t=+$("lv-type").value,half=$("lv-half").checked,from=$("lv-from").value,to=half?from:$("lv-to").value;
+  if(!t){toast("เลือกประเภทการลา");return}if(!from||!to||to<from){toast("เลือกวันที่ให้ถูกต้อง");return}
+  if(!(LV.n>0)){toast("ช่วงวันที่เลือกเป็นวันหยุดทั้งหมด ไม่ต้องลา");return}
+  if(LV.bal&&lvType(t).max_days>0&&LV.n>+LV.bal.remaining){toast("วันลาไม่เพียงพอ: คงเหลือ "+num(LV.bal.remaining)+" วัน แต่ขอลา "+num(LV.n)+" วัน");return}
+  var subs=[],miss=[];
+  LV.days.forEach(function(d){var k=dayKind(d);if(k==="rot"){subs.push({date:d,rotation:true});return}if(k!=="work"){subs.push({date:d,off:true});return}
+    var s=document.querySelector('#lv-subs select[data-d="'+d+'"]');if(!s){return}if(!s.value){miss.push(shortD(d));return}var m=empOf(s.value)||{};subs.push({date:d,emp_id:m.id,emp_no:m.employee_no,name:m.display_name})});
+  if(miss.length){toast("ใส่ผู้มาแทนให้ครบ: "+miss.join(", "));return}
+  if(!$("lv-reason").value.trim()){toast("กรอกเหตุผลการลา");return}
+  var btn=$("lv-submit");btn.disabled=true;
+  var ok=await act(function(){return q(db.from("leave_requests").insert({employee_id:e.id,leave_type_id:t,shift:$("lv-shift").value,start_date:from,end_date:to,half_day:half?document.querySelector('input[name=lvhp]:checked').value:null,
+    reason:$("lv-reason").value.trim(),destination:$("lv-dest").value.trim(),province:$("lv-prov").value,substitutes:subs}))},"ส่งคำขอลาสำเร็จ 🎉 รอหัวหน้าอนุมัติ");
+  btn.disabled=false;
+  if(ok){$("lv-reason").value="";$("lv-dest").value="";$("lv-prov").value="";$("lv-half").checked=false;lvPendingDot();show(e.id===S.me.id?"myleave":"leaveappr")}
+});
+
+/* ---------- วันลาของฉัน ---------- */
+async function renderMyLeave(){
+  await lvMeta();
+  var ys=$("ml-year");if(!ys.options.length){var y0=new Date().getFullYear();ys.innerHTML=[y0+1,y0,y0-1].map(function(y){return '<option value="'+y+'"'+(y===y0?" selected":"")+'>'+(y+543)+'</option>'}).join("")}
+  var y=+ys.value;
+  var r=await Promise.all([q(db.rpc("leave_balance_rows",{p_year:y,p_type:null})),q(db.from("leave_requests").select("*").eq("employee_id",S.me.id).order("start_date",{ascending:false}).limit(200))]);
+  var mine=r[0].filter(function(b){return b.employee_id===S.me.id});
+  $("ml-bal").innerHTML=mine.map(function(b){var t=lvType(b.leave_type_id),pc=+b.total>0?Math.min(100,Math.round(+b.used*100/+b.total)):0;
+    return '<div class="balcard" style="--tc:'+esc(t.color)+'"><div class="depthead"><b>'+esc(t.name)+'</b><span class="bnum">'+num(b.remaining)+'<small>/'+num(b.total)+' วัน</small></span></div><div class="gbar"><i style="width:'+pc+'%;background:'+esc(t.color)+'"></i></div><small>ใช้ไป '+num(b.used)+' วัน'+(+b.pending?' · รออนุมัติ '+num(b.pending):'')+'</small></div>'}).join("")||emptyRow("ยังไม่มีข้อมูลสิทธิ์วันลา");
+  var td=today();
+  $("ml-rows").innerHTML=r[1].length?r[1].map(function(x){var canC=x.status==="pending"||(x.status==="approved"&&x.start_date>td);
+    return '<div class="row lvrow"><div class="l"><div class="lvl1">'+typeChip(x.leave_type_id)+'<span>'+esc(rangeTxt(x.start_date,x.end_date))+' · '+num(x.total_days)+' วัน'+(x.half_day?" (ครึ่ง"+(x.half_day==="am"?"เช้า":"บ่าย")+")":"")+'</span></div><small>'+esc([x.reason,x.province].filter(Boolean).join(" · "))+'</small>'+subsHtml(x.substitutes)+(x.decision_note?'<small>หมายเหตุหัวหน้า: '+esc(x.decision_note)+'</small>':'')+'</div><div class="lvact">'+lvStatus(x.status)+(canC?'<button type="button" class="sm danger" data-lvcancel="'+x.id+'">ยกเลิก</button>':'')+'</div></div>'}).join(""):emptyRow("ยังไม่เคยขอลา");
+}
+$("ml-year").addEventListener("change",refresh);
+function subsHtml(s){s=Array.isArray(s)?s:[];var w=s.filter(function(x){return x.name||x.rotation});if(!w.length)return "";
+  return '<small class="subs">ผู้มาแทน: '+w.map(function(x){return esc(shortD(x.date)+": "+(x.rotation?"ควงกะ":x.name+(x.emp_no?" ("+x.emp_no+")":"")))}).join(" · ")+'</small>'}
+
+/* ---------- ปฏิทินลา ---------- */
+async function renderLeaveCal(){
+  await lvMeta();
+  var m=$("lc-month").value||today().slice(0,7);$("lc-month").value=m;var dept=$("lc-dept").value;
+  var first=m+"-01",last=mEnd(m),rows=(await q(db.rpc("leave_calendar",{p_from:first,p_to:last}))).filter(function(r){return !dept||r.department_id===dept});
+  var by={};rows.forEach(function(r){datesBetween(r.start_date<first?first:r.start_date,r.end_date>last?last:r.end_date).forEach(function(d){if(dayKind(d)==="work"||r.half_day)(by[d]=by[d]||[]).push(r)})});
+  var start=new Date(utcMs(first)).getUTCDay(),days=datesBetween(first,last),h='';
+  ["อา","จ","อ","พ","พฤ","ศ","ส"].forEach(function(w){h+='<div class="cw">'+w+'</div>'});
+  for(var i=0;i<start;i++)h+='<div class="cd empty"></div>';
+  days.forEach(function(d){var k=dayKind(d),ri=rotInfo(d),hol=LV.hol[d],list=by[d]||[];
+    h+='<div class="cd k-'+k+(d===today()?" today":"")+'"><div class="cdh"><b>'+(+d.slice(8))+'</b>'+(k==="rot"?'<span class="rotb">ควงกะ</span>':'')+'</div>'+
+      (k==="work"||k==="rot"?'<small class="cds">เช้า '+ri.day+' · ดึก '+ri.night+'</small>':'')+
+      (hol?'<small class="hol'+(hol.co?" co":"")+'">'+(hol.co?"🏭 ":"🇹🇭 ")+esc(hol.names.join(", "))+'</small>':(k==="sun"?'<small class="hol co">วันหยุด</small>':''))+
+      list.map(function(r){var t=lvType(r.leave_type_id);return '<span class="cev'+(r.status==="pending"?" pend":"")+'" style="--tc:'+esc(t.color)+'" title="'+esc(r.name+" · "+t.name+" · "+(r.status==="pending"?"รออนุมัติ":"อนุมัติแล้ว"))+'">'+esc(String(r.name).replace(/^(นางสาว|นาง|นาย)\s*/,"").split(/\s+/)[0])+'</span>'}).join("")+'</div>'});
+  $("lc-grid").innerHTML=h;
+  $("lc-list").innerHTML=rows.length?rows.map(function(r){return '<div class="row"><div class="l"><b>'+esc(r.name)+'</b><div class="lvl1">'+typeChip(r.leave_type_id)+'<span>'+esc(rangeTxt(r.start_date,r.end_date))+' · '+num(r.total_days)+' วัน</span></div><small>'+esc([deptName(r.department_id),"กะ "+shiftLbl(r.shift)].join(" · "))+'</small>'+subsHtml(r.substitutes)+'</div>'+lvStatus(r.status)+'</div>'}).join(""):emptyRow("ไม่มีคนลาในเดือนนี้");
+}
+["lc-month","lc-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
+
+/* ---------- อนุมัติการลา ---------- */
+async function renderLeaveAppr(){
+  if(!lvAppr())return;await lvMeta();
+  var st=$("la-st").value,dept=$("la-dept").value,qq=$("la-q").value,b=db.from("leave_requests").select("*").order("created_at",{ascending:false}).limit(300);
+  if(st)b=b.eq("status",st);if(dept)b=b.eq("department_id",dept);
+  var rows=(await q(b)).filter(function(r){var e=empOf(r.employee_id);return !qq||(e&&matchQ(e,qq))});
+  $("la-rows").innerHTML=rows.length?rows.map(function(r){var e=empOf(r.employee_id)||{display_name:"(ไม่ทราบชื่อ)"},own=r.employee_id===S.me.id,by=r.decided_by&&empOf(r.decided_by);
+    return '<div class="lvcard" style="--tc:'+esc(lvType(r.leave_type_id).color)+'"><div class="depthead"><div class="atwho">'+avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(r.department_id),"กะ "+shiftLbl(r.shift)].join(" · "))+'</small></div></div>'+lvStatus(r.status)+'</div>'+
+      '<div class="lvline">'+typeChip(r.leave_type_id)+' <b>'+esc(rangeTxt(r.start_date,r.end_date))+'</b> · '+num(r.total_days)+' วัน'+(r.half_day?" (ครึ่ง"+(r.half_day==="am"?"เช้า":"บ่าย")+")":"")+'</div>'+
+      '<div class="lvsub">'+subsHtml(r.substitutes)+'</div>'+(r.reason?'<p class="lvreason">เหตุผล: '+esc(r.reason)+(r.destination||r.province?' · ไป '+esc([r.destination,r.province].filter(Boolean).join(" ")):'')+'</p>':'')+
+      '<small class="sub">ยื่นเมื่อ '+esc(new Date(r.created_at).toLocaleString("th-TH",{day:"numeric",month:"short",year:"2-digit",hour:"2-digit",minute:"2-digit"}))+(by?' · ดำเนินการโดย '+esc(by.display_name):'')+(r.decision_note?' · '+esc(r.decision_note):'')+'</small>'+
+      (r.status==="pending"&&(!own||S.admin)?'<div class="lvbtns"><input type="text" class="lvnote" maxlength="300" placeholder="หมายเหตุ (ไม่บังคับ)"><button type="button" class="sm good" data-lvok="'+r.id+'">'+ico("check")+'อนุมัติ</button><button type="button" class="sm danger" data-lvno="'+r.id+'">ไม่อนุมัติ</button></div>':'')+
+      (r.status==="approved"?'<div class="lvbtns"><button type="button" class="sm danger" data-lvcancel="'+r.id+'">ยกเลิกใบลานี้</button></div>':'')+'</div>'}).join(""):emptyRow(st==="pending"?"ไม่มีคำขอรออนุมัติ 🎉":"ไม่มีรายการ");
+  lvPendingDot();
+}
+["la-st","la-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("la-q").addEventListener("input",function(){clearTimeout(LV.t);LV.t=setTimeout(refresh,200)});
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-lvok],[data-lvno],[data-lvcancel]");if(!b)return;
+  var card=b.closest(".lvcard"),note=card&&card.querySelector(".lvnote")?card.querySelector(".lvnote").value:"";
+  if(b.dataset.lvok){b.disabled=true;act(function(){return q(db.rpc("leave_decide",{p_id:b.dataset.lvok,p_status:"approved",p_note:note}))},"อนุมัติแล้ว · ลงสถานะลาในหน้าเช็คชื่อให้แล้ว").then(function(){AT.date=null;refresh()});return}
+  if(b.dataset.lvno){if(!armed(b,"ยืนยันไม่อนุมัติ"))return;act(function(){return q(db.rpc("leave_decide",{p_id:b.dataset.lvno,p_status:"rejected",p_note:note}))},"ไม่อนุมัติแล้ว").then(refresh);return}
+  if(b.dataset.lvcancel){if(!armed(b,"แตะอีกครั้งเพื่อยกเลิก"))return;act(function(){return q(db.rpc("leave_cancel",{p_id:b.dataset.lvcancel}))},"ยกเลิกใบลาแล้ว").then(function(){AT.date=null;lvPendingDot();refresh()});return}
+});
+
+/* ---------- จัดการวันลา ---------- */
+async function renderLeaveAdmin(){
+  if(!lvAppr())return;await lvMeta();
+  var y0=new Date().getFullYear();
+  ["lb-year","lh-year"].forEach(function(id){var s=$(id);if(!s.options.length)s.innerHTML=[y0+1,y0,y0-1].map(function(y){return '<option value="'+y+'"'+(y===y0?" selected":"")+'>'+(y+543)+'</option>'}).join("")});
+  var ts=$("lb-type"),kt=ts.value;ts.innerHTML=LV.types.map(function(t){return '<option value="'+t.id+'">'+esc(t.name)+'</option>'}).join("");ts.value=kt||(LV.types.filter(function(t){return t.name==="ลาพักร้อน"})[0]||LV.types[0]||{}).id;
+  if(!$("lx-from").value){$("lx-from").value=y0+"-01-01";$("lx-to").value=y0+"-12-31"}
+  var y=+$("lb-year").value,t=+ts.value,dept=$("lb-dept").value,qq=$("lb-q").value;
+  var rows=(await q(db.rpc("leave_balance_rows",{p_year:y,p_type:t}))).map(function(r){return Object.assign({e:empOf(r.employee_id)},r)}).filter(function(r){return r.e&&(!dept||r.e.department_id===dept)&&matchQ(r.e,qq)}).sort(function(a,b){return String(a.e.employee_no).localeCompare(String(b.e.employee_no))});
+  $("lb-rows").innerHTML=rows.length?rows.map(function(r){return '<tr><td>'+esc(r.e.employee_no)+'</td><td class="nm">'+esc(r.e.display_name)+(r.entered?'':' <small class="sub">(ค่าเริ่มต้น)</small>')+'</td><td class="n"><input type="number" class="lbtot" min="0" max="366" step="0.5" value="'+(+r.total)+'" data-emp="'+r.employee_id+'"></td><td class="n">'+num(r.used)+'</td><td class="n">'+num(r.pending)+'</td><td class="n"><b class="'+(+r.remaining<=0?"bad":"")+'">'+num(r.remaining)+'</b></td><td><button type="button" class="sm" data-lbsave="'+r.employee_id+'">บันทึก</button></td></tr>'}).join(""):'<tr><td colspan="7">'+emptyRow("ไม่มีพนักงาน")+'</td></tr>';
+  if(S.admin){
+    var hy=$("lh-year").value;$("lh-rows").innerHTML=(LV.holList||[]).filter(function(h){return h.date.slice(0,4)===hy}).map(function(h){return '<div class="row"><div class="l"><b>'+esc(wdD(h.date))+'</b> '+esc(h.name)+'<small>'+(h.type==="company"?"🏭 วันหยุดโรงงาน":"🇹🇭 วันหยุดราชการ (โรงงานทำงาน)")+'</small></div><button type="button" class="sm danger" data-lhdel="'+h.id+'">ลบ</button></div>'}).join("")||emptyRow("ยังไม่มีวันหยุดปีนี้");
+    var R=lvRot();$("lr-anchor").value=R.anchor;$("lr-day").value=R.day;$("lr-int").value=R.int;
+    $("lt-on").checked=(S.settings.leave_telegram||{enabled:true}).enabled!==false;
+    $("lt-rows").innerHTML=LV.types.map(function(t){return '<div class="row ltrow"><div class="l"><span class="tchip"><i style="background:'+esc(t.color)+'"></i>'+esc(t.name)+'</span><small>ลงเช็คชื่อเป็น “'+esc(t.att_status)+'”</small></div><label class="mini">สิทธิ์/ปี<input type="number" min="0" max="366" value="'+(+t.max_days)+'" data-ltmax="'+t.id+'"></label><label class="check"><input type="checkbox" data-ltteam="'+t.id+'"'+(t.team_limit?" checked":"")+'> ห้ามลาซ้อนในกะ</label><label class="check"><input type="checkbox" data-ltact="'+t.id+'"'+(t.active?" checked":"")+'> ใช้งาน</label><button type="button" class="sm" data-ltsave="'+t.id+'">บันทึก</button></div>'}).join("");
+  }
+}
+["lb-year","lb-type","lb-dept","lh-year"].forEach(function(id){$(id).addEventListener("change",refresh)});$("lb-q").addEventListener("input",function(){clearTimeout(LV.t2);LV.t2=setTimeout(refresh,200)});
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-lbsave],[data-lhdel],[data-ltsave]");if(!b)return;
+  if(b.dataset.lbsave){var inp=b.closest("tr").querySelector(".lbtot");act(function(){return q(db.rpc("leave_set_total",{p_emp:b.dataset.lbsave,p_type:+$("lb-type").value,p_year:+$("lb-year").value,p_total:+inp.value}))},"บันทึกสิทธิ์วันลาแล้ว").then(refresh);return}
+  if(b.dataset.lhdel){if(!armed(b,"ลบ?"))return;act(function(){return q(db.from("holidays").delete().eq("id",+b.dataset.lhdel))},"ลบวันหยุดแล้ว").then(function(){lvMeta(true).then(refresh)});return}
+  if(b.dataset.ltsave){var id=+b.dataset.ltsave,row=b.closest(".ltrow");act(function(){return q(db.from("leave_types").update({max_days:+row.querySelector("[data-ltmax]").value,team_limit:row.querySelector("[data-ltteam]").checked,active:row.querySelector("[data-ltact]").checked}).eq("id",id))},"บันทึกประเภทการลาแล้ว").then(function(){lvMeta(true).then(refresh)});return}
+});
+$("lh-form").addEventListener("submit",function(ev){ev.preventDefault();act(function(){return q(db.from("holidays").upsert({date:$("lh-date").value,name:$("lh-name").value.trim(),type:$("lh-type").value},{onConflict:"date,type"}))},"เพิ่มวันหยุดแล้ว").then(function(ok){if(ok){$("lh-name").value="";lvMeta(true).then(refresh)}})});
+$("lr-form").addEventListener("submit",function(ev){ev.preventDefault();var v={anchor:$("lr-anchor").value,day_shift_at_anchor:$("lr-day").value,interval_days:Math.max(1,+$("lr-int").value||14),span_days:1};
+  act(async function(){await q(db.from("app_settings").upsert({key:"leave_rotation",value:v}));S.settings.leave_rotation=v},"บันทึกวันควงกะแล้ว")});
+$("lt-on").addEventListener("change",function(){var v={enabled:this.checked};act(async function(){await q(db.from("app_settings").upsert({key:"leave_telegram",value:v}));S.settings.leave_telegram=v},v.enabled?"เปิดแจ้งเตือนการลาทาง Telegram":"ปิดแจ้งเตือนการลาทาง Telegram")});
+$("lx-go").addEventListener("click",async function(){
+  var a=$("lx-from").value,b=$("lx-to").value;if(!a||!b){toast("เลือกช่วงวันที่");return}
+  try{var rows=await q(db.from("leave_requests").select("*").lte("start_date",b).gte("end_date",a).order("start_date"));
+    exportXlsx("Leave-"+a+"_"+b+".xlsx",[{name:"ใบลา",rows:rows.map(function(r){var e=empOf(r.employee_id)||{};return {"วันที่เริ่ม":r.start_date,"วันที่สิ้นสุด":r.end_date,"รหัส":e.employee_no||"","ชื่อพนักงาน":e.display_name||"","แผนก":deptName(r.department_id),"ประเภทการลา":lvType(r.leave_type_id).name,"จำนวนวัน":+r.total_days,"ครึ่งวัน":r.half_day?(r.half_day==="am"?"เช้า":"บ่าย"):"","กะ":shiftLbl(r.shift),
+      "ผู้มาแทน (OT)":(r.substitutes||[]).filter(function(x){return x.name||x.rotation}).map(function(x){return shortD(x.date)+": "+(x.rotation?"ควงกะ":x.name+(x.emp_no?" ("+x.emp_no+")":""))}).join("; "),"สถานะ":(LST[r.status]||{}).t||r.status,"เหตุผล":r.reason,"สถานที่ไป":r.destination,"จังหวัด":r.province,"หมายเหตุหัวหน้า":r.decision_note}})}]);
+  }catch(e){toast(thErr(e))}
+});
+
+var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce"];
+var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
-  if((tab==="staff"||tab==="emp"||tab==="targets"||tab==="allowmgr"||tab==="admin")&&!S.mgr)tab="home";
+  if((tab==="staff"||tab==="emp"||tab==="targets"||tab==="allowmgr"||tab==="admin"||["att","attdash","atthist","attqr","deduct","dedrep","tv"].indexOf(tab)>=0)&&!S.mgr)tab="home";
+  if(tab!=="tv")document.body.classList.remove("tvmode");
+  if((tab==="leaveappr"||tab==="leaveadmin")&&!lvAppr())tab="myleave";
   if((tab==="telegram"||tab==="kpis"||tab==="announce")&&!S.admin)tab="home";
   if(tab==="chat"){$("chat-dot").hidden=true;$("chat-dot2").hidden=true}
   S.tab=tab;
@@ -2703,6 +3815,8 @@ document.addEventListener("click",function(ev){
   if(d.ttdel){if(!armed(b,"แตะอีกครั้ง"))return;var tp=ttPost(d.ttdel);if(!tp)return;
     act(async function(){await q(db.from("posts").delete().eq("id",tp.id));await db.storage.from("tingtong").remove([tp.media_path])},"ลบโพสต์แล้ว").then(function(ok){if(ok)refresh()});return}
   if(d.tcdel){if(!armed(b,"แตะอีกครั้ง"))return;act(function(){return q(db.from("post_comments").delete().eq("id",d.tcdel))},"ลบความคิดเห็นแล้ว").then(function(ok){if(ok)ttComments(TT.cur)});return}
+  if(d.dk){openDeduct(d.dk);return}
+  if(d.dkdel){if(!armed(b,"ลบ?"))return;act(function(){return q(db.from("kpi_deductions").delete().eq("id",d.dkdel))},"ลบรายการหักแล้ว").then(function(ok){if(ok){if(!$("m-deduct").hidden&&DK.emp)openDeduct(DK.emp.id);refresh()}});return}
   if(d.prod&&b.closest("#tt-feed")){var pv=ttVisible();if(pv)pv.pause()}
   if(d.prod){openProduct(d.prod).catch(function(e){toast(thErr(e))});return}
   if(d.revprod){openProduct(d.revprod).then(function(){setTimeout(function(){var f=$("pd-rev");if(f)f.scrollIntoView({behavior:"smooth",block:"start"})},500)}).catch(function(e){toast(thErr(e))});return}
@@ -2810,7 +3924,8 @@ async function start(){
   await loadBase();
   document.querySelectorAll(".mgr").forEach(function(el){el.hidden=!S.mgr});
   document.querySelectorAll(".adm").forEach(function(el){el.hidden=!S.admin});
-  fillSelects();paintWho();
+  document.querySelectorAll(".lva").forEach(function(el){el.hidden=!lvAppr()});
+  fillSelects();paintWho();lvPendingDot();
   $("p-name").value=me.display_name;if(me.shift){$("p-shift").value=me.shift;$("f-shift").value=me.shift}
   $("p-phone").value=me.phone||"";$("p-kpi").value=me.workstation_id||"";showAvatar("p",me.avatar);
   if(me.workstation_id){$("f-kpi").value=me.workstation_id;showTarget()}
