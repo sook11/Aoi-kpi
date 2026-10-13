@@ -453,6 +453,44 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
 .revrow p{margin:3px 0 0;font-size:14.5px;white-space:pre-wrap;overflow-wrap:anywhere}
 .ttview{cursor:default;display:flex;flex-direction:column;align-items:center}
 .tthot{display:inline-block;background:linear-gradient(90deg,#f97316,#ef4444);color:#fff;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px;margin-bottom:6px}
+/* ---------- ตัวหนังสือวิ่ง ---------- */
+.marquee{display:flex;align-items:center;gap:10px;margin-inline:-16px;padding:7px 16px;background:linear-gradient(90deg,#1d4ed8,#12284c);color:#fff;font-size:14.5px;overflow:hidden;cursor:pointer}
+.marquee.warn{background:linear-gradient(90deg,#b45309,#7c2d12)}
+.mqbadge{flex:none;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:600}
+.mqwin{flex:1;overflow:hidden;white-space:nowrap;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.mqtrack{display:inline-block;padding-left:100%;animation:mq 20s linear infinite;will-change:transform}
+.mqtrack span{margin-right:56px}
+.marquee:hover .mqtrack{animation-play-state:paused}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@media (min-width:900px){.marquee{margin-inline:-32px;padding-inline:32px}}
+body.tt-full .marquee{display:none}
+/* ---------- แชต ---------- */
+.navdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-left:6px;vertical-align:middle;font-style:normal}
+.menugrid button{position:relative}.menugrid .navdot{position:absolute;top:8px;right:10px;margin:0}
+.chatbox{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;height:calc(100vh - 300px);height:calc(100dvh - 300px);min-height:360px;overflow:hidden}
+.chatlist{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--off-bg)}
+.cmsg{display:flex;gap:8px;align-items:flex-end;max-width:82%}
+.cmsg .avatar{width:32px;height:32px;font-size:13px;flex:none}
+.cmsg .cb{background:var(--surface);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:7px 12px;min-width:0}
+.cmsg .cn{font-size:12px;color:var(--muted);margin-bottom:2px}
+.cmsg .ct{font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere}
+.cmsg .cm{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;align-items:center}
+.cmsg .cm button,.cmsg .cm button:hover{background:none!important;border:0!important;padding:0;color:inherit!important;font-size:11px;text-decoration:underline;min-height:0;box-shadow:none}
+.cmsg.me{align-self:flex-end;flex-direction:row-reverse}
+.cmsg.me .cb{background:var(--accent);color:#fff;border-color:var(--accent);border-radius:16px 16px 4px 16px}
+.cmsg.me .cm{color:rgba(255,255,255,.8)}
+.cday{align-self:center;font-size:12px;color:var(--muted);background:var(--surface);border-radius:999px;padding:2px 12px}
+.chatform{display:flex!important;flex-direction:row!important;flex-wrap:nowrap;align-items:center;gap:8px;padding:10px;border-top:1px solid var(--line);background:var(--surface)}
+.chatform input{flex:1;min-width:0}
+.chatform button{flex:none;width:52px;height:46px;min-height:46px;padding:0;justify-content:center;margin:0}
+.chatform input{margin:0}
+/* ---------- ยอดขาย ---------- */
+.shopseg{display:flex!important;flex-wrap:wrap}.shopseg button{flex:1 1 auto}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.tbl th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--off-bg)}
+.tbl td.n,.tbl th.n{text-align:right}
+.tablewrap{overflow-x:auto}
 </style>
 </head>
 <body>
@@ -482,7 +520,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-14</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-15</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -513,6 +551,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
     <div class="brand"><img class="brandimg" src="icon-192.png?v=5" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><i hidden>KPI</i><div><b>AOI KPI</b><small id="hdate"></small></div></div>
     <div class="whobox"><div class="who"><b id="who"></b><span id="whorole"></span></div><span class="avatar hdr" id="who-av" data-tab="settings" role="button" tabindex="0" title="โปรไฟล์ของฉัน"></span></div>
   </header>
+  <div class="marquee" id="mq" hidden role="status" aria-live="polite"><span class="mqbadge" id="mq-badge">ประกาศ</span><div class="mqwin"><div class="mqtrack" id="mq-track"></div></div></div>
 
   <!-- HOME -->
   <section class="view g2" id="v-home">
@@ -637,6 +676,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <button data-tab="staff" class="mgr">พนักงาน</button>
       <button data-tab="top">Top 5 ยอดผลิต</button>
       <button data-tab="tt">ติ่งต๊อง</button>
+      <button data-tab="chat">แชต<i class="navdot" id="chat-dot2" hidden></i></button>
       <button data-tab="shop">สินค้า</button>
       <button data-tab="allowance">KPI / Allowance</button>
       <button data-tab="install">ติดตั้งแอปลงมือถือ</button>
@@ -645,6 +685,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <button data-tab="kpis" class="adm">จัดการหน้างาน</button>
       <button data-tab="allowmgr" class="mgr">จัดการ KPI/Allowance</button>
       <button data-tab="telegram" class="adm">แจ้งเตือน Telegram</button>
+      <button data-tab="announce" class="adm">ประกาศตัวหนังสือวิ่ง</button>
       <button data-tab="settings">ตั้งค่า</button>
     </div>
   </section>
@@ -660,6 +701,31 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <label>จำนวน<select id="t-n"><option value="5">Top 5</option><option value="10">Top 10</option><option value="20">Top 20</option></select></label>
     </div>
     <div class="panel"><div class="rows" id="t-rows"></div></div>
+  </section>
+
+  <!-- CHAT -->
+  <section class="view" id="v-chat" hidden>
+    <div class="headrow"><div><h2>แชต</h2><p class="sub">พูดคุยกับเพื่อนพนักงาน</p></div></div>
+    <div class="chips" id="ch-rooms"></div>
+    <div class="chatbox">
+      <div class="chatlist" id="ch-list"></div>
+      <form id="chform" class="chatform"><input type="text" id="ch-body" maxlength="1000" placeholder="พิมพ์ข้อความ..." autocomplete="off" aria-label="ข้อความ"><button class="primary" type="submit" data-ico="send" aria-label="ส่ง"></button></form>
+    </div>
+  </section>
+
+  <!-- ANNOUNCE (admin) -->
+  <section class="view g2" id="v-announce" hidden>
+    <div><h2>ประกาศตัวหนังสือวิ่ง</h2><p class="sub">ข้อความวิ่งด้านบนแอป ทุกคนเห็น</p></div>
+    <div class="panel half">
+      <h3>เพิ่มประกาศ</h3>
+      <form id="anform">
+        <label>ข้อความ<textarea id="an-msg" rows="3" maxlength="300" required placeholder="เช่น ประชุมประจำเดือน วันศุกร์ 9.00 น. ห้องประชุม 2"></textarea></label>
+        <div class="grid2"><label>ประเภท<select id="an-kind"><option value="info">📢 ประกาศทั่วไป</option><option value="warn">⚠️ เตือน/ด่วน</option></select></label><label>แสดงถึงวันที่ (ไม่บังคับ)<input type="date" id="an-exp"></label></div>
+        <button class="primary" type="submit" data-ico="plus">เพิ่มประกาศ</button>
+      </form>
+      <p class="sub">นอกจากประกาศนี้ แอปจะเตือนพนักงานที่ยังไม่ลงยอดวันนี้ให้อัตโนมัติ</p>
+    </div>
+    <div class="panel half"><h3>ประกาศทั้งหมด</h3><div class="rows" id="an-list"></div></div>
   </section>
 
   <!-- TINGTONG -->
@@ -682,6 +748,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <button type="button" data-shopmode="browse" aria-pressed="true">เลือกซื้อ</button>
       <button type="button" data-shopmode="mine" aria-pressed="false">ร้านของฉัน</button>
       <button type="button" data-shopmode="orders" aria-pressed="false">คำสั่งซื้อของฉัน</button>
+      <button type="button" data-shopmode="sales" aria-pressed="false" class="adm">ยอดขาย</button>
     </div>
     <div id="sh-browse" class="view">
       <div class="filters"><label class="searchbox">ค้นหา<input type="search" id="sh-q" placeholder="ค้นหาชื่อสินค้าหรือผู้ขาย..."></label></div>
@@ -695,6 +762,12 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
     </div>
     <div id="sh-orders" class="view" hidden>
       <div class="panel"><h3>คำสั่งซื้อของฉัน</h3><div class="rows" id="sh-out"></div></div>
+    </div>
+    <div id="sh-sales" class="view" hidden>
+      <div class="filters"><label>เดือน<input type="month" id="ss-month"></label><button type="button" id="ss-export" data-ico="download">ส่งออก Excel</button></div>
+      <div class="stats" id="ss-stats"></div>
+      <div class="panel"><h3>ยอดขายแยกตามผู้ขาย</h3><p class="sub">นับเฉพาะคำสั่งซื้อที่ผู้ขายยืนยันหรือส่งของแล้ว <span id="ss-pend"></span></p><div class="tablewrap"><table class="tbl" id="ss-sellers"></table></div></div>
+      <div class="panel"><h3>รายการขายทั้งหมด</h3><div class="tablewrap"><table class="tbl" id="ss-rows"></table></div></div>
     </div>
   </section>
 
@@ -814,6 +887,12 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       <label>ข้อความที่จะส่ง (แก้ไขได้)<textarea id="tl-msg" rows="10"></textarea></label>
       <button class="primary" type="button" id="tl-send" data-ico="telegram">ส่งเข้ากลุ่ม Telegram</button>
     </div>
+    <div class="panel">
+      <h3>แจ้งเตือนอัตโนมัติทุกวัน</h3>
+      <p class="sub">ระบบส่งสรุปเข้ากลุ่ม Telegram เองทุกวัน เวลา <b>08:30</b> (สรุปของเมื่อวาน ครบทุกกะ) และ <b>20:30</b> (สรุปของวันนี้) บอกว่าแต่ละแผนกใครลงยอดแล้ว ใครยังไม่ลง ไม่ต้องเปิดแอปไว้</p>
+      <label class="check"><input type="checkbox" id="ta-on"> เปิดการแจ้งเตือนอัตโนมัติ</label>
+      <button type="button" id="ta-test" data-ico="telegram">ส่งสรุปของวันนี้เข้ากลุ่มตอนนี้ (ทดสอบ)</button>
+    </div>
   </section>
 
   <!-- SETTINGS -->
@@ -848,7 +927,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-14 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-15 · 11/10/2569</p>
   </section>
 </div>
 
@@ -863,6 +942,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
   <button data-tab="allowance" class="navx">KPI / Allowance</button>
   <button data-tab="shop" class="navx">สินค้า</button>
   <button data-tab="tt" class="navx">ติ่งต๊อง</button>
+  <button data-tab="chat" class="navx">แชต<i class="navdot" id="chat-dot" hidden></i></button>
   <button data-tab="install" class="navx">ติดตั้งแอปลงมือถือ</button>
   <span class="navlabel mgr">ADMIN</span>
   <button data-tab="admin" class="mgr navx">Admin Dashboard</button>
@@ -870,6 +950,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
   <button data-tab="kpis" class="adm navx">จัดการหน้างาน</button>
   <button data-tab="allowmgr" class="mgr navx">จัดการ KPI/Allowance</button>
   <button data-tab="telegram" class="adm navx">แจ้งเตือน Telegram</button>
+  <button data-tab="announce" class="adm navx">ประกาศตัวหนังสือวิ่ง</button>
   <button data-tab="settings" class="navx">ตั้งค่า</button>
   <button data-tab="menu" class="navmore">เมนู</button>
 </div></nav>
@@ -970,7 +1051,7 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="tp-head">
     <div class="headrow"><h3 id="tp-head" style="font-size:18px">โพสต์ลงติ่งต๊อง</h3><button type="button" class="iconbtn" data-close="m-ttpost" data-ico="x" aria-label="ปิด"></button></div>
     <div class="ttprev" id="tp-prev"><span class="sub">ยังไม่ได้เลือกไฟล์</span></div>
-    <label class="filebtn" data-ico="camera">เลือกวิดีโอหรือรูป<input type="file" id="tp-file" accept="video/*,image/*" hidden></label>
+    <label class="filebtn" data-ico="camera"><span id="tp-filelbl">เลือกวิดีโอหรือรูป</span><input type="file" id="tp-file" accept="video/*,image/*" hidden></label>
     <p class="sub">วิดีโอยาวไม่เกิน 60 วินาที ขนาดไม่เกิน 30 MB</p>
     <form id="ttform">
       <label>คำบรรยาย<textarea id="tp-cap" rows="3" maxlength="500" placeholder="เล่าอะไรหน่อย... #AOI"></textarea></label>
@@ -1030,6 +1111,9 @@ var ICON={
   settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.900 4.900l2.100 2.100M17 17l2.100 2.100M4.900 19.100L7 17M17 7l2.100-2.100"/>',
   menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
   tt:'<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M10 8.500v7l6-3.500z"/>',
+  chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.500h8M8 12.500h5"/>',
+  announce:'<path d="M3 10v4h3l6 4V6L6 10z"/><path d="M16 8.500a5 5 0 0 1 0 7M19 6a8.500 8.500 0 0 1 0 12"/>',
+  edit2:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
   heart:'<path d="M12 20s-7-4.400-9.200-9C1.400 7.800 3.500 4.500 7 4.500c2 0 3.300 1.100 5 3 1.700-1.900 3-3 5-3 3.500 0 5.600 3.300 4.200 6.500C19 15.600 12 20 12 20z"/>',
   eye:'<path d="M2 12s3.600-7 10-7 10 7 10 7-3.600 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   comment:'<path d="M4 5h16v11H9l-5 4z"/>',
@@ -1566,7 +1650,9 @@ function orderRow(o,asSeller){
   return '<div class="row"><div class="l"><b>'+esc(o.product_title)+' × '+o.qty+'</b><small>'+esc([who,o.note?"“"+o.note+"”":null,new Date(o.created_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"})].filter(Boolean).join(" · "))+'</small>'+(b?'<div class="acts">'+b+'</div>':'')+'</div><div class="r">'+baht(o.unit_price*o.qty)+'<small class="ostat '+esc(o.status)+'">'+esc(OSTAT[o.status]||o.status)+'</small></div></div>';
 }
 function drawShop(){
-  ["browse","mine","orders"].forEach(function(m){$("sh-"+m).hidden=SH.mode!==m});
+  if(SH.mode==="sales"&&!S.admin)SH.mode="browse";
+  ["browse","mine","orders","sales"].forEach(function(m){$("sh-"+m).hidden=SH.mode!==m});
+  if(SH.mode==="sales")drawSales().catch(function(e){toast(thErr(e))});
   document.querySelectorAll("[data-shopmode]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.shopmode===SH.mode)});
   var qq=$("sh-q").value.trim().toLowerCase();
   var vis=SH.list.filter(function(p){return p.status!=="hidden"});
@@ -1711,7 +1797,8 @@ function ttItem(p,rank){
       '<button type="button" class="ttbtn'+(TT.liked[p.id]?' liked':'')+'" data-ttlike="'+p.id+'" aria-label="ถูกใจ">'+ico("heart")+'<span>'+num(p.like_count)+'</span></button>'+
       '<button type="button" class="ttbtn" data-ttcom="'+p.id+'" aria-label="ความคิดเห็น">'+ico("comment")+'<span>'+num(p.comment_count)+'</span></button>'+
       '<div class="ttbtn ttview" aria-label="ยอดเข้าชม">'+ico("eye")+'<span>'+num(p.view_count||0)+'</span></div>'+
-      (own||S.admin?'<button type="button" class="ttbtn" data-ttdel="'+p.id+'" aria-label="ลบโพสต์">'+ico("trash")+'<span>ลบ</span></button>':'')+
+      (own?'<button type="button" class="ttbtn" data-ttedit="'+p.id+'" aria-label="แก้ไขโพสต์">'+ico("edit2")+'<span>แก้ไข</span></button>':'')+
+      (own||S.admin?'<button type="button" class="ttbtn" data-ttdel="'+p.id+'" aria-label="ลบโพสต์">'+ico("trash")+'<span>'+(own?'ลบ':'ลบ (Admin)')+'</span></button>':'')+
     '</div><div class="ttinfo">'+(rank!=null&&rank<3&&(p.like_count||p.view_count)?'<span class="tthot">🔥 ยอดนิยมอันดับ '+(rank+1)+'</span>':'')+'<b>@'+esc(p.author_name)+'</b><small>'+esc([p.author_dept,ago(p.created_at)].filter(Boolean).join(" · "))+'</small>'+(p.caption?'<p>'+esc(p.caption)+'</p>':'')+'</div>'+
     (p.media_type==="video"?'<button type="button" class="ttmute" data-ttmute="1" aria-label="เปิด/ปิดเสียง">'+ico(TT.muted?"mute":"vol")+'</button>':'')+'</article>';
 }
@@ -1719,9 +1806,10 @@ function drawTT(){
   document.querySelectorAll("[data-ttmode]").forEach(function(b){b.classList.toggle("on",b.dataset.ttmode===TT.mode)});
   var list=TT.list.filter(function(p){return TT.mode!=="mine"||p.author_id===S.me.id});
   if(TT.mode==="all"){var sc={};list.forEach(function(p){sc[p.id]=ttScore(p)});list=list.slice().sort(function(a,b){return sc[b.id]-sc[a.id]})}
-  var hot={};TT.list.slice().sort(function(a,b){return (b.like_count*3+b.comment_count*4+(b.view_count||0))-(a.like_count*3+a.comment_count*4+(a.view_count||0))}).slice(0,3).forEach(function(p,i){hot[p.id]=i});
+  TT.view=list;
+  var hot={};TT.list.slice().sort(function(a,b){return (b.like_count*3+b.comment_count*4+(b.view_count||0))-(a.like_count*3+a.comment_count*4+(a.view_count||0))}).slice(0,3).forEach(function(p,i){hot[p.id]=i});TT.hot=hot;TT.loops=1;
   if(TT.obs)TT.obs.disconnect();
-  $("tt-feed").innerHTML=list.length?list.map(function(p){return ttItem(p,hot[p.id])}).join("")+'<div class="ttitem ttend"><div class="ttempty"><div><b style="font-size:18px">ดูครบทุกโพสต์แล้ว</b><br><small>กดปุ่ม “โพสต์” เพื่อลงคลิปของคุณ</small></div></div></div>':'<div class="ttempty"><div>'+(TT.mode==="mine"?"คุณยังไม่มีโพสต์":"ยังไม่มีโพสต์")+'<br><small>กดปุ่ม “โพสต์” เพื่อลงคลิปหรือรูปแรก</small></div></div>';
+  $("tt-feed").innerHTML=list.length?list.map(function(p){return ttItem(p,hot[p.id])}).join(""):'<div class="ttempty"><div>'+(TT.mode==="mine"?"คุณยังไม่มีโพสต์":"ยังไม่มีโพสต์")+'<br><small>กดปุ่ม “โพสต์” เพื่อลงคลิปหรือรูปแรก</small></div></div>';
   /* เล่นเฉพาะคลิปที่อยู่บนจอ */
   if("IntersectionObserver" in window){
     TT.obs=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting&&S.tab==="tt"){ttPlay(v)}else{v.pause();try{v.currentTime=0}catch(x){}}})},{root:$("tt-feed"),threshold:.6});
@@ -1731,6 +1819,16 @@ function drawTT(){
     document.querySelectorAll("#tt-feed .ttitem[data-pid]").forEach(function(it){TT.vobs.observe(it)});
   }
 }
+/* เลื่อนจนสุดแล้ว วนกลับมาเล่นโพสต์เดิมซ้ำต่อไปเรื่อย ๆ */
+function ttMore(){
+  var f=$("tt-feed");if(!TT.view||!TT.view.length||TT.loops>=50)return;
+  if(f.scrollTop+f.clientHeight*2<f.scrollHeight)return;
+  TT.loops++;var wrap=document.createElement("div");wrap.innerHTML=TT.view.map(function(p){return ttItem(p,TT.hot[p.id])}).join("");
+  var items=[].slice.call(wrap.children);items.forEach(function(it){f.appendChild(it)});
+  items.forEach(function(it){var v=it.querySelector("video");if(v&&TT.obs)TT.obs.observe(v);if(TT.vobs)TT.vobs.observe(it)});
+  TT.view.forEach(ttPaint);
+}
+$("tt-feed").addEventListener("scroll",function(){clearTimeout(TT._mt);TT._mt=setTimeout(ttMore,80)},{passive:true});
 function ttVisible(){var f=$("tt-feed"),r=f.getBoundingClientRect(),best=null;f.querySelectorAll("video").forEach(function(v){var b=v.getBoundingClientRect();if(b.top<r.top+r.height/2&&b.bottom>r.top+r.height/2)best=v});return best}
 function ttMuteIcons(){document.querySelectorAll("[data-ttmute]").forEach(function(x){x.innerHTML=ico(TT.muted?"mute":"vol")})}
 /* เล่นแบบมีเสียง ถ้าเบราว์เซอร์ไม่ยอมให้เล่นมีเสียงเอง จะเล่นแบบปิดเสียงก่อน แล้วแตะจอครั้งแรกเพื่อเปิดเสียง */
@@ -1744,9 +1842,9 @@ function ttSeen(id){
   if(TT.seen[id])return;TT.seen[id]=1;var p=ttPost(id);if(!p)return;
   db.rpc("view_post",{p_post:id}).then(function(r){if(r.error||r.data==null)return;p.view_count=r.data;ttPaint(p)});
 }
-function ttPaint(p){var it=document.querySelector('.ttitem[data-pid="'+p.id+'"]');if(!it)return;
-  var l=it.querySelector("[data-ttlike] span"),c=it.querySelector("[data-ttcom] span"),v=it.querySelector(".ttview span");
-  if(l)l.textContent=num(p.like_count);if(c)c.textContent=num(p.comment_count);if(v)v.textContent=num(p.view_count||0)}
+function ttPaint(p){document.querySelectorAll('.ttitem[data-pid="'+p.id+'"]').forEach(function(it){
+  var l=it.querySelector("[data-ttlike] span"),c=it.querySelector("[data-ttcom] span"),v=it.querySelector(".ttview span"),lb=it.querySelector("[data-ttlike]");
+  if(l)l.textContent=num(p.like_count);if(c)c.textContent=num(p.comment_count);if(v)v.textContent=num(p.view_count||0);if(lb)lb.classList.toggle("liked",!!TT.liked[p.id])})}
 /* อัปเดตยอดหัวใจ/คอมเมนต์/เข้าชมของทุกคนอัตโนมัติทุก 10 วินาที ระหว่างเปิดหน้าติ่งต๊อง */
 async function ttLive(){
   if(S.tab!=="tt"||document.hidden||!TT.list.length||TT.busy)return;
@@ -1759,9 +1857,9 @@ document.addEventListener("visibilitychange",function(){if(!document.hidden)ttLi
 function ttPost(id){return TT.list.filter(function(p){return p.id===id})[0]}
 async function ttLike(id,btn){
   var p=ttPost(id);if(!p||TT.busy)return;TT.busy=true;var was=!!TT.liked[id];
-  TT.liked[id]=!was;p.like_count+=was?-1:1;if(btn){btn.classList.toggle("liked",!was);btn.querySelector("span").textContent=num(p.like_count)}
+  TT.liked[id]=!was;p.like_count+=was?-1:1;ttPaint(p);
   try{if(was)await q(db.from("post_likes").delete().eq("post_id",id).eq("employee_id",S.me.id));else await q(db.from("post_likes").insert({post_id:id,employee_id:S.me.id}))}
-  catch(e){TT.liked[id]=was;p.like_count+=was?1:-1;if(btn){btn.classList.toggle("liked",was);btn.querySelector("span").textContent=num(p.like_count)}toast(thErr(e))}
+  catch(e){TT.liked[id]=was;p.like_count+=was?1:-1;ttPaint(p);toast(thErr(e))}
   TT.busy=false;
 }
 $("tt-feed").addEventListener("click",function(ev){
@@ -1779,7 +1877,14 @@ $("tt-feed").addEventListener("click",function(ev){
 });
 $("tt-feed").addEventListener("play",function(ev){var p=ev.target.closest(".ttitem");var o=p&&p.querySelector(".ttpause");if(o)o.remove()},true);
 /* โพสต์ใหม่ */
-function ttReset(){TT.file=null;TT.kind=null;TT.thumb=null;$("tp-prev").innerHTML='<span class="sub">ยังไม่ได้เลือกไฟล์</span>';$("tp-cap").value="";$("tp-submit").disabled=false;$("tp-submit").textContent="โพสต์"}
+function ttReset(){TT.edit=null;TT.file=null;TT.kind=null;TT.thumb=null;$("tp-prev").innerHTML='<span class="sub">ยังไม่ได้เลือกไฟล์</span>';$("tp-cap").value="";$("tp-submit").disabled=false;$("tp-submit").textContent="โพสต์";$("tp-head").textContent="โพสต์ลงติ่งต๊อง";$("tp-filelbl").textContent="เลือกวิดีโอหรือรูป"}
+function ttEditOpen(id){
+  var p=ttPost(id);if(!p)return;ttReset();TT.edit=p;
+  var url=TT.urls[p.media_path]||"";
+  $("tp-prev").innerHTML=p.media_type==="video"?'<video src="'+esc(url)+'" controls playsinline muted></video>':'<img alt="" src="'+esc(url)+'">';
+  $("tp-cap").value=p.caption||"";$("tp-head").textContent="แก้ไขโพสต์";$("tp-submit").textContent="บันทึกการแก้ไข";$("tp-filelbl").textContent="เปลี่ยนวิดีโอหรือรูป (ไม่บังคับ)";
+  openModal("m-ttpost");
+}
 function videoThumb(url){return new Promise(function(res){var v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="auto";v.src=url;
   var done=false,fin=function(x){if(!done){done=true;res(x)}};setTimeout(function(){fin({thumb:null,dur:v.duration||0})},6000);
   v.onloadedmetadata=function(){try{v.currentTime=Math.min(.5,(v.duration||1)/2)}catch(e){fin({thumb:null,dur:v.duration})}};
@@ -1800,7 +1905,10 @@ $("tp-file").addEventListener("change",async function(ev){
 });
 function toBlob(src,max,q){return new Promise(function(res,rej){var img=new Image();img.onload=function(){var k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);c.toBlob(function(b){b?res(b):rej(new Error("แปลงรูปไม่สำเร็จ"))},"image/jpeg",q)};img.onerror=rej;img.src=src})}
 $("ttform").addEventListener("submit",async function(ev){
-  ev.preventDefault();if(!TT.file){toast("เลือกวิดีโอหรือรูปก่อน");return}
+  ev.preventDefault();
+  if(TT.edit&&!TT.file){var ep=TT.edit,cap=$("tp-cap").value.trim();$("tp-submit").disabled=true;
+    act(function(){return q(db.from("posts").update({caption:cap}).eq("id",ep.id))},"บันทึกการแก้ไขแล้ว").then(function(ok){$("tp-submit").disabled=false;if(ok){ep.caption=cap;closeModal("m-ttpost");ttReset();refresh()}});return}
+  if(!TT.file){toast("เลือกวิดีโอหรือรูปก่อน");return}
   var btn=$("tp-submit");btn.disabled=true;btn.textContent="กำลังอัปโหลด...";
   var f=TT.file,isV=TT.kind==="video",blob=f,type=f.type,ext;
   try{
@@ -1809,10 +1917,15 @@ $("ttform").addEventListener("submit",async function(ev){
     var path=S.uid+"/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
     var up=await db.storage.from("tingtong").upload(path,blob,{contentType:type,upsert:false});
     if(up.error)throw up.error;
+    if(TT.edit){var old=TT.edit.media_path;
+      try{await q(db.from("posts").update({media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim()}).eq("id",TT.edit.id))}
+      catch(e){await db.storage.from("tingtong").remove([path]);throw e}
+      await db.storage.from("tingtong").remove([old]);delete TT.urls[old];
+      closeModal("m-ttpost");ttReset();toast("บันทึกการแก้ไขแล้ว");refresh();return}
     try{await q(db.from("posts").insert({author_id:S.me.id,media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim()}))}
     catch(e){await db.storage.from("tingtong").remove([path]);throw e}
     closeModal("m-ttpost");ttReset();toast("โพสต์แล้ว");TT.mode="all";refresh();$("tt-feed").scrollTop=0;
-  }catch(e){toast(/exceeded|too large|413/i.test(e.message||"")?"ไฟล์ใหญ่เกินกำหนด (30 MB)":/mime|type/i.test(e.message||"")?"ไฟล์ชนิดนี้ไม่รองรับ ใช้ .mp4 .mov .webm หรือรูป":thErr(e));btn.disabled=false;btn.textContent="โพสต์"}
+  }catch(e){toast(/exceeded|too large|413/i.test(e.message||"")?"ไฟล์ใหญ่เกินกำหนด (30 MB)":/mime|type/i.test(e.message||"")?"ไฟล์ชนิดนี้ไม่รองรับ ใช้ .mp4 .mov .webm หรือรูป":thErr(e));btn.disabled=false;btn.textContent=TT.edit?"บันทึกการแก้ไข":"โพสต์"}
 });
 /* ความคิดเห็น */
 async function ttComments(id){
@@ -1821,22 +1934,124 @@ async function ttComments(id){
   $("tc-head").textContent="ความคิดเห็น ("+rows.length+")";
   $("tc-list").innerHTML=rows.length?rows.map(function(c){var del=c.author_id===S.me.id||S.admin||(p&&p.author_id===S.me.id);
     return '<div class="tcrow">'+avHtml(c.author_avatar,c.author_name)+'<div style="flex:1;min-width:0"><b>'+esc(c.author_name)+'</b><small>'+ago(c.created_at)+'</small><p>'+esc(c.body)+'</p></div>'+(del?'<button type="button" class="sm danger" data-tcdel="'+c.id+'">ลบ</button>':'')+'</div>'}).join(""):emptyRow("ยังไม่มีความคิดเห็น เป็นคนแรกเลย");
-  if(p){p.comment_count=rows.length;var b=document.querySelector('[data-ttcom="'+id+'"] span');if(b)b.textContent=num(rows.length)}
+  if(p){p.comment_count=rows.length;ttPaint(p)}
 }
 $("tcform").addEventListener("submit",function(ev){
   ev.preventDefault();var body=$("tc-body").value.trim();if(!body||!TT.cur)return;
   act(function(){return q(db.from("post_comments").insert({post_id:TT.cur,author_id:S.me.id,body:body}))},null).then(function(ok){if(ok){$("tc-body").value="";ttComments(TT.cur)}});
 });
 
-var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,telegram:renderTelegram,menu:function(){}};
+/* ---------- ยอดขาย (Admin): ใครขายอะไร กี่ชิ้น ---------- */
+var SS={rows:[],sellers:[]};
+async function drawSales(){
+  var m=$("ss-month").value||today().slice(0,7),from=m+"-01",y=+m.slice(0,4),mo=+m.slice(5,7),to=(mo===12?(y+1)+"-01":y+"-"+String(mo+1).padStart(2,"0"))+"-01";
+  var r=await Promise.all([q(db.from("product_orders").select("*").gte("created_at",from+"T00:00:00+07:00").lt("created_at",to+"T00:00:00+07:00").order("created_at",{ascending:false}).limit(2000)),
+    q(db.from("products").select("id,seller_id,seller_name,seller_dept,title"))]);
+  var P={};r[1].forEach(function(p){P[p.id]=p});
+  SS.rows=r[0].map(function(o){var p=P[o.product_id]||{};return {date:o.created_at,seller:p.seller_name||"-",dept:p.seller_dept||"",product:o.product_title,buyer:o.buyer_name,qty:o.qty,price:+o.unit_price,total:o.qty*o.unit_price,status:o.status,sold:o.status==="confirmed"||o.status==="done"}});
+  var by={};SS.rows.forEach(function(x){if(!x.sold)return;var k=x.seller;by[k]=by[k]||{seller:x.seller,dept:x.dept,qty:0,total:0,orders:0,items:{}};by[k].qty+=x.qty;by[k].total+=x.total;by[k].orders++;by[k].items[x.product]=(by[k].items[x.product]||0)+x.qty});
+  SS.sellers=Object.keys(by).map(function(k){return by[k]}).sort(function(a,b){return b.total-a.total});
+  var sold=SS.rows.filter(function(x){return x.sold}),pend=SS.rows.filter(function(x){return x.status==="pending"});
+  $("ss-stats").innerHTML=[["ยอดขายรวม",baht(sold.reduce(function(a,x){return a+x.total},0))],["ชิ้นที่ขายได้",num(sold.reduce(function(a,x){return a+x.qty},0))],["ผู้ขาย",num(SS.sellers.length)+" คน"]]
+    .map(function(s){return '<div class="stat"><small>'+s[0]+'</small><b>'+s[1]+'</b></div>'}).join("");
+  $("ss-pend").textContent=pend.length?"· รอผู้ขายยืนยันอีก "+pend.length+" รายการ":"";
+  $("ss-sellers").innerHTML=SS.sellers.length?'<thead><tr><th>#</th><th>ผู้ขาย</th><th>แผนก</th><th>สินค้าที่ขายได้</th><th class="n">ชิ้น</th><th class="n">ยอดขาย</th></tr></thead><tbody>'+SS.sellers.map(function(s,i){
+      return '<tr><td>'+(i+1)+'</td><td><b>'+esc(s.seller)+'</b></td><td>'+esc(s.dept)+'</td><td style="white-space:normal">'+Object.keys(s.items).map(function(k){return esc(k)+' ×'+s.items[k]}).join(", ")+'</td><td class="n">'+num(s.qty)+'</td><td class="n"><b>'+baht(s.total)+'</b></td></tr>'}).join("")+'</tbody>':'<tbody><tr><td>ยังไม่มียอดขายในเดือนนี้</td></tr></tbody>';
+  $("ss-rows").innerHTML=SS.rows.length?'<thead><tr><th>วันที่</th><th>ผู้ขาย</th><th>สินค้า</th><th>ผู้ซื้อ</th><th class="n">ชิ้น</th><th class="n">รวม</th><th>สถานะ</th></tr></thead><tbody>'+SS.rows.map(function(x){
+      return '<tr><td>'+new Date(x.date).toLocaleDateString("th-TH",{day:"numeric",month:"short"})+'</td><td>'+esc(x.seller)+'</td><td>'+esc(x.product)+'</td><td>'+esc(x.buyer)+'</td><td class="n">'+x.qty+'</td><td class="n">'+baht(x.total)+'</td><td><small class="ostat '+esc(x.status)+'">'+esc(OSTAT[x.status]||x.status)+'</small></td></tr>'}).join("")+'</tbody>':'<tbody><tr><td>ยังไม่มีคำสั่งซื้อในเดือนนี้</td></tr></tbody>';
+}
+$("ss-month").addEventListener("change",function(){drawSales().catch(function(e){toast(thErr(e))})});
+$("ss-export").addEventListener("click",function(){
+  if(typeof XLSX==="undefined"){toast("กำลังโหลดตัวส่งออก ลองใหม่อีกครั้ง");return}
+  var wb=XLSX.utils.book_new(),m=$("ss-month").value||today().slice(0,7);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(SS.sellers.map(function(s){return {"ผู้ขาย":s.seller,"แผนก":s.dept,"สินค้าที่ขายได้":Object.keys(s.items).map(function(k){return k+" x"+s.items[k]}).join(", "),"จำนวนชิ้น":s.qty,"ยอดขาย (บาท)":s.total}})),"สรุปผู้ขาย");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(SS.rows.map(function(x){return {"วันที่":new Date(x.date).toLocaleString("th-TH"),"ผู้ขาย":x.seller,"แผนก":x.dept,"สินค้า":x.product,"ผู้ซื้อ":x.buyer,"จำนวน":x.qty,"ราคาต่อชิ้น":x.price,"รวม":x.total,"สถานะ":OSTAT[x.status]||x.status}})),"รายการขาย");
+  XLSX.writeFile(wb,"AOI-KPI-sales-"+m+".xlsx");
+});
+
+/* ---------- แชต ---------- */
+var CH={room:"all",list:[],sub:null,poll:null};
+function chRooms(){var r=[{id:"all",t:"ทุกคน"}];
+  if(S.admin)S.depts.forEach(function(d){r.push({id:"dept:"+d.id,t:d.name})});
+  else if(S.me.department_id){var d=S.depts.filter(function(x){return x.id===S.me.department_id})[0];r.push({id:"dept:"+S.me.department_id,t:"แผนก "+(d?d.name:"")})}
+  return r}
+async function renderChat(){
+  $("ch-rooms").innerHTML=chRooms().map(function(r){return '<button type="button" class="chipsel'+(r.id===CH.room?" on":"")+'" data-chroom="'+esc(r.id)+'">'+esc(r.t)+'</button>'}).join("");
+  var rows=await q(db.from("chat_messages").select("*").eq("room",CH.room).order("created_at",{ascending:false}).limit(150));
+  CH.list=rows.reverse();drawChat(true);chatLive();
+}
+function drawChat(stick){
+  var el=$("ch-list"),near=el.scrollHeight-el.scrollTop-el.clientHeight<120,day="";
+  el.innerHTML=CH.list.length?CH.list.map(function(m){var me=m.sender_id===S.me.id,d=new Date(m.created_at),dd=d.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"}),a=okImg(m.sender_avatar),out="";
+    if(dd!==day){day=dd;out+='<div class="cday">'+dd+'</div>'}
+    return out+'<div class="cmsg'+(me?" me":"")+'">'+(me?'':'<span class="avatar">'+(a?'<img alt="" src="'+a+'">':esc(String(m.sender_name||"?").trim().charAt(0)))+'</span>')+'<div class="cb">'+(me?'':'<div class="cn">'+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):'')+'</div>')+'<div class="ct">'+esc(m.body)+'</div><div class="cm">'+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})+(me||S.admin?'<button type="button" data-chdel="'+m.id+'">ลบ</button>':'')+'</div></div></div>'}).join(""):'<div class="cday">ยังไม่มีข้อความ เริ่มทักทายกันเลย</div>';
+  if(stick||near)el.scrollTop=el.scrollHeight;
+}
+function chatAdd(m){
+  if(!m||CH.list.some(function(x){return x.id===m.id}))return;
+  if(S.tab==="chat"&&m.room===CH.room){CH.list.push(m);drawChat(m.sender_id===S.me.id)}
+  else if(m.sender_id!==S.me.id){$("chat-dot").hidden=false;$("chat-dot2").hidden=false}
+}
+/* ข้อความใหม่เด้งทันที (Realtime) + เช็กซ้ำทุก 8 วินาทีกันพลาด */
+function chatLive(){
+  if(!CH.sub&&db.channel){try{CH.sub=db.channel("aoi-chat").on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages"},function(pl){if(pl&&pl.new)chatAdd(pl.new)}).subscribe()}catch(e){CH.sub=null}}
+  if(!CH.poll)CH.poll=setInterval(function(){if(S.tab!=="chat"||document.hidden)return;var last=CH.list.length?CH.list[CH.list.length-1].created_at:"1970-01-01T00:00:00Z";
+    db.from("chat_messages").select("*").eq("room",CH.room).gt("created_at",last).order("created_at").limit(50).then(function(r){if(r.data)r.data.forEach(chatAdd)})},8000);
+}
+$("chform").addEventListener("submit",function(ev){
+  ev.preventDefault();var body=$("ch-body").value.trim();if(!body)return;$("ch-body").value="";
+  db.from("chat_messages").insert({room:CH.room,sender_id:S.me.id,body:body}).select().single().then(function(r){if(r.error){$("ch-body").value=body;toast(thErr(r.error));return}chatAdd(r.data)});
+});
+
+/* ---------- ประกาศตัวหนังสือวิ่ง + เตือนคนที่ยังไม่ลงยอด ---------- */
+var MQ={me:false};
+async function loadMarquee(){
+  if(!S.me)return;
+  var t=today(),items=[];
+  var r=await Promise.all([db.from("announcements").select("*").eq("active",true).order("created_at",{ascending:false}),
+    db.from("work_logs").select("employee_id").eq("work_date",t).limit(5000)]);
+  (r[0].data||[]).forEach(function(a){if(a.expires_at&&new Date(a.expires_at)<new Date())return;items.push({w:a.kind==="warn",t:(a.kind==="warn"?"⚠️ ":"📢 ")+a.message})});
+  var done={};(r[1].data||[]).forEach(function(x){done[x.employee_id]=1});
+  if(!done[S.me.id]&&S.me.role!=="admin")items.unshift({w:true,me:true,t:"⏰ คุณยังไม่ได้ลงยอดผลิตวันนี้ แตะที่นี่เพื่อบันทึก"});
+  if(S.mgr&&new Date().getHours()>=8){var mine=(S.myDepts||S.depts).map(function(d){return d.id}),miss=S.emps.filter(function(e){return e.active&&e.role!=="admin"&&mine.indexOf(e.department_id)>=0&&!done[e.id]});
+    if(miss.length)items.push({w:true,t:"📋 วันนี้ยังไม่ลงยอด "+miss.length+" คน: "+miss.slice(0,15).map(function(e){return e.display_name}).join(", ")+(miss.length>15?" และอีก "+(miss.length-15)+" คน":"")})}
+  var mq=$("mq");if(!items.length){mq.hidden=true;return}
+  var warn=items.some(function(x){return x.w});mq.hidden=false;mq.classList.toggle("warn",warn);MQ.me=items.some(function(x){return x.me});
+  $("mq-badge").textContent=warn?"แจ้งเตือน":"ประกาศ";
+  var tr=$("mq-track"),html=items.map(function(x){return '<span>'+esc(x.t)+'</span>'}).join("");
+  if(tr.innerHTML!==html){tr.innerHTML=html;var len=items.reduce(function(a,x){return a+x.t.length},0);tr.style.animationDuration=Math.max(14,Math.round(len*0.25+10))+"s"}
+}
+$("mq").addEventListener("click",function(){if(MQ.me)show("log")});
+setInterval(function(){if(!document.hidden)loadMarquee().catch(function(){})},3*60000);
+async function renderAnnounce(){
+  if(!S.admin)return;
+  var rows=await q(db.from("announcements").select("*").order("created_at",{ascending:false}));
+  $("an-list").innerHTML=rows.length?rows.map(function(a){var exp=a.expires_at&&new Date(a.expires_at)<new Date();
+    return '<div class="row"><div class="l"><b>'+(a.kind==="warn"?"⚠️ ":"📢 ")+esc(a.message)+'</b><small>'+esc(a.created_by)+' · '+new Date(a.created_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"})+(a.expires_at?' · ถึง '+new Date(a.expires_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"}):'')+(exp?' · หมดอายุแล้ว':'')+'</small><div class="acts">'+
+      (a.active?'<button class="sm" data-anon="'+a.id+'" data-v="0">ปิดชั่วคราว</button>':'<button class="sm good" data-anon="'+a.id+'" data-v="1">เปิดแสดง</button>')+'<button class="sm danger" data-andel="'+a.id+'">ลบ</button></div></div><div class="r">'+(a.active&&!exp?'<small class="ostat done">กำลังแสดง</small>':'<small class="ostat cancelled">ไม่แสดง</small>')+'</div></div>'}).join(""):emptyRow("ยังไม่มีประกาศ");
+}
+$("anform").addEventListener("submit",function(ev){
+  ev.preventDefault();var msg=$("an-msg").value.trim();if(!msg)return;var exp=$("an-exp").value;
+  act(function(){return q(db.from("announcements").insert({message:msg,kind:$("an-kind").value,expires_at:exp?exp+"T23:59:59+07:00":null}))},"เพิ่มประกาศแล้ว").then(function(ok){if(ok){$("an-msg").value="";$("an-exp").value="";renderAnnounce();loadMarquee()}});
+});
+
+/* ---------- Telegram อัตโนมัติ 08:30 / 20:30 ---------- */
+$("ta-on").addEventListener("change",function(){var on=$("ta-on").checked;
+  act(function(){return q(db.from("app_settings").upsert({key:"telegram_daily",value:{enabled:on}}))},on?"เปิดแจ้งเตือนอัตโนมัติแล้ว":"ปิดแจ้งเตือนอัตโนมัติแล้ว").then(function(ok){if(ok)S.settings.telegram_daily={enabled:on};else $("ta-on").checked=!on})});
+$("ta-test").addEventListener("click",function(){
+  act(async function(){var r=await db.rpc("send_kpi_telegram",{p_date:today(),p_force:true});if(r.error)throw r.error;toast(r.data||"ส่งแล้ว")},null);
+});
+
+var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt"];
+var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
   if((tab==="staff"||tab==="emp"||tab==="targets"||tab==="allowmgr"||tab==="admin")&&!S.mgr)tab="home";
-  if((tab==="telegram"||tab==="kpis")&&!S.admin)tab="home";
+  if((tab==="telegram"||tab==="kpis"||tab==="announce")&&!S.admin)tab="home";
+  if(tab==="chat"){$("chat-dot").hidden=true;$("chat-dot2").hidden=true}
   S.tab=tab;
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
   document.querySelectorAll("nav.tabs button").forEach(function(b){if(b.dataset.tab===(tab==="emp"?"staff":tab)||(b.dataset.tab==="menu"&&MAIN.indexOf(tab)<0))b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
@@ -2032,6 +2247,11 @@ document.addEventListener("click",function(ev){
   if(d.close){closeModal(d.close);return}
   if(d.sell){sellModal(null);return}
   if(d.ttpost){ttReset();openModal("m-ttpost");return}
+  if(d.ttedit){ttEditOpen(d.ttedit);return}
+  if(d.chroom){CH.room=d.chroom;CH.list=[];renderChat().catch(function(e){toast(thErr(e))});return}
+  if(d.chdel){if(!armed(b,"ลบ?"))return;act(function(){return q(db.from("chat_messages").delete().eq("id",d.chdel))},"ลบข้อความแล้ว").then(function(ok){if(ok){CH.list=CH.list.filter(function(m){return m.id!==d.chdel});drawChat(false)}});return}
+  if(d.anon){var an=d.anon;act(function(){return q(db.from("announcements").update({active:d.v==="1"}).eq("id",an))},null).then(function(ok){if(ok){renderAnnounce();loadMarquee()}});return}
+  if(d.andel){if(!armed(b,"แตะอีกครั้ง"))return;act(function(){return q(db.from("announcements").delete().eq("id",d.andel))},"ลบประกาศแล้ว").then(function(ok){if(ok){renderAnnounce();loadMarquee()}});return}
   if(d.ttmode){TT.mode=d.ttmode;drawTT();$("tt-feed").scrollTop=0;return}
   if(d.ttlike){ttLike(d.ttlike,b);return}
   if(d.ttcom){$("tc-list").innerHTML=emptyRow("กำลังโหลด...");openModal("m-ttcom");ttComments(d.ttcom).catch(function(e){toast(thErr(e))});return}
@@ -2148,6 +2368,7 @@ async function start(){
   $("p-phone").value=me.phone||"";$("p-kpi").value=me.workstation_id||"";showAvatar("p",me.avatar);
   if(me.workstation_id){$("f-kpi").value=me.workstation_id;showTarget()}
   $("sr-on").checked=(S.settings.self_register||{enabled:true}).enabled!==false;
+  $("ta-on").checked=(S.settings.telegram_daily||{enabled:true}).enabled!==false;$("ss-month").value=today().slice(0,7);
   var lr=S.settings.log_restriction||{};$("r-on").checked=!!lr.enabled;if(lr.max_backdate_days!=null)$("r-days").value=lr.max_backdate_days;
   $("hdate").textContent=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
   $("f-date").value=today();$("f-date").max=today();$("h-date").value=today();$("d-date").value=today();$("m-month").value=today().slice(0,7);
@@ -2155,6 +2376,7 @@ async function start(){
   $("auth").hidden=true;$("app").hidden=false;
   var t0="home";try{t0=localStorage.getItem("aoi-tab")||"home"}catch(e){}
   show(TABS.indexOf(t0)>=0?t0:"home");
+  loadMarquee().catch(function(){});chatLive();
 }
 start().catch(function(e){$("auth").hidden=false;$("a-msg").textContent=thErr(e)});
 })();
