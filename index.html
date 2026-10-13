@@ -484,6 +484,8 @@ body.tt-full .marquee{display:none}
 .chatform input{flex:1;min-width:0}
 .chatform button{flex:none;width:52px;height:46px;min-height:46px;padding:0;justify-content:center;margin:0}
 .chatform input{margin:0}
+.croom,.croom:hover{display:inline-block!important;min-height:0!important;border:0!important;box-shadow:none!important;background:var(--accent);color:#fff;border-radius:999px;padding:0 8px;font-size:11.5px;font-weight:600;margin-right:4px;cursor:pointer}
+.cmsg.me .croom{background:#fff;color:var(--accent)}
 /* ---------- ยอดขาย ---------- */
 .shopseg{display:flex!important;flex-wrap:wrap}.shopseg button{flex:1 1 auto}
 .tbl{width:100%;border-collapse:collapse;font-size:14px}
@@ -498,6 +500,18 @@ body.tt-full .marquee{display:none}
 .ttnoplay small{opacity:.85;font-size:12.5px;line-height:1.4}
 .convnote{grid-column:1/-1;color:#fde68a;font-size:13px;margin:8px 10px;text-align:center}
 .ttprev{grid-template-rows:auto auto}
+/* ---------- ชำระเงิน ---------- */
+.paybox{background:var(--off-bg);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.paybox b#pay-amt{font-family:var(--display);font-size:30px;color:var(--accent)}
+.payqr{background:#fff;border-radius:12px;padding:8px;width:min(260px,70vw)}
+.payqr svg,.payqr img{display:block;width:100%;height:auto}
+.payqr .pphead{background:#0e3a6b;color:#fff;font-weight:700;border-radius:8px 8px 0 0;padding:6px;font-size:14px;letter-spacing:.5px}
+#pay-to{font-size:14px}#pay-to b{font-size:15px}
+#pay-slip img,#py-qrprev img{max-height:160px;border-radius:10px;display:block;margin-top:8px}
+#py-qrprev img{max-height:70px;margin:0}
+.paybadge{font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:6px;white-space:nowrap}
+.paybadge.unpaid{background:#fee2e2;color:#b91c1c}.paybadge.reported{background:#fef3c7;color:#92400e}.paybadge.paid{background:#dcfce7;color:#166534}
+.sellerbox .paywith{display:block;color:var(--good);font-size:12.5px;font-weight:600}
 </style>
 </head>
 <body>
@@ -527,7 +541,7 @@ body.tt-full .marquee{display:none}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-16</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-17</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -763,6 +777,10 @@ body.tt-full .marquee{display:none}
       <div class="pgrid" id="sh-grid"></div>
     </div>
     <div id="sh-mine" class="view" hidden>
+      <div class="panel paypanel"><h3>ช่องทางรับเงินของฉัน</h3><p class="sub">ผู้ซื้อจะเห็น QR พร้อมยอดเงินหลังกดสั่งซื้อ แล้วแนบสลิปมาให้ตรวจ</p>
+        <form id="payform"><div class="grid2"><label>เบอร์พร้อมเพย์ / เลขบัตรประชาชน<input type="text" id="py-pp" inputmode="numeric" maxlength="17" placeholder="เช่น 0812345678"></label><label>ชื่อบัญชี<input type="text" id="py-name" maxlength="100" placeholder="ชื่อที่ขึ้นตอนโอน"></label></div>
+        <div class="inline"><label class="filebtn" data-ico="camera">ใส่รูป QR ธนาคาร (ไม่บังคับ)<input type="file" id="py-file" accept="image/*" hidden></label><span id="py-qrprev"></span><button type="button" class="sm danger" id="py-qrdel" hidden>ลบรูป QR</button></div>
+        <button class="primary slim" type="submit">บันทึกช่องทางรับเงิน</button></form></div>
       <div class="panel"><h3>คำสั่งซื้อที่ได้รับ</h3><div class="rows" id="sh-in"></div></div>
       <h3>สินค้าของฉัน</h3>
       <div class="pgrid" id="sh-my"></div>
@@ -934,7 +952,7 @@ body.tt-full .marquee{display:none}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-16 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-17 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1071,6 +1089,15 @@ body.tt-full .marquee{display:none}
     <div class="headrow"><h3 id="tc-head" style="font-size:18px">ความคิดเห็น</h3><button type="button" class="iconbtn" data-close="m-ttcom" data-ico="x" aria-label="ปิด"></button></div>
     <div class="rows" id="tc-list"></div>
     <form id="tcform" class="inline"><input type="text" id="tc-body" maxlength="300" placeholder="แสดงความคิดเห็น..." autocomplete="off" required><button class="primary slim" type="submit" data-ico="send">ส่ง</button></form>
+  </div>
+</div>
+<div class="modal" id="m-pay" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="pay-head">
+    <div class="headrow"><h3 id="pay-head" style="font-size:18px">ชำระเงิน</h3><button type="button" class="iconbtn" data-close="m-pay" data-ico="x" aria-label="ปิด"></button></div>
+    <div class="paybox"><small id="pay-item"></small><b id="pay-amt"></b><div id="pay-qr" class="payqr"></div><div id="pay-to"></div></div>
+    <div id="pay-slipbox"><label class="filebtn" data-ico="camera">แนบรูปสลิปการโอน<input type="file" id="pay-file" accept="image/*" hidden></label><div id="pay-slip"></div></div>
+    <p class="sub" id="pay-st"></p>
+    <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-pay">ไว้ทีหลัง</button><button type="button" class="primary slim" id="pay-send">แจ้งชำระเงินแล้ว</button></div>
   </div>
 </div>
 <div id="toast" role="status" hidden></div>
@@ -1631,6 +1658,7 @@ $("tl-send").addEventListener("click",async function(ev){
 
 /* ---------- หน้า: สินค้า (ตลาดซื้อขายของพนักงาน) ---------- */
 var CATS=["อาหาร/ขนม","เครื่องดื่ม","เสื้อผ้า/แฟชั่น","ของใช้","ความงาม","อิเล็กทรอนิกส์","อื่นๆ"];
+var PSTAT={unpaid:"ยังไม่ชำระ",reported:"แจ้งโอนแล้ว รอตรวจ",paid:"ชำระแล้ว"};
 var OSTAT={pending:"รอผู้ขายยืนยัน",confirmed:"ยืนยันแล้ว",done:"สำเร็จ",cancelled:"ยกเลิก"};
 var SH={mode:"browse",cat:"",list:[],orders:[],photos:[],edit:null,cur:null,img:0};
 function baht(n){return "฿"+num(n)}
@@ -1640,9 +1668,10 @@ setOptions($("sl-cat"),CATS.map(function(c){return {v:c,t:c}}),null);
 async function renderShop(){
   var r=await Promise.all([
     q(db.from("products").select("id,seller_id,seller_name,seller_dept,title,price,stock,category,condition,contact,cover,status,created_at,rating_avg,rating_count").order("created_at",{ascending:false}).limit(400)),
-    q(db.from("product_orders").select("*").order("created_at",{ascending:false}).limit(300))
+    q(db.from("product_orders").select("id,product_id,buyer_id,buyer_name,buyer_dept,buyer_contact,product_title,unit_price,qty,note,status,created_at,payment_status,paid_at").order("created_at",{ascending:false}).limit(300)),
+    q(db.from("seller_payment").select("employee_id,promptpay,account_name"))
   ]);
-  SH.list=r[0];SH.orders=r[1];drawShop();
+  SH.list=r[0];SH.orders=r[1];SH.pay={};r[2].forEach(function(x){SH.pay[x.employee_id]=x});drawShop();
 }
 function stars(n){n=Math.round(+n||0);return '<span class="stars" aria-label="'+n+' ดาว">'+"★★★★★".slice(0,n)+'<i>'+"★★★★★".slice(n)+'</i></span>'}
 function rateTxt(p){return p.rating_count?'<div class="prate">'+stars(p.rating_avg)+' '+(+p.rating_avg).toFixed(1)+' ('+p.rating_count+')</div>':''}
@@ -1655,15 +1684,19 @@ function orderRow(o,asSeller){
   if(asSeller){
     if(o.status==="pending")b='<button class="sm good" data-ordst="confirmed" data-id="'+o.id+'">'+ico("check")+'ยืนยัน</button><button class="sm danger" data-ordst="cancelled" data-id="'+o.id+'">ยกเลิก</button>';
     else if(o.status==="confirmed")b='<button class="sm good" data-ordst="done" data-id="'+o.id+'">'+ico("check")+'ส่งของแล้ว</button><button class="sm danger" data-ordst="cancelled" data-id="'+o.id+'">ยกเลิก</button>';
+    if(o.status!=="cancelled"){if(o.payment_status==="reported")b+='<button class="sm" data-slip="'+o.id+'">ดูสลิป</button><button class="sm good" data-paid="'+o.id+'">'+ico("check")+'ได้รับเงินแล้ว</button>';
+      else if(o.payment_status==="unpaid")b+='<button class="sm" data-paid="'+o.id+'">ได้รับเงินสดแล้ว</button>'}
   }else if(o.status==="pending")b='<button class="sm danger" data-ordst="cancelled" data-id="'+o.id+'">ยกเลิกคำสั่งซื้อ</button>';
   else if(o.status==="confirmed"||o.status==="done")b='<button class="sm" data-revprod="'+o.product_id+'">★ รีวิวสินค้า</button>';
+  if(!asSeller&&o.status!=="cancelled"&&o.payment_status!=="paid")b='<button class="sm good" data-pay="'+o.id+'">'+(o.payment_status==="reported"?"ดูการชำระเงิน":"ชำระเงิน")+'</button>'+b;
   var who=asSeller?(o.buyer_name+(o.buyer_dept?" · "+o.buyer_dept:"")+(o.buyer_contact?" · โทร "+o.buyer_contact:"")):(function(){var p=SH.list.filter(function(x){return x.id===o.product_id})[0];return p?"ผู้ขาย: "+p.seller_name+(p.contact?" · "+p.contact:""):""})();
-  return '<div class="row"><div class="l"><b>'+esc(o.product_title)+' × '+o.qty+'</b><small>'+esc([who,o.note?"“"+o.note+"”":null,new Date(o.created_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"})].filter(Boolean).join(" · "))+'</small>'+(b?'<div class="acts">'+b+'</div>':'')+'</div><div class="r">'+baht(o.unit_price*o.qty)+'<small class="ostat '+esc(o.status)+'">'+esc(OSTAT[o.status]||o.status)+'</small></div></div>';
+  return '<div class="row"><div class="l"><b>'+esc(o.product_title)+' × '+o.qty+'</b><small>'+esc([who,o.note?"“"+o.note+"”":null,new Date(o.created_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"})].filter(Boolean).join(" · "))+'</small>'+(b?'<div class="acts">'+b+'</div>':'')+'</div><div class="r">'+baht(o.unit_price*o.qty)+'<small class="ostat '+esc(o.status)+'">'+esc(OSTAT[o.status]||o.status)+'</small>'+(o.status!=="cancelled"?'<small class="paybadge '+esc(o.payment_status||"unpaid")+'">'+PSTAT[o.payment_status||"unpaid"]+'</small>':'')+'</div></div>';
 }
 function drawShop(){
   if(SH.mode==="sales"&&!S.admin)SH.mode="browse";
   ["browse","mine","orders","sales"].forEach(function(m){$("sh-"+m).hidden=SH.mode!==m});
   if(SH.mode==="sales")drawSales().catch(function(e){toast(thErr(e))});
+  if(SH.mode==="mine")loadMyPay().catch(function(){});
   document.querySelectorAll("[data-shopmode]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.shopmode===SH.mode)});
   var qq=$("sh-q").value.trim().toLowerCase();
   var vis=SH.list.filter(function(p){return p.status!=="hidden"});
@@ -1724,7 +1757,7 @@ async function openProduct(id){
   $("pd-cat").textContent=p.category;$("pd-title").textContent=p.title;$("pd-price").textContent=baht(p.price);
   $("pd-meta").textContent=[p.condition,p.status==="active"?"เหลือ "+p.stock+" ชิ้น":p.status==="sold"?"ขายแล้ว":"ซ่อนอยู่"].join(" · ");
   $("pd-desc").textContent=p.description||"";$("pd-desc").hidden=!p.description;
-  var sa=okImg(p.seller_avatar);$("pd-av").innerHTML=sa?'<img alt="" src="'+sa+'">':esc(String(p.seller_name).trim().charAt(0));$("pd-seller").textContent=p.seller_name;$("pd-sdept").textContent=p.seller_dept;$("pd-contact").textContent=p.contact?"ติดต่อ: "+p.contact:"";
+  var sa=okImg(p.seller_avatar);$("pd-av").innerHTML=sa?'<img alt="" src="'+sa+'">':esc(String(p.seller_name).trim().charAt(0));$("pd-seller").textContent=p.seller_name;$("pd-sdept").textContent=p.seller_dept;$("pd-contact").innerHTML=esc(p.contact?"ติดต่อ: "+p.contact:"")+(SH.pay&&SH.pay[p.seller_id]?'<span class="paywith">✓ รับชำระผ่านพร้อมเพย์ / QR Code</span>':'');
   var mine=p.seller_id===S.me.id;
   $("buyform").hidden=mine||p.status!=="active";$("pd-own").hidden=!(mine||S.admin);$("pd-edit").hidden=!mine;
   $("pd-toggle").textContent=p.status==="active"?"ซ่อนสินค้า":"วางขายอีกครั้ง";
@@ -1764,10 +1797,10 @@ $("rv-del").addEventListener("click",function(ev){var p=SH.cur;if(!p||!RV.mine||
   act(function(){return q(db.from("product_reviews").delete().eq("id",RV.mine.id))},"ลบรีวิวแล้ว").then(function(ok){if(ok){loadReviews(p);refresh()}})});
 /* ดูรูปเต็มจอ: แตะรูปใหญ่, เลื่อนซ้ายขวาด้วยปุ่ม ลูกศร หรือปัดนิ้ว */
 var VW={i:0};
-function viewerImgs(){return SH.cur?(SH.cur.images||[]).filter(okImg):[]}
+function viewerImgs(){if(VW.list)return VW.list;return SH.cur?(SH.cur.images||[]).filter(okImg):[]}
 function showViewer(i){var imgs=viewerImgs();if(!imgs.length)return;VW.i=(i+imgs.length)%imgs.length;$("v-img").src=imgs[VW.i];
   $("v-count").textContent=imgs.length>1?(VW.i+1)+" / "+imgs.length:"";$("v-prev").hidden=$("v-next").hidden=imgs.length<2;$("m-img").style.zIndex=++MZ;$("m-img").hidden=false}
-$("pd-main").addEventListener("click",function(){showViewer(SH.img)});
+$("pd-main").addEventListener("click",function(){VW.list=null;showViewer(SH.img)});
 $("pd-main").addEventListener("keydown",function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();showViewer(SH.img)}});
 $("v-prev").addEventListener("click",function(){showViewer(VW.i-1)});
 $("v-next").addEventListener("click",function(){showViewer(VW.i+1)});
@@ -1777,8 +1810,9 @@ document.addEventListener("keydown",function(ev){if($("m-img").hidden)return;if(
 $("pd-qty").addEventListener("input",function(){var n=parseInt($("pd-qty").value,10)||0;$("pd-sum").textContent=SH.cur?baht(SH.cur.price*n):"–"});
 $("buyform").addEventListener("submit",function(ev){
   ev.preventDefault();var p=SH.cur,n=parseInt($("pd-qty").value,10);if(!p||!(n>=1)){toast("ใส่จำนวนอย่างน้อย 1");return}
-  act(function(){return q(db.from("product_orders").insert({product_id:p.id,buyer_id:S.me.id,qty:n,note:$("pd-note").value.trim()}))},"สั่งซื้อแล้ว จองสินค้าไว้ให้แล้ว รอผู้ขายยืนยัน")
-    .then(function(ok){if(ok){closeModal("m-prod");SH.mode="orders";refresh()}});
+  var made=null;
+  act(async function(){made=await q(db.from("product_orders").insert({product_id:p.id,buyer_id:S.me.id,qty:n,note:$("pd-note").value.trim()}).select("id,product_id,buyer_id,buyer_name,buyer_dept,buyer_contact,product_title,unit_price,qty,note,status,created_at,payment_status,paid_at").single())},"สั่งซื้อแล้ว จองสินค้าไว้ให้แล้ว")
+    .then(function(ok){if(ok){closeModal("m-prod");SH.mode="orders";refresh();if(made&&SH.pay[p.seller_id])openPay(made,p.seller_id)}});
 });
 $("pd-edit").addEventListener("click",function(){if(SH.cur){closeModal("m-prod");sellModal(SH.cur)}});
 $("pd-toggle").addEventListener("click",function(){var p=SH.cur;if(!p)return;var st=p.status==="active"?"hidden":"active";
@@ -1802,7 +1836,7 @@ async function renderTT(){
 function ttScore(p){var h=(Date.now()-new Date(p.created_at).getTime())/3600000;return ((p.like_count||0)*3+(p.comment_count||0)*4+(p.view_count||0)+2)/Math.pow(h+2,0.6)}
 function ttItem(p,rank){
   var url=TT.urls[p.media_path]||"",own=p.author_id===S.me.id,thumb=okImg(p.thumb);
-  var media=p.media_type==="video"?'<video class="ttmedia" src="'+esc(url)+'"'+(thumb?' poster="'+thumb+'"':'')+' playsinline muted loop preload="metadata"></video>':'<img class="ttmedia" alt="" src="'+esc(url)+'">';
+  var media=p.media_type==="video"?'<video class="ttmedia" crossorigin="anonymous" src="'+esc(url)+'"'+(thumb?' poster="'+thumb+'"':'')+' playsinline muted loop preload="metadata"></video>':'<img class="ttmedia" alt="" src="'+esc(url)+'">';
   return '<article class="ttitem" data-pid="'+p.id+'">'+media+
     '<div class="ttside">'+avHtml(p.author_avatar,p.author_name)+
       '<button type="button" class="ttbtn'+(TT.liked[p.id]?' liked':'')+'" data-ttlike="'+p.id+'" aria-label="ถูกใจ">'+ico("heart")+'<span>'+num(p.like_count)+'</span></button>'+
@@ -1843,9 +1877,15 @@ $("tt-feed").addEventListener("scroll",function(){clearTimeout(TT._mt);TT._mt=se
 function ttVisible(){var f=$("tt-feed"),r=f.getBoundingClientRect(),best=null;f.querySelectorAll("video").forEach(function(v){var b=v.getBoundingClientRect();if(b.top<r.top+r.height/2&&b.bottom>r.top+r.height/2)best=v});return best}
 function ttMuteIcons(){document.querySelectorAll("[data-ttmute]").forEach(function(x){x.innerHTML=ico(TT.muted?"mute":"vol")})}
 /* เล่นแบบมีเสียง ถ้าเบราว์เซอร์ไม่ยอมให้เล่นมีเสียงเอง จะเล่นแบบปิดเสียงก่อน แล้วแตะจอครั้งแรกเพื่อเปิดเสียง */
-function ttCheckDecode(v){clearTimeout(v._dc);v._dc=setTimeout(function(){
-  if(v.paused||v.currentTime<.4||!v.getVideoPlaybackQuality)return;
-  if(v.getVideoPlaybackQuality().totalVideoFrames===0||!v.videoWidth)ttCantPlay(v)},1800)}
+/* ภาพดำล้วน = เบราว์เซอร์ถอดรหัสภาพไม่ได้ (มักเป็นไฟล์ HEVC) */
+function ttIsBlack(v){try{var c=document.createElement("canvas");c.width=24;c.height=24;var g=c.getContext("2d");g.drawImage(v,0,0,24,24);var d=g.getImageData(0,0,24,24).data,m=0;for(var i=0;i<d.length;i+=4)m=Math.max(m,d[i],d[i+1],d[i+2]);return m<12}catch(e){return false}}
+function ttCheckDecode(v){if(v._dcBusy||v._dcOk)return;v._dcBusy=1;
+  setTimeout(function(){
+    if(v.paused||v.readyState<2){v._dcBusy=0;return}
+    var q2=v.getVideoPlaybackQuality?v.getVideoPlaybackQuality():null;
+    if((q2&&q2.totalVideoFrames===0)||!v.videoWidth){ttCantPlay(v);return}
+    if(!ttIsBlack(v)){v._dcOk=1;v._dcBusy=0;return}
+    setTimeout(function(){v._dcBusy=0;if(v.paused)return;if(ttIsBlack(v))ttCantPlay(v);else v._dcOk=1},1500)},1500)}
 function ttCantPlay(v){var it=v.closest(".ttitem");if(!it||it.querySelector(".ttnoplay"))return;
   var p=ttPost(it.dataset.pid),th=p&&okImg(p.thumb);
   it.insertAdjacentHTML("beforeend",'<div class="ttnoplay">'+(th?'<img alt="" src="'+th+'">':'')+'<div><b>เบราว์เซอร์นี้เปิดภาพวิดีโอนี้ไม่ได้</b><small>ไฟล์เป็นแบบ HEVC ดูได้ในมือถือ'+(p&&p.author_id===S.me.id?' หรือกด “แก้ไข” แล้วเลือกวิดีโอเดิมอีกครั้งจากมือถือ ระบบจะแปลงไฟล์ให้เปิดได้ทุกเครื่อง':'')+'</small></div></div>')}
@@ -2004,7 +2044,7 @@ $("tcform").addEventListener("submit",function(ev){
 var SS={rows:[],sellers:[]};
 async function drawSales(){
   var m=$("ss-month").value||today().slice(0,7),from=m+"-01",y=+m.slice(0,4),mo=+m.slice(5,7),to=(mo===12?(y+1)+"-01":y+"-"+String(mo+1).padStart(2,"0"))+"-01";
-  var r=await Promise.all([q(db.from("product_orders").select("*").gte("created_at",from+"T00:00:00+07:00").lt("created_at",to+"T00:00:00+07:00").order("created_at",{ascending:false}).limit(2000)),
+  var r=await Promise.all([q(db.from("product_orders").select("id,product_id,buyer_id,buyer_name,buyer_dept,buyer_contact,product_title,unit_price,qty,note,status,created_at,payment_status,paid_at").gte("created_at",from+"T00:00:00+07:00").lt("created_at",to+"T00:00:00+07:00").order("created_at",{ascending:false}).limit(2000)),
     q(db.from("products").select("id,seller_id,seller_name,seller_dept,title"))]);
   var P={};r[1].forEach(function(p){P[p.id]=p});
   SS.rows=r[0].map(function(o){var p=P[o.product_id]||{};return {date:o.created_at,seller:p.seller_name||"-",dept:p.seller_dept||"",product:o.product_title,buyer:o.buyer_name,qty:o.qty,price:+o.unit_price,total:o.qty*o.unit_price,status:o.status,sold:o.status==="confirmed"||o.status==="done"}});
@@ -2030,32 +2070,38 @@ $("ss-export").addEventListener("click",function(){
 
 /* ---------- แชต ---------- */
 var CH={room:"all",list:[],sub:null,poll:null};
-function chRooms(){var r=[{id:"all",t:"ทุกคน"}];
+/* Admin มีห้อง "รวมทุกห้อง" ดูข้อความทุกห้องในที่เดียว บอกว่ามาจากห้องไหน */
+function chRoomName(id){if(id==="all")return "ทุกคน";var d=S.depts.filter(function(x){return "dept:"+x.id===id})[0];return d?d.name:"แผนก"}
+function chRooms(){var r=(S.admin?[{id:"*",t:"📋 รวมทุกห้อง"}]:[]).concat([{id:"all",t:"ทุกคน"}]);
   if(S.admin)S.depts.forEach(function(d){r.push({id:"dept:"+d.id,t:d.name})});
   else if(S.me.department_id){var d=S.depts.filter(function(x){return x.id===S.me.department_id})[0];r.push({id:"dept:"+S.me.department_id,t:"แผนก "+(d?d.name:"")})}
   return r}
 async function renderChat(){
+  var rooms=chRooms();if(!rooms.some(function(r){return r.id===CH.room}))CH.room=rooms.length?rooms[0].id:"";
+  if(!CH.room){$("ch-rooms").innerHTML="";$("ch-list").innerHTML='<div class="cday">คุณยังไม่มีแผนก ให้ผู้ดูแลกำหนดแผนกก่อนจึงจะแชตได้</div>';return}
   $("ch-rooms").innerHTML=chRooms().map(function(r){return '<button type="button" class="chipsel'+(r.id===CH.room?" on":"")+'" data-chroom="'+esc(r.id)+'">'+esc(r.t)+'</button>'}).join("");
-  var rows=await q(db.from("chat_messages").select("*").eq("room",CH.room).order("created_at",{ascending:false}).limit(150));
+  var qq=db.from("chat_messages").select("*");if(CH.room!=="*")qq=qq.eq("room",CH.room);
+  var rows=await q(qq.order("created_at",{ascending:false}).limit(CH.room==="*"?300:150));
+  var all=CH.room==="*";$("ch-body").disabled=all;$("ch-body").placeholder=all?"ห้องรวมดูอย่างเดียว เลือกห้องด้านบนเพื่อพิมพ์ตอบ":"พิมพ์ข้อความ...";$("chform").querySelector("button").disabled=all;
   CH.list=rows.reverse();drawChat(true);chatLive();
 }
 function drawChat(stick){
   var el=$("ch-list"),near=el.scrollHeight-el.scrollTop-el.clientHeight<120,day="";
   el.innerHTML=CH.list.length?CH.list.map(function(m){var me=m.sender_id===S.me.id,d=new Date(m.created_at),dd=d.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"}),a=okImg(m.sender_avatar),out="";
     if(dd!==day){day=dd;out+='<div class="cday">'+dd+'</div>'}
-    return out+'<div class="cmsg'+(me?" me":"")+'">'+(me?'':'<span class="avatar">'+(a?'<img alt="" src="'+a+'">':esc(String(m.sender_name||"?").trim().charAt(0)))+'</span>')+'<div class="cb">'+(me?'':'<div class="cn">'+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):'')+'</div>')+'<div class="ct">'+esc(m.body)+'</div><div class="cm">'+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})+(me||S.admin?'<button type="button" data-chdel="'+m.id+'">ลบ</button>':'')+'</div></div></div>'}).join(""):'<div class="cday">ยังไม่มีข้อความ เริ่มทักทายกันเลย</div>';
+    return out+'<div class="cmsg'+(me?" me":"")+'">'+(me?'':'<span class="avatar">'+(a?'<img alt="" src="'+a+'">':esc(String(m.sender_name||"?").trim().charAt(0)))+'</span>')+'<div class="cb">'+(CH.room==="*"?'<div class="cn"><button type="button" class="croom" data-chroom="'+esc(m.room)+'" title="ไปที่ห้องนี้">ห้อง '+esc(chRoomName(m.room))+'</button>'+(me?'':' '+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):''))+'</div>':(me?'':'<div class="cn">'+esc(m.sender_name)+(m.sender_dept?' · '+esc(m.sender_dept):'')+'</div>'))+'<div class="ct">'+esc(m.body)+'</div><div class="cm">'+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})+(me||S.admin?'<button type="button" data-chdel="'+m.id+'">ลบ</button>':'')+'</div></div></div>'}).join(""):'<div class="cday">ยังไม่มีข้อความ เริ่มทักทายกันเลย</div>';
   if(stick||near)el.scrollTop=el.scrollHeight;
 }
 function chatAdd(m){
   if(!m||CH.list.some(function(x){return x.id===m.id}))return;
-  if(S.tab==="chat"&&m.room===CH.room){CH.list.push(m);drawChat(m.sender_id===S.me.id)}
+  if(S.tab==="chat"&&(m.room===CH.room||CH.room==="*")){CH.list.push(m);drawChat(m.sender_id===S.me.id)}
   else if(m.sender_id!==S.me.id){$("chat-dot").hidden=false;$("chat-dot2").hidden=false}
 }
 /* ข้อความใหม่เด้งทันที (Realtime) + เช็กซ้ำทุก 8 วินาทีกันพลาด */
 function chatLive(){
   if(!CH.sub&&db.channel){try{CH.sub=db.channel("aoi-chat").on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages"},function(pl){if(pl&&pl.new)chatAdd(pl.new)}).subscribe()}catch(e){CH.sub=null}}
   if(!CH.poll)CH.poll=setInterval(function(){if(S.tab!=="chat"||document.hidden)return;var last=CH.list.length?CH.list[CH.list.length-1].created_at:"1970-01-01T00:00:00Z";
-    db.from("chat_messages").select("*").eq("room",CH.room).gt("created_at",last).order("created_at").limit(50).then(function(r){if(r.data)r.data.forEach(chatAdd)})},8000);
+    (CH.room==="*"?db.from("chat_messages").select("*"):db.from("chat_messages").select("*").eq("room",CH.room)).gt("created_at",last).order("created_at").limit(50).then(function(r){if(r.data)r.data.forEach(chatAdd)})},8000);
 }
 $("chform").addEventListener("submit",function(ev){
   ev.preventDefault();var body=$("ch-body").value.trim();if(!body)return;$("ch-body").value="";
@@ -2099,6 +2145,51 @@ $("ta-on").addEventListener("change",function(){var on=$("ta-on").checked;
   act(function(){return q(db.from("app_settings").upsert({key:"telegram_daily",value:{enabled:on}}))},on?"เปิดแจ้งเตือนอัตโนมัติแล้ว":"ปิดแจ้งเตือนอัตโนมัติแล้ว").then(function(ok){if(ok)S.settings.telegram_daily={enabled:on};else $("ta-on").checked=!on})});
 $("ta-test").addEventListener("click",function(){
   act(async function(){var r=await db.rpc("send_kpi_telegram",{p_date:today(),p_force:true});if(r.error)throw r.error;toast(r.data||"ส่งแล้ว")},null);
+});
+
+/* ---------- ชำระเงิน: พร้อมเพย์ QR (ใส่ยอดให้อัตโนมัติ) / QR ธนาคารของผู้ขาย + แนบสลิป ---------- */
+function ppPayload(id,amount){
+  id=String(id||"").replace(/\D/g,"");var f=function(t,v){return t+String(v.length).padStart(2,"0")+v};
+  var acc=id.length>=15?f("03",id):id.length===13?f("02",id):f("01",("0066"+id.replace(/^0/,"")).slice(-13).padStart(13,"0"));
+  var p=f("00","01")+f("01",amount?"12":"11")+f("29",f("00","A000000677010111")+acc)+f("58","TH")+f("53","764")+(amount?f("54",(+amount).toFixed(2)):"")+"6304";
+  var crc=0xFFFF;for(var i=0;i<p.length;i++){crc^=p.charCodeAt(i)<<8;for(var j=0;j<8;j++)crc=crc&0x8000?((crc<<1)^0x1021)&0xFFFF:(crc<<1)&0xFFFF}
+  return p+crc.toString(16).toUpperCase().padStart(4,"0")}
+var PAY={order:null,slip:null};
+async function openPay(o,sellerId){
+  PAY.order=o;PAY.slip=null;var amt=o.unit_price*o.qty,sp=sellerId&&SH.pay?SH.pay[sellerId]:null;
+  $("pay-item").textContent=o.product_title+" × "+o.qty;$("pay-amt").textContent=baht(amt);
+  $("pay-qr").innerHTML=emptyRow("กำลังโหลด...");$("pay-to").innerHTML="";$("pay-slip").innerHTML="";
+  $("pay-st").textContent=o.payment_status==="reported"?"แจ้งโอนแล้ว รอผู้ขายตรวจสอบ (แนบสลิปใหม่ได้ถ้าส่งผิด)":"สแกน QR แล้วโอนให้ตรงยอด จากนั้นแนบสลิปและกด “แจ้งชำระเงินแล้ว”";
+  openModal("m-pay");
+  try{
+    var full=sellerId?await q(db.from("seller_payment").select("*").eq("employee_id",sellerId).maybeSingle()):null;
+    if(full&&full.promptpay&&window.qrcode){var qr=window.qrcode(0,"M");qr.addData(ppPayload(full.promptpay,amt));qr.make();
+      $("pay-qr").innerHTML='<div class="pphead">PromptPay พร้อมเพย์</div>'+qr.createSvgTag({cellSize:5,margin:3,scalable:true})}
+    else if(full&&okImg(full.qr_image))$("pay-qr").innerHTML='<img alt="QR รับเงิน" src="'+full.qr_image+'">';
+    else $("pay-qr").innerHTML=emptyRow("ผู้ขายยังไม่ได้ตั้งช่องทางรับเงิน ติดต่อผู้ขายโดยตรง");
+    if(full){var ppn=String(full.promptpay||"");$("pay-to").innerHTML=(full.account_name?'<b>'+esc(full.account_name)+'</b><br>':'')+(ppn?'พร้อมเพย์ '+esc(ppn.length===10?ppn.slice(0,3)+"-"+ppn.slice(3,6)+"-"+ppn.slice(6):ppn)+' <button type="button" class="sm" id="pay-copy">คัดลอก</button>':'')+(full.promptpay&&okImg(full.qr_image)?'<br><small class="sub">หรือ <a href="#" id="pay-alt">ใช้ QR ธนาคารของผู้ขาย</a></small>':'');
+      var cp=$("pay-copy");if(cp)cp.onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(ppn):Promise.reject()).then(function(){toast("คัดลอกเบอร์พร้อมเพย์แล้ว")},function(){})};
+      var al=$("pay-alt");if(al)al.onclick=function(e){e.preventDefault();$("pay-qr").innerHTML='<img alt="QR รับเงิน" src="'+full.qr_image+'">'}}
+    if(o.payment_status==="reported"){var r=await q(db.from("product_orders").select("slip").eq("id",o.id).single());if(okImg(r.slip))$("pay-slip").innerHTML='<img alt="สลิป" src="'+r.slip+'">'}
+  }catch(e){$("pay-qr").innerHTML=emptyRow(thErr(e))}
+}
+$("pay-file").addEventListener("change",async function(ev){var f=ev.target.files[0];ev.target.value="";if(!f)return;
+  var u=URL.createObjectURL(f);try{var d=await resizeImg(u,1100,.75);if(d.length>390000)d=await resizeImg(u,800,.6);PAY.slip=d;$("pay-slip").innerHTML='<img alt="สลิป" src="'+d+'">'}catch(e){toast("เปิดรูปไม่ได้")}finally{URL.revokeObjectURL(u)}});
+$("pay-send").addEventListener("click",function(){
+  if(!PAY.order)return;if(!PAY.slip){toast("แนบรูปสลิปการโอนก่อน");return}
+  act(function(){return q(db.from("product_orders").update({payment_status:"reported",slip:PAY.slip}).eq("id",PAY.order.id))},"แจ้งชำระเงินแล้ว รอผู้ขายตรวจสอบ").then(function(ok){if(ok){closeModal("m-pay");refresh()}});
+});
+/* ร้านของฉัน: ตั้งช่องทางรับเงิน */
+var PYF={qr:undefined};
+async function loadMyPay(){var r=await q(db.from("seller_payment").select("*").eq("employee_id",S.me.id).maybeSingle());
+  $("py-pp").value=r?r.promptpay:"";$("py-name").value=r?r.account_name:(S.me.display_name||"");PYF.qr=r&&okImg(r.qr_image)?r.qr_image:null;drawPyQr()}
+function drawPyQr(){$("py-qrprev").innerHTML=PYF.qr?'<img alt="QR" src="'+PYF.qr+'">':"";$("py-qrdel").hidden=!PYF.qr}
+$("py-file").addEventListener("change",async function(ev){var f=ev.target.files[0];ev.target.value="";if(!f)return;var u=URL.createObjectURL(f);try{PYF.qr=await resizeImg(u,900,.85);if(PYF.qr.length>290000)PYF.qr=await resizeImg(u,700,.75);drawPyQr()}catch(e){toast("เปิดรูปไม่ได้")}finally{URL.revokeObjectURL(u)}});
+$("py-qrdel").addEventListener("click",function(){PYF.qr=null;drawPyQr()});
+$("payform").addEventListener("submit",function(ev){ev.preventDefault();
+  var pp=$("py-pp").value.replace(/\D/g,"");if(pp&&!(pp.length===10||pp.length===13||pp.length===15)){toast("เบอร์พร้อมเพย์ต้องเป็นเบอร์มือถือ 10 หลัก หรือเลขบัตร 13 หลัก");return}
+  if(!pp&&!PYF.qr){toast("ใส่เบอร์พร้อมเพย์ หรือรูป QR อย่างใดอย่างหนึ่ง");return}
+  act(function(){return q(db.from("seller_payment").upsert({employee_id:S.me.id,promptpay:pp,account_name:$("py-name").value.trim(),qr_image:PYF.qr||null}))},"บันทึกช่องทางรับเงินแล้ว").then(function(ok){if(ok)refresh()});
 });
 
 var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,menu:function(){}};
@@ -2307,6 +2398,9 @@ document.addEventListener("click",function(ev){
   if(d.sell){sellModal(null);return}
   if(d.ttpost){ttReset();openModal("m-ttpost");return}
   if(d.ttedit){ttEditOpen(d.ttedit);return}
+  if(d.pay){var po=SH.orders.filter(function(x){return x.id===d.pay})[0];if(po){var pp=SH.list.filter(function(x){return x.id===po.product_id})[0];openPay(po,pp?pp.seller_id:null)}return}
+  if(d.slip){q(db.from("product_orders").select("slip").eq("id",d.slip).single()).then(function(r){if(!okImg(r.slip)){toast("ไม่มีรูปสลิป");return}VW.list=[r.slip];showViewer(0)}).catch(function(e){toast(thErr(e))});return}
+  if(d.paid){act(function(){return q(db.from("product_orders").update({payment_status:"paid"}).eq("id",d.paid))},"บันทึกว่าได้รับเงินแล้ว").then(function(ok){if(ok)refresh()});return}
   if(d.delemp){var de=empOf(d.delemp);if(!de||!armed(b,"แตะอีกครั้ง = ลบ "+de.display_name+" ถาวร"))return;
     act(async function(){
       var ps=await q(db.from("posts").select("media_path").eq("author_id",de.id));if(ps.length)await db.storage.from("tingtong").remove(ps.map(function(x){return x.media_path}));
