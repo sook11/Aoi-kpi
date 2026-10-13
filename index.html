@@ -554,7 +554,7 @@ video.cmedia{cursor:default}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-18</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-19</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -965,7 +965,7 @@ video.cmedia{cursor:default}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-18 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-19 · 11/10/2569</p>
   </section>
 </div>
 
@@ -2138,9 +2138,12 @@ async function loadMarquee(){
   var warn=items.some(function(x){return x.w});mq.hidden=false;mq.classList.toggle("warn",warn);MQ.me=items.some(function(x){return x.me});
   $("mq-badge").textContent=warn?"แจ้งเตือน":"ประกาศ";
   var tr=$("mq-track"),html=items.map(function(x){return '<span>'+esc(x.t)+'</span>'}).join("");
-  if(tr.innerHTML!==html){tr.innerHTML=html;var len=items.reduce(function(a,x){return a+x.t.length},0);tr.style.animationDuration=Math.max(14,Math.round(len*0.25+10))+"s"}
+  if(tr.innerHTML!==html){tr.innerHTML=html;mqSpeed()}
 }
 $("mq").addEventListener("click",function(){if(MQ.me)show("log")});
+/* ความเร็วตัวหนังสือวิ่งคงที่ ~140 พิกเซล/วินาที ไม่ว่าจอกว้างหรือข้อความยาวแค่ไหน */
+function mqSpeed(){requestAnimationFrame(function(){var tr=$("mq-track");if(!tr||!tr.offsetWidth)return;tr.style.animationDuration=Math.max(6,tr.offsetWidth/140).toFixed(1)+"s"})}
+window.addEventListener("resize",function(){clearTimeout(MQ.rt);MQ.rt=setTimeout(mqSpeed,300)});
 setInterval(function(){if(!document.hidden)loadMarquee().catch(function(){})},3*60000);
 async function renderAnnounce(){
   if(!S.admin)return;
