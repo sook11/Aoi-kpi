@@ -231,6 +231,7 @@ rect.bar{transform-box:fill-box;transform-origin:bottom;animation:grow .5s ease 
 .avrow{display:flex;flex-direction:row;align-items:center;gap:14px}
 /* ---------- เมนูเพิ่มเติม / หน้าใหม่ ---------- */
 nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
+@media (min-width:900px){nav.tabs .empnav{display:none!important}}
 .menugrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .menugrid button{padding:18px 12px;text-align:left;font-size:15px;box-shadow:var(--shadow)}
 .steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
@@ -595,6 +596,12 @@ button.atall{color:var(--sc);border-color:color-mix(in srgb,var(--sc) 40%,transp
 .qrcard{background:#fff;color:#111;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:2px;break-inside:avoid}
 .qrcard svg{width:100%;max-width:150px;height:auto;margin:0 auto 4px}.qrcard b{font-size:13px;line-height:1.3}.qrcard small{font-size:11px;color:#555}
 .myqr{align-items:center;text-align:center}.myqr #my-qr{background:#fff;padding:10px;border-radius:14px;width:min(260px,70vw)}.myqr svg{width:100%;height:auto;display:block}.myqr small{color:var(--muted)}
+.pmbody{display:flex;flex-direction:column;gap:12px}.pmlist{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.pmlist .pmg{font-size:12.5px;font-weight:700;color:var(--muted);margin-top:6px}.pmlist label.check{font-size:14px}.pmlist label.check{align-items:flex-start}.pmlist .pmt{display:flex;flex-direction:column;line-height:1.35}.pmlist .pmt b{font-weight:600}.pmlist .pmt small{color:var(--muted);font-size:12px}
+.pmpre{align-items:center;margin-top:6px}.pmchips{display:flex;flex-wrap:wrap;gap:4px}.pmchip{font-size:11.5px;border-radius:99px;padding:2px 8px;background:var(--off-bg);white-space:nowrap}
+.pmchip.p-att_check,.pmchip.p-att_view{background:#fef3c7;color:#92400e}.pmchip.p-leave_view,.pmchip.p-leave_appr,.pmchip.p-leave_admin{background:#e0f2fe;color:#075985}.pmchip.p-kpi{background:#dcfce7;color:#166534}.pmchip.p-deduct{background:#fee2e2;color:#991b1b}.pmchip.p-emp{background:#ede9fe;color:#5b21b6}
+@media (prefers-color-scheme: dark){.pmchip{filter:brightness(.8)}}
+.pmtbl td{vertical-align:top}.pmtbl .rl{font-weight:600;white-space:nowrap}
 #qrprint{display:none}.qrcard .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#111}
 @media print{
   @page{size:A4 portrait;margin:8mm}
@@ -974,8 +981,8 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div><h2>🏆 เกมพนักงาน</h2><p class="sub" id="gm-sub">คะแนนและอันดับจากข้อมูลการเข้างานจริง</p></div>
     <div class="filters">
       <label>เดือน<input type="month" id="gm-month"></label>
-      <label>แผนก<select id="gm-dept"></select></label>
-      <label>ค้นหา<input type="search" id="gm-q" placeholder="ชื่อพนักงาน" autocomplete="off"></label>
+      <label data-perm="att_view">แผนก<select id="gm-dept"></select></label>
+      <label data-perm="att_view">ค้นหา<input type="search" id="gm-q" placeholder="ชื่อพนักงาน" autocomplete="off"></label>
     </div>
     <div class="chips"><button type="button" class="chipsel on" data-gmode="xp">🏆 คะแนนเข้างาน</button><button type="button" class="chipsel" data-gmode="fast">⚡ มาต่อกะเร็ว</button></div>
     <div class="stats" id="gm-stats"></div>
@@ -1025,7 +1032,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div><h2>ขอลางาน</h2><p class="sub">กรอกข้อมูลเพื่อยื่นคำขอลา · วันอาทิตย์และวันหยุดโรงงานไม่นับเป็นวันลา</p></div>
     <div class="panel">
       <form id="lvform" class="lvform">
-        <label class="lva">คีย์ลาให้ (หัวหน้า)<select id="lv-emp"></select></label>
+        <label data-perm="leave_appr">คีย์ลาให้ (หัวหน้า)<select id="lv-emp"></select></label>
         <div class="lvwho" id="lv-who"></div>
         <label>ประเภทการลา *<select id="lv-type" required></select></label>
         <div class="lvbal" id="lv-bal"></div>
@@ -1125,7 +1132,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div><h2>เมนู</h2><p class="sub">เลือกหน้าที่ต้องการ</p></div>
     <div class="menugrid">
       <button data-tab="staff" class="mgr">พนักงาน</button>
-      <button data-tab="top">Top 5 ยอดผลิต</button>
+      <button data-tab="top" class="mgr">Top 5 ยอดผลิต</button>
       <button data-tab="tt">ติ่งต๊อง</button>
       <button data-tab="chat">แชต<i class="navdot" id="chat-dot2" hidden></i></button>
       <button data-tab="shop">สินค้า</button>
@@ -1134,22 +1141,23 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button data-tab="leave">ขอลางาน</button>
       <button data-tab="myleave">วันลาของฉัน</button>
       <button data-tab="leavecal">ปฏิทินลา</button>
-      <button data-tab="leaveappr" class="lva">อนุมัติการลา<i class="navdot num" id="lv-dot2" hidden></i></button>
-      <button data-tab="leaveadmin" class="lva">จัดการวันลา</button>
+      <button data-tab="leaveappr" data-perm="leave_view">อนุมัติการลา<i class="navdot num" id="lv-dot2" hidden></i></button>
+      <button data-tab="leaveadmin" data-perm="leave_admin">จัดการวันลา</button>
       <button data-tab="myatt">เช็คชื่อของฉัน / QR</button>
       <button data-tab="game">เกมพนักงาน</button>
-      <button data-tab="att" class="mgr">เช็ครายชื่อ</button>
-      <button data-tab="empmgr" class="mgr">จัดการพนักงาน</button>
-      <button data-tab="attdash" class="mgr">แดชบอร์ดเช็คชื่อ</button>
-      <button data-tab="atthist" class="mgr">ประวัติย้อนหลัง</button>
-      <button data-tab="attqr" class="mgr">QR Code พนักงาน</button>
-      <button data-tab="deduct" class="mgr">หัก KPI</button>
-      <button data-tab="dedrep" class="mgr">รายงานหัก KPI</button>
-      <button data-tab="tv" class="mgr">หน้าจอ TV</button>
+      <button data-tab="att" data-perm="att_check">เช็ครายชื่อ</button>
+      <button data-tab="empmgr" data-perm="emp">จัดการพนักงาน</button>
+      <button data-tab="attdash" data-perm="att_view">แดชบอร์ดเช็คชื่อ</button>
+      <button data-tab="atthist" data-perm="att_view">ประวัติย้อนหลัง</button>
+      <button data-tab="attqr" data-perm="att_check">QR Code พนักงาน</button>
+      <button data-tab="deduct" data-perm="deduct">หัก KPI</button>
+      <button data-tab="dedrep" data-perm="deduct">รายงานหัก KPI</button>
+      <button data-tab="tv" data-perm="att_view">หน้าจอ TV</button>
       <button data-tab="admin" class="mgr">Admin Dashboard</button>
       <button data-tab="targets" class="mgr">กำหนดเป้าหมายรายวัน</button>
       <button data-tab="kpis" class="adm">จัดการหน้างาน</button>
       <button data-tab="allowmgr" class="mgr">จัดการ KPI/Allowance</button>
+      <button data-tab="perms" class="adm">สิทธิ์ผู้ใช้</button>
       <button data-tab="telegram" class="adm">แจ้งเตือน Telegram</button>
       <button data-tab="announce" class="adm">ประกาศตัวหนังสือวิ่ง</button>
       <button data-tab="settings">ตั้งค่า</button>
@@ -1338,6 +1346,17 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   </section>
 
   <!-- TELEGRAM (Admin) -->
+  <!-- ADMIN: สิทธิ์ผู้ใช้ -->
+  <section class="view" id="v-perms" hidden>
+    <div><h2>สิทธิ์ผู้ใช้</h2><p class="sub">Admin กำหนดว่าใครดูแลแผนกไหน และทำอะไรได้บ้าง (เช็คชื่อ · หัก KPI · การลา · งานผลิต · จัดการพนักงาน)</p></div>
+    <div class="filters">
+      <label>แสดง<select id="pm-show"><option value="1">เฉพาะผู้มีสิทธิ์</option><option value="">พนักงานทั้งหมด</option></select></label>
+      <label>แผนก<select id="pm-dept"></select></label>
+      <label>ค้นหา<input type="search" id="pm-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label>
+    </div>
+    <div class="panel"><p class="sub" id="pm-count"></p><div class="scroll"><table class="tbl pmtbl"><thead><tr><th>พนักงาน</th><th>ระดับ</th><th>แผนกที่ดูแล</th><th>สิทธิ์</th><th></th></tr></thead><tbody id="pm-rows"></tbody></table></div></div>
+  </section>
+
   <section class="view g2" id="v-telegram" hidden>
     <div><h2>แจ้งเตือน Telegram</h2><p class="sub">ส่งรายชื่อคนที่ยังไม่ลง KPI เข้ากลุ่ม Telegram ด้วยการกดปุ่ม</p></div>
     <div class="panel half">
@@ -1426,11 +1445,13 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <span class="navlabel" data-g="kpi">📊 งานผลิต · KPI</span>
   <button data-tab="home" aria-current="page">ภาพรวม</button>
   <button data-tab="log">บันทึก<span class="navx-t">ผลงาน</span></button>
-  <button data-tab="daily">รายวัน</button>
-  <button data-tab="monthly">รายเดือน</button>
+  <button data-tab="daily" class="mgr">รายวัน</button>
+  <button data-tab="monthly" class="mgr">รายเดือน</button>
+  <button data-tab="tt" class="empnav">ติ่งต๊อง</button>
+  <button data-tab="leave" class="empnav">ขอลา</button>
   <button data-tab="staff" class="mgr navx">พนักงาน</button>
   <div class="navsub mgr" id="nav-depts"></div>
-  <button data-tab="top" class="navx">Top 5 ยอดผลิต</button>
+  <button data-tab="top" class="mgr navx">Top 5 ยอดผลิต</button>
   <button data-tab="allowance" class="navx">KPI / Allowance</button>
   <span class="navlabel" data-g="soc">🛍️ ร้านค้า · ติ่งต๊อง · แชต</span>
   <button data-tab="shop" class="navx">สินค้า</button>
@@ -1441,24 +1462,25 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <button data-tab="leave" class="navx">ขอลางาน</button>
   <button data-tab="myleave" class="navx">วันลาของฉัน</button>
   <button data-tab="leavecal" class="navx">ปฏิทินลา</button>
-  <button data-tab="leaveappr" class="lva navx">อนุมัติการลา<i class="navdot num" id="lv-dot" hidden></i></button>
-  <button data-tab="leaveadmin" class="lva navx">จัดการวันลา</button>
+  <button data-tab="leaveappr" data-perm="leave_view" class="navx">อนุมัติการลา<i class="navdot num" id="lv-dot" hidden></i></button>
+  <button data-tab="leaveadmin" data-perm="leave_admin" class="navx">จัดการวันลา</button>
   <span class="navlabel" data-g="att">✅ เช็คชื่อ</span>
   <button data-tab="myatt" class="navx">เช็คชื่อของฉัน / QR</button>
   <button data-tab="game" class="navx">เกมพนักงาน</button>
-  <button data-tab="att" class="mgr navx">เช็ครายชื่อ</button>
-  <button data-tab="empmgr" class="mgr navx">จัดการพนักงาน</button>
-  <button data-tab="attdash" class="mgr navx">แดชบอร์ดเช็คชื่อ</button>
-  <button data-tab="atthist" class="mgr navx">ประวัติย้อนหลัง</button>
-  <button data-tab="attqr" class="mgr navx">QR Code พนักงาน</button>
-  <button data-tab="deduct" class="mgr navx">หัก KPI</button>
-  <button data-tab="dedrep" class="mgr navx">รายงานหัก KPI</button>
-  <button data-tab="tv" class="mgr navx">หน้าจอ TV</button>
+  <button data-tab="att" data-perm="att_check" class="navx">เช็ครายชื่อ</button>
+  <button data-tab="empmgr" data-perm="emp" class="navx">จัดการพนักงาน</button>
+  <button data-tab="attdash" data-perm="att_view" class="navx">แดชบอร์ดเช็คชื่อ</button>
+  <button data-tab="atthist" data-perm="att_view" class="navx">ประวัติย้อนหลัง</button>
+  <button data-tab="attqr" data-perm="att_check" class="navx">QR Code พนักงาน</button>
+  <button data-tab="deduct" data-perm="deduct" class="navx">หัก KPI</button>
+  <button data-tab="dedrep" data-perm="deduct" class="navx">รายงานหัก KPI</button>
+  <button data-tab="tv" data-perm="att_view" class="navx">หน้าจอ TV</button>
   <span class="navlabel mgr" data-g="adm">⚙️ ADMIN · ตั้งค่า</span>
   <button data-tab="admin" class="mgr navx">Admin Dashboard</button>
   <button data-tab="targets" class="mgr navx">กำหนดเป้าหมายรายวัน</button>
   <button data-tab="kpis" class="adm navx">จัดการหน้างาน</button>
   <button data-tab="allowmgr" class="mgr navx">จัดการ KPI/Allowance</button>
+  <button data-tab="perms" class="adm navx">สิทธิ์ผู้ใช้</button>
   <button data-tab="telegram" class="adm navx">แจ้งเตือน Telegram</button>
   <button data-tab="announce" class="adm navx">ประกาศตัวหนังสือวิ่ง</button>
   <button data-tab="settings" class="navx">ตั้งค่า</button>
@@ -1466,6 +1488,21 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 </div></nav>
 </div>
 <!-- ============ POPUPS ============ -->
+<div class="modal" id="m-perm" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+    <div class="headrow"><h3 id="pm-title" style="font-size:18px">กำหนดสิทธิ์</h3><button type="button" class="iconbtn" data-close="m-perm" data-ico="x" aria-label="ปิด"></button></div>
+    <div class="lvwho" id="pm-who"></div>
+    <label>ระดับ<select id="pm-role"><option value="employee">พนักงานทั่วไป</option><option value="dept_admin">หัวหน้างาน / ผู้ได้รับมอบหมาย</option><option value="admin">Admin (ทำได้ทุกอย่าง ทุกแผนก)</option></select></label>
+    <div id="pm-body" class="pmbody">
+      <div><b>แผนกที่ดูแล</b><p class="sub">เห็นและจัดการได้เฉพาะพนักงานในแผนกที่เลือก</p><div class="pmlist" id="pm-depts"></div></div>
+      <div><b>ทำอะไรได้บ้าง</b>
+        <div class="chips pmpre"><span class="sub">ชุดสำเร็จรูป:</span><button type="button" class="chipsel" data-pmpre="all">หัวหน้างาน (ทุกอย่าง)</button><button type="button" class="chipsel" data-pmpre="leader">Leader (อนุมัติลา)</button><button type="button" class="chipsel" data-pmpre="check">ผู้ช่วยเช็คชื่อ</button><button type="button" class="chipsel" data-pmpre="none">ล้าง</button></div>
+        <div class="pmlist" id="pm-perms"></div></div>
+    </div>
+    <label class="check"><input type="checkbox" id="pm-kpi"> ต้องลงยอดผลิต (KPI) — เอาออกถ้าไม่ต้องนับว่าขาดลงยอด</label>
+    <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-perm">ยกเลิก</button><button class="primary slim" type="button" id="pm-save">บันทึกสิทธิ์</button></div>
+  </div>
+</div>
 <div class="modal" id="m-emp" hidden>
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="em-title">
     <div class="headrow"><h3 id="em-title" style="font-size:18px">เพิ่มพนักงานใหม่</h3><button type="button" class="iconbtn" data-close="m-emp" data-ico="x" aria-label="ปิด"></button></div>
@@ -1481,7 +1518,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <label>หน้างาน<select id="e-kpi"></select></label>
       <div class="grid2"><label>ตำแหน่ง<input type="text" id="e-pos" maxlength="60" placeholder="เช่น Operator, Verify"></label><label>เบอร์โทร<input type="tel" id="e-phone" inputmode="tel" maxlength="20"></label></div>
       <label class="check" id="e-actwrap"><input type="checkbox" id="e-active" checked> ใช้งานอยู่ (เอาเครื่องหมายออก = ปิดใช้งาน ไม่แสดงในเช็คชื่อ)</label>
-      <label class="adm">สิทธิ์<select id="e-role"><option value="employee">พนักงาน</option><option value="dept_admin">ผู้ดูแลแผนก</option><option value="admin">Admin</option></select></label>
+      <label class="adm">สิทธิ์<select id="e-role"><option value="employee">พนักงาน</option><option value="dept_admin">หัวหน้างาน</option><option value="admin">Admin</option></select></label>
       <p class="sub" id="em-hint">พนักงานใช้รหัสนี้กด “สมัครใช้งาน” เพื่อตั้งรหัสผ่านเอง ไม่ต้องใช้อีเมล</p>
       <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-emp">ยกเลิก</button><button class="primary slim" type="submit" id="em-submit">เพิ่มพนักงาน</button></div>
     </form>
@@ -1636,7 +1673,7 @@ var $=function(id){return document.getElementById(id)};
 if(!window.supabase){document.body.innerHTML='<p style="padding:24px">โหลดแอปไม่สำเร็จ ตรวจการเชื่อมต่ออินเทอร์เน็ตแล้วเปิดใหม่อีกครั้ง</p>';return}
 var db=window.supabase.createClient(SB_URL,SB_KEY);
 var S={me:null,mgr:false,admin:false,depts:[],myDepts:[],kpis:[],emps:[],cache:{},tab:"home",editRole:null,settings:{}};
-var SHIFT={A:"กะ A",B:"กะ B",D:"กะเช้าตลอด"},ROLE={employee:"พนักงาน",dept_admin:"ผู้ดูแลแผนก",admin:"ADMIN"},STATUS={pending:"รอตรวจ",approved:"อนุมัติ",rejected:"ไม่ผ่าน"};
+var SHIFT={A:"กะ A",B:"กะ B",D:"กะเช้าตลอด"},ROLE={employee:"พนักงาน",dept_admin:"หัวหน้างาน",admin:"ADMIN"},STATUS={pending:"รอตรวจ",approved:"อนุมัติ",rejected:"ไม่ผ่าน"};
 
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function pad(n){return n<10?"0"+n:""+n}
@@ -1706,7 +1743,8 @@ var ICON={
   leaveappr:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>',
   leaveadmin:'<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   empmgr:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.300 3.400-5.500 6.500-5.500s5.700 2.200 6.500 5.500"/><path d="M17 11h5M19.500 8.500v5"/>',
-  shield:'<path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6z"/>'
+  shield:'<path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6z"/>',
+  perms:'<path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/>'
 };
 function ico(n){return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICON[n]||"")+'</svg>'}
 document.querySelectorAll("nav.tabs button[data-tab],.menugrid button[data-tab]").forEach(function(b){if(ICON[b.dataset.tab])b.innerHTML=ico(b.dataset.tab)+'<span>'+b.innerHTML+'</span>'});
@@ -1776,6 +1814,26 @@ async function loadBase(){
   try{S.dir=await q(db.rpc("staff_directory"))}catch(e){S.dir=[]}
   S.myDepts=S.admin?S.depts:S.mgr?S.depts.filter(function(d){return (S.me.allowed_departments||[]).indexOf(d.id)>=0}):S.depts.filter(function(d){return d.id===S.me.department_id});
 }
+/* ---------- สิทธิ์รายคน (Admin กำหนด) ---------- */
+var PERMS=[["งานผลิต / KPI","kpi","ดูแลยอดผลิต / KPI","หน้าพนักงาน, รายวัน, รายเดือน, Top 5, Admin Dashboard, เป้าหมาย, KPI/Allowance, อนุมัติยอด"],
+  ["พนักงาน","emp","จัดการพนักงาน","เพิ่ม / แก้ไข / ปิดใช้งาน / รีเซ็ตรหัสผ่าน พนักงานในแผนก"],
+  ["เช็คชื่อ","att_view","ดูการเช็คชื่อ","แดชบอร์ด, ประวัติย้อนหลัง, หน้าจอ TV, Export, คะแนนเกมของแผนก"],
+  ["เช็คชื่อ","att_check","เช็คชื่อ / สแกน QR","เช็ครายชื่อ, สแกน QR, แก้สถานะ, พิมพ์บัตร QR (รวมสิทธิ์ดู)"],
+  ["หัก KPI","deduct","หัก KPI","บันทึกหัก KPI และรายงานหัก KPI"],
+  ["การลา","leave_view","ดูใบลาของแผนก","เห็นรายการขอลา แต่กดอนุมัติไม่ได้"],
+  ["การลา","leave_appr","อนุมัติการลา","อนุมัติ / ไม่อนุมัติ / ยกเลิกใบลา, คีย์ลาแทนพนักงาน"],
+  ["การลา","leave_admin","จัดการวันลา","ตั้งสิทธิ์วันลารายคน, ส่งออกรายงาน/ปฏิทินลา"]];
+var PERMN={};PERMS.forEach(function(x){PERMN[x[1]]=x[2]});
+var PERM_IMPL={att_view:["att_check"],leave_view:["leave_appr","leave_admin"]};
+var PERM_PRE={all:PERMS.map(function(x){return x[1]}),leader:["leave_view","leave_appr"],check:["att_check"],none:[]};
+function can(p,dept){if(S.admin)return true;if(!S.me||S.me.role!=="dept_admin")return false;var ps=S.me.perms||[];
+  if(ps.indexOf(p)<0&&!(PERM_IMPL[p]||[]).some(function(x){return ps.indexOf(x)>=0}))return false;return !dept||(S.me.allowed_departments||[]).indexOf(dept)>=0}
+function permDepts(){return S.admin?S.depts:S.me&&S.me.role==="dept_admin"&&(S.me.perms||[]).length?S.depts.filter(function(d){return (S.me.allowed_departments||[]).indexOf(d.id)>=0}):[]}
+function applyPerms(){
+  document.querySelectorAll("[data-perm]").forEach(function(el){el.hidden=!can(el.dataset.perm)});
+  document.querySelectorAll(".empnav").forEach(function(el){el.hidden=S.mgr});
+  navHeads();
+}
 function setOptions(el,opts,placeholder){
   var keep=el.value;
   el.innerHTML=(placeholder==null?"":'<option value="">'+esc(placeholder)+'</option>')+opts.map(function(o){return '<option value="'+esc(o.v)+'">'+esc(o.t)+'</option>'}).join("");
@@ -1784,7 +1842,10 @@ function setOptions(el,opts,placeholder){
 function fillSelects(){
   var d=S.myDepts.map(function(x){return {v:x.id,t:x.name}}),all=S.myDepts.length>1?"ทุกแผนกที่ดูแล":null;
   if(S.admin)all="ทุกแผนก";
-  ["h-dept","d-dept","m-dept","s-dept","am-dept","tl-dept","at-dept","ad2-dept","ah-dept","aq-dept","dd-dept","dr-dept","em2-dept"].forEach(function(id){setOptions($(id),d,all)});
+  ["h-dept","d-dept","m-dept","s-dept","am-dept","tl-dept"].forEach(function(id){setOptions($(id),d,all)});
+  var pd=permDepts().map(function(x){return {v:x.id,t:x.name}});
+  ["at-dept","ad2-dept","ah-dept","aq-dept","dd-dept","dr-dept","em2-dept"].forEach(function(id){setOptions($(id),pd,S.admin?"ทุกแผนก":pd.length>1?"ทุกแผนกที่ดูแล":null)});
+  setOptions($("pm-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   setOptions($("gm-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   setOptions($("lc-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   var la=lvApprDepts().map(function(id){return {v:id,t:deptName(id)}}).filter(function(o){return o.t});
@@ -1792,7 +1853,7 @@ function fillSelects(){
   setOptions($("k-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   setOptions($("t-dept"),S.depts.map(function(x){return {v:x.id,t:x.name}}),"ทุกแผนก");
   var yy=new Date().getFullYear();setOptions($("al-year"),[yy,yy-1,yy-2].map(function(v){return {v:String(v),t:String(v+543)+" ("+v+")"}}),null);
-  setOptions($("e-dept"),d,d.length>1?"เลือกแผนก":null);
+  var ed=S.mgr?d:pd;setOptions($("e-dept"),ed,ed.length>1?"เลือกแผนก":null);
   var ko=S.kpis.map(function(k){return {v:k.id,t:k.name}});
   /* ฟอร์มบันทึก: พนักงานเห็นเฉพาะหน้างานของแผนกตัวเองกับหน้างานที่ใช้ได้ทุกแผนก */
   var mineK=S.kpis.filter(function(k){return S.mgr||!k.department_id||k.department_id===S.me.department_id}).map(function(k){return {v:k.id,t:k.name}});
@@ -1918,7 +1979,7 @@ async function renderStaff(){
     if(S.admin&&e.id!==S.me.id)b+='<button class="sm danger" data-delemp="'+e.id+'">'+ico("trash")+'ลบถาวร</button>';
     var ed="";
     if(S.admin&&S.editRole===e.id){
-      ed='<div class="roleedit"><label>ระดับสิทธิ์<select id="re-role"><option value="employee">พนักงาน</option><option value="dept_admin">ผู้ดูแลแผนก</option><option value="admin">Admin</option></select></label><label class="check"><input type="checkbox" id="re-kpi"'+(e.kpi_required!==false?" checked":"")+'> ต้องลงยอดผลิต (KPI) — เอาเครื่องหมายออกถ้าใช้แค่สินค้า/ติ่งต๊อง/แชต จะไม่ถูกนับว่าขาดลงยอด</label><div><small>แผนกที่ดูแลได้ (ใช้กับผู้ดูแลแผนก)</small>'+
+      ed='<div class="roleedit"><label>ระดับสิทธิ์<select id="re-role"><option value="employee">พนักงาน</option><option value="dept_admin">หัวหน้างาน</option><option value="admin">Admin</option></select></label><label class="check"><input type="checkbox" id="re-kpi"'+(e.kpi_required!==false?" checked":"")+'> ต้องลงยอดผลิต (KPI) — เอาเครื่องหมายออกถ้าใช้แค่สินค้า/ติ่งต๊อง/แชต จะไม่ถูกนับว่าขาดลงยอด</label><div><small>แผนกที่ดูแลได้ (ใช้กับผู้ดูแลแผนก)</small>'+
         S.depts.map(function(d){return '<label class="check"><input type="checkbox" class="re-dept" value="'+d.id+'"'+((e.allowed_departments||[]).indexOf(d.id)>=0?" checked":"")+'> '+esc(d.name)+'</label>'}).join("")+
         '</div><button class="sm good" data-saverole="'+e.id+'">บันทึกสิทธิ์</button></div>';
     }
@@ -2984,7 +3045,7 @@ function hhmm(d){d=d||new Date();return pad(d.getHours())+":"+pad(d.getMinutes()
 function mEnd(m){var p=m.split("-");return m+"-"+pad(new Date(+p[0],+p[1],0).getDate())}
 function shiftTxt(s){return s?"กะ "+s:"-"}
 /* พนักงานที่ผู้ใช้นี้ดูแลได้ (Admin = ทุกคน) */
-function mgrEmps(dept){var ids=S.myDepts.map(function(d){return d.id});
+function mgrEmps(dept){var ids=permDepts().map(function(d){return d.id});
   return S.emps.filter(function(e){return e.active&&(S.admin||ids.indexOf(e.department_id)>=0)&&(!dept||e.department_id===dept)})
     .sort(function(a,b){return String(a.employee_no).localeCompare(String(b.employee_no))})}
 function matchQ(e,qq){qq=String(qq||"").trim().toLowerCase();return !qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0}
@@ -3006,7 +3067,7 @@ async function atLoad(date){
   rows.forEach(function(r){AT.map[r.employee_id]={status:r.status,time:r.check_in_time,scanned:r.scanned,note:r.note||"",saved:r.status,savedNote:r.note||""}});
 }
 async function renderAtt(){
-  if(!S.mgr)return;
+  if(!can("att_check"))return;
   var date=$("at-date").value||today();$("at-date").value=date;
   if(AT.date!==date){AT.order=null;await atLoad(date)}
   if(!$("at-allbtns").innerHTML)$("at-allbtns").innerHTML=AST.map(function(s,i){return '<button type="button" class="sm atall s'+i+'" data-atall="'+i+'">'+esc(i===11?"หยุด (อาทิตย์/นักขัตฯ)":s.v)+'</button>'}).join("");
@@ -3119,7 +3180,7 @@ function scShow(ok,msg,code,kind){
 
 /* ---------- ประวัติย้อนหลัง + ส่งออก ---------- */
 async function renderAttHist(){
-  if(!S.mgr)return;
+  if(!can("att_view"))return;
   if($("ah-status").options.length<2)$("ah-status").insertAdjacentHTML("beforeend",AST.map(function(s){return '<option>'+esc(s.v)+'</option>'}).join(""));
   var date=$("ah-date").value||today();$("ah-date").value=date;if(!$("ah-month").value)$("ah-month").value=date.slice(0,7);
   var dept=$("ah-dept").value,st=$("ah-status").value,qq=$("ah-q").value;
@@ -3154,7 +3215,7 @@ function topCount(rows,status,n){var c={};rows.forEach(function(r){if(r.status==
   return Object.keys(c).map(function(k){return {id:k,n:c[k]}}).sort(function(a,b){return b.n-a.n}).slice(0,n||5)}
 function topRows(list,unit,none){return list.length?list.map(function(a,i){var e=empOf(a.id)||{};return '<div class="row"><span class="rank'+(i<3?" g"+(i+1):"")+'">'+(i+1)+'</span>'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name||"-")+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div><div class="r">'+a.n+'<small>'+unit+'</small></div></div>'}).join(""):emptyRow(none)}
 async function renderAttDash(){
-  if(!S.mgr)return;
+  if(!can("att_view"))return;
   var date=$("ad2-date").value||today();$("ad2-date").value=date;var dept=$("ad2-dept").value;
   $("ad2-sub").textContent="ภาพรวมการเข้างาน · "+thLong(date);
   var D=await attSnapshot(date,dept),by={};D.day.forEach(function(r){by[r.employee_id]=r});
@@ -3186,7 +3247,7 @@ function donut(parts,total){
   return svg+'<text x="100" y="96" text-anchor="middle" class="dn1">'+(total?Math.round((parts[0].n)*100/total):0)+'%</text><text x="100" y="118" text-anchor="middle" class="dn2">มาทำงาน</text></svg>';
 }
 async function renderTV(){
-  if(!S.mgr)return;
+  if(!can("att_view"))return;
   document.body.classList.add("tvmode");
   clearInterval(TV.tick);TV.tick=setInterval(function(){if(S.tab!=="tv"){clearInterval(TV.tick);clearInterval(TV.data);document.body.classList.remove("tvmode");return}var d=new Date();$("tv-clock").textContent=hhmm(d);$("tv-sec").textContent=pad(d.getSeconds())+" วินาที"},1000);
   clearInterval(TV.data);TV.data=setInterval(function(){if(S.tab==="tv")tvDraw().catch(function(){})},30000);
@@ -3210,7 +3271,7 @@ $("tv-full").addEventListener("click",function(){var el=document.documentElement
 function qrSvg(text,cell){if(!window.qrcode)return "";var qr=window.qrcode(0,"M");qr.addData(String(text));qr.make();return qr.createSvgTag({cellSize:cell||4,margin:2,scalable:true})}
 function aqList(){var sh=$("aq-shift").value;return mgrEmps($("aq-dept").value).filter(function(e){return matchQ(e,$("aq-q").value)&&(!sh||e.shift===sh)})}
 function renderAttQr(){
-  if(!S.mgr)return;
+  if(!can("att_check"))return;
   var list=aqList();$("aq-count").textContent=list.length?list.length+" คน · "+Math.ceil(list.length/12)+" หน้า A4":"";
   $("aq-grid").innerHTML=list.length?list.map(function(e){return '<div class="qrcard">'+qrSvg(e.employee_no)+'<b>'+esc(e.display_name)+'</b><small class="mono">'+esc(e.employee_no)+'</small><small>'+esc(deptName(e.department_id))+'</small><small>'+esc(shiftTxt(e.shift))+'</small></div>'}).join(""):emptyRow("ไม่พบพนักงาน");
 }
@@ -3223,6 +3284,47 @@ $("aq-print").addEventListener("click",function(){var list=aqList();if(!list.len
   buildQrPrint(list);document.body.classList.add("printqr");
   var done=function(){document.body.classList.remove("printqr");window.removeEventListener("afterprint",done)};window.addEventListener("afterprint",done);
   setTimeout(function(){window.print()},80)});
+
+
+/* ---------- Admin: สิทธิ์ผู้ใช้ ---------- */
+var PMX={id:null};
+function permChips(e){if(e.role==="admin")return '<span class="pmchip">ทุกสิทธิ์</span>';return (e.perms||[]).map(function(p){return '<span class="pmchip p-'+esc(p)+'">'+esc(PERMN[p]||p)+'</span>'}).join("")||'<span class="sub">–</span>'}
+function renderPerms(){
+  if(!S.admin)return;
+  var only=$("pm-show").value==="1",dept=$("pm-dept").value,qq=$("pm-q").value;
+  var list=S.emps.filter(function(e){return (!only||e.role!=="employee")&&(!dept||e.department_id===dept||(e.allowed_departments||[]).indexOf(dept)>=0)&&matchQ(e,qq)})
+    .sort(function(a,b){var r={admin:0,dept_admin:1,employee:2};return r[a.role]-r[b.role]||String(a.display_name).localeCompare(String(b.display_name),"th")});
+  $("pm-count").textContent=list.length+" คน";
+  $("pm-rows").innerHTML=list.length?list.map(function(e){
+    var ds=e.role==="admin"?'<span class="pmchip">ทุกแผนก</span>':(e.allowed_departments||[]).map(function(id){return '<span class="dbadge">'+esc(deptName(id)||"?")+'</span>'}).join(" ")||'<span class="sub">–</span>';
+    return '<tr'+(e.active?'':' class="off"')+'><td class="nm"><div class="atwho">'+avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div></div></td>'+
+      '<td class="rl">'+esc(e.role==="dept_admin"?"หัวหน้างาน / ผู้ได้รับมอบหมาย":e.role==="admin"?"Admin":"พนักงาน")+'</td><td><div class="pmchips">'+ds+'</div></td><td><div class="pmchips">'+(e.role==="employee"?'<span class="sub">–</span>':permChips(e))+'</div></td>'+
+      '<td class="n"><button type="button" class="sm" data-perm-edit="'+e.id+'">'+ico("edit")+'แก้ไข</button></td></tr>'}).join(""):'<tr><td colspan="5">'+emptyRow(only?"ยังไม่มีผู้ได้รับสิทธิ์ — เปลี่ยนเป็น “พนักงานทั้งหมด” เพื่อเลือกคนที่จะให้สิทธิ์":"ไม่พบพนักงาน")+'</td></tr>';
+}
+["pm-show","pm-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("pm-q").addEventListener("input",function(){clearTimeout(PMX.t);PMX.t=setTimeout(refresh,200)});
+function pmSync(){var r=$("pm-role").value;$("pm-body").hidden=r!=="dept_admin"}
+function openPerm(id){
+  if(!S.admin)return;var e=empOf(id);if(!e)return;PMX.id=id;
+  $("pm-who").innerHTML=avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),e.shift?SHIFT[e.shift]:null].filter(Boolean).join(" · "))+'</small></div>';
+  $("pm-role").value=e.role;var ad=e.allowed_departments||[],ps=e.perms||[];
+  $("pm-depts").innerHTML=S.depts.map(function(d){return '<label class="check"><input type="checkbox" class="pm-d" value="'+d.id+'"'+(ad.indexOf(d.id)>=0?" checked":"")+'> '+esc(d.name)+'</label>'}).join("");
+  var g="";$("pm-perms").innerHTML=PERMS.map(function(x){var h=(x[0]!==g?'<div class="pmg">'+esc(x[0])+'</div>':'');g=x[0];
+    return h+'<label class="check"><input type="checkbox" class="pm-p" value="'+x[1]+'"'+(ps.indexOf(x[1])>=0?" checked":"")+'><span class="pmt"><b>'+esc(x[2])+'</b><small>'+esc(x[3])+'</small></span></label>'}).join("");
+  $("pm-kpi").checked=e.kpi_required!==false;pmSync();openModal("m-perm");
+}
+$("pm-role").addEventListener("change",function(){pmSync();if($("pm-role").value==="dept_admin"&&!document.querySelector(".pm-d:checked")){var e=empOf(PMX.id);var c=e&&document.querySelector('.pm-d[value="'+e.department_id+'"]');if(c)c.checked=true}});
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-perm-edit]");if(b){openPerm(b.dataset.permEdit);return}
+  var pr=ev.target.closest("[data-pmpre]");if(pr){var set=PERM_PRE[pr.dataset.pmpre]||[];document.querySelectorAll(".pm-p").forEach(function(c){c.checked=set.indexOf(c.value)>=0})}
+});
+$("pm-save").addEventListener("click",function(){
+  var id=PMX.id,role=$("pm-role").value,ds=[],ps=[];
+  document.querySelectorAll(".pm-d:checked").forEach(function(c){ds.push(c.value)});document.querySelectorAll(".pm-p:checked").forEach(function(c){ps.push(c.value)});
+  if(id===S.me.id&&role!=="admin"){toast("ลดสิทธิ์ Admin ของตัวเองไม่ได้ ให้ Admin คนอื่นทำแทน");return}
+  if(role==="dept_admin"&&(!ds.length||!ps.length)){toast("เลือกแผนกที่ดูแล และสิทธิ์อย่างน้อย 1 อย่าง");return}
+  var row={role:role,allowed_departments:role==="dept_admin"?ds:[],perms:role==="dept_admin"?ps:[],kpi_required:$("pm-kpi").checked};
+  act(async function(){await q(db.from("employees").update(row).eq("id",id));await loadBase()},"บันทึกสิทธิ์แล้ว").then(function(ok){if(ok){closeModal("m-perm");refresh()}});
+});
 
 /* ---------- เช็คชื่อของฉัน ---------- */
 async function renderMyAtt(){
@@ -3270,7 +3372,7 @@ document.querySelectorAll("[data-gmode]").forEach(function(b){b.addEventListener
 /* ---------- หัก KPI ---------- */
 var DK={emp:null,amt:0};
 async function renderDeduct(){
-  if(!S.mgr)return;
+  if(!can("deduct"))return;
   var list=mgrEmps($("dd-dept").value).filter(function(e){return matchQ(e,$("dd-q").value)});
   $("dd-rows").innerHTML=list.length?list.map(function(e){return '<div class="row"><div class="atwho">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div></div><button type="button" class="sm danger" data-dk="'+e.id+'">'+ico("minus")+'บันทึกหัก</button></div>'}).join(""):emptyRow("ไม่พบพนักงาน");
   var rec=await q(db.from("kpi_deductions").select("*").order("created_at",{ascending:false}).limit(10));
@@ -3299,7 +3401,7 @@ $("dk-save").addEventListener("click",async function(){
 
 /* ---------- รายงานหัก KPI ---------- */
 async function renderDedRep(){
-  if(!S.mgr)return;
+  if(!can("deduct"))return;
   var sel=$("dr-month");if(!sel.options.length){var o='<option value="">ทุกเดือน</option>',d=new Date();for(var i=0;i<18;i++){var x=new Date(d.getFullYear(),d.getMonth()-i,1),v=x.getFullYear()+"-"+pad(x.getMonth()+1);o+='<option value="'+v+'">'+MONTHS[x.getMonth()]+" "+(x.getFullYear()+543)+'</option>'}sel.innerHTML=o;sel.value=today().slice(0,7)}
   var m=sel.value,dept=$("dr-dept").value,qq=$("dr-q").value;
   var rows=(await dedRange(m?m+"-01":null,m?mEnd(m):null)).filter(function(x){return !dept||x.department_id===dept});
@@ -3453,8 +3555,8 @@ function lvType(id){return LV.types.filter(function(t){return t.id===id})[0]||{n
 function typeChip(id){var t=lvType(id);return '<span class="tchip"><i style="background:'+esc(t.color)+'"></i>'+esc(t.name)+'</span>'}
 function shiftLbl(s){return s==="D"?"AA (เช้าตลอด)":s?s:"-"}
 /* หัวหน้าที่อนุมัติการลาได้ */
-function lvApprDepts(){if(S.admin)return S.depts.map(function(d){return d.id});var a=S.myDepts.map(function(d){return d.id});(S.me.leave_approver_depts||[]).forEach(function(x){if(a.indexOf(x)<0)a.push(x)});return S.mgr||(S.me.leave_approver_depts||[]).length?a:[]}
-function lvAppr(){return lvApprDepts().length>0}
+function lvApprDepts(){return can("leave_view")?permDepts().map(function(d){return d.id}):[]}
+function lvAppr(){return can("leave_view")}
 function dirList(){return (S.dir&&S.dir.length?S.dir:S.emps).filter(function(e){return e.active!==false})}
 async function lvMeta(force){
   if(LV.loaded&&!force)return;
@@ -3466,12 +3568,12 @@ async function lvMeta(force){
 async function lvPendingDot(){if(!lvAppr())return;try{var r=await db.from("leave_requests").select("id",{count:"exact",head:true}).eq("status","pending");var n=r.count||0;["lv-dot","lv-dot2"].forEach(function(id){var el=$(id);if(el){el.hidden=!n;el.textContent=n}})}catch(e){}}
 
 /* ---------- ขอลา ---------- */
-function lvTarget(){var id=lvAppr()&&$("lv-emp").value||S.me.id;return empOf(id)||S.me}
+function lvTarget(){var id=can("leave_appr")&&$("lv-emp").value||S.me.id;return empOf(id)||S.me}
 async function renderLeave(){
   await lvMeta();
   if(!$("lv-prov").options.length)$("lv-prov").innerHTML='<option value="">— ไม่ระบุ —</option>'+PROV.map(function(p){return '<option>'+esc(p)+'</option>'}).join("");
   var keepT=$("lv-type").value;$("lv-type").innerHTML='<option value="">เลือกประเภทการลา</option>'+LV.types.filter(function(t){return t.active}).map(function(t){return '<option value="'+t.id+'">'+esc(t.name)+'</option>'}).join("");if(keepT)$("lv-type").value=keepT;
-  if(lvAppr()){var keep=$("lv-emp").value,ds=lvApprDepts();
+  if(can("leave_appr")){var keep=$("lv-emp").value,ds=lvApprDepts();
     $("lv-emp").innerHTML='<option value="">ตัวฉันเอง ('+esc(S.me.display_name)+')</option>'+dirList().filter(function(e){return e.id!==S.me.id&&ds.indexOf(e.department_id)>=0}).sort(function(a,b){return String(a.display_name).localeCompare(String(b.display_name),"th")}).map(function(e){return '<option value="'+e.id+'">'+esc(e.employee_no+" · "+e.display_name)+'</option>'}).join("");$("lv-emp").value=keep}
   if(!$("lv-from").value){$("lv-from").value=today();$("lv-to").value=today()}
   lvEmpChanged(true);
@@ -3581,8 +3683,8 @@ async function renderLeaveAppr(){
       '<div class="lvline">'+typeChip(r.leave_type_id)+' <b>'+esc(rangeTxt(r.start_date,r.end_date))+'</b> · '+num(r.total_days)+' วัน'+(r.half_day?" (ครึ่ง"+(r.half_day==="am"?"เช้า":"บ่าย")+")":"")+'</div>'+
       '<div class="lvsub">'+subsHtml(r.substitutes)+'</div>'+(r.reason?'<p class="lvreason">เหตุผล: '+esc(r.reason)+(r.destination||r.province?' · ไป '+esc([r.destination,r.province].filter(Boolean).join(" ")):'')+'</p>':'')+
       '<small class="sub">ยื่นเมื่อ '+esc(new Date(r.created_at).toLocaleString("th-TH",{day:"numeric",month:"short",year:"2-digit",hour:"2-digit",minute:"2-digit"}))+(by?' · ดำเนินการโดย '+esc(by.display_name):'')+(r.decision_note?' · '+esc(r.decision_note):'')+'</small>'+
-      (r.status==="pending"&&(!own||S.admin)?'<div class="lvbtns"><input type="text" class="lvnote" maxlength="300" placeholder="หมายเหตุ (ไม่บังคับ)"><button type="button" class="sm good" data-lvok="'+r.id+'">'+ico("check")+'อนุมัติ</button><button type="button" class="sm danger" data-lvno="'+r.id+'">ไม่อนุมัติ</button></div>':'')+
-      (r.status==="approved"?'<div class="lvbtns"><button type="button" class="sm danger" data-lvcancel="'+r.id+'">ยกเลิกใบลานี้</button></div>':'')+'</div>'}).join(""):emptyRow(st==="pending"?"ไม่มีคำขอรออนุมัติ 🎉":"ไม่มีรายการ");
+      (r.status==="pending"&&(!own||S.admin)&&can("leave_appr",r.department_id)?'<div class="lvbtns"><input type="text" class="lvnote" maxlength="300" placeholder="หมายเหตุ (ไม่บังคับ)"><button type="button" class="sm good" data-lvok="'+r.id+'">'+ico("check")+'อนุมัติ</button><button type="button" class="sm danger" data-lvno="'+r.id+'">ไม่อนุมัติ</button></div>':'')+
+      (r.status==="approved"&&can("leave_appr",r.department_id)?'<div class="lvbtns"><button type="button" class="sm danger" data-lvcancel="'+r.id+'">ยกเลิกใบลานี้</button></div>':'')+'</div>'}).join(""):emptyRow(st==="pending"?"ไม่มีคำขอรออนุมัติ 🎉":"ไม่มีรายการ");
   lvPendingDot();
 }
 ["la-st","la-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("la-q").addEventListener("input",function(){clearTimeout(LV.t);LV.t=setTimeout(refresh,200)});
@@ -3596,7 +3698,7 @@ document.addEventListener("click",function(ev){
 
 /* ---------- จัดการวันลา ---------- */
 async function renderLeaveAdmin(){
-  if(!lvAppr())return;await lvMeta();
+  if(!can("leave_admin"))return;await lvMeta();
   var y0=new Date().getFullYear();
   ["lb-year","lh-year"].forEach(function(id){var s=$(id);if(!s.options.length)s.innerHTML=[y0+1,y0,y0-1].map(function(y){return '<option value="'+y+'"'+(y===y0?" selected":"")+'>'+(y+543)+'</option>'}).join("")});
   var ts=$("lb-type"),kt=ts.value;ts.innerHTML=LV.types.map(function(t){return '<option value="'+t.id+'">'+esc(t.name)+'</option>'}).join("");ts.value=kt||(LV.types.filter(function(t){return t.name==="ลาพักร้อน"})[0]||LV.types[0]||{}).id;
@@ -3633,7 +3735,7 @@ $("lx-go").addEventListener("click",async function(){
 /* ---------- สีหมวดเมนู (จำง่าย) ---------- */
 var NAVG={home:"kpi",log:"kpi",daily:"kpi",monthly:"kpi",staff:"kpi",top:"kpi",allowance:"kpi",shop:"soc",tt:"soc",chat:"soc",install:"soc",
   leave:"lv",myleave:"lv",leavecal:"lv",leaveappr:"lv",leaveadmin:"lv",empmgr:"att",myatt:"att",game:"att",att:"att",attdash:"att",atthist:"att",attqr:"att",deduct:"att",dedrep:"att",tv:"att",
-  admin:"adm",targets:"adm",kpis:"adm",allowmgr:"adm",telegram:"adm",announce:"adm",settings:"adm"};
+  admin:"adm",perms:"adm",targets:"adm",kpis:"adm",allowmgr:"adm",telegram:"adm",announce:"adm",settings:"adm"};
 var NAVGT={kpi:"📊 งานผลิต · KPI",soc:"🛍️ ร้านค้า · ติ่งต๊อง · แชต",lv:"🌴 การลา",att:"✅ เช็คชื่อ",adm:"⚙️ Admin · ตั้งค่า"};
 document.querySelectorAll("nav.tabs button[data-tab],.menugrid button[data-tab]").forEach(function(b){var g=NAVG[b.dataset.tab];if(g)b.dataset.g=g});
 document.querySelectorAll("#nav-depts").forEach(function(x){x.dataset.g="kpi"});
@@ -3644,8 +3746,8 @@ document.querySelectorAll("#nav-depts").forEach(function(x){x.dataset.g="kpi"});
 function navHeads(){document.querySelectorAll(".mghead").forEach(function(h){h.hidden=![].slice.call(document.querySelectorAll('.menugrid button[data-g="'+h.dataset.g+'"]')).some(function(b){return !b.hidden})})}
 /* ---------- จัดการพนักงาน (ตาราง) ---------- */
 function renderEmpMgr(){
-  if(!S.mgr)return;
-  var dept=$("em2-dept").value,sh=$("em2-shift").value,ac=$("em2-act").value,qq=$("em2-q").value.trim().toLowerCase(),ids=S.myDepts.map(function(d){return d.id});
+  if(!can("emp"))return;
+  var dept=$("em2-dept").value,sh=$("em2-shift").value,ac=$("em2-act").value,qq=$("em2-q").value.trim().toLowerCase(),ids=permDepts().map(function(d){return d.id});
   var list=S.emps.filter(function(e){return (S.admin||ids.indexOf(e.department_id)>=0)&&(!dept||e.department_id===dept)&&(!sh||e.shift===sh)&&(ac===""||(ac==="1")===!!e.active)&&
     (!qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0||String(e.phone||"").indexOf(qq)>=0)})
     .sort(function(a,b){return String(a.employee_no).localeCompare(String(b.employee_no))});
@@ -3654,6 +3756,7 @@ function renderEmpMgr(){
     return '<tr'+(e.active?'':' class="off"')+'><td>'+esc(e.employee_no)+'</td><td class="nm"><div class="atwho">'+avatarHtml(e)+'<b>'+esc(e.display_name)+'</b></div></td><td><span class="dbadge">'+esc(deptName(e.department_id)||"-")+'</span></td><td>'+esc(e.shift?SHIFT[e.shift]:"-")+'</td><td>'+esc(e.position||"–")+'</td><td>'+esc(e.phone||"–")+'</td><td>'+(e.user_id?'<span class="stb s0">สมัครแล้ว</span>':'<span class="stb none">ยังไม่สมัคร</span>')+(e.role!=="employee"?' <span class="stb s6">'+esc(ROLE[e.role])+'</span>':'')+(e.active?'':' <span class="stb s2">ปิดใช้งาน</span>')+'</td>'+
       '<td class="n"><div class="emact"><button type="button" class="iconbtn" data-open="'+e.id+'" title="ดูรายละเอียด" aria-label="ดูรายละเอียด">'+ico("eye")+'</button>'+(canEdit?'<button type="button" class="iconbtn" data-editemp="'+e.id+'" title="แก้ไข" aria-label="แก้ไข">'+ico("edit")+'</button>':'')+
       (canEdit&&!me?'<button type="button" class="iconbtn" data-active="'+e.id+'" title="'+(e.active?"ปิดใช้งาน":"เปิดใช้งาน")+'" aria-label="'+(e.active?"ปิดใช้งาน":"เปิดใช้งาน")+'">'+ico(e.active?"x":"check")+'</button>':'')+
+      (S.admin?'<button type="button" class="iconbtn" data-perm-edit="'+e.id+'" title="กำหนดสิทธิ์" aria-label="กำหนดสิทธิ์">'+ico("shield")+'</button>':'')+
       (S.admin&&!me?'<button type="button" class="iconbtn danger" data-delemp="'+e.id+'" title="ลบถาวร" aria-label="ลบถาวร">'+ico("trash")+'</button>':'')+'</div></td></tr>'}).join(""):'<tr><td colspan="8">'+emptyRow("ไม่พบพนักงาน")+'</td></tr>';
 }
 ["em2-dept","em2-shift","em2-act"].forEach(function(id){$(id).addEventListener("change",refresh)});
@@ -3778,21 +3881,23 @@ async function exportLeaveCalendar(y,dept,shift){
   await xlSave(wb,"leave-calendar_"+y+".xlsx");
 }
 
-var RENDER={home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+var RENDER={perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr"];
+var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
-  if((tab==="staff"||tab==="emp"||tab==="targets"||tab==="allowmgr"||tab==="admin"||["att","attdash","atthist","attqr","deduct","dedrep","tv","empmgr"].indexOf(tab)>=0)&&!S.mgr)tab="home";
+  if(["staff","targets","allowmgr","admin","daily","monthly","top"].indexOf(tab)>=0&&!S.mgr)tab="home";
+  if(tab==="emp"&&!S.mgr&&!can("emp"))tab="home";
+  var TP={att:"att_check",attqr:"att_check",attdash:"att_view",atthist:"att_view",tv:"att_view",deduct:"deduct",dedrep:"deduct",empmgr:"emp",leaveappr:"leave_view",leaveadmin:"leave_admin"};
+  if(TP[tab]&&!can(TP[tab]))tab=tab.indexOf("leave")===0?"myleave":"home";
   if(tab!=="tv")document.body.classList.remove("tvmode");
-  if((tab==="leaveappr"||tab==="leaveadmin")&&!lvAppr())tab="myleave";
-  if((tab==="telegram"||tab==="kpis"||tab==="announce")&&!S.admin)tab="home";
+  if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms")&&!S.admin)tab="home";
   if(tab==="chat"){$("chat-dot").hidden=true;$("chat-dot2").hidden=true}
   S.tab=tab;
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
-  document.querySelectorAll("nav.tabs button").forEach(function(b){if(b.dataset.tab===(tab==="emp"?"staff":tab)||(b.dataset.tab==="menu"&&MAIN.indexOf(tab)<0))b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  document.querySelectorAll("nav.tabs button").forEach(function(b){if(b.dataset.tab===(tab==="emp"?"staff":tab)||(b.dataset.tab==="menu"&&(S.mgr?MAIN:["home","log","tt","leave"]).indexOf(tab)<0))b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   renderDeptNav();
   if(tab!=="tt")document.querySelectorAll("#tt-feed video").forEach(function(v){v.pause()});
   document.body.classList.toggle("tt-full",tab==="tt");
@@ -3833,7 +3938,7 @@ $("empform").addEventListener("submit",function(ev){
   if(EM&&EM===S.me.id&&S.admin&&role!=="admin"){toast("ลดสิทธิ์ Admin ของตัวเองไม่ได้ ให้ Admin คนอื่นทำแทน");return}
   var row={employee_no:no,display_name:name,department_id:dept,shift:$("e-shift").value,workstation_id:$("e-kpi").value||null,avatar:AV.ea,position:$("e-pos").value.trim(),phone:$("e-phone").value.replace(/[^\d+\-\s]/g,"").trim()};
   if(EM&&EM!==S.me.id)row.active=$("e-active").checked;
-  if(S.admin&&(!cur||cur.role!==role)){row.role=role;row.allowed_departments=role==="dept_admin"?[dept]:[]}
+  if(S.admin&&(!cur||cur.role!==role)){row.role=role;row.allowed_departments=role==="dept_admin"?[dept]:[];row.perms=role==="dept_admin"?PERM_PRE.all.slice():[]}
   act(async function(){
     if(EM)await q(db.from("employees").update(row).eq("id",EM));else await q(db.from("employees").insert(row));
     await loadBase();if(EM&&EM===S.me.id){S.me=empOf(EM)||S.me;paintWho()}
@@ -4030,7 +4135,7 @@ document.addEventListener("click",function(ev){
   if(d.del){if(!armed(b,"แตะอีกครั้งเพื่อลบ"))return;act(function(){return q(db.from("work_logs").delete().eq("id",d.del))},"ลบรายการแล้ว").then(function(ok){if(ok)dirty(d.d)});return}
   if(d.reset){if(!armed(b))return;act(async function(){await q(db.rpc("reset_employee_login",{p_employee:d.reset}));await loadBase()},"รีเซ็ตแล้ว ให้พนักงานสมัครใหม่ด้วยรหัสพนักงานเดิม").then(refresh);return}
   if(d.active){var e=empOf(d.active);if(!e||(e.active&&!armed(b)))return;act(async function(){await q(db.from("employees").update({active:!e.active}).eq("id",e.id));await loadBase()},e.active?"ปิดใช้งานแล้ว":"เปิดใช้งานแล้ว").then(refresh);return}
-  if(d.role){S.editRole=S.editRole===d.role?null:d.role;refresh();return}
+  if(d.role){openPerm(d.role);return}
   if(d.saverole){
     var allowed=[];document.querySelectorAll(".re-dept:checked").forEach(function(c){allowed.push(c.value)});
     var role=$("re-role").value;
@@ -4114,11 +4219,11 @@ async function start(){
     $("auth").hidden=true;$("app").hidden=true;$("setup").hidden=false;return;
   }
   $("setup").hidden=true;
-  S.me=me;S.uid=u.id;S.admin=me.role==="admin";S.mgr=me.role!=="employee";S.cache={};
+  S.me=me;S.uid=u.id;S.admin=me.role==="admin";S.mgr=can("kpi");S.cache={};
   await loadBase();
   document.querySelectorAll(".mgr").forEach(function(el){el.hidden=!S.mgr});
   document.querySelectorAll(".adm").forEach(function(el){el.hidden=!S.admin});
-  document.querySelectorAll(".lva").forEach(function(el){el.hidden=!lvAppr()});navHeads();
+  applyPerms();
   fillSelects();paintWho();lvPendingDot();
   $("p-name").value=me.display_name;if(me.shift){$("p-shift").value=me.shift;$("f-shift").value=me.shift}
   $("p-phone").value=me.phone||"";$("p-kpi").value=me.workstation_id||"";showAvatar("p",me.avatar);
