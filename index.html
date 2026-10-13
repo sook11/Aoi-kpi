@@ -2557,12 +2557,23 @@ function ttMuteIcons(){document.querySelectorAll("[data-ttmute]").forEach(functi
 /* เล่นแบบมีเสียง ถ้าเบราว์เซอร์ไม่ยอมให้เล่นมีเสียงเอง จะเล่นแบบปิดเสียงก่อน แล้วแตะจอครั้งแรกเพื่อเปิดเสียง */
 /* ภาพดำล้วน = เบราว์เซอร์ถอดรหัสภาพไม่ได้ (มักเป็นไฟล์ HEVC) */
 function ttIsBlack(v){try{var c=document.createElement("canvas");c.width=24;c.height=24;var g=c.getContext("2d");g.drawImage(v,0,0,24,24);var d=g.getImageData(0,0,24,24).data,m=0;for(var i=0;i<d.length;i+=4)m=Math.max(m,d[i],d[i+1],d[i+2]);return m<12}catch(e){return false}}
+/* คลิปที่มีขอบดำ (เช่นวิดีโอแนวตั้งที่ถูกใส่กรอบแนวนอน) → ซูมตัดขอบดำให้เต็มจอ */
+function ttBars(v){try{var W=160,H=Math.max(2,Math.round(W*v.videoHeight/v.videoWidth)),c=document.createElement("canvas");c.width=W;c.height=H;
+  var g=c.getContext("2d",{willReadFrequently:true});g.drawImage(v,0,0,W,H);var d=g.getImageData(0,0,W,H).data;
+  function dark(x0,y0,dx,dy,n){var k=0;for(var i=0;i<n;i++){var o=((y0+dy*i)*W+(x0+dx*i))*4;if(Math.max(d[o],d[o+1],d[o+2])<22)k++}return k>=n*0.985}
+  var l=0,r=0,t=0,b=0;while(l<W/2&&dark(l,0,0,1,H))l++;while(r<W/2&&dark(W-1-r,0,0,1,H))r++;while(t<H/2&&dark(0,t,1,0,W))t++;while(b<H/2&&dark(0,H-1-b,1,0,W))b++;
+  var sx=Math.min(l,r)/W,sy=Math.min(t,b)/H;if(sx<0.06)sx=0;if(sy<0.06)sy=0;if((!sx&&!sy)||sx>=0.45||sy>=0.45)return null;return {x:sx,y:sy}}catch(e){return null}}
+function ttApplyCrop(v){var cr=v._crop;if(!cr)return;var W=v.clientWidth,H=v.clientHeight,vw=v.videoWidth,vh=v.videoHeight;if(!W||!H||!vw)return;
+  var s0=Math.min(W/vw,H/vh),cw=vw*(1-2*cr.x),ch=vh*(1-2*cr.y),z=Math.min(W/cw,H/ch)/s0;v.style.transform=z>1.02?"scale("+z.toFixed(3)+")":""}
+function ttAutoCrop(v){if(v._cropDone)return;v._cropDone=1;var a=ttBars(v);if(!a)return;
+  setTimeout(function(){var b=ttBars(v);if(!b)return;v._crop={x:Math.min(a.x,b.x),y:Math.min(a.y,b.y)};v.style.transition="transform .25s";ttApplyCrop(v)},700)}
+window.addEventListener("resize",function(){document.querySelectorAll("#tt-feed video").forEach(ttApplyCrop)});
 function ttCheckDecode(v){if(v._dcBusy||v._dcOk)return;v._dcBusy=1;
   setTimeout(function(){
     if(v.paused||v.readyState<2){v._dcBusy=0;return}
     var q2=v.getVideoPlaybackQuality?v.getVideoPlaybackQuality():null;
     if((q2&&q2.totalVideoFrames===0)||!v.videoWidth){ttCantPlay(v);return}
-    if(!ttIsBlack(v)){v._dcOk=1;v._dcBusy=0;return}
+    if(!ttIsBlack(v)){v._dcOk=1;v._dcBusy=0;ttAutoCrop(v);return}
     setTimeout(function(){v._dcBusy=0;if(v.paused)return;if(ttIsBlack(v))ttCantPlay(v);else v._dcOk=1},1500)},1500)}
 function ttCantPlay(v){var it=v.closest(".ttitem");if(!it||it.querySelector(".ttnoplay"))return;
   var p=ttPost(it.dataset.pid),th=p&&okImg(p.thumb);
