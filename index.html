@@ -491,6 +491,13 @@ body.tt-full .marquee{display:none}
 .tbl th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--off-bg)}
 .tbl td.n,.tbl th.n{text-align:right}
 .tablewrap{overflow-x:auto}
+/* วิดีโอที่เบราว์เซอร์เปิดภาพไม่ได้ + การแปลงไฟล์ */
+.ttnoplay{position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none}
+.ttnoplay img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.55}
+.ttnoplay div{position:relative;background:rgba(0,0,0,.65);color:#fff;border-radius:12px;padding:10px 14px;max-width:78%;text-align:center;display:flex;flex-direction:column;gap:4px}
+.ttnoplay small{opacity:.85;font-size:12.5px;line-height:1.4}
+.convnote{grid-column:1/-1;color:#fde68a;font-size:13px;margin:8px 10px;text-align:center}
+.ttprev{grid-template-rows:auto auto}
 </style>
 </head>
 <body>
@@ -520,7 +527,7 @@ body.tt-full .marquee{display:none}
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-15</p>
+    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-16</p>
     <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
   </div>
 </div>
@@ -927,7 +934,7 @@ body.tt-full .marquee{display:none}
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-15 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · upload-update-16 · 11/10/2569</p>
   </section>
 </div>
 
@@ -1190,6 +1197,8 @@ function kpiRows(list,none){
   return list.length?list.map(function(a){return '<div class="row"><div class="l"><b>'+esc(a.k)+'</b><small>'+a.n+' รายการ</small></div><div class="r">'+num(a.o)+' ชิ้น</div></div>'}).join(""):emptyRow(none);
 }
 function activeEmps(dept){return S.emps.filter(function(e){return e.active&&(!dept||e.department_id===dept)})}
+/* คนที่ต้องลงยอด KPI (ไม่นับคนที่ตั้งว่า "ไม่ต้องลงยอด") */
+function kpiEmps(dept){return activeEmps(dept).filter(function(e){return e.kpi_required!==false})}
 
 async function loadBase(){
   var r=await Promise.all([
@@ -1235,7 +1244,7 @@ async function renderHome(){
   if(!S.mgr)return;
   var done={};all.forEach(function(r){if(r.work_date===date)done[r.employee_id]=1});
   var groups=S.myDepts.filter(function(d){return !dept||d.id===dept}).map(function(d,i){
-    var ids=activeEmps(d.id),miss=ids.filter(function(e){return !done[e.id]}).length;return {name:d.name,all:ids.length,miss:miss,c:"var(--c"+(i%6+1)+")"}});
+    var ids=kpiEmps(d.id),miss=ids.filter(function(e){return !done[e.id]}).length;return {name:d.name,all:ids.length,miss:miss,c:"var(--c"+(i%6+1)+")"}});
   var allN=0,missN=0;groups.forEach(function(g){allN+=g.all;missN+=g.miss});
   var al=$("h-missalert");
   if(allN){al.hidden=false;al.textContent=missN?"ยังมี "+missN+" คน ยังไม่ลง KPI วันที่ "+dmy(date)+" · จากทั้งหมด "+allN+" คน ("+Math.round(missN/allN*100)+"%)":"ทุกคนลง KPI วันที่ "+dmy(date)+" ครบแล้ว ("+allN+" คน)"}else al.hidden=true;
@@ -1336,15 +1345,17 @@ async function renderStaff(){
     if(S.admin)b+='<button class="sm" data-role="'+e.id+'">'+ico("shield")+'มอบสิทธิ์</button>';
     if(e.user_id&&canEdit&&e.id!==S.me.id)b+='<button class="sm" data-reset="'+e.id+'">'+ico("key")+'รีเซ็ตรหัสผ่าน</button>';
     if(canEdit&&e.id!==S.me.id)b+='<button class="sm'+(e.active?' danger':'')+'" data-active="'+e.id+'">'+(e.active?"ปิดใช้งาน":"เปิดใช้งาน")+'</button>';
+    if(S.admin&&e.id!==S.me.id)b+='<button class="sm danger" data-delemp="'+e.id+'">'+ico("trash")+'ลบถาวร</button>';
     var ed="";
     if(S.admin&&S.editRole===e.id){
-      ed='<div class="roleedit"><label>ระดับสิทธิ์<select id="re-role"><option value="employee">พนักงาน</option><option value="dept_admin">ผู้ดูแลแผนก</option><option value="admin">Admin</option></select></label><div><small>แผนกที่ดูแลได้ (ใช้กับผู้ดูแลแผนก)</small>'+
+      ed='<div class="roleedit"><label>ระดับสิทธิ์<select id="re-role"><option value="employee">พนักงาน</option><option value="dept_admin">ผู้ดูแลแผนก</option><option value="admin">Admin</option></select></label><label class="check"><input type="checkbox" id="re-kpi"'+(e.kpi_required!==false?" checked":"")+'> ต้องลงยอดผลิต (KPI) — เอาเครื่องหมายออกถ้าใช้แค่สินค้า/ติ่งต๊อง/แชต จะไม่ถูกนับว่าขาดลงยอด</label><div><small>แผนกที่ดูแลได้ (ใช้กับผู้ดูแลแผนก)</small>'+
         S.depts.map(function(d){return '<label class="check"><input type="checkbox" class="re-dept" value="'+d.id+'"'+((e.allowed_departments||[]).indexOf(d.id)>=0?" checked":"")+'> '+esc(d.name)+'</label>'}).join("")+
         '</div><button class="sm good" data-saverole="'+e.id+'">บันทึกสิทธิ์</button></div>';
     }
     return '<div class="emp"><div class="emphead" data-open="'+e.id+'" title="ดูรายละเอียด"><span class="avatar">'+(okAvatar(e.avatar)?'<img alt="" src="'+okAvatar(e.avatar)+'">':esc(String(e.display_name).trim().charAt(0)))+'</span><div><b>'+esc(e.display_name)+(e.active?"":" (ปิดใช้งาน)")+'</b><small>'+esc([e.employee_no,SHIFT[e.shift],kpiName(e.workstation_id),e.phone,e.role!=="employee"?ROLE[e.role]:null,e.user_id?null:"ยังไม่สมัครใช้งาน"].filter(Boolean).join(" · "))+'</small></div></div>'+
+      (e.kpi_required===false?'<small class="okline">ไม่ต้องลงยอดผลิต (ใช้สินค้า / ติ่งต๊อง / แชต)</small>':
       '<small>บันทึกยอดผลิต — ถึงวันที่ '+td+' ('+logged+' วัน)</small><div class="days">'+cells+'</div>'+
-      '<small class="'+(miss.length?"missline":"okline")+'">'+(miss.length?"ไม่ได้บันทึก: วันที่ "+miss.join(", "):"บันทึกครบทุกวัน")+'</small>'+
+      '<small class="'+(miss.length?"missline":"okline")+'">'+(miss.length?"ไม่ได้บันทึก: วันที่ "+miss.join(", "):"บันทึกครบทุกวัน")+'</small>')+
       (b?'<div class="acts">'+b+'</div>':'')+ed+'</div>';
   }
   var groups=S.depts.map(function(d){return {name:d.name,list:list.filter(function(e){return e.department_id===d.id})}});
@@ -1588,7 +1599,7 @@ async function renderTelegram(){
   var logs=await month(date.slice(0,7)),done={};logs.forEach(function(r){if(r.work_date===date)done[r.employee_id]=1});
   var lines=[],n=0,all=0;
   S.depts.filter(function(d){return !dept||d.id===dept}).forEach(function(d){
-    var emps=activeEmps(d.id),miss=emps.filter(function(e){return !done[e.id]});all+=emps.length;n+=miss.length;
+    var emps=kpiEmps(d.id),miss=emps.filter(function(e){return !done[e.id]});all+=emps.length;n+=miss.length;
     if(miss.length){lines.push("");lines.push("["+d.name+"] "+miss.length+"/"+emps.length+" คน");miss.forEach(function(e){lines.push("- "+e.display_name+" ("+e.employee_no+")")})}
   });
   $("tl-msg").value=n?"แจ้งเตือน AOI KPI วันที่ "+dmy(date)+"\nยังไม่ลงข้อมูล "+n+" คน จากทั้งหมด "+all+" คน"+lines.join("\n")+"\n\nกรุณาลงยอดผลิตในแอป AOI KPI":"AOI KPI วันที่ "+dmy(date)+"\nทุกคนลงข้อมูลครบแล้ว ("+all+" คน)";
@@ -1832,7 +1843,14 @@ $("tt-feed").addEventListener("scroll",function(){clearTimeout(TT._mt);TT._mt=se
 function ttVisible(){var f=$("tt-feed"),r=f.getBoundingClientRect(),best=null;f.querySelectorAll("video").forEach(function(v){var b=v.getBoundingClientRect();if(b.top<r.top+r.height/2&&b.bottom>r.top+r.height/2)best=v});return best}
 function ttMuteIcons(){document.querySelectorAll("[data-ttmute]").forEach(function(x){x.innerHTML=ico(TT.muted?"mute":"vol")})}
 /* เล่นแบบมีเสียง ถ้าเบราว์เซอร์ไม่ยอมให้เล่นมีเสียงเอง จะเล่นแบบปิดเสียงก่อน แล้วแตะจอครั้งแรกเพื่อเปิดเสียง */
+function ttCheckDecode(v){clearTimeout(v._dc);v._dc=setTimeout(function(){
+  if(v.paused||v.currentTime<.4||!v.getVideoPlaybackQuality)return;
+  if(v.getVideoPlaybackQuality().totalVideoFrames===0||!v.videoWidth)ttCantPlay(v)},1800)}
+function ttCantPlay(v){var it=v.closest(".ttitem");if(!it||it.querySelector(".ttnoplay"))return;
+  var p=ttPost(it.dataset.pid),th=p&&okImg(p.thumb);
+  it.insertAdjacentHTML("beforeend",'<div class="ttnoplay">'+(th?'<img alt="" src="'+th+'">':'')+'<div><b>เบราว์เซอร์นี้เปิดภาพวิดีโอนี้ไม่ได้</b><small>ไฟล์เป็นแบบ HEVC ดูได้ในมือถือ'+(p&&p.author_id===S.me.id?' หรือกด “แก้ไข” แล้วเลือกวิดีโอเดิมอีกครั้งจากมือถือ ระบบจะแปลงไฟล์ให้เปิดได้ทุกเครื่อง':'')+'</small></div></div>')}
 function ttPlay(v){
+  if(!v._dcb){v._dcb=1;v.addEventListener("playing",function(){ttCheckDecode(v)});v.addEventListener("error",function(){ttCantPlay(v)})}
   v.muted=TT.muted;var pr=v.play();
   if(pr&&pr.catch)pr.catch(function(){if(!v.muted){v.muted=true;TT.muted=true;TT.autoMuted=true;ttMuteIcons();var p2=v.play();if(p2&&p2.catch)p2.catch(function(){})}});
 }
@@ -1877,7 +1895,7 @@ $("tt-feed").addEventListener("click",function(ev){
 });
 $("tt-feed").addEventListener("play",function(ev){var p=ev.target.closest(".ttitem");var o=p&&p.querySelector(".ttpause");if(o)o.remove()},true);
 /* โพสต์ใหม่ */
-function ttReset(){TT.edit=null;TT.file=null;TT.kind=null;TT.thumb=null;$("tp-prev").innerHTML='<span class="sub">ยังไม่ได้เลือกไฟล์</span>';$("tp-cap").value="";$("tp-submit").disabled=false;$("tp-submit").textContent="โพสต์";$("tp-head").textContent="โพสต์ลงติ่งต๊อง";$("tp-filelbl").textContent="เลือกวิดีโอหรือรูป"}
+function ttReset(){TT.conv=false;TT.edit=null;TT.file=null;TT.kind=null;TT.thumb=null;$("tp-prev").innerHTML='<span class="sub">ยังไม่ได้เลือกไฟล์</span>';$("tp-cap").value="";$("tp-submit").disabled=false;$("tp-submit").textContent="โพสต์";$("tp-head").textContent="โพสต์ลงติ่งต๊อง";$("tp-filelbl").textContent="เลือกวิดีโอหรือรูป"}
 function ttEditOpen(id){
   var p=ttPost(id);if(!p)return;ttReset();TT.edit=p;
   var url=TT.urls[p.media_path]||"";
@@ -1894,15 +1912,54 @@ $("tp-file").addEventListener("change",async function(ev){
   var f=ev.target.files[0];ev.target.value="";if(!f)return;
   var isV=/^video\//.test(f.type)||/\.(mp4|mov|webm|m4v)$/i.test(f.name),isI=/^image\//.test(f.type);
   if(!isV&&!isI){toast("เลือกได้เฉพาะวิดีโอหรือรูป");return}
-  if(isV&&f.size>30*1024*1024){toast("วิดีโอใหญ่เกิน 30 MB ลองตัดให้สั้นลงหรือลดความละเอียด");return}
-  var url=URL.createObjectURL(f);TT.file=f;TT.kind=isV?"video":"image";
+  if(isV&&f.size>300*1024*1024){toast("วิดีโอใหญ่เกินไป ลองตัดให้สั้นลง");return}
+  var url=URL.createObjectURL(f);TT.file=f;TT.kind=isV?"video":"image";TT.conv=false;
   if(isV){
     $("tp-prev").innerHTML='<video src="'+url+'" controls playsinline muted></video>';
     var info=await videoThumb(url);TT.thumb=info.thumb;
     if(info.dur>61){toast("วิดีโอยาว "+Math.round(info.dur)+" วินาที เกิน 60 วินาที");ttReset();return}
-    if(info.bad)toast("เครื่องนี้เล่นวิดีโอนี้ไม่ได้ อาจเปิดไม่ได้บางเครื่อง แนะนำไฟล์ .mp4");
+    if(info.bad){toast("เครื่องนี้เปิดวิดีโอนี้ไม่ได้ ลองเลือกไฟล์อื่น");ttReset();return}
+    var codec=await videoCodec(f);
+    TT.conv=codec==="hevc"||f.size>25*1024*1024;
+    if(TT.conv&&!canConvert()){TT.conv=false;if(codec==="hevc")toast("ไฟล์นี้เป็น HEVC บางเครื่อง (เช่นคอม) อาจเปิดไม่ได้");if(f.size>30*1024*1024){toast("วิดีโอใหญ่เกิน 30 MB");ttReset();return}}
+    if(TT.conv)$("tp-prev").insertAdjacentHTML("beforeend",'<p class="convnote">'+(codec==="hevc"?"ไฟล์นี้เป็นแบบ HEVC ซึ่งคอมและมือถือบางเครื่องเปิดไม่ได้ (จอดำ)":"ไฟล์นี้ใหญ่")+' ระบบจะแปลงไฟล์ให้เล่นได้ทุกเครื่องตอนกดโพสต์ ใช้เวลาประมาณ '+Math.ceil(info.dur)+' วินาที ระหว่างนั้นอย่าปิดหน้าจอ</p>');
   }else{$("tp-prev").innerHTML='<img alt="" src="'+url+'">';try{TT.thumb=await resizeImg(url,360,.7)}catch(e){TT.thumb=null}}
 });
+/* ดูชนิดวิดีโอจากในไฟล์: hvc1/hev1 = HEVC (H.265) ซึ่งเบราว์เซอร์บนคอมหลายตัวเล่นไม่ได้ */
+async function videoCodec(f){try{
+  var buf=new Uint8Array(await f.arrayBuffer()),n=buf.length,h=0,a=0;
+  for(var i=4;i<n-4;i++){if(buf[i]===104||buf[i]===97){var c1=buf[i+1],c2=buf[i+2],c3=buf[i+3];
+    if(buf[i]===104&&((c1===118&&c2===99&&c3===49)||(c1===101&&c2===118&&c3===49)))h++;             /* hvc1 / hev1 */
+    else if(buf[i]===97&&c1===118&&c2===99&&(c3===49||c3===51))a++}}                                    /* avc1 / avc3 */
+  return h?"hevc":a?"h264":"other"}catch(e){return "other"}}
+function recType(){if(typeof MediaRecorder==="undefined"||!MediaRecorder.isTypeSupported)return null;
+  var t=["video/mp4;codecs=avc1.42E01F,mp4a.40.2","video/mp4;codecs=avc1,mp4a.40.2","video/mp4;codecs=avc1","video/webm;codecs=vp8,opus","video/webm;codecs=vp8","video/webm","video/mp4"];
+  for(var i=0;i<t.length;i++)if(MediaRecorder.isTypeSupported(t[i]))return t[i];return null}
+function canConvert(){var c=document.createElement("canvas");return !!(recType()&&c.captureStream)}
+/* แปลงวิดีโอเป็นแบบที่เล่นได้ทุกเครื่อง (H.264 หรือ WebM) ด้วยการเล่นคลิปแล้วอัดใหม่ ความละเอียดไม่เกิน 720p */
+function convertVideo(f,onp){return new Promise(function(res,rej){
+  var mime=recType(),url=URL.createObjectURL(f),v=document.createElement("video");v.src=url;v.playsInline=true;v.preload="auto";v.muted=false;
+  v.style.cssText="position:fixed;left:-9999px;width:2px;height:2px";document.body.appendChild(v);
+  var done=false,fail=function(e){if(done)return;done=true;cleanup();rej(e instanceof Error?e:new Error("แปลงไฟล์ไม่สำเร็จ"))},ctx=null,raf=0,rec=null,chunks=[];
+  function cleanup(){cancelAnimationFrame(raf);try{v.pause()}catch(e){}v.remove();URL.revokeObjectURL(url);if(ctx)try{ctx.close()}catch(e){}}
+  v.onerror=function(){fail(new Error("เปิดวิดีโอเพื่อแปลงไม่ได้"))};
+  v.onloadedmetadata=function(){
+    var k=Math.min(1,1280/Math.max(v.videoWidth,v.videoHeight)),cw=Math.round(v.videoWidth*k/2)*2,ch=Math.round(v.videoHeight*k/2)*2;
+    if(!cw||!ch){fail(new Error("เครื่องนี้เปิดภาพวิดีโอนี้ไม่ได้"));return}
+    var c=document.createElement("canvas");c.width=cw;c.height=ch;var g=c.getContext("2d");
+    var stream=c.captureStream(30);
+    try{var AC=window.AudioContext||window.webkitAudioContext;ctx=new AC();var src=ctx.createMediaElementSource(v),dst=ctx.createMediaStreamDestination();src.connect(dst);dst.stream.getAudioTracks().forEach(function(t){stream.addTrack(t)})}catch(e){v.muted=true}
+    try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000,audioBitsPerSecond:128000})}catch(e){fail(e);return}
+    rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
+    rec.onstop=function(){if(done)return;done=true;var base=mime.split(";")[0];cleanup();res({blob:new Blob(chunks,{type:base}),type:base,ext:base==="video/mp4"?"mp4":"webm"})};
+    function draw(){g.drawImage(v,0,0,cw,ch);if(onp&&v.duration)onp(Math.min(.99,v.currentTime/v.duration));if(!v.ended)raf=requestAnimationFrame(draw)}
+    v.onended=function(){g.drawImage(v,0,0,cw,ch);setTimeout(function(){if(rec&&rec.state!=="inactive")rec.stop()},150)};
+    rec.start(1000);
+    var pr=ctx&&ctx.resume?ctx.resume():Promise.resolve();
+    pr.then(function(){return v.play()}).then(function(){draw()}).catch(function(e){fail(new Error("เริ่มแปลงไฟล์ไม่ได้ ลองกดโพสต์อีกครั้ง"))});
+  };
+  setTimeout(function(){fail(new Error("แปลงไฟล์นานเกินไป"))},150000);
+})}
 function toBlob(src,max,q){return new Promise(function(res,rej){var img=new Image();img.onload=function(){var k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);c.toBlob(function(b){b?res(b):rej(new Error("แปลงรูปไม่สำเร็จ"))},"image/jpeg",q)};img.onerror=rej;img.src=src})}
 $("ttform").addEventListener("submit",async function(ev){
   ev.preventDefault();
@@ -1912,7 +1969,9 @@ $("ttform").addEventListener("submit",async function(ev){
   var btn=$("tp-submit");btn.disabled=true;btn.textContent="กำลังอัปโหลด...";
   var f=TT.file,isV=TT.kind==="video",blob=f,type=f.type,ext;
   try{
-    if(isV){ext=(f.name.split(".").pop()||"mp4").toLowerCase();if(!/^(mp4|mov|webm|m4v)$/.test(ext))ext="mp4";if(!type)type=ext==="mov"?"video/quicktime":ext==="webm"?"video/webm":"video/mp4";if(ext==="m4v")type="video/mp4"}
+    if(isV&&TT.conv){var cv=await convertVideo(f,function(p){btn.textContent="กำลังแปลงไฟล์ "+Math.round(p*100)+"%"});blob=cv.blob;type=cv.type;ext=cv.ext;btn.textContent="กำลังอัปโหลด...";
+      if(blob.size>30*1024*1024)throw new Error("ไฟล์หลังแปลงยังใหญ่เกิน 30 MB ลองตัดคลิปให้สั้นลง")}
+    else if(isV){ext=(f.name.split(".").pop()||"mp4").toLowerCase();if(!/^(mp4|mov|webm|m4v)$/.test(ext))ext="mp4";if(!type)type=ext==="mov"?"video/quicktime":ext==="webm"?"video/webm":"video/mp4";if(ext==="m4v")type="video/mp4"}
     else{var u=URL.createObjectURL(f);blob=await toBlob(u,1080,.82);URL.revokeObjectURL(u);type="image/jpeg";ext="jpg"}
     var path=S.uid+"/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
     var up=await db.storage.from("tingtong").upload(path,blob,{contentType:type,upsert:false});
@@ -2012,8 +2071,8 @@ async function loadMarquee(){
     db.from("work_logs").select("employee_id").eq("work_date",t).limit(5000)]);
   (r[0].data||[]).forEach(function(a){if(a.expires_at&&new Date(a.expires_at)<new Date())return;items.push({w:a.kind==="warn",t:(a.kind==="warn"?"⚠️ ":"📢 ")+a.message})});
   var done={};(r[1].data||[]).forEach(function(x){done[x.employee_id]=1});
-  if(!done[S.me.id]&&S.me.role!=="admin")items.unshift({w:true,me:true,t:"⏰ คุณยังไม่ได้ลงยอดผลิตวันนี้ แตะที่นี่เพื่อบันทึก"});
-  if(S.mgr&&new Date().getHours()>=8){var mine=(S.myDepts||S.depts).map(function(d){return d.id}),miss=S.emps.filter(function(e){return e.active&&e.role!=="admin"&&mine.indexOf(e.department_id)>=0&&!done[e.id]});
+  if(!done[S.me.id]&&S.me.role!=="admin"&&S.me.kpi_required!==false)items.unshift({w:true,me:true,t:"⏰ คุณยังไม่ได้ลงยอดผลิตวันนี้ แตะที่นี่เพื่อบันทึก"});
+  if(S.mgr&&new Date().getHours()>=8){var mine=(S.myDepts||S.depts).map(function(d){return d.id}),miss=S.emps.filter(function(e){return e.active&&e.role!=="admin"&&e.kpi_required!==false&&mine.indexOf(e.department_id)>=0&&!done[e.id]});
     if(miss.length)items.push({w:true,t:"📋 วันนี้ยังไม่ลงยอด "+miss.length+" คน: "+miss.slice(0,15).map(function(e){return e.display_name}).join(", ")+(miss.length>15?" และอีก "+(miss.length-15)+" คน":"")})}
   var mq=$("mq");if(!items.length){mq.hidden=true;return}
   var warn=items.some(function(x){return x.w});mq.hidden=false;mq.classList.toggle("warn",warn);MQ.me=items.some(function(x){return x.me});
@@ -2248,6 +2307,10 @@ document.addEventListener("click",function(ev){
   if(d.sell){sellModal(null);return}
   if(d.ttpost){ttReset();openModal("m-ttpost");return}
   if(d.ttedit){ttEditOpen(d.ttedit);return}
+  if(d.delemp){var de=empOf(d.delemp);if(!de||!armed(b,"แตะอีกครั้ง = ลบ "+de.display_name+" ถาวร"))return;
+    act(async function(){
+      var ps=await q(db.from("posts").select("media_path").eq("author_id",de.id));if(ps.length)await db.storage.from("tingtong").remove(ps.map(function(x){return x.media_path}));
+      await q(db.rpc("admin_delete_employee",{p_employee:de.id}));await loadBase()},"ลบ "+de.display_name+" แล้ว").then(refresh);return}
   if(d.chroom){CH.room=d.chroom;CH.list=[];renderChat().catch(function(e){toast(thErr(e))});return}
   if(d.chdel){if(!armed(b,"ลบ?"))return;act(function(){return q(db.from("chat_messages").delete().eq("id",d.chdel))},"ลบข้อความแล้ว").then(function(ok){if(ok){CH.list=CH.list.filter(function(m){return m.id!==d.chdel});drawChat(false)}});return}
   if(d.anon){var an=d.anon;act(function(){return q(db.from("announcements").update({active:d.v==="1"}).eq("id",an))},null).then(function(ok){if(ok){renderAnnounce();loadMarquee()}});return}
@@ -2282,7 +2345,7 @@ document.addEventListener("click",function(ev){
     var allowed=[];document.querySelectorAll(".re-dept:checked").forEach(function(c){allowed.push(c.value)});
     var role=$("re-role").value;
     if(d.saverole===S.me.id&&role!=="admin"){toast("ลดสิทธิ์ Admin ของตัวเองไม่ได้ ให้ Admin คนอื่นทำแทน");return}
-    act(async function(){await q(db.from("employees").update({role:role,allowed_departments:role==="dept_admin"?allowed:[]}).eq("id",d.saverole));await loadBase();S.editRole=null},"บันทึกสิทธิ์แล้ว").then(refresh);return}
+    act(async function(){await q(db.from("employees").update({role:role,allowed_departments:role==="dept_admin"?allowed:[],kpi_required:$("re-kpi").checked}).eq("id",d.saverole));await loadBase();S.editRole=null},"บันทึกสิทธิ์แล้ว").then(refresh);return}
   if(d.rmdept){if(!armed(b,"แตะอีกครั้งเพื่อลบ"))return;act(async function(){await q(db.from("departments").delete().eq("id",d.rmdept));await loadBase();fillSelects()},"ลบแผนกแล้ว").then(refresh);return}
   if(d.edkpi){kpiEdit(S.kpis.filter(function(k){return k.id===d.edkpi})[0]||null);return}
   if(d.rmkpi){if(!armed(b,"แตะอีกครั้งเพื่อลบ"))return;act(async function(){await q(db.from("workstations").update({active:false}).eq("id",d.rmkpi));await loadBase();fillSelects()},"ลบหน้างานแล้ว").then(refresh);return}
@@ -2326,6 +2389,8 @@ $("authform").addEventListener("submit",async function(ev){
   if(full&&(!$("au-name").value.trim()||!$("au-dept").value||!$("au-shift").value)){msg.textContent="กรอกชื่อ-นามสกุล เลือกแผนก และกะการทำงาน";return}
   btn.disabled=true;msg.textContent="";
   try{
+    if(full){var dup=await db.rpc("signup_duplicate",{p_name:$("au-name").value,p_phone:$("au-phone").value,p_no:no});
+      if(dup.data){msg.textContent=dup.data;btn.disabled=false;return}}
     var r=mode==="in"?await db.auth.signInWithPassword({email:no+DOMAIN,password:pw}):await db.auth.signUp({email:no+DOMAIN,password:pw});
     if(r.error)throw r.error;
     if(!r.data.session){msg.textContent="ระบบยังเปิดการยืนยันอีเมลอยู่ ให้ผู้ดูแลปิด Confirm email ใน Supabase ก่อน";btn.disabled=false;return}
@@ -2374,7 +2439,7 @@ async function start(){
   $("f-date").value=today();$("f-date").max=today();$("h-date").value=today();$("d-date").value=today();$("m-month").value=today().slice(0,7);
   ["t-date","tl-date"].forEach(function(id){$(id).value=today()});["t-month","am-month","tg-month","ad-month","ed-month"].forEach(function(id){$(id).value=today().slice(0,7)});
   $("auth").hidden=true;$("app").hidden=false;
-  var t0="home";try{t0=localStorage.getItem("aoi-tab")||"home"}catch(e){}
+  var t0=me.kpi_required===false?"tt":"home";try{t0=localStorage.getItem("aoi-tab")||t0}catch(e){}
   show(TABS.indexOf(t0)>=0?t0:"home");
   loadMarquee().catch(function(){});chatLive();
 }
