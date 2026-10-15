@@ -674,6 +674,31 @@ button.atall{color:var(--sc);border-color:color-mix(in srgb,var(--sc) 40%,transp
 .alnet{font-family:var(--display);font-size:20px;color:var(--good)}.alrow .r{display:flex;flex-direction:column;align-items:flex-end}.alrow .r small{color:var(--muted);font-size:11.5px}
 .alrow .l small{display:block}.alnote{color:var(--muted)}.alpay{display:inline-block;margin-top:4px;font-size:11.5px;border-radius:99px;padding:1px 8px;background:var(--warn-bg);color:var(--warn)}.alpay.ok{background:var(--tint);color:var(--good)}
 .alrow.none b{color:var(--muted)}
+
+/* ===== สรุปของฉัน + แลกรางวัล ===== */
+.mecard{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#7c3aed));color:#fff;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.mecard:empty{display:none}
+.mehi{display:flex;align-items:center;gap:12px}.mehi .avatar{width:52px;height:52px;font-size:22px;border:2px solid rgba(255,255,255,.7)}
+.mehi b{font-size:19px;display:block}.mehi small{opacity:.85}
+.metiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.metile{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:14px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:2px;box-shadow:none;cursor:pointer;min-height:76px}
+.metile:hover{background:rgba(255,255,255,.22)}
+.metile small{font-size:12px;opacity:.85}.metile b{font-family:var(--display);font-size:22px;line-height:1.15}.metile em{font-style:normal;font-size:12px;opacity:.9}
+.metile.warn{background:rgba(251,191,36,.25);border-color:rgba(251,191,36,.6)}.metile.bad{background:rgba(248,113,113,.25);border-color:rgba(248,113,113,.6)}
+.mepill{background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:6px 12px;font-size:13px;box-shadow:none;margin-left:auto;margin-right:6px;white-space:nowrap}
+body:not(.tt-full) .mepill{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.ptshero{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;border-radius:20px;padding:18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;box-shadow:var(--shadow)}
+.ptshero .big{font-family:var(--display);font-size:44px;font-weight:700;line-height:1}.ptshero .big small{font-size:16px;font-weight:500}
+.ptshero .sub2{display:flex;gap:16px;font-size:13px;opacity:.95}.ptshero .nx{flex-basis:100%;font-size:13.5px}
+.ptbar{flex-basis:100%;height:10px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden}.ptbar i{display:block;height:100%;background:#fff;border-radius:99px}
+.rwgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.rwcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.rwcard .em{font-size:40px;line-height:1}.rwcard b{font-size:16px}.rwcard small{color:var(--muted)}
+.rwcost{font-family:var(--display);font-weight:700;color:#d97706;font-size:18px}.rwcard .need{font-size:12.5px;color:var(--muted)}
+.rwcard.off{opacity:.55}
+.stb.pend{background:var(--warn-bg);color:var(--warn)}.stb.ok{background:var(--tint);color:var(--good)}.stb.no{background:var(--miss-bg);color:var(--miss-ink)}
+.slimsel{width:auto;padding:6px 10px}
+.rwform{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;align-items:end;margin-bottom:10px}.rwform label{display:flex;flex-direction:column;gap:4px;font-size:13px}.rwform input,.rwform select{width:100%!important}.rwform button{height:42px}
 #qrprint{display:none}.qrcard .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#111}
 @media print{
   @page{size:A4 portrait;margin:8mm}
@@ -852,6 +877,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 
   <!-- HOME -->
   <section class="view g2" id="v-home">
+    <div class="mecard" id="me-card"></div>
     <div><h2>Dashboard</h2><p class="sub" id="greet"></p></div>
     <div class="filters">
       <label>วันที่<input type="date" id="h-date"></label>
@@ -1220,6 +1246,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button data-tab="leaveadmin" data-perm="leave_admin">จัดการวันลา</button>
       <button data-tab="myatt">เช็คชื่อของฉัน / QR</button>
       <button data-tab="game">เกมพนักงาน</button>
+      <button data-tab="rewards">แลกรางวัล</button>
       <button data-tab="att" data-perm="att_check">เช็ครายชื่อ</button>
       <button data-tab="empmgr" data-perm="emp">จัดการพนักงาน</button>
       <button data-tab="attdash" data-perm="att_view">แดชบอร์ดเช็คชื่อ</button>
@@ -1235,6 +1262,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button data-tab="perms" class="adm">สิทธิ์ผู้ใช้</button>
       <button data-tab="telegram" class="adm">แจ้งเตือน Telegram</button>
       <button data-tab="announce" class="adm">ประกาศตัวหนังสือวิ่ง</button>
+      <button data-tab="rewardadm" class="adm">จัดการรางวัล</button>
       <button data-tab="settings">ตั้งค่า</button>
     </div>
   </section>
@@ -1282,6 +1310,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <section class="view" id="v-tt" hidden>
     <div class="headrow">
       <div><h2>ติ่งต๊อง</h2><p class="sub">คลิปและรูปจากเพื่อนพนักงาน</p></div>
+      <button type="button" class="mepill" id="tt-me" data-tab="home" hidden></button>
       <button type="button" class="primary slim" data-ttpost="1" data-ico="plus">โพสต์</button>
     </div>
     <div class="chips"><button type="button" class="chipsel on" data-ttmode="all">สำหรับคุณ</button><button type="button" class="chipsel" data-ttmode="new">ล่าสุด</button><button type="button" class="chipsel" data-ttmode="mine">ของฉัน</button></div>
@@ -1423,6 +1452,32 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   </section>
 
   <!-- TELEGRAM (Admin) -->
+  <!-- แลกรางวัล -->
+  <section class="view" id="v-rewards" hidden>
+    <div><h2>🎁 แลกรางวัล</h2><p class="sub">มาทำงานตรงเวลา = ได้แต้ม (มาทำงาน +10 · สาย −5 · ขาด −10) แล้วนำแต้มมาแลกของรางวัล</p></div>
+    <div class="ptshero" id="rw-hero"></div>
+    <div class="rwgrid" id="rw-grid"></div>
+    <div class="panel"><h3>ประวัติการแลกของฉัน</h3><div class="rows" id="rw-hist"></div></div>
+  </section>
+
+  <!-- ADMIN: จัดการรางวัล -->
+  <section class="view" id="v-rewardadm" hidden>
+    <div><h2>จัดการรางวัล</h2><p class="sub">อนุมัติคำขอแลก · ตั้งของรางวัล · ให้แต้มพิเศษ (เช่น พนักงานดีเด่นประจำสัปดาห์)</p></div>
+    <div class="panel"><div class="depthead"><h3>คำขอแลกรางวัล</h3><select id="ra-st" class="slimsel"><option value="pending">รออนุมัติ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ไม่อนุมัติ</option><option value="">ทั้งหมด</option></select></div><div class="rows" id="ra-reqs"></div></div>
+    <div class="g2c">
+      <div class="panel">
+        <h3>ของรางวัล</h3>
+        <form id="rf" class="rwform"><input type="hidden" id="rf-id"><label>อีโมจิ<input type="text" id="rf-emoji" maxlength="4" value="🎁"></label><label>ชื่อรางวัล<input type="text" id="rf-name" maxlength="80" required></label><label>ใช้แต้ม<input type="number" id="rf-cost" min="1" required></label><label>จำนวน (เว้นว่าง = ไม่จำกัด)<input type="number" id="rf-stock" min="0"></label><label>รายละเอียด<input type="text" id="rf-desc" maxlength="300"></label><button type="submit" class="primary slim" id="rf-save">เพิ่ม</button><button type="button" class="slim" id="rf-cancel" hidden>ยกเลิกแก้ไข</button></form>
+        <div class="rows" id="ra-rewards"></div>
+      </div>
+      <div class="panel">
+        <h3>ให้แต้มพิเศษ</h3>
+        <form id="bf" class="rwform"><label>พนักงาน<select id="bf-emp" required></select></label><label>แต้ม (+/−)<input type="number" id="bf-pts" required placeholder="50"></label><label>เหตุผล<input type="text" id="bf-why" maxlength="200" placeholder="พนักงานดีเด่นประจำสัปดาห์"></label><button type="submit" class="primary slim">ให้แต้ม</button></form>
+        <div class="rows" id="ra-bonus"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ADMIN: สิทธิ์ผู้ใช้ -->
   <section class="view" id="v-perms" hidden>
     <div><h2>สิทธิ์ผู้ใช้</h2><p class="sub">Admin กำหนดว่าใครดูแลแผนกไหน และทำอะไรได้บ้าง (เช็คชื่อ · หัก KPI · การลา · งานผลิต · จัดการพนักงาน)</p></div>
@@ -1544,6 +1599,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <span class="navlabel" data-g="att">✅ เช็คชื่อ</span>
   <button data-tab="myatt" class="navx">เช็คชื่อของฉัน / QR</button>
   <button data-tab="game" class="navx">เกมพนักงาน</button>
+  <button data-tab="rewards" class="navx">แลกรางวัล</button>
   <button data-tab="att" data-perm="att_check" class="navx">เช็ครายชื่อ</button>
   <button data-tab="empmgr" data-perm="emp" class="navx">จัดการพนักงาน</button>
   <button data-tab="attdash" data-perm="att_view" class="navx">แดชบอร์ดเช็คชื่อ</button>
@@ -1560,6 +1616,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <button data-tab="perms" class="adm navx">สิทธิ์ผู้ใช้</button>
   <button data-tab="telegram" class="adm navx">แจ้งเตือน Telegram</button>
   <button data-tab="announce" class="adm navx">ประกาศตัวหนังสือวิ่ง</button>
+  <button data-tab="rewardadm" class="adm navx">จัดการรางวัล</button>
   <button data-tab="settings" class="navx">ตั้งค่า</button>
   <button data-tab="menu" class="navmore">เมนู</button>
 </div></nav>
@@ -1813,6 +1870,8 @@ var ICON={
   attqr:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M21 14v7h-4M14 18v3"/>',
   qr:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M21 14v7h-4M14 18v3"/>',
   myatt:'<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17c1-2 2.500-3 4-3s3 1 4 3"/>',
+  rewards:'<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1.500S9 8 12 8zM12 8c2-4 6-4 6-1.500S15 8 12 8z"/>',
+  rewardadm:'<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1.500S9 8 12 8zM12 8c2-4 6-4 6-1.500S15 8 12 8z"/>',
   game:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
   deduct:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',minus:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
   dedrep:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3 3 3-3"/>',
@@ -1945,6 +2004,7 @@ function showTarget(){var k=S.kpis.filter(function(x){return x.id===$("f-kpi").v
 
 /* ---------- หน้า: ภาพรวม ---------- */
 async function renderHome(){
+  renderMeCard();
   var date=$("h-date").value||today(),dept=S.mgr?$("h-dept").value:"",m=date.slice(0,7);
   var all=await month(m),logs=all.filter(function(r){return !dept||r.department_id===dept});
   var day=logs.filter(function(r){return r.work_date===date});
@@ -2640,6 +2700,7 @@ var TT={seen:{},vobs:null,mode:"all",list:[],liked:{},urls:{},urlsAt:0,muted:fal
 function ago(t){var s=(Date.now()-new Date(t).getTime())/1000;if(s<60)return "เมื่อสักครู่";if(s<3600)return Math.floor(s/60)+" นาทีที่แล้ว";if(s<86400)return Math.floor(s/3600)+" ชม.ที่แล้ว";if(s<604800)return Math.floor(s/86400)+" วันที่แล้ว";return new Date(t).toLocaleDateString("th-TH",{day:"numeric",month:"short"})}
 function avHtml(src,name){var a=okImg(src);return '<span class="ttav">'+(a?'<img alt="" src="'+a+'">':esc(String(name||"?").trim().charAt(0)))+'</span>'}
 async function renderTT(){
+  renderMeCard();
   var r=await Promise.all([q(db.from("posts").select("*").order("created_at",{ascending:false}).limit(100)),q(db.from("post_likes").select("post_id").eq("employee_id",S.me.id))]);
   TT.list=r[0];TT.liked={};r[1].forEach(function(x){TT.liked[x.post_id]=1});
   var pids=TT.list.map(function(p){return p.product_id}).filter(Boolean);TT.prods={};
@@ -3581,6 +3642,94 @@ $("pm-save").addEventListener("click",function(){
   act(async function(){await q(db.from("employees").update(row).eq("id",id));await loadBase()},"บันทึกสิทธิ์แล้ว").then(function(ok){if(ok){closeModal("m-perm");refresh()}});
 });
 
+
+/* ---------- สรุปของฉัน (หน้าแรกส่วนตัว) ---------- */
+var ME={t:0,data:null};
+var SMON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+async function meLoad(force){
+  if(!force&&ME.data&&Date.now()-ME.t<60000)return ME.data;
+  var me=S.me,td=today(),y=new Date().getFullYear(),d={};
+  var r=await Promise.all([
+    db.from("attendance").select("status,check_in_time").eq("employee_id",me.id).eq("work_date",td).maybeSingle(),
+    db.rpc("leave_balance_rows",{p_year:y,p_type:null}),
+    db.from("leave_requests").select("id",{count:"exact",head:true}).eq("employee_id",me.id).eq("status","pending"),
+    db.from("kpi_allowances").select("*").eq("employee_id",me.id).order("month",{ascending:false}).limit(1),
+    db.rpc("my_points",{p_emp:null}),
+    lvMeta().catch(function(){})]);
+  d.att=r[0].data||null;
+  d.bal=(r[1].data||[]).filter(function(x){return x.employee_id===me.id&&+x.total>0});
+  d.myPending=r[2].count||0;d.kpi=(r[3].data||[])[0]||null;d.pts=(r[4].data||[])[0]||null;
+  if(lvAppr()){try{var c=await db.from("leave_requests").select("id",{count:"exact",head:true}).eq("status","pending");d.apprPending=c.count||0}catch(e){}}
+  if(S.admin){try{var c2=await db.from("reward_redemptions").select("id",{count:"exact",head:true}).eq("status","pending");d.rwPending=c2.count||0}catch(e){}}
+  ME.data=d;ME.t=Date.now();return d}
+function meTile(tab,label,big,em,cls){return '<button type="button" class="metile'+(cls?" "+cls:"")+'" data-tab="'+tab+'"><small>'+esc(label)+'</small><b>'+big+'</b>'+(em?'<em>'+em+'</em>':'')+'</button>'}
+async function renderMeCard(){
+  try{var d=await meLoad(),me=S.me,h=new Date().getHours(),hi=h<12?"สวัสดีตอนเช้า":h<17?"สวัสดีตอนบ่าย":"สวัสดีตอนเย็น",t=[];
+    var a=d.att,att=a?(isPresent(a.status)?"✓ "+(a.check_in_time||"มาแล้ว"):esc(stShort(a.status))):"ยังไม่เช็ค";
+    t.push(meTile("myatt","เข้างานวันนี้",att,a&&a.status!=="มาทำงาน"&&a.status?esc(a.status):"",a?(a.status==="ขาดงาน"?"bad":ST_LATE.indexOf(a.status)>=0?"warn":""):""));
+    var vac=d.bal.filter(function(x){var t2=lvType(x.leave_type_id);return /พักร้อน/.test(t2.name)})[0]||d.bal[0];
+    if(vac)t.push(meTile("myleave",(lvType(vac.leave_type_id).name||"วันลา")+" คงเหลือ",num(vac.remaining)+' <small style="font-size:13px">วัน</small>',d.myPending?"รออนุมัติ "+d.myPending+" ใบ":"",d.myPending?"warn":""));
+    else t.push(meTile("leave","ขอลางาน","📝","ลาได้ในแอป",""));
+    if(d.kpi){var km=+d.kpi.month.slice(5,7),ky=+d.kpi.month.slice(0,4),pm=km===12?1:km+1,py=km===12?ky+1:ky,pd=py+"-"+String(pm).padStart(2,"0")+"-05",paid=today()>=pd;
+      t.push(meTile("allowance","KPI "+SMON[km-1]+" จ่ายจริง",num(d.kpi.amount)+' <small style="font-size:13px">บาท</small>',(paid?"✓ จ่ายแล้ว ":"⏳ จ่าย ")+"5 "+SMON[pm-1],""))}
+    if(d.pts)t.push(meTile("rewards","แต้มสะสม 🪙",num(d.pts.balance),"กดดูของรางวัล",""));
+    if(d.apprPending)t.push(meTile("leaveappr","ใบลารออนุมัติ (แผนก)",num(d.apprPending),"กดเพื่ออนุมัติ","warn"));
+    if(d.rwPending)t.push(meTile("rewardadm","คำขอแลกรางวัล",num(d.rwPending),"รออนุมัติ","warn"));
+    $("me-card").innerHTML='<div class="mehi">'+avatarHtml(me)+'<div><b>'+hi+' คุณ'+esc(nick(me.display_name))+'</b><small>'+esc(thLong(today()))+'</small></div></div><div class="metiles">'+t.join("")+'</div>';
+    var pill=$("tt-me");if(pill){pill.hidden=false;pill.textContent="👋 "+nick(me.display_name)+(vac?" · ลา "+num(vac.remaining)+" วัน":"")+(d.pts?" · 🪙 "+num(d.pts.balance):"")}
+  }catch(e){}}
+
+/* ---------- แลกรางวัล ---------- */
+var RW={list:[]};
+async function renderRewards(){
+  var r=await Promise.all([q(db.from("rewards").select("*").eq("active",true).order("sort_order").order("cost")),q(db.rpc("my_points",{p_emp:null})),
+    q(db.from("reward_redemptions").select("*").eq("employee_id",S.me.id).order("created_at",{ascending:false}).limit(50))]);
+  RW.list=r[0];var p=r[1][0]||{earned:0,bonus:0,spent:0,balance:0},bal=+p.balance||0;ME.t=0;
+  var next=RW.list.filter(function(x){return x.cost>bal&&(x.stock==null||x.stock>0)}).sort(function(a,b){return a.cost-b.cost})[0];
+  $("rw-hero").innerHTML='<div><small>แต้มของฉัน</small><div class="big">'+num(bal)+' <small>แต้ม</small></div></div><div class="sub2"><span>ได้จากเข้างาน '+num(p.earned)+'</span><span>แต้มพิเศษ '+num(p.bonus)+'</span><span>ใช้แลกแล้ว '+num(p.spent)+'</span></div>'+
+    (next?'<div class="nx">อีก <b>'+num(next.cost-bal)+'</b> แต้ม จะแลก '+esc(next.emoji+" "+next.name)+' ได้</div><div class="ptbar"><i style="width:'+Math.min(100,Math.round(bal*100/next.cost))+'%"></i></div>':'');
+  $("rw-grid").innerHTML=RW.list.length?RW.list.map(function(x){var out=x.stock!=null&&x.stock<=0,can=!out&&bal>=x.cost;
+    return '<div class="rwcard'+(can?'':' off')+'"><span class="em">'+esc(x.emoji||"🎁")+'</span><b>'+esc(x.name)+'</b>'+(x.description?'<small>'+esc(x.description)+'</small>':'')+
+      '<span class="rwcost">🪙 '+num(x.cost)+' แต้ม</span>'+(x.stock!=null?'<small>เหลือ '+num(x.stock)+' ชิ้น</small>':'')+
+      (out?'<span class="need">หมดแล้ว</span>':can?'<button type="button" class="primary sm" data-redeem="'+x.id+'">แลกเลย</button>':'<span class="need">ขาดอีก '+num(x.cost-bal)+' แต้ม</span>')+'</div>'}).join(""):emptyRow("ยังไม่มีของรางวัล");
+  var ST={pending:['pend','รออนุมัติ'],approved:['ok','ได้รับแล้ว'],rejected:['no','ไม่อนุมัติ (คืนแต้มแล้ว)'],cancelled:['no','ยกเลิก (คืนแต้มแล้ว)']};
+  $("rw-hist").innerHTML=r[2].length?r[2].map(function(x){var s2=ST[x.status]||['',x.status];return '<div class="row"><div class="l"><b>'+esc(x.reward_name)+'</b><small>'+esc(new Date(x.created_at).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"}))+' · 🪙 '+num(x.cost)+(x.note?' · '+esc(x.note):'')+'</small></div><div class="r"><span class="stb '+s2[0]+'">'+esc(s2[1])+'</span>'+(x.status==="pending"?' <button type="button" class="sm" data-rwcancel="'+x.id+'">ยกเลิก</button>':'')+'</div></div>'}).join(""):emptyRow("ยังไม่เคยแลก");
+}
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-redeem]");if(b){var x=RW.list.filter(function(r){return r.id===b.dataset.redeem})[0];if(!x||!armed(b,"แตะอีกครั้งเพื่อแลก "+x.cost+" แต้ม"))return;
+    act(function(){return q(db.rpc("redeem_reward",{p_reward:x.id}))},"ส่งคำขอแลก "+x.name+" แล้ว รอ Admin อนุมัติ").then(function(){refresh()});return}
+  var c=ev.target.closest("[data-rwcancel]");if(c){if(!armed(c,"แตะอีกครั้งเพื่อยกเลิก"))return;act(function(){return q(db.rpc("cancel_redemption",{p_id:c.dataset.rwcancel}))},"ยกเลิกแล้ว คืนแต้มให้แล้ว").then(function(){refresh()});return}
+});
+
+/* ---------- Admin: จัดการรางวัล ---------- */
+async function renderRewardAdm(){
+  if(!S.admin)return;
+  var st=$("ra-st").value,b=db.from("reward_redemptions").select("*").order("created_at",{ascending:false}).limit(200);if(st)b=b.eq("status",st);
+  var r=await Promise.all([q(b),q(db.from("rewards").select("*").order("sort_order").order("cost")),q(db.from("point_bonuses").select("*").order("created_at",{ascending:false}).limit(30))]);
+  var ST={pending:['pend','รออนุมัติ'],approved:['ok','อนุมัติแล้ว'],rejected:['no','ไม่อนุมัติ'],cancelled:['no','ยกเลิก']};
+  $("ra-reqs").innerHTML=r[0].length?r[0].map(function(x){var e=empOf(x.employee_id)||{display_name:"?"},s2=ST[x.status]||['',x.status];
+    return '<div class="row"><div class="l"><div class="atwho">'+avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div></div><small>'+esc(x.reward_name)+' · 🪙 '+num(x.cost)+' · '+esc(new Date(x.created_at).toLocaleString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))+'</small></div><div class="r">'+
+      (x.status==="pending"?'<button type="button" class="sm good" data-rwok="'+x.id+'">ให้ของแล้ว</button> <button type="button" class="sm danger" data-rwno="'+x.id+'">ไม่อนุมัติ</button>':'<span class="stb '+s2[0]+'">'+esc(s2[1])+'</span>')+'</div></div>'}).join(""):emptyRow(st==="pending"?"ไม่มีคำขอรออนุมัติ":"ไม่มีรายการ");
+  $("ra-rewards").innerHTML=r[1].length?r[1].map(function(x){return '<div class="row'+(x.active?'':' off')+'"><div class="l"><b>'+esc((x.emoji||"🎁")+" "+x.name)+'</b><small>🪙 '+num(x.cost)+' แต้ม · '+(x.stock==null?"ไม่จำกัด":"เหลือ "+num(x.stock))+(x.active?"":" · ปิดอยู่")+(x.description?" · "+esc(x.description):"")+'</small></div><div class="r"><button type="button" class="sm" data-rwedit="'+x.id+'">แก้ไข</button> <button type="button" class="sm" data-rwtog="'+x.id+'">'+(x.active?"ปิด":"เปิด")+'</button></div></div>'}).join(""):emptyRow("ยังไม่มีของรางวัล");
+  RW.adm=r[1];
+  if(!$("bf-emp").options.length)$("bf-emp").innerHTML='<option value="">เลือกพนักงาน</option>'+S.emps.filter(function(e){return e.active}).sort(function(a,b){return String(a.display_name).localeCompare(String(b.display_name),"th")}).map(function(e){return '<option value="'+e.id+'">'+esc(e.display_name+" ("+e.employee_no+")")+'</option>'}).join("");
+  $("ra-bonus").innerHTML=r[2].length?r[2].map(function(x){var e=empOf(x.employee_id)||{display_name:"?"};return '<div class="row"><div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(x.reason||"-")+' · '+esc(new Date(x.created_at).toLocaleDateString("th-TH",{day:"numeric",month:"short"}))+'</small></div><div class="r"><b class="'+(x.points>0?"good":"bad")+'">'+(x.points>0?"+":"")+num(x.points)+'</b></div></div>'}).join(""):emptyRow("ยังไม่มี");
+}
+$("ra-st").addEventListener("change",refresh);
+function rfReset(){$("rf-id").value="";$("rf-name").value="";$("rf-cost").value="";$("rf-stock").value="";$("rf-desc").value="";$("rf-emoji").value="🎁";$("rf-save").textContent="เพิ่ม";$("rf-cancel").hidden=true}
+$("rf-cancel").addEventListener("click",rfReset);
+$("rf").addEventListener("submit",function(ev){ev.preventDefault();var id=$("rf-id").value,st=$("rf-stock").value;
+  var row={name:$("rf-name").value.trim(),cost:+$("rf-cost").value,stock:st===""?null:+st,description:$("rf-desc").value.trim(),emoji:$("rf-emoji").value.trim()||"🎁"};
+  act(function(){return q(id?db.from("rewards").update(row).eq("id",id):db.from("rewards").insert(row))},id?"แก้ไขรางวัลแล้ว":"เพิ่มรางวัลแล้ว").then(function(ok){if(ok){rfReset();refresh()}})});
+$("bf").addEventListener("submit",function(ev){ev.preventDefault();var e=$("bf-emp").value,p=parseInt($("bf-pts").value,10);if(!e||!p){toast("เลือกพนักงานและใส่แต้ม");return}
+  act(function(){return q(db.from("point_bonuses").insert({employee_id:e,points:p,reason:$("bf-why").value.trim(),created_by:S.me.id}))},"ให้แต้มแล้ว").then(function(ok){if(ok){$("bf-pts").value="";$("bf-why").value="";refresh()}})});
+document.addEventListener("click",function(ev){
+  var o=ev.target.closest("[data-rwok],[data-rwno]");if(o){var id=o.dataset.rwok||o.dataset.rwno,stt=o.dataset.rwok?"approved":"rejected";if(stt==="rejected"&&!armed(o,"ยืนยันไม่อนุมัติ (คืนแต้ม)"))return;
+    act(function(){return q(db.rpc("decide_redemption",{p_id:id,p_status:stt,p_note:""}))},stt==="approved"?"บันทึกว่าให้ของแล้ว":"ไม่อนุมัติ คืนแต้มให้พนักงานแล้ว").then(function(){ME.t=0;refresh()});return}
+  var ed=ev.target.closest("[data-rwedit]");if(ed){var x=(RW.adm||[]).filter(function(r){return r.id===ed.dataset.rwedit})[0];if(!x)return;$("rf-id").value=x.id;$("rf-name").value=x.name;$("rf-cost").value=x.cost;$("rf-stock").value=x.stock==null?"":x.stock;$("rf-desc").value=x.description||"";$("rf-emoji").value=x.emoji||"🎁";$("rf-save").textContent="บันทึกการแก้ไข";$("rf-cancel").hidden=false;$("rf-name").focus();return}
+  var tg=ev.target.closest("[data-rwtog]");if(tg){var y=(RW.adm||[]).filter(function(r){return r.id===tg.dataset.rwtog})[0];if(!y)return;act(function(){return q(db.from("rewards").update({active:!y.active}).eq("id",y.id))},y.active?"ปิดรางวัลแล้ว":"เปิดรางวัลแล้ว").then(refresh);return}
+});
+
 /* ---------- เช็คชื่อของฉัน ---------- */
 async function renderMyAtt(){
   var me=S.me;$("my-qr").innerHTML=qrSvg(me.employee_no,6);$("my-qrname").textContent=me.display_name;$("my-qrsub").textContent=[me.employee_no,deptName(me.department_id),shiftTxt(me.shift)].join(" · ");
@@ -3992,7 +4141,7 @@ $("lx-go").addEventListener("click",async function(){
 /* ---------- สีหมวดเมนู (จำง่าย) ---------- */
 var NAVG={home:"kpi",log:"kpi",daily:"kpi",monthly:"kpi",staff:"kpi",top:"kpi",allowance:"kpi",shop:"soc",tt:"soc",chat:"soc",install:"soc",
   leave:"lv",myleave:"lv",leavecal:"lv",leaveappr:"lv",leaveadmin:"lv",empmgr:"att",myatt:"att",game:"att",att:"att",attdash:"att",atthist:"att",attqr:"att",deduct:"att",dedrep:"att",tv:"att",
-  admin:"adm",perms:"adm",targets:"adm",kpis:"adm",allowmgr:"adm",telegram:"adm",announce:"adm",settings:"adm"};
+  admin:"adm",perms:"adm",rewardadm:"adm",rewards:"att",targets:"adm",kpis:"adm",allowmgr:"adm",telegram:"adm",announce:"adm",settings:"adm"};
 var NAVGT={kpi:"📊 งานผลิต · KPI",soc:"🛍️ ร้านค้า · ติ่งต๊อง · แชต",lv:"🌴 การลา",att:"✅ เช็คชื่อ",adm:"⚙️ Admin · ตั้งค่า"};
 document.querySelectorAll("nav.tabs button[data-tab],.menugrid button[data-tab]").forEach(function(b){var g=NAVG[b.dataset.tab];if(g)b.dataset.g=g});
 document.querySelectorAll("#nav-depts").forEach(function(x){x.dataset.g="kpi"});
@@ -4138,10 +4287,10 @@ async function exportLeaveCalendar(y,dept,shift){
   await xlSave(wb,"leave-calendar_"+y+".xlsx");
 }
 
-var RENDER={perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+var RENDER={rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms"];
+var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
@@ -4150,7 +4299,7 @@ function show(tab){
   var TP={att:"att_check",attqr:"att_check",attdash:"att_view",atthist:"att_view",tv:"att_view",deduct:"deduct",dedrep:"deduct",empmgr:"emp",leaveappr:"leave_view",leaveadmin:"leave_admin"};
   if(TP[tab]&&!can(TP[tab]))tab=tab.indexOf("leave")===0?"myleave":"home";
   if(tab!=="tv")document.body.classList.remove("tvmode");
-  if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms")&&!S.admin)tab="home";
+  if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms"||tab==="rewardadm")&&!S.admin)tab="home";
   if(tab==="chat"){$("chat-dot").hidden=true;$("chat-dot2").hidden=true}
   S.tab=tab;
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
