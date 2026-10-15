@@ -3202,7 +3202,7 @@ function seatHtml(e){var a=AT.map[e.id]||{},st=a.status,i=stIdx(st),g=stGroup(st
   return '<button type="button" class="seat'+(g==="absent"||g==="leave"||g==="holi"?" off":"")+(dirty?" pend":"")+(i>=0?" s"+i:"")+'" data-seat="'+e.id+'"'+(i>=0?' style="--ring:var(--sc)"':'')+'>'+faceHtml(e)+
     (i>=0?'<span class="sb">'+esc(AST[i].s)+'</span>':'')+(a.time&&isPresent(st)?'<span class="tm">'+esc(a.time)+'</span>':'')+
     '<span class="desk"><b>'+esc(nick(e.display_name))+'</b><small>'+esc(e.employee_no)+'</small></span></button>'}
-function nick(n){n=String(n||"").replace(/^(นางสาว|นาง|นาย|น\.ส\.|Mr\.|Mrs\.|Ms\.)\s*/,"").trim();return n.split(/\s+/)[0]||n}
+function nick(n){n=String(n||"").trim().replace(/^(นางสาว|นาง|นาย|ด\s*\.?\s*[ชญ]\s*\.|น\s*\.?\s*ส\s*\.|น\s+ส(?=\s)|mrs?\.?(?=\s)|ms\.?(?=\s)|miss(?=\s))\s*/i,"").trim();var w=n.split(/\s+/);return (w[0]&&w[0].replace(/\./g,"").length>1?w[0]:w.slice(0,2).join(" "))||n}
 function drawRoom(){var list=atList();$("at-room").innerHTML=list.length?list.map(seatHtml).join(""):emptyRow("ไม่มีพนักงานในเงื่อนไขที่เลือก")}
 function seatRedraw(id){var el=document.querySelector('#at-room [data-seat="'+id+'"]'),e=empOf(id);if(el&&e)el.outerHTML=seatHtml(e)}
 function setAtView(v){ROOM.view=v;try{localStorage.setItem("aoi-atview",v)}catch(e){}
