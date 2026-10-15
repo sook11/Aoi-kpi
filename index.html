@@ -3722,10 +3722,12 @@ function lvDays(){
   var ds=datesBetween(from,to),work=ds.filter(function(d){return dayKind(d)==="work"});
   LV.days=ds;var n=half?(work.length?0.5:0):work.length;LV.n=n;
   $("lv-days").innerHTML=ds.length?'<span class="lvn">'+num(n)+' วัน</span><small>'+(ds.length>work.length?"ไม่นับวันอาทิตย์/วันหยุดโรงงาน "+(ds.length-work.length)+" วัน":"")+'</small>':'<small class="bad">วันที่สิ้นสุดต้องไม่ก่อนวันเริ่มต้น</small>';
-  var e=LV.emp||S.me,mates=dirList().filter(function(x){return x.id!==e.id&&x.department_id===e.department_id}),my=$("lv-shift").value,opp=my==="A"?"B":my==="B"?"A":null;
-  mates.sort(function(a,b){return (b.shift===opp)-(a.shift===opp)||String(a.display_name).localeCompare(String(b.display_name),"th")});
+  /* คู่กะ = คนในแผนกเดียวกันที่อยู่ "อีกกะ" เท่านั้น (A ↔ B, กะ AA ใช้ได้ทั้ง A และ B) */
+  var e=LV.emp||S.me,my=$("lv-shift").value,opp=my==="A"?"B":my==="B"?"A":null,
+      mates=dirList().filter(function(x){return x.id!==e.id&&x.department_id===e.department_id&&x.shift!==my&&(opp?x.shift===opp:(x.shift==="A"||x.shift==="B"))});
+  mates.sort(function(a,b){return String(a.shift).localeCompare(String(b.shift))||String(a.display_name).localeCompare(String(b.display_name),"th")});
   var old={};document.querySelectorAll("#lv-subs select").forEach(function(s){old[s.dataset.d]=s.value});
-  var opts=function(d){return '<option value="">เลือกคู่กะที่มาแทน</option>'+mates.map(function(m){return '<option value="'+m.id+'"'+(old[d]===m.id?" selected":"")+'>'+esc((m.shift===opp?"⭐ ":"")+m.display_name+" (กะ "+shiftLbl(m.shift)+")")+'</option>'}).join("")};
+  var opts=function(d){return '<option value="">'+(mates.length?"เลือกคู่กะที่มาแทน (กะ "+(opp?shiftLbl(opp):"A / B")+")":"— ไม่มีพนักงานอีกกะในแผนกนี้ —")+'</option>'+mates.map(function(m){return '<option value="'+m.id+'"'+(old[d]===m.id?" selected":"")+'>'+esc(m.display_name+" (กะ "+shiftLbl(m.shift)+")")+'</option>'}).join("")};
   $("lv-subs").innerHTML=ds.length>62?'<p class="sub">ช่วงยาวเกิน 62 วัน ไม่ต้องระบุผู้มาแทนรายวัน</p>':ds.map(function(d){var k=dayKind(d),ri=rotInfo(d),sl=my==="D"?"เช้า":my===ri.day?"เช้า":"ดึก";
     return '<div class="subrow k-'+k+'"><span class="sd">'+esc(wdD(d))+'<small>'+(k==="work"?"กะ"+shiftLbl(my)+" เข้า"+sl:"")+'</small></span>'+(k==="work"?'<select data-d="'+d+'">'+opts(d)+'</select>':'<span class="soff">'+(k==="rot"?"ควงกะ (ไม่ต้องมีผู้มาแทน)":k==="co"?"วันหยุดโรงงาน · "+esc(LV.hol[d].names.join(", ")):"วันหยุด (อาทิตย์)")+'</span>')+'</div>'}).join("");
   lvConflict();
