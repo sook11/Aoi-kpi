@@ -420,6 +420,8 @@ nav.tabs button:hover,nav.tabs button[aria-current="page"]:hover{color:#fff!impo
   body.tt-full #v-tt{position:fixed;left:0;right:0;top:0;bottom:var(--navh,64px);z-index:8;background:#000;margin:0;padding:0;display:block;gap:0}
   body.tt-full #v-tt>*{animation:none}
   body.tt-full #v-tt .ttfeed{height:100%;min-height:0;max-width:none;border-radius:0}
+  body.tt-full #v-tt.tt-prof .headrow{background:var(--bg)}body.tt-full #v-tt.tt-prof .headrow h2{color:var(--ink);text-shadow:none}
+  body.tt-full #v-tt .ttprof{height:100%;min-height:0;max-width:none;border-radius:0;border:0;padding-top:calc(env(safe-area-inset-top,0px) + 92px);background:var(--bg)}
   body.tt-full #v-tt .headrow{position:absolute;top:0;left:0;right:0;z-index:4;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 26px;background:linear-gradient(rgba(0,0,0,.55),transparent);pointer-events:none;color:#fff}
   body.tt-full #v-tt .headrow>*{pointer-events:auto}
   body.tt-full #v-tt .headrow h2{color:#fff;font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
@@ -647,6 +649,26 @@ button.atall{color:var(--sc);border-color:color-mix(in srgb,var(--sc) 40%,transp
 .stbody b{font-size:clamp(22px,5vmin,40px)}.stbody small{opacity:.85;font-size:15px}
 .stbtns{position:absolute;bottom:22px;left:0;right:0;z-index:4;display:flex;gap:10px;justify-content:center}
 .stbtns button:not(.primary){background:rgba(255,255,255,.9);color:#111}
+
+/* ===== ติ่งต๊อง: ฟิลเตอร์ + คลังโพสต์ ===== */
+.ttfx{display:flex;flex-direction:column;gap:6px}.ttfx b{font-size:14px}
+.fxrow{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin}
+.fxb{flex:none;border:0;background:none;box-shadow:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;color:var(--ink)}
+.fxb i{width:56px;height:56px;border-radius:12px;background:#333 center/cover no-repeat;display:block;border:2px solid transparent}
+.fxb.on i{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}.fxb.on{color:var(--accent);font-weight:700}
+.ttprof{height:calc(100vh - 250px);height:calc(100dvh - 250px);min-height:420px;overflow-y:auto;background:var(--surface);border-radius:18px;max-width:460px;width:100%;margin-inline:auto;border:1px solid var(--line)}
+.tpf-head{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 14px 10px;text-align:center}
+.tpf-head .ttav{width:88px;height:88px;font-size:34px;border-width:3px}.tpf-head h3{margin:0;font-size:19px}.tpf-head small{color:var(--muted)}
+.tpf-stats{display:flex;gap:26px;justify-content:center;margin:4px 0}.tpf-stats div{display:flex;flex-direction:column;align-items:center}.tpf-stats b{font-size:18px;font-family:var(--display)}.tpf-stats small{font-size:12px;color:var(--muted)}
+.tpf-acts{display:flex;gap:8px;justify-content:center}
+.tpf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.tpf-t{position:relative;aspect-ratio:3/4;background:#111 center/cover no-repeat;border:0;padding:0;border-radius:0;box-shadow:none;overflow:hidden}
+.tpf-t .tpf-img{position:absolute;inset:0;background:inherit;background-size:cover;background-position:center}
+.tpf-t span{position:absolute;left:6px;bottom:5px;color:#fff;font-size:12.5px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.8);display:flex;align-items:center;gap:3px}
+.tpf-t span svg{width:13px;height:13px}
+.tpf-t em{position:absolute;top:5px;left:5px;font-style:normal;font-size:10.5px;background:rgba(0,0,0,.55);color:#fff;border-radius:5px;padding:0 5px}
+.tpf-empty{padding:30px 16px;text-align:center;color:var(--muted)}
+.ttside .ttav{cursor:pointer}
 #qrprint{display:none}.qrcard .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#111}
 @media print{
   @page{size:A4 portrait;margin:8mm}
@@ -1258,6 +1280,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button type="button" class="primary slim" data-ttpost="1" data-ico="plus">โพสต์</button>
     </div>
     <div class="chips"><button type="button" class="chipsel on" data-ttmode="all">สำหรับคุณ</button><button type="button" class="chipsel" data-ttmode="new">ล่าสุด</button><button type="button" class="chipsel" data-ttmode="mine">ของฉัน</button></div>
+    <div class="ttprof" id="tt-prof" hidden></div>
     <div class="ttfeed" id="tt-feed"></div>
   </section>
 
@@ -1652,6 +1675,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div class="headrow"><h3 id="tp-head" style="font-size:18px">โพสต์ลงติ่งต๊อง</h3><button type="button" class="iconbtn" data-close="m-ttpost" data-ico="x" aria-label="ปิด"></button></div>
     <div class="ttprev" id="tp-prev"><span class="sub">ยังไม่ได้เลือกไฟล์</span></div>
     <label class="filebtn" data-ico="camera"><span id="tp-filelbl">เลือกวิดีโอหรือรูป</span><input type="file" id="tp-file" accept="video/*,image/*" hidden></label>
+    <div class="ttfx" id="tp-fx" hidden><b>✨ ฟิลเตอร์</b><div class="fxrow" id="tp-fxrow"></div></div>
     <p class="sub">วิดีโอยาวไม่เกิน 60 วินาที ขนาดไม่เกิน 30 MB</p>
     <form id="ttform">
       <label>🛒 ปักตะกร้าสินค้า (ไม่บังคับ)<select id="tp-prod"><option value="">— ไม่ปักตะกร้า —</option></select></label>
@@ -2563,7 +2587,7 @@ async function renderTT(){
 function ttScore(p){var h=(Date.now()-new Date(p.created_at).getTime())/3600000;return ((p.like_count||0)*3+(p.comment_count||0)*4+(p.view_count||0)+2)/Math.pow(h+2,0.6)}
 function ttItem(p,rank){
   var url=TT.urls[p.media_path]||"",own=p.author_id===S.me.id,thumb=okImg(p.thumb);
-  var media=p.media_type==="video"?'<video class="ttmedia" crossorigin="anonymous" src="'+esc(url)+'"'+(thumb?' poster="'+thumb+'"':'')+' playsinline muted loop preload="metadata"></video>':'<img class="ttmedia" alt="" src="'+esc(url)+'">';
+  var media=p.media_type==="video"?'<video class="ttmedia" crossorigin="anonymous" src="'+esc(url)+'"'+(thumb?' poster="'+thumb+'"':'')+fxStyle(p.filter)+' playsinline muted loop preload="metadata"></video>':'<img class="ttmedia" alt="" src="'+esc(url)+'"'+fxStyle(p.filter)+'>';
   return '<article class="ttitem" data-pid="'+p.id+'">'+media+
     '<div class="ttside">'+avHtml(p.author_avatar,p.author_name)+
       '<button type="button" class="ttbtn'+(TT.liked[p.id]?' liked':'')+'" data-ttlike="'+p.id+'" aria-label="ถูกใจ">'+ico("heart")+'<span>'+num(p.like_count)+'</span></button>'+
@@ -2574,11 +2598,48 @@ function ttItem(p,rank){
     '</div><div class="ttinfo">'+ttCart(p)+(rank!=null&&rank<3&&(p.like_count||p.view_count)?'<span class="tthot">🔥 ยอดนิยมอันดับ '+(rank+1)+'</span>':'')+'<b>@'+esc(p.author_name)+'</b><small>'+esc([p.author_dept,ago(p.created_at)].filter(Boolean).join(" · "))+'</small>'+(p.caption?'<p>'+esc(p.caption)+'</p>':'')+'</div>'+
     (p.media_type==="video"?'<button type="button" class="ttmute" data-ttmute="1" aria-label="เปิด/ปิดเสียง">'+ico(TT.muted?"mute":"vol")+'</button>':'')+'</article>';
 }
+
+/* ฟิลเตอร์ตกแต่ง: เก็บชื่อไว้กับโพสต์ แล้วใส่เอฟเฟกต์ตอนแสดง (ไม่ต้องแปลงไฟล์ ภาพไม่เสีย ใช้ได้ทุกเครื่อง) */
+var TTFX=[{k:"",n:"ปกติ",c:""},{k:"bright",n:"สดใส",c:"brightness(1.08) saturate(1.35) contrast(1.05)"},{k:"beauty",n:"ผิวใส",c:"brightness(1.12) contrast(.92) saturate(1.08) blur(.35px)"},
+  {k:"pink",n:"ชมพูหวาน",c:"sepia(.18) saturate(1.45) hue-rotate(-22deg) brightness(1.07)"},{k:"warm",n:"อบอุ่น",c:"sepia(.28) saturate(1.3) hue-rotate(-6deg) brightness(1.04)"},
+  {k:"cool",n:"เย็นตา",c:"saturate(1.1) hue-rotate(14deg) brightness(1.03) contrast(1.05)"},{k:"vintage",n:"วินเทจ",c:"sepia(.55) contrast(1.1) brightness(.95) saturate(.85)"},
+  {k:"fade",n:"ฟิล์มจาง",c:"contrast(.85) brightness(1.1) saturate(.75)"},{k:"drama",n:"ดราม่า",c:"contrast(1.35) saturate(1.2) brightness(.92)"},{k:"bw",n:"ขาวดำ",c:"grayscale(1) contrast(1.15)"}];
+function fxCss(k){for(var i=0;i<TTFX.length;i++)if(TTFX[i].k===(k||""))return TTFX[i].c;return ""}
+function fxStyle(k){var c=fxCss(k);return c?' style="filter:'+c+'"':''}
+function ttFxDraw(){var th=TT.thumb||"";$("tp-fx").hidden=!(TT.file||TT.edit);
+  $("tp-fxrow").innerHTML=TTFX.map(function(f){return '<button type="button" class="fxb'+((TT.fx||"")===f.k?" on":"")+'" data-fx="'+f.k+'"><i style="'+(th?'background-image:url('+th+');':'')+(f.c?'filter:'+f.c:'')+'"></i>'+esc(f.n)+'</button>'}).join("");
+  var m=document.querySelector("#tp-prev video,#tp-prev img");if(m)m.style.filter=fxCss(TT.fx)}
+$("tp-fxrow").addEventListener("click",function(ev){var b=ev.target.closest("[data-fx]");if(!b)return;TT.fx=b.dataset.fx;ttFxDraw()});
+
+/* คลังโพสต์ (โปรไฟล์) */
+async function ttOpenProf(aid){TT.prof=aid;TT.mode="prof";
+  $("tt-feed").hidden=true;$("tt-prof").hidden=false;$("v-tt").classList.add("tt-prof");document.querySelectorAll("#tt-feed video").forEach(function(v){v.pause()});
+  document.querySelectorAll("[data-ttmode]").forEach(function(b){b.classList.toggle("on",b.dataset.ttmode==="mine"&&aid===S.me.id)});
+  $("tt-prof").innerHTML='<div class="tpf-empty">กำลังโหลด...</div>';
+  try{var list=await q(db.from("posts").select("*").eq("author_id",aid).order("created_at",{ascending:false}));TT.plist=list;
+    var need=list.map(function(p){return p.media_path}).filter(function(x){return !TT.urls[x]});
+    if(need.length){var res=await db.storage.from("tingtong").createSignedUrls(need,3600);if(!res.error)res.data.forEach(function(x){if(x.signedUrl)TT.urls[x.path]=x.signedUrl})}
+    var e=empOf(aid)||{},p0=list[0]||{},name=e.display_name||p0.author_name||"",me=aid===S.me.id;
+    var likes=list.reduce(function(a,p){return a+(p.like_count||0)},0),views=list.reduce(function(a,p){return a+(p.view_count||0)},0);
+    $("tt-prof").innerHTML='<div class="tpf-head">'+avHtml(e.avatar||p0.author_avatar,name)+'<h3>'+esc(name)+'</h3><small>'+esc(p0.author_dept||deptName(e.department_id)||"")+'</small>'+
+      '<div class="tpf-stats"><div><b>'+num(list.length)+'</b><small>โพสต์</small></div><div><b>'+num(likes)+'</b><small>ถูกใจ</small></div><div><b>'+num(views)+'</b><small>ยอดดู</small></div></div>'+
+      '<div class="tpf-acts">'+(me?'<button type="button" class="primary slim" data-ttpost="1" data-ico="plus">'+ico("plus")+'โพสต์ใหม่</button>':'')+'<button type="button" class="slim" data-ttmode="all">กลับหน้าฟีด</button></div></div>'+
+      (list.length?'<div class="tpf-grid">'+list.map(function(p){var th=okImg(p.thumb)||(p.media_type==="image"?TT.urls[p.media_path]:"");
+        return '<button type="button" class="tpf-t" data-ttopen="'+p.id+'"><i class="tpf-img"'+' style="'+(th?'background-image:url('+esc(th)+');':'')+(fxCss(p.filter)?'filter:'+fxCss(p.filter):'')+'"></i>'+(p.media_type==="image"?'<em>รูป</em>':'')+'<span>'+ico("playf")+num(p.view_count||0)+'</span></button>'}).join("")+'</div>'
+        :'<div class="tpf-empty">'+(me?"ยังไม่มีโพสต์ กด “โพสต์ใหม่” เพื่อลงคลิปแรก":"ยังไม่มีโพสต์")+'</div>');
+  }catch(err){$("tt-prof").innerHTML='<div class="tpf-empty">'+esc(thErr(err))+'</div>'}}
+function ttCloseProf(){$("tt-prof").hidden=true;$("tt-feed").hidden=false;$("v-tt").classList.remove("tt-prof")}
+document.addEventListener("click",function(ev){
+  var o=ev.target.closest("[data-ttopen]");if(o){var id=o.dataset.ttopen;TT.mode="user";ttCloseProf();drawTT();var el=document.querySelector('#tt-feed .ttitem[data-pid="'+id+'"]');if(el)$("tt-feed").scrollTop=el.offsetTop;return}
+  var a=ev.target.closest(".ttside .ttav");if(a&&S.tab==="tt"){var it=a.closest(".ttitem"),p=it&&ttPost(it.dataset.pid);if(p)ttOpenProf(p.author_id)}});
 function ttCart(p){var x=p.product_id&&TT.prods&&TT.prods[p.product_id];if(!x)return "";
   return '<button type="button" class="ttcart" data-prod="'+x.id+'">'+ico("shop")+'<span>'+esc(x.title)+'</span><b>'+(x.status==="active"?baht(x.price):"หมดแล้ว")+'</b></button>'}
 function drawTT(){
   document.querySelectorAll("[data-ttmode]").forEach(function(b){b.classList.toggle("on",b.dataset.ttmode===TT.mode)});
-  var list=TT.list.filter(function(p){return TT.mode!=="mine"||p.author_id===S.me.id});
+  if(TT.mode==="mine"){ttOpenProf(S.me.id);return}
+  if(TT.mode==="prof"){ttOpenProf(TT.prof);return}
+  ttCloseProf();
+  var list=TT.mode==="user"?(TT.plist||[]):TT.list;
   if(TT.mode==="all"){var sc={};list.forEach(function(p){sc[p.id]=ttScore(p)});list=list.slice().sort(function(a,b){return sc[b.id]-sc[a.id]})}
   TT.view=list;
   var hot={};TT.list.slice().sort(function(a,b){return (b.like_count*3+b.comment_count*4+(b.view_count||0))-(a.like_count*3+a.comment_count*4+(a.view_count||0))}).slice(0,3).forEach(function(p,i){hot[p.id]=i});TT.hot=hot;TT.loops=1;
@@ -2652,7 +2713,7 @@ async function ttLive(){
 }
 setInterval(function(){ttLive().catch(function(){})},10000);
 document.addEventListener("visibilitychange",function(){if(!document.hidden)ttLive().catch(function(){})});
-function ttPost(id){return TT.list.filter(function(p){return p.id===id})[0]}
+function ttPost(id){return TT.list.filter(function(p){return p.id===id})[0]||(TT.plist||[]).filter(function(p){return p.id===id})[0]}
 async function ttLike(id,btn){
   var p=ttPost(id);if(!p||TT.busy)return;TT.busy=true;var was=!!TT.liked[id];
   TT.liked[id]=!was;p.like_count+=was?-1:1;ttPaint(p);
@@ -2675,7 +2736,7 @@ $("tt-feed").addEventListener("click",function(ev){
 });
 $("tt-feed").addEventListener("play",function(ev){var p=ev.target.closest(".ttitem");var o=p&&p.querySelector(".ttpause");if(o)o.remove()},true);
 /* โพสต์ใหม่ */
-function ttReset(){TT.conv=false;TT.edit=null;TT.file=null;TT.kind=null;TT.thumb=null;$("tp-prev").innerHTML='<span class="sub">ยังไม่ได้เลือกไฟล์</span>';$("tp-cap").value="";ttProdList(null);$("tp-submit").disabled=false;$("tp-submit").textContent="โพสต์";$("tp-head").textContent="โพสต์ลงติ่งต๊อง";$("tp-filelbl").textContent="เลือกวิดีโอหรือรูป"}
+function ttReset(){TT.fx="";$("tp-fx").hidden=true;TT.conv=false;TT.edit=null;TT.file=null;TT.kind=null;TT.thumb=null;$("tp-prev").innerHTML='<span class="sub">ยังไม่ได้เลือกไฟล์</span>';$("tp-cap").value="";ttProdList(null);$("tp-submit").disabled=false;$("tp-submit").textContent="โพสต์";$("tp-head").textContent="โพสต์ลงติ่งต๊อง";$("tp-filelbl").textContent="เลือกวิดีโอหรือรูป"}
 /* รายการสินค้าที่ปักได้ (สินค้าที่วางขายอยู่ ของตัวเองขึ้นก่อน) */
 async function ttProdList(keep){
   var sel=$("tp-prod");sel.innerHTML='<option value="">— ไม่ปักตะกร้า —</option>';sel.value="";
@@ -2692,6 +2753,7 @@ function ttEditOpen(id){
   var p=ttPost(id);if(!p)return;ttReset();TT.edit=p;
   var url=TT.urls[p.media_path]||"";
   $("tp-prev").innerHTML=p.media_type==="video"?'<video src="'+esc(url)+'" controls playsinline muted></video>':'<img alt="" src="'+esc(url)+'">';
+  TT.fx=p.filter||"";TT.thumb=okImg(p.thumb)||(p.media_type==="image"?url:null);ttFxDraw();
   $("tp-cap").value=p.caption||"";ttProdList(p.product_id);$("tp-head").textContent="แก้ไขโพสต์";$("tp-submit").textContent="บันทึกการแก้ไข";$("tp-filelbl").textContent="เปลี่ยนวิดีโอหรือรูป (ไม่บังคับ)";
   openModal("m-ttpost");
 }
@@ -2716,6 +2778,7 @@ $("tp-file").addEventListener("change",async function(ev){
     if(TT.conv&&!canConvert()){TT.conv=false;if(codec==="hevc")toast("ไฟล์นี้เป็น HEVC บางเครื่อง (เช่นคอม) อาจเปิดไม่ได้");if(f.size>30*1024*1024){toast("วิดีโอใหญ่เกิน 30 MB");ttReset();return}}
     if(TT.conv)$("tp-prev").insertAdjacentHTML("beforeend",'<p class="convnote">'+(codec==="hevc"?"ไฟล์นี้เป็นแบบ HEVC ซึ่งคอมและมือถือบางเครื่องเปิดไม่ได้ (จอดำ)":"ไฟล์นี้ใหญ่")+' ระบบจะแปลงไฟล์ให้เล่นได้ทุกเครื่องตอนกดโพสต์ ใช้เวลาประมาณ '+Math.ceil(info.dur)+' วินาที ระหว่างนั้นอย่าปิดหน้าจอ</p>');
   }else{$("tp-prev").innerHTML='<img alt="" src="'+url+'">';try{TT.thumb=await resizeImg(url,360,.7)}catch(e){TT.thumb=null}}
+  ttFxDraw();
 });
 /* ดูชนิดวิดีโอจากในไฟล์: hvc1/hev1 = HEVC (H.265) ซึ่งเบราว์เซอร์บนคอมหลายตัวเล่นไม่ได้ */
 async function videoCodec(f){try{
@@ -2756,7 +2819,7 @@ function toBlob(src,max,q){return new Promise(function(res,rej){var img=new Imag
 $("ttform").addEventListener("submit",async function(ev){
   ev.preventDefault();
   if(TT.edit&&!TT.file){var ep=TT.edit,cap=$("tp-cap").value.trim(),pid=$("tp-prod").value||null;$("tp-submit").disabled=true;
-    act(function(){return q(db.from("posts").update({caption:cap,product_id:pid}).eq("id",ep.id))},"บันทึกการแก้ไขแล้ว").then(function(ok){$("tp-submit").disabled=false;if(ok){ep.caption=cap;ep.product_id=pid;closeModal("m-ttpost");ttReset();refresh()}});return}
+    var fx=TT.fx||"";act(function(){return q(db.from("posts").update({caption:cap,product_id:pid,filter:fx}).eq("id",ep.id))},"บันทึกการแก้ไขแล้ว").then(function(ok){$("tp-submit").disabled=false;if(ok){ep.caption=cap;ep.product_id=pid;ep.filter=fx;closeModal("m-ttpost");ttReset();refresh()}});return}
   if(!TT.file){toast("เลือกวิดีโอหรือรูปก่อน");return}
   var btn=$("tp-submit");btn.disabled=true;btn.textContent="กำลังอัปโหลด...";
   var f=TT.file,isV=TT.kind==="video",blob=f,type=f.type,ext;
@@ -2769,11 +2832,11 @@ $("ttform").addEventListener("submit",async function(ev){
     var up=await db.storage.from("tingtong").upload(path,blob,{contentType:type,upsert:false});
     if(up.error)throw up.error;
     if(TT.edit){var old=TT.edit.media_path;
-      try{await q(db.from("posts").update({media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim(),product_id:$("tp-prod").value||null}).eq("id",TT.edit.id))}
+      try{await q(db.from("posts").update({media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim(),product_id:$("tp-prod").value||null,filter:TT.fx||""}).eq("id",TT.edit.id))}
       catch(e){await db.storage.from("tingtong").remove([path]);throw e}
       await db.storage.from("tingtong").remove([old]);delete TT.urls[old];
       closeModal("m-ttpost");ttReset();toast("บันทึกการแก้ไขแล้ว");refresh();return}
-    try{await q(db.from("posts").insert({author_id:S.me.id,media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim(),product_id:$("tp-prod").value||null}))}
+    try{await q(db.from("posts").insert({author_id:S.me.id,media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim(),product_id:$("tp-prod").value||null,filter:TT.fx||""}))}
     catch(e){await db.storage.from("tingtong").remove([path]);throw e}
     closeModal("m-ttpost");ttReset();toast("โพสต์แล้ว");TT.mode="all";refresh();$("tt-feed").scrollTop=0;
   }catch(e){toast(/exceeded|too large|413/i.test(e.message||"")?"ไฟล์ใหญ่เกินกำหนด (30 MB)":/mime|type/i.test(e.message||"")?"ไฟล์ชนิดนี้ไม่รองรับ ใช้ .mp4 .mov .webm หรือรูป":thErr(e));btn.disabled=false;btn.textContent=TT.edit?"บันทึกการแก้ไข":"โพสต์"}
