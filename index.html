@@ -1405,14 +1405,15 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <section class="view" id="v-allowmgr" hidden>
     <div><h2>จัดการ KPI / Allowance</h2><p class="sub">Import ข้อมูลการหัก/จ่าย Allowance รายเดือน และจัดการรายการ</p></div>
     <div class="filters">
-      <label>เดือน<input type="month" id="am-month"></label>
+      <input type="hidden" id="am-month"><label>เดือน<select id="am-mm"></select></label><label>ปี<select id="am-yy"></select></label>
       <label>แผนก<select id="am-dept"></select></label>
     </div>
     <div class="inline">
       <label class="filebtn" data-ico="upload">Import Excel<input type="file" id="am-file" accept=".xlsx,.xls,.csv" hidden></label>
       <button type="button" id="am-export" data-ico="download">Export Excel</button>
+      <button type="button" class="primary" id="am-save2" data-ico="check">บันทึก Allowance</button>
     </div>
-    <p class="sub">Import ไฟล์ Allowance ของ HR ได้เลย (เช่น “Allowance AOI BRR-A3 … .xlsx” ทุกชีต — รายเดือน + รายวันแต่ละแผนก) ระบบเลือกเดือนจากหัวไฟล์ แล้วเติม ยอดเต็ม / ค่าเป้าที่ทำได้ / ยอดหัก (OX) / หมายเหตุ · จ่ายจริง = ค่าเป้าที่ทำได้ − ยอดหัก ให้ตรวจ แล้วกด “บันทึก Allowance” · หรือไฟล์ที่มีหัวคอลัมน์ รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ</p>
+    <p class="sub">Import ไฟล์ Allowance ของ HR ได้เลย (เช่น “Allowance AOI BRR-A3 … .xlsx” ทุกชีต — รายเดือน + รายวันแต่ละแผนก) ระบบเลือกเดือนจากหัวไฟล์ แล้วเติม ยอดเต็ม / ค่าเป้าที่ทำได้ / ยอดหัก (OX) / หมายเหตุ และ<b>บันทึกให้ทันที</b> · จ่ายจริง = ค่าเป้าที่ทำได้ − ยอดหัก · แก้ตัวเลขเองแล้วกด “บันทึก Allowance” · หรือไฟล์ที่มีหัวคอลัมน์ รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ</p>
     <div class="stats">
       <div class="stat"><small>ยอดจ่ายจริงรวม</small><b id="am-net">–</b><small>บาท</small></div>
       <div class="stat"><small>ยอดเต็มรวม</small><b id="am-base">–</b><small>บาท</small></div>
@@ -2327,7 +2328,13 @@ function amTotal(){
     o.textContent=r.net==null?"–":num(r.net);if(r.net!=null){tb+=r.f;td+=Math.min(r.d,r.b);tn+=r.net}});
   $("am-net").textContent=num(tn);$("am-base").textContent=num(tb);$("am-ded").textContent=num(td);
 }
+function amSyncSel(){var v=$("am-month").value||today().slice(0,7),y=+v.slice(0,4),cy=new Date().getFullYear();
+  if(!$("am-mm").options.length)$("am-mm").innerHTML=MONTHS.map(function(n,i){return '<option value="'+String(i+1).padStart(2,"0")+'">'+n+'</option>'}).join("");
+  var ys=[];for(var k=cy+1;k>=Math.min(cy-3,y);k--)ys.push(k);$("am-yy").innerHTML=ys.map(function(k){return '<option value="'+k+'">'+(k+543)+'</option>'}).join("");
+  $("am-mm").value=v.slice(5,7);$("am-yy").value=String(y)}
+["am-mm","am-yy"].forEach(function(id){$(id).addEventListener("change",function(){$("am-month").value=$("am-yy").value+"-"+$("am-mm").value;refresh()})});
 async function renderAllowMgr(){
+  amSyncSel();
   if(!S.mgr)return;
   var m=$("am-month").value||today().slice(0,7),dept=$("am-dept").value;
   AM.rows=await q(db.from("kpi_allowances").select("*").eq("month",m+"-01"));
@@ -2344,17 +2351,19 @@ async function renderAllowMgr(){
   amTotal();
 }
 $("am-rows").addEventListener("input",amTotal);
-$("am-save").addEventListener("click",function(){
+function amSave(msg){
   var m=($("am-month").value||today().slice(0,7))+"-01",up=[],del=[],by={},notes={};
   AM.rows.forEach(function(r){by[r.employee_id]=r});
   document.querySelectorAll(".amn").forEach(function(i){notes[i.dataset.emp]=i.value.trim()});
   document.querySelectorAll(".amb").forEach(function(i){var id=i.dataset.emp,r=amRow(id);
     if(r.net!=null)up.push({employee_id:id,month:m,amount:r.net,deduction:Math.min(r.d,r.b),full_amount:r.f,note:notes[id]||""});else if(by[id])del.push(by[id].id)});
-  act(async function(){
+  return act(async function(){
     if(up.length)await q(db.from("kpi_allowances").upsert(up,{onConflict:"employee_id,month"}));
     if(del.length)await q(db.from("kpi_allowances").delete().in("id",del));
-  },"บันทึก Allowance "+up.length+" คนแล้ว").then(function(ok){if(ok)refresh()});
-});
+  },msg||("บันทึก Allowance "+up.length+" คนแล้ว")).then(function(ok){if(ok)refresh();return ok});
+}
+$("am-save").addEventListener("click",function(){amSave()});
+$("am-save2").addEventListener("click",function(){amSave()});
 $("am-export").addEventListener("click",function(){
   var m=$("am-month").value||today().slice(0,7),notes={};
   document.querySelectorAll(".amn").forEach(function(i){notes[i.dataset.emp]=i.value.trim()});
@@ -2407,7 +2416,10 @@ $("am-file").addEventListener("change",async function(ev){
       document.querySelector('.amn[data-emp="'+id+'"]').value=x.note||"";
       inp.closest(".row").classList.add("amhit")});
     amTotal();
-    toast("อ่านไฟล์ได้ "+keys.length+" คน · เติมลงช่องแล้ว "+hit+" คน"+(miss.length?" · ไม่พบในระบบ "+miss.length+" คน ("+miss.slice(0,5).join(", ")+(miss.length>5?" …":"")+")":"")+" — ตรวจแล้วกด “บันทึก Allowance”");
+    if(!hit){toast("ไม่พบรหัสพนักงานในไฟล์ที่ตรงกับรายชื่อในระบบ ("+miss.slice(0,5).join(", ")+")");return}
+    /* บันทึกให้ทันทีหลัง Import (เขียนทับเดือนเดิม) */
+    var msg="Import และบันทึกแล้ว "+hit+" คน · "+MONTHS[+$("am-month").value.slice(5)-1]+(miss.length?" · ไม่พบในระบบ "+miss.length+" คน ("+miss.slice(0,5).join(", ")+(miss.length>5?" …":"")+")":"");
+    await amSave(msg);
   }catch(e){toast(thErr(e))}
 });
 
