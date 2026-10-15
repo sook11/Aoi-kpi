@@ -1679,6 +1679,17 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-perm">ยกเลิก</button><button class="primary slim" type="button" id="pm-save">บันทึกสิทธิ์</button></div>
   </div>
 </div>
+<div class="modal" id="m-bday" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="bd-title" style="max-width:380px;text-align:center">
+    <div style="font-size:46px;line-height:1">🎂</div>
+    <h3 id="bd-title" style="font-size:19px;margin:6px 0 2px">ใส่วันเกิดของคุณหน่อยนะ</h3>
+    <p class="sub">เพื่อนร่วมงานจะได้อวยพรวันเกิดคุณที่หน้าแรก<br>แสดงแค่วันและเดือน ไม่แสดงปีเกิด</p>
+    <form id="bdform" style="text-align:left">
+      <label>วันเกิด<input type="date" id="bd-date" min="1940-01-01" max="2015-12-31" required></label>
+      <div class="inline" style="justify-content:flex-end"><button type="button" id="bd-later">ไว้ทีหลัง</button><button class="primary slim" type="submit">บันทึกวันเกิด</button></div>
+    </form>
+  </div>
+</div>
 <div class="modal" id="m-emp" hidden>
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="em-title">
     <div class="headrow"><h3 id="em-title" style="font-size:18px">เพิ่มพนักงานใหม่</h3><button type="button" class="iconbtn" data-close="m-emp" data-ico="x" aria-label="ปิด"></button></div>
@@ -2046,7 +2057,7 @@ function showTarget(){var k=S.kpis.filter(function(x){return x.id===$("f-kpi").v
 
 /* ---------- หน้า: ภาพรวม ---------- */
 async function renderHome(){
-  renderMeCard();renderCeleb();
+  renderMeCard();renderCeleb();askBirthday();
   var date=$("h-date").value||today(),dept=S.mgr?$("h-dept").value:"",m=date.slice(0,7);
   var all=await month(m),logs=all.filter(function(r){return !dept||r.department_id===dept});
   var day=logs.filter(function(r){return r.work_date===date});
@@ -3737,6 +3748,17 @@ async function renderCeleb(){
       var k=x.kind==="star"?["star","⭐","พนักงานดีเด่นประจำสัปดาห์",x.reason||""]:x.kind==="birthday"?["bd","🎂","สุขสันต์วันเกิด "+when(x.on_date),""]:["an","🎉","ครบรอบทำงาน "+x.years+" ปี · "+when(x.on_date),""];
       return '<div class="cbox '+k[0]+'"><span class="em">'+k[1]+'</span>'+avatarHtml(e)+'<div><b>'+esc(x.display_name)+'</b><small>'+esc(k[2])+(k[3]?' · '+esc(k[3]):'')+'</small><small>'+esc(x.department||"")+'</small></div></div>'}).join("")+'</div>';
     $("celeb").hidden=false}catch(e){$("celeb").hidden=true}}
+
+/* ---------- แจ้งเตือนใส่วันเกิด (วันละครั้งจนกว่าจะใส่) ---------- */
+var BDASK="";
+function askBirthday(){
+  if(!S.me||S.me.birth_date||S.tab!=="home")return;var k="aoi-bdask-"+S.me.id,d=today(),last=BDASK;
+  try{last=localStorage.getItem(k)||last}catch(e){}
+  if(last===d)return;BDASK=d;try{localStorage.setItem(k,d)}catch(e){}
+  setTimeout(function(){if(S.tab==="home"&&!S.me.birth_date){$("bd-date").value="";$("m-bday").hidden=false}},900)}
+$("bd-later").addEventListener("click",function(){$("m-bday").hidden=true;toast("ใส่ได้ทีหลังที่ ตั้งค่า หรือปุ่ม 🎂 หน้าแรก")});
+$("bdform").addEventListener("submit",function(ev){ev.preventDefault();var v=$("bd-date").value;if(!v||v<"1940-01-01"||v>"2015-12-31"){toast("เลือกวันเกิดให้ถูกต้อง");return}
+  act(function(){return q(db.rpc("set_my_birthdate",{p_date:v}))},"บันทึกวันเกิดแล้ว 🎉").then(function(ok){if(ok){S.me.birth_date=v;$("m-bday").hidden=true;refresh()}})});
 
 /* ---------- ไอเดียปรับปรุงงาน ---------- */
 var ID={f:"",list:[],liked:{}};
