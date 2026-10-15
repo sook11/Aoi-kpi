@@ -1413,7 +1413,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button type="button" id="am-export" data-ico="download">Export Excel</button>
       <button type="button" class="primary" id="am-save2" data-ico="check">บันทึก Allowance</button>
     </div>
-    <p class="sub">Import ไฟล์ Allowance ของ HR ได้เลย (เช่น “Allowance AOI BRR-A3 … .xlsx” ทุกชีต — รายเดือน + รายวันแต่ละแผนก) ระบบเลือกเดือนจากหัวไฟล์ แล้วเติม ยอดเต็ม / ค่าเป้าที่ทำได้ / ยอดหัก (OX) / หมายเหตุ และ<b>บันทึกให้ทันที</b> · จ่ายจริง = ค่าเป้าที่ทำได้ − ยอดหัก · แก้ตัวเลขเองแล้วกด “บันทึก Allowance” · หรือไฟล์ที่มีหัวคอลัมน์ รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ</p>
+    <p class="sub">Import ไฟล์ Allowance ของ HR ได้เลย (เช่น “Allowance AOI BRR-A3 … .xlsx” ทุกชีต — รายเดือน + รายวันแต่ละแผนก) ระบบ<b>ยึดเดือนจากชื่อไฟล์</b> (ชื่อย่อเดือน + ปี เช่น …_Sep_-26… = กันยายน 2569) ถามยืนยันก่อน แล้วเติม ยอดเต็ม / ค่าเป้าที่ทำได้ / ยอดหัก (OX) / หมายเหตุ และ<b>บันทึกให้ทันที</b> · จ่ายจริง = ค่าเป้าที่ทำได้ − ยอดหัก · แก้ตัวเลขเองแล้วกด “บันทึก Allowance” · หรือไฟล์ที่มีหัวคอลัมน์ รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ</p>
     <div class="stats">
       <div class="stat"><small>ยอดจ่ายจริงรวม</small><b id="am-net">–</b><small>บาท</small></div>
       <div class="stat"><small>ยอดเต็มรวม</small><b id="am-base">–</b><small>บาท</small></div>
@@ -2373,6 +2373,9 @@ $("am-export").addEventListener("click",function(){
 });
 /* อ่านไฟล์ Allowance ของ HR ได้ตรง ๆ (ทุกชีต: รายเดือน + รายวันแต่ละแผนก) หรือไฟล์ง่าย ๆ ที่มีหัวคอลัมน์ รหัสพนักงาน/ยอดเต็ม/ยอดหัก/หมายเหตุ */
 var MON3={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+/* เดือนจากชื่อไฟล์ เช่น "9_.Allowance_AOI_BRR-A3_AOI_Sep_-26_11-10-26.xlsx" → 2026-09 (ชื่อย่อเดือน + ปี 2 หลัก) */
+function amFileMonth(name){var m=String(name||"").match(/(?:^|[^a-z])(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s._'-]*(\d{4}|\d{2})(?!\d)/i);
+  if(!m)return null;var y=+m[2];if(y<100)y+=2000;return y+"-"+String(MON3[m[1].toLowerCase()]).padStart(2,"0")}
 function amParseBook(wb){
   var out={},month=null,nump=function(v){var n=parseFloat(String(v==null?"":v).replace(/[,\s฿]/g,""));return isNaN(n)?null:n};
   wb.SheetNames.forEach(function(sn){
@@ -2405,7 +2408,12 @@ $("am-file").addEventListener("change",async function(ev){
   try{
     var wb=XLSX.read(await f.arrayBuffer(),{type:"array",codepage:65001}),P=amParseBook(wb),keys=Object.keys(P.rows);
     if(!keys.length){toast("ไม่พบข้อมูลในไฟล์ ต้องมีคอลัมน์ รหัสพนักงาน และยอดเต็มหรือยอดจ่ายจริง");return}
-    if(P.month&&P.month!==$("am-month").value){$("am-month").value=P.month;toast("ไฟล์นี้เป็นเดือน "+MONTHS[+P.month.slice(5)-1]+" "+(+P.month.slice(0,4)+543)+" เปลี่ยนเดือนให้แล้ว")}
+    /* ยึดเดือนจากชื่อไฟล์ (ชื่อย่อเดือน + ปี) ก่อน ถ้าไม่มีค่อยดูหัวไฟล์ */
+    var FM=amFileMonth(f.name)||P.month;
+    if(!FM){toast("หาเดือนจากชื่อไฟล์ไม่เจอ ตั้งชื่อไฟล์ให้มีเดือนย่อ+ปี เช่น ..._Sep_-26.xlsx");return}
+    var lbl=MONTHS[+FM.slice(5)-1]+" "+(+FM.slice(0,4)+543);
+    if(!confirm("ไฟล์: "+f.name+"\n\nบันทึก KPI/Allowance เป็นเดือน  "+lbl+"  ("+keys.length+" คน)\nถ้าเดือนนี้มีข้อมูลอยู่แล้ว จะเขียนทับ\n\nตกลงไหม?"))return;
+    $("am-month").value=FM;
     if($("am-dept").value){$("am-dept").value=S.admin||S.myDepts.length>1?"":$("am-dept").value}
     await renderAllowMgr();
     var hit=0,miss=[];
@@ -2418,7 +2426,7 @@ $("am-file").addEventListener("change",async function(ev){
     amTotal();
     if(!hit){toast("ไม่พบรหัสพนักงานในไฟล์ที่ตรงกับรายชื่อในระบบ ("+miss.slice(0,5).join(", ")+")");return}
     /* บันทึกให้ทันทีหลัง Import (เขียนทับเดือนเดิม) */
-    var msg="Import และบันทึกแล้ว "+hit+" คน · "+MONTHS[+$("am-month").value.slice(5)-1]+(miss.length?" · ไม่พบในระบบ "+miss.length+" คน ("+miss.slice(0,5).join(", ")+(miss.length>5?" …":"")+")":"");
+    var msg="Import และบันทึกแล้ว "+hit+" คน · เดือน "+lbl+(miss.length?" · ไม่พบในระบบ "+miss.length+" คน ("+miss.slice(0,5).join(", ")+(miss.length>5?" …":"")+")":"");
     await amSave(msg);
   }catch(e){toast(thErr(e))}
 });
