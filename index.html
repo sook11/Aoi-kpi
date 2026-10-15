@@ -669,6 +669,7 @@ button.atall{color:var(--sc);border-color:color-mix(in srgb,var(--sc) 40%,transp
 .tpf-t em{position:absolute;top:5px;left:5px;font-style:normal;font-size:10.5px;background:rgba(0,0,0,.55);color:#fff;border-radius:5px;padding:0 5px}
 .tpf-empty{padding:30px 16px;text-align:center;color:var(--muted)}
 .ttside .ttav{cursor:pointer}
+.row.amhit{background:color-mix(in srgb,var(--good) 8%,transparent)}
 #qrprint{display:none}.qrcard .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#111}
 @media print{
   @page{size:A4 portrait;margin:8mm}
@@ -1407,7 +1408,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <label class="filebtn" data-ico="upload">Import Excel<input type="file" id="am-file" accept=".xlsx,.xls,.csv" hidden></label>
       <button type="button" id="am-export" data-ico="download">Export Excel</button>
     </div>
-    <p class="sub">ไฟล์ Import ต้องมีหัวคอลัมน์: รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ ระบบจะเติมลงช่องให้ตรวจก่อน แล้วกดบันทึกเอง</p>
+    <p class="sub">Import ไฟล์ Allowance ของ HR ได้เลย (เช่น “Allowance AOI BRR-A3 … .xlsx” ทุกชีต — รายเดือน + รายวันแต่ละแผนก) ระบบเลือกเดือนจากหัวไฟล์ แล้วเติม ยอดเต็ม / ยอดหัก / หมายเหตุ (OX, ใบเตือน, %) ให้ตรวจ แล้วกด “บันทึก Allowance” · หรือไฟล์ที่มีหัวคอลัมน์ รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ</p>
     <div class="stats">
       <div class="stat"><small>ยอดจ่ายจริงรวม</small><b id="am-net">–</b><small>บาท</small></div>
       <div class="stat"><small>ยอดเต็มรวม</small><b id="am-base">–</b><small>บาท</small></div>
@@ -2347,21 +2348,48 @@ $("am-export").addEventListener("click",function(){
     rows.push({"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(e.department_id),"เดือน":m,"ยอดเต็ม":r.net==null?"":r.b,"ยอดหัก":r.net==null?"":Math.min(r.d,r.b),"ยอดจ่ายจริง":r.net==null?"":r.net,"หมายเหตุ":notes[i.dataset.emp]||""})});
   exportXlsx("AOI-KPI-Allowance-"+m+".xlsx",[{name:"Allowance",rows:rows}]);
 });
+/* อ่านไฟล์ Allowance ของ HR ได้ตรง ๆ (ทุกชีต: รายเดือน + รายวันแต่ละแผนก) หรือไฟล์ง่าย ๆ ที่มีหัวคอลัมน์ รหัสพนักงาน/ยอดเต็ม/ยอดหัก/หมายเหตุ */
+var MON3={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+function amParseBook(wb){
+  var out={},month=null,nump=function(v){var n=parseFloat(String(v==null?"":v).replace(/[,\s฿]/g,""));return isNaN(n)?null:n};
+  wb.SheetNames.forEach(function(sn){
+    var g=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:"",raw:true});if(!g.length)return;
+    for(var r=0;r<Math.min(8,g.length);r++)g[r].forEach(function(c){var m=String(c).match(/allowance\s+of\s+([a-z]{3})[a-z]*\.?\s*'?\s*(\d{4})/i);if(m&&!month&&MON3[m[1].toLowerCase()])month=m[2]+"-"+String(MON3[m[1].toLowerCase()]).padStart(2,"0")});
+    var h=-1;for(var r2=0;r2<Math.min(15,g.length);r2++){if(g[r2].some(function(c){return /employee\s*no|รหัสพนักงาน|^รหัส$/i.test(String(c).trim())})){h=r2;break}}
+    if(h<0)return;
+    var W=Math.max.apply(null,g.slice(h,h+3).map(function(x){return x.length})),lab=[];
+    for(var c=0;c<W;c++)lab[c]=[0,1,2].map(function(k){return String((g[h+k]||[])[c]||"").trim()}).join(" ").toLowerCase();
+    var col=function(re,not){for(var c=0;c<W;c++)if(re.test(lab[c])&&!(not&&not.test(lab[c])))return c;return -1};
+    var cNo=col(/employee\s*no|รหัสพนักงาน|^รหัส/),cBase=col(/maximum allowance|ยอดเต็ม|std allowance/,/working/),cDed=col(/amount\s*deduct|ยอดหัก|^หัก/),cNet=col(/actual allowance|ยอดจ่าย|จ่ายจริง/),
+        cPct=col(/actual achievement|% get/),cRem=col(/remark|หมายเหตุ/),cWarn=col(/ใบเตือน/);
+    if(cNo<0||(cBase<0&&cNet<0))return;
+    for(var r3=h+1;r3<g.length;r3++){var row=g[r3],no=String(row[cNo]||"").replace(/\D/g,"");if(no.length<5)continue;
+      var b=cBase>=0?nump(row[cBase]):null,d=cDed>=0?nump(row[cDed]):null,n=cNet>=0?nump(row[cNet]):null;
+      if(b==null&&n!=null)b=n+(d||0);if(b==null)continue;if(d==null)d=n!=null?Math.max(0,b-n):0;
+      var note=[];var rem=cRem>=0?String(row[cRem]||"").trim():"";if(rem&&rem!=="-")note.push(rem);
+      var w=cWarn>=0?String(row[cWarn]||"").trim():"";if(w&&w!=="-"&&w!=="0")note.push(w);
+      var pc=cPct>=0?nump(row[cPct]):null;if(pc!=null&&pc>0)note.push((/achievement/.test(lab[cPct])?"ผลงาน ":"ได้ ")+Math.round(pc<=1.5?pc*100:pc)+"%");
+      out[no]={b:b,d:Math.min(d,b),note:note.join(" · ").slice(0,120),sheet:sn}}
+  });
+  return {month:month,rows:out}}
 $("am-file").addEventListener("change",async function(ev){
   var f=ev.target.files[0];ev.target.value="";if(!f)return;
   if(!window.XLSX){toast("โหลดตัวอ่าน Excel ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วเปิดแอปใหม่");return}
   try{
-    var wb=XLSX.read(await f.arrayBuffer(),{type:"array",codepage:65001}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:false});
-    var pick=function(o,re){for(var k in o)if(re.test(k))return String(o[k]).trim();return ""},nump=function(v){return parseFloat(String(v).replace(/,/g,""))},hit=0,miss=0;
-    rows.forEach(function(o){
-      var no=pick(o,/รหัสพนักงาน|รหัส|employee.?(no|id)|^id$/i),base=nump(pick(o,/ยอดเต็ม|เต็ม|จำนวนเงิน|^amount|allowance|full/i)),ded=nump(pick(o,/ยอดหัก|หัก|deduct/i)),note=pick(o,/หมายเหตุ|note|remark/i);
-      var inp=null;document.querySelectorAll(".amb").forEach(function(i){if(i.dataset.no===no)inp=i});
-      if(!inp||isNaN(base)){miss++;return}
-      var id=inp.dataset.emp;inp.value=base;hit++;
-      document.querySelector('.amd[data-emp="'+id+'"]').value=isNaN(ded)||!ded?"":ded;
-      if(note)document.querySelector('.amn[data-emp="'+id+'"]').value=note;
-    });
-    amTotal();toast("เติมข้อมูล "+hit+" คน"+(miss?" · ข้าม "+miss+" แถวที่ไม่พบรหัสในรายการนี้":"")+" ตรวจแล้วกดบันทึก Allowance");
+    var wb=XLSX.read(await f.arrayBuffer(),{type:"array",codepage:65001}),P=amParseBook(wb),keys=Object.keys(P.rows);
+    if(!keys.length){toast("ไม่พบข้อมูลในไฟล์ ต้องมีคอลัมน์ รหัสพนักงาน และยอดเต็มหรือยอดจ่ายจริง");return}
+    if(P.month&&P.month!==$("am-month").value){$("am-month").value=P.month;toast("ไฟล์นี้เป็นเดือน "+MONTHS[+P.month.slice(5)-1]+" "+(+P.month.slice(0,4)+543)+" เปลี่ยนเดือนให้แล้ว")}
+    if($("am-dept").value){$("am-dept").value=S.admin||S.myDepts.length>1?"":$("am-dept").value}
+    await renderAllowMgr();
+    var hit=0,miss=[];
+    keys.forEach(function(no){var x=P.rows[no],inp=null;document.querySelectorAll(".amb").forEach(function(i){if(String(i.dataset.no)===no)inp=i});
+      if(!inp){miss.push(no);return}
+      var id=inp.dataset.emp;inp.value=x.b;hit++;
+      document.querySelector('.amd[data-emp="'+id+'"]').value=x.d?x.d:"";
+      document.querySelector('.amn[data-emp="'+id+'"]').value=x.note||"";
+      inp.closest(".row").classList.add("amhit")});
+    amTotal();
+    toast("อ่านไฟล์ได้ "+keys.length+" คน · เติมลงช่องแล้ว "+hit+" คน"+(miss.length?" · ไม่พบในระบบ "+miss.length+" คน ("+miss.slice(0,5).join(", ")+(miss.length>5?" …":"")+")":"")+" — ตรวจแล้วกด “บันทึก Allowance”");
   }catch(e){toast(thErr(e))}
 });
 
