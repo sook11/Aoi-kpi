@@ -270,7 +270,8 @@ nav.tabs .navx,nav.tabs .navlabel,.navx-t{display:none}
 .tgrid th.we{color:var(--bad)}
 .tgrid .wsn{position:sticky;left:0;background:var(--surface);text-align:left;padding-right:12px;min-width:130px;max-width:160px;white-space:normal;z-index:1;font-weight:500}
 .tgrid input{width:62px;padding:6px 4px;text-align:center;font-size:14px;border-radius:6px}
-.amgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px}
+.amgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+@media (max-width:560px){.amgrid{grid-template-columns:1fr 1fr}}
 .amgrid label{font-size:12px;color:var(--muted)}
 .amgrid input{padding:7px 9px;text-align:right}
 .amgrid output{display:block;padding:7px 9px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;background:var(--off-bg);border-radius:8px}
@@ -1329,7 +1330,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <section class="view" id="v-allowance" hidden>
     <div><h2>KPI / Allowance</h2><p class="sub">เงิน KPI รายเดือนของคุณ · จ่ายย้อนหลังทุกวันที่ 5 ของเดือนถัดไป</p></div>
     <div class="filters"><label>ปี<select id="al-year"></select></label></div>
-    <div class="panel"><div class="row"><div class="l"><b>รวมจ่ายจริงทั้งปี</b><small>ยอดที่ได้รับจริง (Actual Allowance payment) หลังหัก OX / ใบเตือนแล้ว</small></div><div class="r" id="al-total">–</div></div></div>
+    <div class="panel"><div class="row"><div class="l"><b>รวมจ่ายจริงทั้งปี</b><small>จ่ายจริง = ค่าเป้าที่ทำได้ − ยอดหัก (OX / ใบเตือน)</small></div><div class="r" id="al-total">–</div></div></div>
     <div class="panel"><div class="rows" id="al-rows"></div></div>
   </section>
 
@@ -1411,7 +1412,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <label class="filebtn" data-ico="upload">Import Excel<input type="file" id="am-file" accept=".xlsx,.xls,.csv" hidden></label>
       <button type="button" id="am-export" data-ico="download">Export Excel</button>
     </div>
-    <p class="sub">Import ไฟล์ Allowance ของ HR ได้เลย (เช่น “Allowance AOI BRR-A3 … .xlsx” ทุกชีต — รายเดือน + รายวันแต่ละแผนก) ระบบเลือกเดือนจากหัวไฟล์ แล้วเติม ยอดเต็ม / ยอดหัก / หมายเหตุ (OX, ใบเตือน, %) ให้ตรวจ แล้วกด “บันทึก Allowance” · หรือไฟล์ที่มีหัวคอลัมน์ รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ</p>
+    <p class="sub">Import ไฟล์ Allowance ของ HR ได้เลย (เช่น “Allowance AOI BRR-A3 … .xlsx” ทุกชีต — รายเดือน + รายวันแต่ละแผนก) ระบบเลือกเดือนจากหัวไฟล์ แล้วเติม ยอดเต็ม / ค่าเป้าที่ทำได้ / ยอดหัก (OX) / หมายเหตุ · จ่ายจริง = ค่าเป้าที่ทำได้ − ยอดหัก ให้ตรวจ แล้วกด “บันทึก Allowance” · หรือไฟล์ที่มีหัวคอลัมน์ รหัสพนักงาน, ยอดเต็ม, ยอดหัก, หมายเหตุ</p>
     <div class="stats">
       <div class="stat"><small>ยอดจ่ายจริงรวม</small><b id="am-net">–</b><small>บาท</small></div>
       <div class="stat"><small>ยอดเต็มรวม</small><b id="am-base">–</b><small>บาท</small></div>
@@ -2208,8 +2209,8 @@ async function renderAllowance(){
   var td=today(),SM=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
   $("al-rows").innerHTML=MONTHS.map(function(mn,i){var r=by[i+1],py=+y+(i===11?1:0),pm=i===11?1:i+2,pd=py+"-"+String(pm).padStart(2,"0")+"-05",paid=td>=pd,
       pay='จ่าย 5 '+SM[pm-1]+' '+String((py+543)%100),mEnd2=y+"-"+String(i+1).padStart(2,"0")+"-31";
-    if(r){var base=(+r.amount||0)+(+r.deduction||0),ded=+r.deduction||0;
-      return '<div class="row alrow"><div class="l"><b>'+mn+'</b><small>ยอดเต็ม '+num(base)+(ded?' · <span class="bad">หัก '+num(ded)+'</span>':' · ไม่โดนหัก')+'</small>'+(r.note?'<small class="alnote">'+esc(r.note)+'</small>':'')+
+    if(r){var ach=(+r.amount||0)+(+r.deduction||0),ded=+r.deduction||0,full=r.full_amount!=null?+r.full_amount:ach;
+      return '<div class="row alrow"><div class="l"><b>'+mn+'</b><small>ยอดเต็ม '+num(full)+' · ค่าเป้าที่ทำได้ '+num(ach)+(ded?' · <span class="bad">หัก '+num(ded)+'</span>':' · ไม่โดนหัก')+'</small>'+(r.note?'<small class="alnote">'+esc(r.note)+'</small>':'')+
         '<span class="alpay'+(paid?' ok':'')+'">'+(paid?'✓ ':'⏳ รอ')+pay+'</span></div><div class="r"><b class="alnet">'+num(r.amount)+'</b><small>บาท · จ่ายจริง</small></div></div>'}
     if(pub[i+1])return '<div class="row alrow none"><div class="l"><b>'+mn+'</b><small>ไม่ได้รับ KPI เดือนนี้ — ยังไม่ถึงเกณฑ์ (อายุงานนับตั้งแต่วันเริ่มงาน)</small></div><div class="r"><small>–</small></div></div>';
     return '<div class="row alrow none"><div class="l"><b>'+mn+'</b><small>'+(td>mEnd2?'ยังไม่ประกาศยอด':'ยังไม่ถึงรอบ')+' · '+pay+'</small></div><div class="r"><small>–</small></div></div>'}).join("");
@@ -2317,11 +2318,13 @@ $("tg-save").addEventListener("click",function(){
 
 /* ---------- หน้า: จัดการ KPI/Allowance (ยอดเต็ม − ยอดหัก = ยอดจ่ายจริง) ---------- */
 var AM={rows:[]};
-function amRow(id){var b=parseFloat(document.querySelector('.amb[data-emp="'+id+'"]').value),d=parseFloat(document.querySelector('.amd[data-emp="'+id+'"]').value)||0;return {b:b,d:d,net:isNaN(b)?null:Math.max(0,b-d)}}
+/* ยอดเต็ม (f) · ค่าเป้าที่ทำได้ (b) · ยอดหัก OX (d) · จ่ายจริง = ค่าเป้าที่ทำได้ − ยอดหัก */
+function amRow(id){var b=parseFloat(document.querySelector('.amb[data-emp="'+id+'"]').value),d=parseFloat(document.querySelector('.amd[data-emp="'+id+'"]').value)||0,f=parseFloat(document.querySelector('.amf[data-emp="'+id+'"]').value);
+  return {f:isNaN(f)?(isNaN(b)?null:b):f,b:b,d:d,net:isNaN(b)?null:Math.max(0,b-d)}}
 function amTotal(){
   var tb=0,td=0,tn=0;
   document.querySelectorAll(".amb").forEach(function(i){var r=amRow(i.dataset.emp),o=document.querySelector('.amo[data-emp="'+i.dataset.emp+'"]');
-    o.textContent=r.net==null?"–":num(r.net);if(r.net!=null){tb+=r.b;td+=Math.min(r.d,r.b);tn+=r.net}});
+    o.textContent=r.net==null?"–":num(r.net);if(r.net!=null){tb+=r.f;td+=Math.min(r.d,r.b);tn+=r.net}});
   $("am-net").textContent=num(tn);$("am-base").textContent=num(tb);$("am-ded").textContent=num(td);
 }
 async function renderAllowMgr(){
@@ -2331,10 +2334,11 @@ async function renderAllowMgr(){
   var by={};AM.rows.forEach(function(r){by[r.employee_id]=r});
   var list=activeEmps(dept).filter(function(e){return S.admin||(S.me.allowed_departments||[]).indexOf(e.department_id)>=0});
   $("am-label").textContent=MONTHS[+m.slice(5,7)-1]+" "+(+m.slice(0,4)+543)+" · "+list.length+" คน · มีรายการแล้ว "+list.filter(function(e){return by[e.id]}).length+" คน";
-  $("am-rows").innerHTML=list.length?list.map(function(e){var r=by[e.id],base=r?(+r.amount||0)+(+r.deduction||0):"",id=e.id,nm=esc(e.display_name);
+  $("am-rows").innerHTML=list.length?list.map(function(e){var r=by[e.id],base=r?(+r.amount||0)+(+r.deduction||0):"",full=r?(r.full_amount!=null?+r.full_amount:base):"",id=e.id,nm=esc(e.display_name);
     return '<div class="row"><div class="l"><b>'+nm+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small>'+
-      '<div class="amgrid"><label>ยอดเต็ม<input class="amb" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" data-no="'+esc(e.employee_no)+'" value="'+base+'" aria-label="ยอดเต็มของ '+nm+'"></label>'+
-      '<label>ยอดหัก<input class="amd" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" value="'+(r&&+r.deduction?esc(r.deduction):"")+'" aria-label="ยอดหักของ '+nm+'"></label>'+
+      '<div class="amgrid"><label>ยอดเต็ม<input class="amf" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" value="'+full+'" aria-label="ยอดเต็มของ '+nm+'"></label>'+
+      '<label>ค่าเป้าที่ทำได้<input class="amb" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" data-no="'+esc(e.employee_no)+'" value="'+base+'" aria-label="ค่าเป้าที่ทำได้ของ '+nm+'"></label>'+
+      '<label>ยอดหัก (OX)<input class="amd" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" value="'+(r&&+r.deduction?esc(r.deduction):"")+'" aria-label="ยอดหักของ '+nm+'"></label>'+
       '<label>จ่ายจริง (Actual)<output class="amo" data-emp="'+id+'">–</output></label></div>'+
       '<input class="nt amn" type="text" maxlength="120" data-emp="'+id+'" value="'+esc(r?r.note:"")+'" placeholder="หมายเหตุ (ไม่บังคับ)" aria-label="หมายเหตุของ '+nm+'"></div></div>'}).join(""):emptyRow("ไม่มีพนักงานในแผนกที่เลือก");
   amTotal();
@@ -2345,7 +2349,7 @@ $("am-save").addEventListener("click",function(){
   AM.rows.forEach(function(r){by[r.employee_id]=r});
   document.querySelectorAll(".amn").forEach(function(i){notes[i.dataset.emp]=i.value.trim()});
   document.querySelectorAll(".amb").forEach(function(i){var id=i.dataset.emp,r=amRow(id);
-    if(r.net!=null)up.push({employee_id:id,month:m,amount:r.net,deduction:Math.min(r.d,r.b),note:notes[id]||""});else if(by[id])del.push(by[id].id)});
+    if(r.net!=null)up.push({employee_id:id,month:m,amount:r.net,deduction:Math.min(r.d,r.b),full_amount:r.f,note:notes[id]||""});else if(by[id])del.push(by[id].id)});
   act(async function(){
     if(up.length)await q(db.from("kpi_allowances").upsert(up,{onConflict:"employee_id,month"}));
     if(del.length)await q(db.from("kpi_allowances").delete().in("id",del));
@@ -2355,7 +2359,7 @@ $("am-export").addEventListener("click",function(){
   var m=$("am-month").value||today().slice(0,7),notes={};
   document.querySelectorAll(".amn").forEach(function(i){notes[i.dataset.emp]=i.value.trim()});
   var rows=[];document.querySelectorAll(".amb").forEach(function(i){var e=empOf(i.dataset.emp)||{},r=amRow(i.dataset.emp);
-    rows.push({"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(e.department_id),"เดือน":m,"ยอดเต็ม":r.net==null?"":r.b,"ยอดหัก":r.net==null?"":Math.min(r.d,r.b),"ยอดจ่ายจริง":r.net==null?"":r.net,"หมายเหตุ":notes[i.dataset.emp]||""})});
+    rows.push({"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(e.department_id),"เดือน":m,"ยอดเต็ม":r.net==null?"":r.f,"ค่าเป้าที่ทำได้":r.net==null?"":r.b,"ยอดหัก":r.net==null?"":Math.min(r.d,r.b),"ยอดจ่ายจริง":r.net==null?"":r.net,"หมายเหตุ":notes[i.dataset.emp]||""})});
   exportXlsx("AOI-KPI-Allowance-"+m+".xlsx",[{name:"Allowance",rows:rows}]);
 });
 /* อ่านไฟล์ Allowance ของ HR ได้ตรง ๆ (ทุกชีต: รายเดือน + รายวันแต่ละแผนก) หรือไฟล์ง่าย ๆ ที่มีหัวคอลัมน์ รหัสพนักงาน/ยอดเต็ม/ยอดหัก/หมายเหตุ */
@@ -2371,15 +2375,19 @@ function amParseBook(wb){
     for(var c=0;c<W;c++)lab[c]=[0,1,2].map(function(k){return String((g[h+k]||[])[c]||"").trim()}).join(" ").toLowerCase();
     var col=function(re,not){for(var c=0;c<W;c++)if(re.test(lab[c])&&!(not&&not.test(lab[c])))return c;return -1};
     var cNo=col(/employee\s*no|รหัสพนักงาน|^รหัส/),cBase=col(/maximum allowance|ยอดเต็ม|std allowance/,/working/),cDed=col(/amount\s*deduct|ยอดหัก|^หัก/),cNet=col(/actual allowance|ยอดจ่าย|จ่ายจริง/),
-        cPct=col(/actual achievement|% get/),cRem=col(/remark|หมายเหตุ/),cWarn=col(/ใบเตือน/);
+        cPct=col(/actual achievement|% get/),cRem=col(/remark|หมายเหตุ/),cWarn=col(/ใบเตือน/),cOx=col(/^ox\b/),cAch=col(/ค่าเป้าที่ทำได้|achieved/);
     if(cNo<0||(cBase<0&&cNet<0))return;
     for(var r3=h+1;r3<g.length;r3++){var row=g[r3],no=String(row[cNo]||"").replace(/\D/g,"");if(no.length<5)continue;
       var b=cBase>=0?nump(row[cBase]):null,d=cDed>=0?nump(row[cDed]):null,n=cNet>=0?nump(row[cNet]):null;
-      if(b==null&&n!=null)b=n+(d||0);if(b==null)continue;if(n!=null)d=Math.max(0,b-n);else if(d==null)d=0;   /* จ่ายจริง = คอลัมน์ Actual Allowance payment (หัก OX แล้ว) */
+      /* ไฟล์ HR: จ่ายจริง (Actual) = ค่าเป้าที่ทำได้ − OX · "Amount Deduct" ในไฟล์ = ส่วนที่ทำเป้าไม่ถึง ไม่ใช่ยอดหัก */
+      var ox=cOx>=0?nump(row[cOx]):null,ach=cAch>=0?nump(row[cAch]):null,full=b;
+      if(n!=null){d=ox!=null?ox:(ach!=null?Math.max(0,ach-n):0);ach=n+d}
+      else{if(b==null)continue;d=d||0;ach=ach!=null?ach:b}
+      if(full==null)full=ach;b=ach;
       var note=[];var rem=cRem>=0?String(row[cRem]||"").trim():"";if(rem&&rem!=="-")note.push(rem);
       var w=cWarn>=0?String(row[cWarn]||"").trim():"";if(w&&w!=="-"&&w!=="0")note.push(w);
       var pc=cPct>=0?nump(row[cPct]):null;if(pc!=null&&pc>0)note.push((/achievement/.test(lab[cPct])?"ผลงาน ":"ได้ ")+Math.round(pc<=1.5?pc*100:pc)+"%");
-      out[no]={b:b,d:Math.min(d,b),note:note.join(" · ").slice(0,120),sheet:sn}}
+      out[no]={f:full,b:b,d:Math.min(d,b),note:note.join(" · ").slice(0,120),sheet:sn}}
   });
   return {month:month,rows:out}}
 $("am-file").addEventListener("change",async function(ev){
@@ -2394,7 +2402,7 @@ $("am-file").addEventListener("change",async function(ev){
     var hit=0,miss=[];
     keys.forEach(function(no){var x=P.rows[no],inp=null;document.querySelectorAll(".amb").forEach(function(i){if(String(i.dataset.no)===no)inp=i});
       if(!inp){miss.push(no);return}
-      var id=inp.dataset.emp;inp.value=x.b;hit++;
+      var id=inp.dataset.emp;inp.value=x.b;hit++;document.querySelector('.amf[data-emp="'+id+'"]').value=x.f;
       document.querySelector('.amd[data-emp="'+id+'"]').value=x.d?x.d:"";
       document.querySelector('.amn[data-emp="'+id+'"]').value=x.note||"";
       inp.closest(".row").classList.add("amhit")});
