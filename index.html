@@ -670,6 +670,9 @@ button.atall{color:var(--sc);border-color:color-mix(in srgb,var(--sc) 40%,transp
 .tpf-empty{padding:30px 16px;text-align:center;color:var(--muted)}
 .ttside .ttav{cursor:pointer}
 .row.amhit{background:color-mix(in srgb,var(--good) 8%,transparent)}
+.alnet{font-family:var(--display);font-size:20px;color:var(--good)}.alrow .r{display:flex;flex-direction:column;align-items:flex-end}.alrow .r small{color:var(--muted);font-size:11.5px}
+.alrow .l small{display:block}.alnote{color:var(--muted)}.alpay{display:inline-block;margin-top:4px;font-size:11.5px;border-radius:99px;padding:1px 8px;background:var(--warn-bg);color:var(--warn)}.alpay.ok{background:var(--tint);color:var(--good)}
+.alrow.none b{color:var(--muted)}
 #qrprint{display:none}.qrcard .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#111}
 @media print{
   @page{size:A4 portrait;margin:8mm}
@@ -1324,9 +1327,9 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 
   <!-- MY ALLOWANCE -->
   <section class="view" id="v-allowance" hidden>
-    <div><h2>KPI / Allowance</h2><p class="sub">เงิน Allowance รายเดือนของคุณ</p></div>
+    <div><h2>KPI / Allowance</h2><p class="sub">เงิน KPI รายเดือนของคุณ · จ่ายย้อนหลังทุกวันที่ 5 ของเดือนถัดไป</p></div>
     <div class="filters"><label>ปี<select id="al-year"></select></label></div>
-    <div class="panel"><div class="row"><div class="l"><b>รวมทั้งปี</b></div><div class="r" id="al-total">–</div></div></div>
+    <div class="panel"><div class="row"><div class="l"><b>รวมจ่ายจริงทั้งปี</b><small>ยอดที่ได้รับจริง (Actual Allowance payment) หลังหัก OX / ใบเตือนแล้ว</small></div><div class="r" id="al-total">–</div></div></div>
     <div class="panel"><div class="rows" id="al-rows"></div></div>
   </section>
 
@@ -2198,11 +2201,18 @@ async function renderTop(){
 var MONTHS=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
 async function renderAllowance(){
   var y=$("al-year").value||String(new Date().getFullYear());
-  var rows=await q(db.from("kpi_allowances").select("*").eq("employee_id",S.me.id).gte("month",y+"-01-01").lte("month",y+"-12-01")),by={},tot=0;
-  rows.forEach(function(r){by[+r.month.slice(5,7)]=r;tot+=+r.amount||0});
-  $("al-total").textContent=num(tot)+" บาท";
-  $("al-rows").innerHTML=MONTHS.map(function(mn,i){var r=by[i+1];
-    return '<div class="row"><div class="l"><b>'+mn+'</b>'+(r?'<small>'+esc(["ยอดเต็ม "+num((+r.amount||0)+(+r.deduction||0)),+r.deduction?"หัก "+num(r.deduction):null,r.note].filter(Boolean).join(" · "))+'</small>':'')+'</div><div class="r">'+(r?num(r.amount)+'<small>บาท (จ่ายจริง)</small>':'<small>ยังไม่มีรายการ</small>')+'</div></div>'}).join("");
+  var rr=await Promise.all([q(db.from("kpi_allowances").select("*").eq("employee_id",S.me.id).gte("month",y+"-01-01").lte("month",y+"-12-01")),
+    db.rpc("allowance_months",{p_year:+y}).then(function(r){return r.error?[]:r.data||[]})]);
+  var by={},tot=0,pub={};rr[0].forEach(function(r){by[+r.month.slice(5,7)]=r;tot+=+r.amount||0});rr[1].forEach(function(x){pub[+String(x.month).slice(5,7)]=1});
+  $("al-total").innerHTML='<b class="alnet">'+num(tot)+'</b> บาท';
+  var td=today(),SM=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+  $("al-rows").innerHTML=MONTHS.map(function(mn,i){var r=by[i+1],py=+y+(i===11?1:0),pm=i===11?1:i+2,pd=py+"-"+String(pm).padStart(2,"0")+"-05",paid=td>=pd,
+      pay='จ่าย 5 '+SM[pm-1]+' '+String((py+543)%100),mEnd2=y+"-"+String(i+1).padStart(2,"0")+"-31";
+    if(r){var base=(+r.amount||0)+(+r.deduction||0),ded=+r.deduction||0;
+      return '<div class="row alrow"><div class="l"><b>'+mn+'</b><small>ยอดเต็ม '+num(base)+(ded?' · <span class="bad">หัก '+num(ded)+'</span>':' · ไม่โดนหัก')+'</small>'+(r.note?'<small class="alnote">'+esc(r.note)+'</small>':'')+
+        '<span class="alpay'+(paid?' ok':'')+'">'+(paid?'✓ ':'⏳ รอ')+pay+'</span></div><div class="r"><b class="alnet">'+num(r.amount)+'</b><small>บาท · จ่ายจริง</small></div></div>'}
+    if(pub[i+1])return '<div class="row alrow none"><div class="l"><b>'+mn+'</b><small>ไม่ได้รับ KPI เดือนนี้ — ยังไม่ถึงเกณฑ์ (อายุงานนับตั้งแต่วันเริ่มงาน)</small></div><div class="r"><small>–</small></div></div>';
+    return '<div class="row alrow none"><div class="l"><b>'+mn+'</b><small>'+(td>mEnd2?'ยังไม่ประกาศยอด':'ยังไม่ถึงรอบ')+' · '+pay+'</small></div><div class="r"><small>–</small></div></div>'}).join("");
 }
 
 /* ---------- หน้า: ติดตั้งแอป ---------- */
@@ -2325,7 +2335,7 @@ async function renderAllowMgr(){
     return '<div class="row"><div class="l"><b>'+nm+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small>'+
       '<div class="amgrid"><label>ยอดเต็ม<input class="amb" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" data-no="'+esc(e.employee_no)+'" value="'+base+'" aria-label="ยอดเต็มของ '+nm+'"></label>'+
       '<label>ยอดหัก<input class="amd" type="number" min="0" step="any" inputmode="decimal" data-emp="'+id+'" value="'+(r&&+r.deduction?esc(r.deduction):"")+'" aria-label="ยอดหักของ '+nm+'"></label>'+
-      '<label>จ่ายจริง<output class="amo" data-emp="'+id+'">–</output></label></div>'+
+      '<label>จ่ายจริง (Actual)<output class="amo" data-emp="'+id+'">–</output></label></div>'+
       '<input class="nt amn" type="text" maxlength="120" data-emp="'+id+'" value="'+esc(r?r.note:"")+'" placeholder="หมายเหตุ (ไม่บังคับ)" aria-label="หมายเหตุของ '+nm+'"></div></div>'}).join(""):emptyRow("ไม่มีพนักงานในแผนกที่เลือก");
   amTotal();
 }
@@ -2365,7 +2375,7 @@ function amParseBook(wb){
     if(cNo<0||(cBase<0&&cNet<0))return;
     for(var r3=h+1;r3<g.length;r3++){var row=g[r3],no=String(row[cNo]||"").replace(/\D/g,"");if(no.length<5)continue;
       var b=cBase>=0?nump(row[cBase]):null,d=cDed>=0?nump(row[cDed]):null,n=cNet>=0?nump(row[cNet]):null;
-      if(b==null&&n!=null)b=n+(d||0);if(b==null)continue;if(d==null)d=n!=null?Math.max(0,b-n):0;
+      if(b==null&&n!=null)b=n+(d||0);if(b==null)continue;if(n!=null)d=Math.max(0,b-n);else if(d==null)d=0;   /* จ่ายจริง = คอลัมน์ Actual Allowance payment (หัก OX แล้ว) */
       var note=[];var rem=cRem>=0?String(row[cRem]||"").trim():"";if(rem&&rem!=="-")note.push(rem);
       var w=cWarn>=0?String(row[cWarn]||"").trim():"";if(w&&w!=="-"&&w!=="0")note.push(w);
       var pc=cPct>=0?nump(row[cPct]):null;if(pc!=null&&pc>0)note.push((/achievement/.test(lab[cPct])?"ผลงาน ":"ได้ ")+Math.round(pc<=1.5?pc*100:pc)+"%");
