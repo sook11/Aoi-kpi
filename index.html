@@ -1203,6 +1203,8 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div class="panel">
       <h3>สิทธิ์วันลารายคน</h3>
       <div class="filters"><label>ปี<select id="lb-year"></select></label><label>ประเภท<select id="lb-type"></select></label><label>แผนก<select id="lb-dept"></select></label><label>ค้นหา<input type="search" id="lb-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label></div>
+      <div class="inline"><label class="filebtn" data-ico="upload">Import วันลาพักร้อน (ไฟล์ HR)<input type="file" id="lb-file" accept=".xlsx,.xls" hidden></label></div>
+      <p class="sub">ไฟล์ “Status Remain Annual Leave” ของ HR — เลือกปีด้านบนก่อน ระบบอ่านชีตของปีนั้น (คอลัมน์ รหัส · สิทธิ์ · ใช้ไป · คงเหลือ) แปลงชั่วโมงเป็นวัน (8 ชม. = 1 วัน) แล้วอัปเดตสิทธิ์และวันที่ใช้ไปของทุกคนที่มีในระบบ · ใบลาที่อนุมัติในแอปหลังวันที่อัปเดตไฟล์จะหักต่อให้อัตโนมัติ</p>
       <div class="scroll"><table class="tbl"><thead><tr><th>รหัส</th><th>ชื่อ</th><th class="n">สิทธิ์ (วัน)</th><th class="n">ใช้ไป</th><th class="n">รออนุมัติ</th><th class="n">คงเหลือ</th><th></th></tr></thead><tbody id="lb-rows"></tbody></table></div>
     </div>
     <div class="panel">
@@ -4553,11 +4555,43 @@ $("e-file").addEventListener("change",async function(ev){
   }catch(e){toast(thErr(e))}
 });
 
+/* ---------- Import วันลาพักร้อน จากไฟล์ HR (Status Remain Annual Leave) ---------- */
+function lvHrs(v){if(v===""||v==null)return null;if(typeof v==="number")return v;var m=String(v).trim().match(/^(\d+)-(\d+):(\d+)$/);if(m)return (+m[1])*8+(+m[2])+(+m[3])/60;var n=parseFloat(v);return isNaN(n)?null:n}
+$("lb-file").addEventListener("change",async function(ev){
+  var f=ev.target.files[0];ev.target.value="";if(!f)return;
+  if(!window.XLSX){toast("โหลดตัวอ่าน Excel ไม่สำเร็จ");return}
+  try{
+    var y=+$("lb-year").value,wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true});
+    var parse=function(sn){var g=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:"",raw:true}),asof=null;
+      for(var a=0;a<Math.min(4,g.length);a++)for(var c=0;c<g[a].length;c++)if(/update/i.test(String(g[a][c]))){for(var c2=c+1;c2<g[a].length;c2++){var d=anyDate(g[a][c2]);if(d){asof=d;break}}}
+      for(var h=0;h<Math.min(12,g.length);h++){var hr=g[h].map(function(x){return String(x).replace(/\s+/g,"")}),cNo=hr.findIndex(function(x){return /^รหัส(พนักงาน)?$/.test(x)});
+        var idx=function(re){var o=[];hr.forEach(function(x,i){if(re.test(x))o.push(i)});return o},cT=idx(/^สิทธิ์?$/),cU=idx(/^ใช้ไป$/),cS=hr.findIndex(function(x){return /วันเริ่มงาน|วันที่เริ่มงาน/.test(x)});
+        if(cNo<0||!cT.length||!cU.length)continue;
+        var tI=cT[cT.length-1],uI=cU[cU.length-1],out={};
+        for(var r=h+1;r<g.length;r++){var no=String(g[r][cNo]||"").replace(/\D/g,"");if(no.length<4)continue;
+          var th=lvHrs(g[r][tI]),uh=lvHrs(g[r][uI]);if(th==null&&uh==null)continue;
+          out[no.replace(/^0+/,"")]={no:no,total:Math.round((th||0)/8*100)/100,used:Math.round((uh||0)/8*100)/100,start:cS>=0?anyDate(g[r][cS]):null}}
+        return {rows:out,asof:asof}}
+      return null};
+    var sn=wb.SheetNames.filter(function(n){return (String(n).match(/\d{4}/)||[])[0]===String(y)})[0],res=sn?parse(sn):null;
+    if(!res){toast("ไม่พบชีตปี "+y+" ("+(y+543)+") ในไฟล์ — มีชีต: "+wb.SheetNames.join(", ")+" · เปลี่ยนปีด้านบนแล้วลองใหม่");return}
+    var vt=LV.types.filter(function(t){return /พักร้อน/.test(t.name)})[0];if(!vt){toast("ไม่พบประเภท ลาพักร้อน");return}
+    if(+$("lb-type").value!==vt.id){$("lb-type").value=vt.id}
+    var all=Object.keys(res.rows),send=[];S.emps.forEach(function(e){var x=res.rows[String(e.employee_no).replace(/\D/g,"").replace(/^0+/,"")];if(x)send.push(x)});
+    if(!send.length){toast("ไม่มีรหัสในไฟล์ที่ตรงกับพนักงานในแอป");return}
+    if(!confirm("Import "+vt.name+" ปี "+(y+543)+" จากชีต “"+sn+"”"+(res.asof?" (ข้อมูล ณ "+shortD(res.asof)+" "+(+res.asof.slice(0,4)+543)+")":"")+"\n\nตรงกับพนักงานในแอป "+send.length+" คน (ในไฟล์ "+all.length+" คน)\nสิทธิ์ และ ใช้ไป จะถูกแทนที่ตามไฟล์ HR\n\nตกลงไหม?"))return;
+    var r=await act(async function(){var m=0,k=0;for(var i=0;i<send.length;i+=300){var x=(await q(db.rpc("leave_import_balances",{p_type:vt.id,p_year:y,p_asof:res.asof,p_rows:send.slice(i,i+300)})))[0]||{};m+=x.matched||0;k+=x.skipped||0}
+      toast("Import วันลาแล้ว "+m+" คน"+(k?" · ข้าม "+k+" คน (ไม่มีสิทธิ์แผนก)":""));await loadBase()},"");
+    refresh();
+  }catch(e){toast(thErr(e))}
+});
+
 /* ---------- อายุงาน + Import วันเริ่มงาน/วันเกิด ---------- */
 function svcAge(sd,short){if(!sd)return "";var a=parseYmd(sd),b=parseYmd(today()),y=b.getFullYear()-a.getFullYear(),m=b.getMonth()-a.getMonth(),d=b.getDate()-a.getDate();
   if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate()}if(m<0){y--;m+=12}if(y<0)return "ยังไม่เริ่มงาน";
   return short?(y?y+" ปี ":"")+m+" ด.":(y?y+" ปี ":"")+(m?m+" เดือน ":"")+(y?"":d+" วัน")}
 function anyDate(v){if(v==null||v==="")return null;
+  if(v instanceof Date&&!isNaN(v)){v=new Date(v.getTime()+12*3600e3);/* SheetJS ให้ 23:59:56 ของวันก่อน → ปัดเป็นวันที่ใกล้สุด */}
   if(v instanceof Date&&!isNaN(v))return v.getFullYear()+"-"+String(v.getMonth()+1).padStart(2,"0")+"-"+String(v.getDate()).padStart(2,"0");
   if(typeof v==="number"&&v>20000&&v<80000){var d=new Date(Math.round((v-25569)*86400000));return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0")}
   var m=String(v).trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/);if(m){var y=+m[3];if(y<100)y+=y>60?1900:2000;if(y>2400)y-=543;var mm=+m[2],dd=+m[1];if(mm>12){var t=mm;mm=dd;dd=t}
