@@ -1205,6 +1205,17 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <div class="filters"><label>ปี<select id="lb-year"></select></label><label>ประเภท<select id="lb-type"></select></label><label>แผนก<select id="lb-dept"></select></label><label>ค้นหา<input type="search" id="lb-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label></div>
       <div class="inline"><label class="filebtn" data-ico="upload">Import วันลาพักร้อน (ไฟล์ HR)<input type="file" id="lb-file" accept=".xlsx,.xls" hidden></label></div>
       <p class="sub">ไฟล์ “Status Remain Annual Leave” ของ HR — เลือกปีด้านบนก่อน ระบบอ่านชีตของปีนั้น (คอลัมน์ รหัส · สิทธิ์ · ใช้ไป · คงเหลือ) แปลงชั่วโมงเป็นวัน (8 ชม. = 1 วัน) แล้วอัปเดตสิทธิ์และวันที่ใช้ไปของทุกคนที่มีในระบบ · ใบลาที่อนุมัติในแอปหลังวันที่อัปเดตไฟล์จะหักต่อให้อัตโนมัติ</p>
+    </div>
+    <div class="panel adm">
+      <h3>สิทธิ์ลาพักร้อนอัตโนมัติตามอายุงาน</h3>
+      <p class="sub">คนที่ไม่มีค่าจาก HR/ไม่ได้ใส่เอง ระบบคิดสิทธิ์ให้เองจาก “วันเริ่มงาน” — ครบอายุงานก็ได้สิทธิ์เพิ่มอัตโนมัติทุกปี · ค่าที่ Import/แก้เองมีผลก่อนเสมอ · กติกาตั้งต้นสรุปจากไฟล์ HR ปี 2569</p>
+      <form id="la-form">
+        <label class="check" style="flex-direction:row;align-items:center"><input type="checkbox" id="la-on"> เปิดใช้คิดสิทธิ์อัตโนมัติ</label>
+        <div class="filters"><label>ทดลองงาน (วัน)<input type="number" id="la-prob" min="0" max="365"></label><label>เริ่มนับสิทธิ์หลังเข้างาน (เดือน)<input type="number" id="la-delay" min="0" max="12"></label><label>ปีแรกต้องเหลืออย่างน้อย (เดือน)<input type="number" id="la-min" min="0" max="12"></label></div>
+        <div class="scroll"><table class="tbl"><thead><tr><th>อายุงานครบ (ปี) ณ 1 ม.ค.</th><th class="n">ได้ (วัน/ปี)</th><th></th></tr></thead><tbody id="la-tiers"></tbody></table></div>
+        <div class="inline"><button type="button" class="sm" id="la-add">+ เพิ่มขั้น</button><span style="flex:1"></span><button type="submit" class="primary slim">บันทึกกติกา</button></div>
+        <p class="sub" id="la-ex"></p>
+      </form>
       <div class="scroll"><table class="tbl"><thead><tr><th>รหัส</th><th>ชื่อ</th><th class="n">สิทธิ์ (วัน)</th><th class="n">ใช้ไป</th><th class="n">รออนุมัติ</th><th class="n">คงเหลือ</th><th></th></tr></thead><tbody id="lb-rows"></tbody></table></div>
     </div>
     <div class="panel">
@@ -4238,14 +4249,14 @@ document.addEventListener("click",function(ev){
 
 /* ---------- จัดการวันลา ---------- */
 async function renderLeaveAdmin(){
-  if(!can("leave_admin"))return;await lvMeta();
+  if(!can("leave_admin"))return;await lvMeta();if(S.admin)laDraw();
   var y0=new Date().getFullYear();
   ["lb-year","lh-year"].forEach(function(id){var s=$(id);if(!s.options.length)s.innerHTML=[y0+1,y0,y0-1].map(function(y){return '<option value="'+y+'"'+(y===y0?" selected":"")+'>'+(y+543)+'</option>'}).join("")});
   var ts=$("lb-type"),kt=ts.value;ts.innerHTML=LV.types.map(function(t){return '<option value="'+t.id+'">'+esc(t.name)+'</option>'}).join("");ts.value=kt||(LV.types.filter(function(t){return t.name==="ลาพักร้อน"})[0]||LV.types[0]||{}).id;
   if(!$("lx-from").value){$("lx-from").value=y0+"-01-01";$("lx-to").value=y0+"-12-31"}
   var y=+$("lb-year").value,t=+ts.value,dept=$("lb-dept").value,qq=$("lb-q").value;
   var rows=(await q(db.rpc("leave_balance_rows",{p_year:y,p_type:t}))).map(function(r){return Object.assign({e:empOf(r.employee_id)},r)}).filter(function(r){return r.e&&(!dept||r.e.department_id===dept)&&matchQ(r.e,qq)}).sort(function(a,b){return String(a.e.employee_no).localeCompare(String(b.e.employee_no))});
-  $("lb-rows").innerHTML=rows.length?rows.map(function(r){return '<tr><td>'+esc(r.e.employee_no)+'</td><td class="nm">'+esc(r.e.display_name)+(r.entered?'':' <small class="sub">(ค่าเริ่มต้น)</small>')+'</td><td class="n"><input type="number" class="lbtot" min="0" max="366" step="0.5" value="'+(+r.total)+'" data-emp="'+r.employee_id+'"></td><td class="n">'+num(r.used)+'</td><td class="n">'+num(r.pending)+'</td><td class="n"><b class="'+(+r.remaining<=0?"bad":"")+'">'+num(r.remaining)+'</b></td><td><button type="button" class="sm" data-lbsave="'+r.employee_id+'">บันทึก</button></td></tr>'}).join(""):'<tr><td colspan="7">'+emptyRow("ไม่มีพนักงาน")+'</td></tr>';
+  $("lb-rows").innerHTML=rows.length?rows.map(function(r){return '<tr><td>'+esc(r.e.employee_no)+'</td><td class="nm">'+esc(r.e.display_name)+(r.e.start_date?' <small class="sub">· อายุงาน '+esc(svcAge(r.e.start_date,true))+'</small>':'')+(r.entered?'':' <small class="sub">('+(laOn(t)&&r.e.start_date?'อัตโนมัติ':'ค่าเริ่มต้น')+')</small>')+'</td><td class="n"><input type="number" class="lbtot" min="0" max="366" step="0.5" value="'+(+r.total)+'" data-emp="'+r.employee_id+'"></td><td class="n">'+num(r.used)+'</td><td class="n">'+num(r.pending)+'</td><td class="n"><b class="'+(+r.remaining<=0?"bad":"")+'">'+num(r.remaining)+'</b></td><td><button type="button" class="sm" data-lbsave="'+r.employee_id+'">บันทึก</button></td></tr>'}).join(""):'<tr><td colspan="7">'+emptyRow("ไม่มีพนักงาน")+'</td></tr>';
   if(S.admin){
     var hy=$("lh-year").value;$("lh-rows").innerHTML=(LV.holList||[]).filter(function(h){return h.date.slice(0,4)===hy}).map(function(h){return '<div class="row"><div class="l"><b>'+esc(wdD(h.date))+'</b> '+esc(h.name)+'<small>'+(h.type==="company"?"🏭 วันหยุดโรงงาน":"🇹🇭 วันหยุดราชการ (โรงงานทำงาน)")+'</small></div><button type="button" class="sm danger" data-lhdel="'+h.id+'">ลบ</button></div>'}).join("")||emptyRow("ยังไม่มีวันหยุดปีนี้");
     var R=lvRot();$("lr-anchor").value=R.anchor;$("lr-day").value=R.day;$("lr-int").value=R.int;
@@ -4261,6 +4272,24 @@ document.addEventListener("click",function(ev){
   if(b.dataset.ltsave){var id=+b.dataset.ltsave,row=b.closest(".ltrow");act(function(){return q(db.from("leave_types").update({max_days:+row.querySelector("[data-ltmax]").value,team_limit:row.querySelector("[data-ltteam]").checked,active:row.querySelector("[data-ltact]").checked}).eq("id",id))},"บันทึกประเภทการลาแล้ว").then(function(){lvMeta(true).then(refresh)});return}
 });
 $("lh-form").addEventListener("submit",function(ev){ev.preventDefault();act(function(){return q(db.from("holidays").upsert({date:$("lh-date").value,name:$("lh-name").value.trim(),type:$("lh-type").value},{onConflict:"date,type"}))},"เพิ่มวันหยุดแล้ว").then(function(ok){if(ok){$("lh-name").value="";lvMeta(true).then(refresh)}})});
+/* ---------- กติกาลาพักร้อนอัตโนมัติ ---------- */
+var LA_DEF={enabled:true,type_id:null,probation_days:119,delay_months:2,first_year_min_months:6,tiers:[[0,6],[3,7],[5,8],[7,9],[9,10],[10,11],[11,12],[12,13],[13,14],[14,15]]};
+function laCfg(){return Object.assign({},LA_DEF,S.settings.leave_auto||{})}
+function laOn(t){var c=laCfg();return c.enabled&&+c.type_id===+t}
+function laDays(sd,y,c){c=c||laCfg();if(!sd)return null;var p=sd.split("-").map(Number),j=y+"-01-01";if(sd>y+"-12-31")return 0;
+  var yrs=sd>=j?0:y-p[0]-((p[1]>1||p[2]>1)?1:0),tier=0;c.tiers.forEach(function(t){if(yrs>=t[0])tier=Math.max(tier,t[1])});
+  var em=p[0]*12+p[1]-1+(+c.delay_months),f=y*12,m=Math.max(0,Math.min(12,f+12-Math.max(em,f)));if(p[0]===y&&m<+c.first_year_min_months)return 0;return m>=12?tier:Math.round(m/12*tier*2)/2}
+function laDraw(){var c=laCfg();$("la-on").checked=!!c.enabled;$("la-prob").value=c.probation_days;$("la-delay").value=c.delay_months;$("la-min").value=c.first_year_min_months;
+  $("la-tiers").innerHTML=c.tiers.map(function(t,i){return '<tr><td><input type="number" class="la-y" min="0" max="60" value="'+t[0]+'" style="width:80px"> ปีขึ้นไป</td><td class="n"><input type="number" class="la-d" min="0" max="60" step="0.5" value="'+t[1]+'" style="width:80px"></td><td><button type="button" class="sm danger" data-ladel="'+i+'">ลบ</button></td></tr>'}).join("");
+  var y=new Date().getFullYear();$("la-ex").textContent="ตัวอย่างปี "+(y+543)+": เข้างาน ม.ค. ปีนี้ = "+laDays(y+"-01-05",y,c)+" วัน · พ.ค. ปีนี้ = "+laDays(y+"-05-07",y,c)+" วัน · มิ.ย. ปีนี้ = "+laDays(y+"-06-02",y,c)+" วัน · อายุงาน 3 ปี = "+laDays((y-4)+"-06-01",y,c)+" วัน · 15 ปี = "+laDays((y-16)+"-06-01",y,c)+" วัน"}
+function laRead(){var t=[].slice.call($("la-tiers").rows).map(function(r){return [+r.querySelector(".la-y").value||0,+r.querySelector(".la-d").value||0]}).sort(function(a,b){return a[0]-b[0]});
+  var vt=(LV.types.filter(function(x){return /พักร้อน/.test(x.name)})[0]||{}).id;
+  return {enabled:$("la-on").checked,type_id:laCfg().type_id||vt,probation_days:+$("la-prob").value||0,delay_months:+$("la-delay").value||0,first_year_min_months:+$("la-min").value||0,tiers:t}}
+$("la-add").addEventListener("click",function(){var c=laRead(),l=c.tiers[c.tiers.length-1]||[0,6];c.tiers.push([l[0]+1,l[1]+1]);S.settings.leave_auto=Object.assign(laCfg(),{tiers:c.tiers});laDraw()});
+$("la-tiers").addEventListener("click",function(ev){var b=ev.target.closest("[data-ladel]");if(!b)return;var c=laRead();c.tiers.splice(+b.dataset.ladel,1);S.settings.leave_auto=Object.assign(laCfg(),{tiers:c.tiers});laDraw()});
+$("la-form").addEventListener("submit",function(ev){ev.preventDefault();var v=laRead();if(!v.tiers.length){toast("ต้องมีอย่างน้อย 1 ขั้น");return}
+  act(async function(){await q(db.from("app_settings").upsert({key:"leave_auto",value:v}));S.settings.leave_auto=v},"บันทึกกติกาลาพักร้อนแล้ว").then(function(ok){if(ok)refresh()})});
+
 $("lr-form").addEventListener("submit",function(ev){ev.preventDefault();var v={anchor:$("lr-anchor").value,day_shift_at_anchor:$("lr-day").value,interval_days:Math.max(1,+$("lr-int").value||14),span_days:1};
   act(async function(){await q(db.from("app_settings").upsert({key:"leave_rotation",value:v}));S.settings.leave_rotation=v},"บันทึกวันควงกะแล้ว")});
 $("lt-on").addEventListener("change",function(){var v={enabled:this.checked};act(async function(){await q(db.from("app_settings").upsert({key:"leave_telegram",value:v}));S.settings.leave_telegram=v},v.enabled?"เปิดแจ้งเตือนการลาทาง Telegram":"ปิดแจ้งเตือนการลาทาง Telegram")});
