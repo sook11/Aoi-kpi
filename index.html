@@ -3149,8 +3149,12 @@ async function loadMarquee(){
   var t=today(),items=[];
   var r=await Promise.all([db.from("announcements").select("*").eq("active",true).order("created_at",{ascending:false}),
     db.from("work_logs").select("employee_id").eq("work_date",t).limit(5000),
-    db.rpc("celebrations",{p_days:0}).then(function(x){return x},function(){return {data:[]}})]);
+    db.rpc("celebrations",{p_days:7}).then(function(x){return x},function(){return {data:[]}})]);
   /* วันเกิด / ครบรอบทำงาน "วันนี้" — ขึ้นก่อนทุกข้อความ สีพิเศษ */
+  /* วันเกิด / ครบรอบ ในอีก 7 วัน — ต่อท้ายข้อความวันนี้ */
+  var soon=((r[2]&&r[2].data)||[]).filter(function(c){return c.on_date>t&&c.kind!=="star"}).map(function(c){var nm=nick(c.display_name)||c.display_name,dd=Math.round((utcMs(c.on_date)-utcMs(t))/864e5);
+    return {bd:true,soon:true,t:(c.kind==="birthday"?"🎂 อีก "+(dd===1?"1 วัน (พรุ่งนี้)":dd+" วัน")+" วันเกิดคุณ"+nm:"🏅 อีก "+(dd===1?"1 วัน (พรุ่งนี้)":dd+" วัน")+" คุณ"+nm+" ทำงานครบ "+c.years+" ปี")+" · "+shortD(c.on_date)+(c.department?" ("+c.department+")":"")+" 🎁 เตรียมอวยพรกันนะ"}});
+  items=soon.concat(items);
   ((r[2]&&r[2].data)||[]).filter(function(c){return c.on_date===t&&c.kind!=="star"}).sort(function(a,b){return a.kind===b.kind?0:a.kind==="birthday"?1:-1}).forEach(function(c){var nm=nick(c.display_name)||c.display_name,mine=c.employee_id===S.me.id;
     items.unshift({bd:true,t:c.kind==="birthday"?(mine?"🎂 สุขสันต์วันเกิดนะคุณ"+nm+"! ขอให้มีความสุขมาก ๆ สุขภาพแข็งแรง 🎉🎁":"🎂 วันนี้วันเกิดคุณ"+nm+(c.department?" ("+c.department+")":"")+" 🎉 ร่วมอวยพรกันนะ 🎁"):
       (mine?"🏅 ยินดีด้วย! วันนี้คุณ"+nm+"ทำงานกับเราครบ "+c.years+" ปี ขอบคุณที่อยู่ด้วยกันนะ 🙏":"🏅 วันนี้คุณ"+nm+" ทำงานครบ "+c.years+" ปี 🎉 ร่วมแสดงความยินดีกันนะ")})});
@@ -3160,8 +3164,8 @@ async function loadMarquee(){
   if(S.mgr&&new Date().getHours()>=8){var mine=(S.myDepts||S.depts).map(function(d){return d.id}),miss=S.emps.filter(function(e){return e.active&&e.role!=="admin"&&e.kpi_required!==false&&mine.indexOf(e.department_id)>=0&&!done[e.id]});
     if(miss.length)items.push({w:true,t:"📋 วันนี้ยังไม่ลงยอด "+miss.length+" คน: "+miss.slice(0,15).map(function(e){return e.display_name}).join(", ")+(miss.length>15?" และอีก "+(miss.length-15)+" คน":"")})}
   var mq=$("mq");if(!items.length){mq.hidden=true;return}
-  var warn=items.some(function(x){return x.w}),bd=items.some(function(x){return x.bd});mq.hidden=false;mq.classList.toggle("warn",warn&&!bd);mq.classList.toggle("bday",bd);MQ.me=items.some(function(x){return x.me});
-  $("mq-badge").textContent=bd?"🎂 วันพิเศษ":warn?"แจ้งเตือน":"ประกาศ";
+  var warn=items.some(function(x){return x.w}),bd=items.some(function(x){return x.bd&&!x.soon});mq.hidden=false;mq.classList.toggle("warn",warn&&!bd);mq.classList.toggle("bday",bd);MQ.me=items.some(function(x){return x.me});
+  $("mq-badge").textContent=bd?"🎂 วันพิเศษ":warn?"แจ้งเตือน":items.some(function(x){return x.soon})?"🎂 ใกล้วันเกิด":"ประกาศ";
   var tr=$("mq-track"),html=items.map(function(x){return '<span'+(x.bd?' class="mqbd"':x.w&&bd?' class="mqw"':'')+'>'+esc(x.t)+'</span>'}).join("");
   if(tr.innerHTML!==html){tr.innerHTML=html;mqSpeed()}
 }
