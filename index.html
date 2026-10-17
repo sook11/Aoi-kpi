@@ -839,7 +839,7 @@ body.farm-full .fwin{height:100%;border-radius:0;box-shadow:none;background:#38b
 @keyframes fsea{from{transform:translateX(0)}to{transform:translateX(120px)}}
 body.farm-full.farm-rot #v-farm{inset:auto;top:0;left:0;transform-origin:0 0;transform:rotate(90deg) translateY(-100%)}
 .fzoom{position:absolute;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:1}
-.fzoom button{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:rgba(15,40,70,.75);color:#fff;font:900 22px system-ui;box-shadow:0 3px 8px rgba(0,0,0,.25);cursor:pointer}
+.fzoom button.off{opacity:.55}.fzoom button{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:rgba(15,40,70,.75);color:#fff;font:900 22px system-ui;box-shadow:0 3px 8px rgba(0,0,0,.25);cursor:pointer}
 .fhud .fact{padding-left:64px}
 .fgame.fland .fsheet{left:auto;right:92px;top:8px;bottom:8px;max-height:none;width:min(440px,58%);border-radius:20px}
 .fgame.fland .fdock{gap:8px}.fgame.fland .fbig{width:58px;height:58px}.fgame.fland .fbig span{font-size:24px}
@@ -3975,7 +3975,7 @@ async function renderFarm(){
   try{if(!FM.cat)FM.cat=await q(db.rpc("farm_cat"));FM.d=await fmLoad();if(FM.v)FM.v=await fmLoad(FM.v.emp);if(FM.t==="friends")FM.board=await q(db.rpc("farm_board"));FM.keep=!!FM.sx;drawFarm()}
   catch(e){$("fm-world").innerHTML='<div class="panel" style="margin:80px 16px">'+emptyRow(thErr(e))+'</div>'}
   if(!FM.tick)FM.tick=setInterval(fmTick,1000)}
-function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
+function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmaud="sfx" aria-label="เสียงเอฟเฟกต์" class="'+(FA.sfx?'':'off')+'">'+(FA.sfx?'🔊':'🔇')+'</button><button type="button" data-fmaud="mus" aria-label="เพลง" class="'+(FA.mus?'':'off')+'">🎵</button><button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
   if(v){h+='<div class="fpill fwho">'+avatarHtml({display_name:v.name,avatar:v.avatar})+'<div><b>ฟาร์มของ'+esc(nick(v.name)||v.name)+'</b><small>เลเวล '+v.level+' · ❤️ '+num(v.likes)+'</small></div></div><span class="fsp"></span>'+
     '<button type="button" class="fpill flike'+(v.liked?' on':'')+'" data-fmlike="'+v.emp+'"'+(v.liked?' disabled':'')+'>'+(v.liked?'❤️ ถูกใจแล้ว':'🤍 ถูกใจ')+'</button></div>'+
     '<div class="fdock"><button type="button" class="fbig" data-fmback="1"><span>🏡</span><small>ฟาร์มฉัน</small></button></div>';return h}
@@ -4012,6 +4012,41 @@ var FMAP=(function(){var o={},k=function(x,y,v){o[x+","+y]=v};
   return {o:o,free:free}})();
 function emo(x,y,e,sz,extra){extra=extra||"";var cls=/class="/.test(extra)?"":' class="iem"';return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" style="font-size:'+sz+'px" text-anchor="middle"'+cls+extra+'>'+e+'</text>'}
 /* ลากเพื่อเลื่อนดูฟาร์ม (เมาส์) — มือถือใช้นิ้วเลื่อนได้เลย */
+/* ---------- เสียงฟาร์ม: เอฟเฟกต์ + เพลงพื้นหลัง (สังเคราะห์ด้วย Web Audio ไม่ต้องโหลดไฟล์) ---------- */
+var FA={ctx:null,sfx:true,mus:true,timer:null,step:0,next:0};
+try{var fap=JSON.parse(localStorage.getItem("aoi-farm-audio")||"{}");if(fap.sfx===false)FA.sfx=false;if(fap.mus===false)FA.mus=false}catch(e){}
+function faSave(){try{localStorage.setItem("aoi-farm-audio",JSON.stringify({sfx:FA.sfx,mus:FA.mus}))}catch(e){}}
+function faCtx(){try{if(!FA.ctx){var C=window.AudioContext||window.webkitAudioContext;if(!C)return null;FA.ctx=new C();FA.out=FA.ctx.createGain();FA.out.gain.value=.9;FA.out.connect(FA.ctx.destination);
+    FA.mg=FA.ctx.createGain();FA.mg.gain.value=.05;FA.mg.connect(FA.out)}
+  if(FA.ctx.state==="suspended")FA.ctx.resume();return FA.ctx}catch(e){return null}}
+function faTone(f,t0,d,type,vol,f2,dest){var c=FA.ctx,o=c.createOscillator(),g=c.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t0);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t0+d);
+  g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol||.2,t0+.012);g.gain.exponentialRampToValueAtTime(0.0001,t0+d);o.connect(g);g.connect(dest||FA.out);o.start(t0);o.stop(t0+d+.05)}
+function faNoise(t0,d,vol,hp){var c=FA.ctx,n=Math.floor(c.sampleRate*d),b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0);for(var i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);
+  var s2=c.createBufferSource(),g=c.createGain(),fl=c.createBiquadFilter();fl.type="highpass";fl.frequency.value=hp||1200;g.gain.value=vol||.15;s2.buffer=b;s2.connect(fl);fl.connect(g);g.connect(FA.out);s2.start(t0)}
+function sfx(k){if(!FA.sfx||!faCtx())return;var t=FA.ctx.currentTime+.01;
+  switch(k){
+    case "tap":faTone(880,t,.06,"triangle",.12);break;
+    case "open":faNoise(t,.18,.08,2500);faTone(520,t,.12,"sine",.08,880);break;
+    case "close":faTone(700,t,.1,"sine",.08,420);break;
+    case "plant":faTone(220,t,.12,"sine",.25,140);faNoise(t,.12,.12,600);faTone(660,t+.08,.12,"triangle",.1);break;
+    case "harvest":[784,988,1175,1568].forEach(function(f,i){faTone(f,t+i*.06,.22,"triangle",.14)});faNoise(t,.15,.06,4000);break;
+    case "collect":faTone(1046,t,.1,"square",.07);faTone(1568,t+.07,.18,"triangle",.12);break;
+    case "feed":for(var i=0;i<3;i++){faNoise(t+i*.09,.06,.14,800);faTone(180+i*20,t+i*.09,.05,"square",.05)}break;
+    case "coin":faTone(1318,t,.09,"square",.08);faTone(1760,t+.08,.35,"square",.08);faTone(2637,t+.08,.3,"sine",.05);break;
+    case "buy":faTone(523,t,.1,"triangle",.14);faTone(659,t+.08,.1,"triangle",.14);faTone(1046,t+.16,.3,"triangle",.16);faTone(2093,t+.16,.25,"sine",.05);break;
+    case "level":[523,659,784,1046,784,1046,1318].forEach(function(f,i){faTone(f,t+i*.11,i>4?.45:.16,"triangle",.16)});faNoise(t+.5,.4,.05,5000);break;
+    case "error":faTone(196,t,.18,"sawtooth",.08,150);faTone(185,t+.16,.22,"sawtooth",.08,140);break;
+    case "like":faTone(880,t,.12,"sine",.14,1320);faTone(1320,t+.1,.25,"sine",.12,1760);break;
+    case "cluck":faTone(900,t,.05,"square",.06,600);faTone(1100,t+.07,.06,"square",.05,700);break}}
+/* เพลงพื้นหลังสบาย ๆ (เพนทาโทนิก) */
+var FAMEL=[67,69,72,74,76,74,72,69, 67,64,67,69,72,69,67,64, 62,64,67,69,72,74,72,69, 67,69,67,64,62,60,62,64],FABASS=[48,48,55,55,45,45,52,52,41,41,48,48,43,43,50,50];
+function faMidi(m){return 440*Math.pow(2,(m-69)/12)}
+function faMusic(on){if(!on){clearInterval(FA.timer);FA.timer=null;return}if(FA.timer||!FA.mus||!faCtx())return;FA.next=FA.ctx.currentTime+.1;
+  FA.timer=setInterval(function(){if(!FA.ctx||document.hidden)return;var spb=.32;while(FA.next<FA.ctx.currentTime+.6){var i=FA.step%FAMEL.length;
+      if(FA.step%4!==3||i%8===0)faTone(faMidi(FAMEL[i]),FA.next,spb*.9,"triangle",.5,null,FA.mg);
+      if(FA.step%2===0)faTone(faMidi(FABASS[(FA.step/2)%FABASS.length]),FA.next,spb*1.8,"sine",.6,null,FA.mg);
+      if(FA.step%8===4)faTone(faMidi(FAMEL[i]+12),FA.next,spb*.5,"sine",.25,null,FA.mg);
+      FA.step++;FA.next+=spb}},150)}
 /* ---------- กล้อง: ลากเลื่อน / ถ่างนิ้วซูม / ล้อเมาส์ / ปุ่ม + − ; มือถือแนวตั้ง → หมุนเป็นแนวนอน ---------- */
 function fmIsTouch(){return window.matchMedia&&matchMedia("(pointer:coarse)").matches}
 function fmLayout(){var v=$("v-farm"),W=window.innerWidth,H=window.innerHeight,rot=S.tab==="farm"&&fmIsTouch()&&H>W;
@@ -4041,7 +4076,7 @@ function fmPan(){if(FM.panOn)return;FM.panOn=1;var w=$("fm-world");var P={},st=n
   w.addEventListener("wheel",function(e){e.preventDefault();var l=fmLoc(e,w);fmZoomAt(e.deltaY<0?1.12:1/1.12,l.x,l.y)},{passive:false});
   w.addEventListener("click",function(e){if(moved){e.stopPropagation();e.preventDefault()}},true)}
 window.addEventListener("resize",function(){if(S.tab!=="farm")return;clearTimeout(FM.rt);FM.rt=setTimeout(function(){fmLayout();fmCam(false)},150)});
-function fmEnter(on){try{if(on&&fmIsTouch()){var de=document.documentElement;if(!document.fullscreenElement&&de.requestFullscreen)de.requestFullscreen({navigationUI:"hide"}).then(function(){if(screen.orientation&&screen.orientation.lock)return screen.orientation.lock("landscape")}).then(function(){setTimeout(function(){fmLayout();fmCam(true)},250)}).catch(function(){})}
+function fmEnter(on){faMusic(on);try{if(on&&fmIsTouch()){var de=document.documentElement;if(!document.fullscreenElement&&de.requestFullscreen)de.requestFullscreen({navigationUI:"hide"}).then(function(){if(screen.orientation&&screen.orientation.lock)return screen.orientation.lock("landscape")}).then(function(){setTimeout(function(){fmLayout();fmCam(true)},250)}).catch(function(){})}
   else if(!on){if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});if(screen.orientation&&screen.orientation.unlock)try{screen.orientation.unlock()}catch(e){}
     document.body.classList.remove("farm-rot");var v=$("v-farm");if(v){v.style.width="";v.style.height=""}}}catch(e){}}
 function frand(seed){var x=Math.sin(seed*999.7)*43758.5453;return x-Math.floor(x)}
@@ -4158,32 +4193,34 @@ function fmTick(force){if(S.tab!=="farm"&&!force)return;var now=fmNow(),flip=fal
     if(tm)tm.textContent=fmLeft(left);if(pg)pg.setAttribute("width",((el.classList.contains("fcrop")?44:36)*pc).toFixed(1))});
   if(flip&&!FM.busy&&!FM.v){FM.keep=true;drawFarm()}else if(!force&&!FM.v&&!FM.busy&&now%10000<1000)$("fm-hud").innerHTML=fmHud()}
 function fmFloat(ev,txt){try{var f=document.createElement("div");f.className="ffloat";f.textContent=txt;f.style.left=ev.clientX+"px";f.style.top=ev.clientY+"px";document.body.appendChild(f);setTimeout(function(){f.remove()},1300)}catch(e){}}
-async function fmDo(fn,msg){if(FM.busy)return;FM.busy=true;try{var r=await fn();if(msg)toast(typeof msg==="function"?msg(r):msg);FM.d=await fmLoad();FM.keep=true;drawFarm()}catch(e){toast(thErr(e))}finally{FM.busy=false}}
+async function fmDo(fn,msg){if(FM.busy)return;FM.busy=true;var snd=FM.snd;FM.snd=null;var lv0=fmLv(FM.d.xp).l;try{var r=await fn();if(snd)sfx(snd);if(msg)toast(typeof msg==="function"?msg(r):msg);FM.d=await fmLoad();FM.keep=true;drawFarm();
+  var lv1=fmLv(FM.d.xp).l;if(lv1>lv0){setTimeout(function(){sfx("level");toast("🎉 เลเวลอัป! ตอนนี้เลเวล "+lv1+" — ปลดล็อกของใหม่ในร้านค้า")},500)}}catch(e){sfx("error");toast(thErr(e))}finally{FM.busy=false}}
 function fmSeedHtml(){var c=FM.cat,l=fmLv(FM.d.xp).l;return '<p class="sub" style="margin:0">ปลูกที่แปลง '+FM.slot+' · มี '+fmc()+' '+num(FM.d.coins)+'</p><div class="seedgrid">'+Object.keys(c.crops).map(function(k){var o=c.crops[k],lk=l<o.lv,poor=FM.d.coins<o.cost;
     return '<button type="button" data-fmseed="'+k+'"'+(lk||poor?' disabled':'')+'><span class="em">'+o.e+'</span><b>'+esc(o.n)+'</b><small>'+fmc()+' '+o.cost+' · '+fmDur(o.min)+'</small><small>'+(lk?'🔒 เลเวล '+o.lv:'ขาย '+o.sell+' · +'+o.xp+' XP')+'</small></button>'}).join("")+'</div>'}
 function fmSeed(slot){FM.slot=slot;FM.t="seed";fmSheet()}
-document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz]");if(!t)return;var D=t.dataset;
-  if(D.fmexit){show("home");return}
-  if(D.fmz){fmZoomAt(D.fmz==="in"?1.25:0.8);return}
-  if(D.fmclose){FM.t="farm";fmSheet();return}
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud]");if(!t)return;var D=t.dataset;
+  if(D.fmexit){sfx("close");show("home");return}
+  if(D.fmz){sfx("tap");fmZoomAt(D.fmz==="in"?1.25:0.8);return}
+  if(D.fmaud){if(D.fmaud==="sfx"){FA.sfx=!FA.sfx;sfx("tap")}else{FA.mus=!FA.mus;faMusic(FA.mus)}faSave();$("fm-hud").innerHTML=fmHud();return}
+  if(D.fmclose){sfx("close");FM.t="farm";fmSheet();return}
   if(FM.v&&!D.fmback&&!D.fmlike)return;
-  if(D.fmt){FM.t=D.fmt;if(FM.t==="friends")q(db.rpc("farm_board")).then(function(b){FM.board=b;if(FM.t==="friends")fmSheet()},function(e){toast(thErr(e))});fmSheet();return}
-  if(D.fmp){fmSeed(+D.fmp);return}
-  if(D.fmseed){var cr=FM.cat.crops[D.fmseed];FM.t="farm";fmDo(function(){return q(db.rpc("farm_plant",{p_slot:FM.slot,p_crop:D.fmseed}))},"ปลูก"+cr.n+"แล้ว 🌱 รอ "+fmDur(cr.min));return}
-  if(D.fmh){if(D.fmh!=="all"&&D.until&&+D.until>fmNow()){toast("ยังไม่สุก อีก "+fmLeft(+D.until-fmNow()));return}
-    if(D.fmh!=="all")fmFloat(ev,"+1 "+((FM.cat.crops[(FM.d.field.filter(function(p){return p.slot===+D.fmh})[0]||{}).crop]||{}).e||"🌾"));
+  if(D.fmt){sfx("open");FM.t=D.fmt;if(FM.t==="friends")q(db.rpc("farm_board")).then(function(b){FM.board=b;if(FM.t==="friends")fmSheet()},function(e){toast(thErr(e))});fmSheet();return}
+  if(D.fmp){sfx("open");fmSeed(+D.fmp);return}
+  if(D.fmseed){var cr=FM.cat.crops[D.fmseed];FM.t="farm";FM.snd="plant";fmDo(function(){return q(db.rpc("farm_plant",{p_slot:FM.slot,p_crop:D.fmseed}))},"ปลูก"+cr.n+"แล้ว 🌱 รอ "+fmDur(cr.min));return}
+  if(D.fmh){if(D.fmh!=="all"&&D.until&&+D.until>fmNow()){sfx("tap");toast("ยังไม่สุก อีก "+fmLeft(+D.until-fmNow()));return}
+    FM.snd="harvest";if(D.fmh!=="all")fmFloat(ev,"+1 "+((FM.cat.crops[(FM.d.field.filter(function(p){return p.slot===+D.fmh})[0]||{}).crop]||{}).e||"🌾"));
     fmDo(function(){return q(db.rpc("farm_harvest",D.fmh==="all"?{}:{p_slot:+D.fmh}))},function(n){return "เก็บเกี่ยวแล้ว "+n+" แปลง → ไปขายที่ 🏚️ ยุ้งฉาง"});return}
-  if(D.fmx){if(!armed(t,"แตะอีกครั้งเพื่อจ่าย "+(30*(FM.d.plots-3))+" เหรียญ"))return;fmDo(function(){return q(db.rpc("farm_expand"))},"ขยายแปลงแล้ว 🎉");return}
-  if(D.fmf){fmDo(function(){return q(db.rpc("farm_feed",D.fmf==="all"?{}:{p_id:D.fmf}))},function(n){return "ให้อาหารแล้ว "+n+" ตัว 🍽️"});return}
-  if(D.fmc){if(D.fmc!=="all"&&+D.until>fmNow()){toast("ยังไม่พร้อม อีก "+fmLeft(+D.until-fmNow()));return}
-    if(D.fmc!=="all")fmFloat(ev,"+1 ✨");
+  if(D.fmx){if(!armed(t,"แตะอีกครั้งเพื่อจ่าย "+(30*(FM.d.plots-3))+" เหรียญ")){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_expand"))},"ขยายแปลงแล้ว 🎉");return}
+  if(D.fmf){FM.snd="feed";fmDo(function(){return q(db.rpc("farm_feed",D.fmf==="all"?{}:{p_id:D.fmf}))},function(n){return "ให้อาหารแล้ว "+n+" ตัว 🍽️"});return}
+  if(D.fmc){if(D.fmc!=="all"&&+D.until>fmNow()){sfx("cluck");toast("ยังไม่พร้อม อีก "+fmLeft(+D.until-fmNow()));return}
+    FM.snd="collect";if(D.fmc!=="all")fmFloat(ev,"+1 ✨");
     fmDo(function(){return q(db.rpc("farm_collect",D.fmc==="all"?{}:{p_id:D.fmc}))},function(n){return "เก็บผลผลิตแล้ว "+n+" ชิ้น → ไปขายที่ 🏚️ ยุ้งฉาง"});return}
-  if(D.fms){fmDo(function(){return q(db.rpc("farm_sell",{p_item:D.fms,p_qty:+D.q}))},function(n){return "ขายได้ +"+n+" เหรียญ 💰"});return}
-  if(D.fmba){var a=FM.cat.animals[D.fmba];if(!armed(t,"แตะอีกครั้ง ซื้อ"+a.n+" "+a.buy+" เหรียญ"))return;fmDo(function(){return q(db.rpc("farm_buy_animal",{p_animal:D.fmba}))},"ได้"+a.n+"แล้ว "+a.e+" ไปให้อาหารที่หน้า ฟาร์ม");return}
-  if(D.fmbd){var o=FM.cat.decor[D.fmbd];if(!armed(t,"แตะอีกครั้ง จ่าย "+o.cost))return;fmDo(function(){return q(db.rpc("farm_buy_decor",{p_item:D.fmbd}))},"ซื้อ"+o.n+"แล้ว "+o.e+" +"+o.xp+" XP");return}
+  if(D.fms){FM.snd="coin";fmDo(function(){return q(db.rpc("farm_sell",{p_item:D.fms,p_qty:+D.q}))},function(n){return "ขายได้ +"+n+" เหรียญ 💰"});return}
+  if(D.fmba){var a=FM.cat.animals[D.fmba];if(!armed(t,"แตะอีกครั้ง ซื้อ"+a.n+" "+a.buy+" เหรียญ")){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_buy_animal",{p_animal:D.fmba}))},"ได้"+a.n+"แล้ว "+a.e+" ไปให้อาหารที่หน้า ฟาร์ม");return}
+  if(D.fmbd){var o=FM.cat.decor[D.fmbd];if(!armed(t,"แตะอีกครั้ง จ่าย "+o.cost)){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_buy_decor",{p_item:D.fmbd}))},"ซื้อ"+o.n+"แล้ว "+o.e+" +"+o.xp+" XP");return}
   if(D.fmv){q(db.rpc("farm_get",{p_emp:D.fmv})).then(function(v){FM.v=v;FM.t="farm";drawFarm()},function(e){toast(thErr(e))});return}
   if(D.fmback){FM.v=null;FM.t="friends";drawFarm();return}
-  if(D.fmlike){q(db.rpc("farm_like",{p_owner:D.fmlike})).then(function(){toast("ส่งหัวใจให้ฟาร์มนี้แล้ว ❤️");return q(db.rpc("farm_get",{p_emp:D.fmlike}))}).then(function(v){FM.v=v;drawFarm(true)},function(e){toast(thErr(e))});return}
+  if(D.fmlike){q(db.rpc("farm_like",{p_owner:D.fmlike})).then(function(){sfx("like");toast("ส่งหัวใจให้ฟาร์มนี้แล้ว ❤️");return q(db.rpc("farm_get",{p_emp:D.fmlike}))}).then(function(v){FM.v=v;drawFarm(true)},function(e){toast(thErr(e))});return}
 });
 
 /* ---------- ไอเดียปรับปรุงงาน ---------- */
