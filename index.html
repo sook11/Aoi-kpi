@@ -4316,7 +4316,18 @@ function fdeco(k,m){var x=m[0],y=m[1]+8,s='';
     s+='<path d="M'+(x-8)+' '+y+' v-14 a8 8 0 0 1 16 0 v14 z" fill="#7c2d12"/>'+tw(x-32,y+2,46,9)+tw(x+32,y+2,46,9)+tw(x,y-26,30,11);return s;
   }
   return null}
-function fmScene(d,own){var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=ISO.th;d.field.forEach(function(p){F[p.slot]=p});
+/* ---------- อัปเดต 66: วาดพื้นหลังที่ไม่ขยับ (ป่า หญ้า ทางเดิน บ่อ) ครั้งเดียวเป็นรูปภาพ แล้วใช้ซ้ำ — มือถือลื่นขึ้นมาก ---------- */
+function fmStaticPart(body,defs){if(FM.bakeUrl)return '<image href="'+FM.bakeUrl+'" x="0" y="0" width="'+ISO.vw+'" height="'+ISO.vh+'" preserveAspectRatio="none" pointer-events="none"/>';
+  if(!FM.baking&&!FM.noBake)setTimeout(function(){fmBake(defs,body)},200);return '<g id="fm-static" pointer-events="none">'+body+'</g>'}
+function fmBake(defs,body){if(FM.baking||FM.bakeUrl)return;FM.baking=1;var done=function(){FM.baking=0};
+  try{var sc=Math.min(2,Math.sqrt(8e6/(ISO.vw*ISO.vh))),W=Math.round(ISO.vw*sc),H=Math.round(ISO.vh*sc);
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="'+W+'" height="'+H+'" viewBox="0 0 '+ISO.vw+' '+ISO.vh+'">'+defs+body+'</svg>';
+    var img=new Image();img.onerror=function(){FM.noBake=1;done()};
+    img.onload=function(){try{var cv=document.createElement("canvas");cv.width=W;cv.height=H;cv.getContext("2d").drawImage(img,0,0,W,H);
+      cv.toBlob(function(b){if(!b){FM.noBake=1;return done()}FM.bakeUrl=URL.createObjectURL(b);done();var g=document.getElementById("fm-static");
+        if(g){var im=document.createElementNS("http://www.w3.org/2000/svg","image");im.setAttribute("href",FM.bakeUrl);im.setAttribute("x","0");im.setAttribute("y","0");im.setAttribute("width",ISO.vw);im.setAttribute("height",ISO.vh);im.setAttribute("preserveAspectRatio","none");im.setAttribute("pointer-events","none");g.parentNode.replaceChild(im,g)}},"image/png")}catch(e){FM.noBake=1;done()}};
+    img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)}catch(e){FM.noBake=1;done()}}
+function fmScene(d,own){fmGrassTex();var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=ISO.th;d.field.forEach(function(p){F[p.slot]=p});
   var add=function(depth,svg){S2.push([depth,svg])},shadow=function(m,rx,ry){return '<ellipse cx="'+m[0].toFixed(1)+'" cy="'+m[1].toFixed(1)+'" rx="'+rx+'" ry="'+ry+'" fill="rgba(20,60,10,.28)"/>'};
   var c00=iso(0,0),c10=iso(12,0),c11=iso(12,12),c01=iso(0,12),dn=function(p,h){return [p[0],p[1]+h]};
   /* พื้นป่ารอบฟาร์ม + ถนนออกนอกฟาร์ม */
@@ -4342,6 +4353,7 @@ function fmScene(d,own){var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=ISO.th;d.fiel
   /* บ่อน้ำ */
   var pc=iso(3.5,2);G.push('<ellipse cx="'+pc[0]+'" cy="'+(pc[1]+4)+'" rx="98" ry="44" fill="#c8a36b"/><ellipse cx="'+pc[0]+'" cy="'+pc[1]+'" rx="92" ry="40" fill="url(#fwater)"/><ellipse cx="'+(pc[0]-24)+'" cy="'+(pc[1]-12)+'" rx="30" ry="8" fill="rgba(255,255,255,.55)"/><ellipse cx="'+(pc[0]+40)+'" cy="'+(pc[1]+12)+'" rx="12" ry="5" fill="#4ade80"/><ellipse cx="'+(pc[0]-50)+'" cy="'+(pc[1]+16)+'" rx="10" ry="4" fill="#4ade80"/>');
   add(5.5,[0,1].map(function(q){return '<g>'+emo(0,8,"🦆",q?22:26,q?' class="iem" transform="scale(-1 1)"':'')+'<animateMotion path="M'+(pc[0]+55)+' '+pc[1]+' a55 22 0 1 0 -110 0 a55 22 0 1 0 110 0" dur="'+(q?26:20)+'s" begin="-'+(q*9)+'s" repeatCount="indefinite"/></g>'}).join(""));add(3.4,emo(pc[0]-80,pc[1]-6,"🌿",24));
+  var GS0=G.length;
   /* แปลงผัก */
   for(var i=1;i<=c.max_plots;i++){var gx=1+((i-1)%4),gy=5+Math.floor((i-1)/4),a=iso(gx,gy),b=iso(gx+1,gy),cc=iso(gx+1,gy+1),dd=iso(gx,gy+1),ctr=iso(gx+.5,gy+.5);
     var ins=function(p,k){return [ctr[0]+(p[0]-ctr[0])*k,ctr[1]+(p[1]-ctr[1])*k]},A=ins(a,.92),B=ins(b,.92),C=ins(cc,.92),D=ins(dd,.92),A2=ins(a,.74),B2=ins(b,.74),C2=ins(cc,.74),D2=ins(dd,.74);
@@ -4369,7 +4381,7 @@ function fmScene(d,own){var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=ISO.th;d.fiel
       var fx=tx+frand(sd+1)*.8,fy=ty+frand(sd+2)*.8;if(fx>4.9&&fx<8.3&&fy>12)continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>12.1&&fx<14&&fy>3.4&&fy<6)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;
       var fm=iso(fx,fy);if(fm[0]<-50||fm[0]>ISO.vw+50||fm[1]<30||fm[1]>ISO.vh+100)continue;var r=frand(sd+3);
       FM.forest.push([fx+fy,r<.06?'<ellipse cx="'+fN(fm[0])+'" cy="'+fN(fm[1]-4)+'" rx="16" ry="10" fill="#a8a29e"/><ellipse cx="'+fN(fm[0]-4)+'" cy="'+fN(fm[1]-8)+'" rx="8" ry="4" fill="#d6d3d1"/>':ftree(fm,r<.62?"pine":r<.82?"dark":r<.9?"fruit":"round",.95+frand(sd+4)*.45,true)])}}
-  FM.forest.forEach(function(t){add(t[0],t[1])});
+  if(!FM.forestSorted){FM.forest.sort(function(a,b){return a[0]-b[0]});FM.forestSorted=1}
   fpicket(add,.3,11.92,5.8,11.92,true);fpicket(add,7.2,11.92,11.92,11.92,true);fpicket(add,11.92,.4,11.92,2.6,true);fpicket(add,11.92,3.6,11.92,11.92,true);
   /* ยุ้งฉาง + ไซโล */
   (function(){var x0=7.2,x1=10.6,y0=.3,y1=2.6,H=60,R=36,ym=(y0+y1)/2,p01=iso(x0,y1),p11=iso(x1,y1),p10=iso(x1,y0),rf=iso(x0,ym),rb=iso(x1,ym);
@@ -4429,7 +4441,7 @@ function fmScene(d,own){var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=ISO.th;d.fiel
     (fmGrassTex()?'<pattern id="fgpat" width="120" height="120" patternUnits="userSpaceOnUse"><image href="'+fmGrassTex()+'" width="120" height="120"/></pattern>':'')+
     '<pattern id="fwave" width="120" height="40" patternUnits="userSpaceOnUse"><path d="M10 20 q15 -8 30 0" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2.5" stroke-linecap="round"/><path d="M70 34 q12 -6 24 0" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/></pattern></defs>';
   return '<div class="fwin" id="fm-win"><svg class="fsvg" width="'+ISO.vw+'" height="'+ISO.vh+'" viewBox="0 0 '+ISO.vw+' '+ISO.vh+'" role="img" aria-label="ฟาร์ม">'+defs+
-    G.join("")+S2.map(function(z){return z[1]}).join("")+'<rect width="'+ISO.vw+'" height="'+ISO.vh+'" fill="url(#flight)" pointer-events="none"/>'+
+    fmStaticPart(G.slice(0,GS0).join("")+FM.forest.map(function(t){return t[1]}).join(""),defs)+G.slice(GS0).join("")+S2.map(function(z){return z[1]}).join("")+'<rect width="'+ISO.vw+'" height="'+ISO.vh+'" fill="url(#flight)" pointer-events="none"/>'+
     '<g pointer-events="none" class="fcshadow"><ellipse cx="200" cy="420" rx="210" ry="80" fill="rgba(0,40,20,.10)"/><ellipse cx="-500" cy="720" rx="260" ry="95" fill="rgba(0,40,20,.08)"/></g>'+
     '<g class="fnight" pointer-events="none"><rect width="'+ISO.vw+'" height="'+ISO.vh+'" fill="#0b1640" opacity=".42"/>'+
       [iso(13.2,2.3),iso(14.3,1.4),iso(8.9,2.6),iso(-1.4,6.4),iso(5.75,12.6),iso(7.25,16.2),iso(5.75,19.6),iso(7.75,5.75)].map(function(q,i){var up=[26,30,48,70,52,52,52,18][i];return '<circle cx="'+fN(q[0])+'" cy="'+fN(q[1]-up)+'" r="'+(i>3&&i<7?46:34)+'" fill="url(#fglow)"/>'}).join("")+
