@@ -780,8 +780,8 @@ body:not(.tt-full) .mepill{background:var(--surface);color:var(--ink);border-col
 @media (prefers-reduced-motion:reduce){.fplot.ready .em,.fani.ready .prod{animation:none}}
 
 .fworld{display:grid;gap:8px}
-.fwin{border-radius:22px;overflow:auto;height:min(560px,68vh);cursor:grab;scrollbar-width:thin;box-shadow:0 10px 30px rgba(14,116,144,.25);background:#d9f3ff;-webkit-overflow-scrolling:touch}
-.fsvg{display:block;width:1560px;max-width:none;height:auto;user-select:none;-webkit-user-select:none}
+.fwin{position:relative;border-radius:22px;overflow:hidden;height:min(560px,68vh);cursor:grab;touch-action:none;box-shadow:0 10px 30px rgba(14,116,144,.25);background:#d9f3ff;-webkit-overflow-scrolling:touch}
+.fsvg{position:absolute;left:0;top:0;display:block;max-width:none;user-select:none;-webkit-user-select:none;transform-origin:0 0;will-change:transform}
 .fsvg .iem{fill:#222;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;dominant-baseline:auto}
 .fsvg text.itx.sg{stroke:none}.fsvg text.itx{font:700 13px var(--sans,system-ui);fill:#fff;text-anchor:middle;paint-order:stroke;stroke:rgba(0,0,0,.45);stroke-width:3px}
 .fsvg .fhit{cursor:pointer}.fsvg .fhit:hover{filter:brightness(1.12)}
@@ -799,14 +799,14 @@ body:not(.tt-full) .mepill{background:var(--surface);color:var(--ink);border-col
 .fhint2{margin:0;text-align:center;font-size:12.5px;color:var(--muted)}
 .ffloat{position:fixed;z-index:60;pointer-events:none;font:800 20px var(--sans,system-ui);color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.5);transform:translate(-50%,-50%);animation:ffloat 1.2s ease-out forwards}
 @keyframes ffloat{from{opacity:1;transform:translate(-50%,-50%)}to{opacity:0;transform:translate(-50%,-160%)}}
-@media (max-width:700px){.fsvg{width:1250px}.fwin{height:min(480px,62vh)}}
+
 .fwin.drag{cursor:grabbing}
 @media (prefers-reduced-motion:reduce){.fsvg .fsea,.fsvg .fcrop.rdy,.fsvg .fbub,.fsvg .fwalk,.fsvg .fcloud,.fsvg .fduck{animation:none}}
 
 /* ===== ฟาร์มเต็มจอ ===== */
 body.farm-full{overflow:hidden}
 body.farm-full #v-farm{position:fixed;inset:0;z-index:8;margin:0;padding:0;max-width:none;background:#38bdf8}
-body.farm-full .marquee{display:none}
+body.farm-full .marquee,body.farm-full #nt-ask{display:none!important}
 .fgame{position:relative;width:100%;height:100%}
 .fworldbox{position:absolute;inset:0}
 body.farm-full .fwin{height:100%;border-radius:0;box-shadow:none;background:#38bdf8}
@@ -837,8 +837,16 @@ body.farm-full .fwin{height:100%;border-radius:0;box-shadow:none;background:#38b
 @media (min-width:900px){.fsheet{left:auto;right:96px;bottom:16px;top:80px;max-height:none;width:440px;border-radius:22px}}
 .fsvg .fsea{animation:fsea 8s linear infinite}
 @keyframes fsea{from{transform:translateX(0)}to{transform:translateX(120px)}}
-body.farm-full .fsvg{width:1700px}
-@media (max-width:700px){body.farm-full .fsvg{width:1420px}}
+body.farm-full.farm-rot #v-farm{inset:auto;top:0;left:0;transform-origin:0 0;transform:rotate(90deg) translateY(-100%)}
+.fzoom{position:absolute;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:1}
+.fzoom button{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:rgba(15,40,70,.75);color:#fff;font:900 22px system-ui;box-shadow:0 3px 8px rgba(0,0,0,.25);cursor:pointer}
+.fhud .fact{padding-left:64px}
+.fgame.fland .fsheet{left:auto;right:92px;top:8px;bottom:8px;max-height:none;width:min(440px,58%);border-radius:20px}
+.fgame.fland .fdock{gap:8px}.fgame.fland .fbig{width:58px;height:58px}.fgame.fland .fbig span{font-size:24px}
+.fsh-body .seedgrid{margin-top:4px}
+body.farm-rot #toast{left:52px;right:auto;top:50%;bottom:auto;width:min(80vh,520px);margin:0;transform:translate(-50%,-50%) rotate(90deg)!important;animation:none!important;z-index:30}
+body.farm-rot .ffloat{animation-name:ffloatR}
+@keyframes ffloatR{from{opacity:1;transform:translate(-50%,-50%) rotate(90deg)}to{opacity:0;transform:translate(60%,-50%) rotate(90deg)}}
 #qrprint{display:none}.qrcard .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#111}
 @media print{
   @page{size:A4 portrait;margin:8mm}
@@ -3967,7 +3975,7 @@ async function renderFarm(){
   try{if(!FM.cat)FM.cat=await q(db.rpc("farm_cat"));FM.d=await fmLoad();if(FM.v)FM.v=await fmLoad(FM.v.emp);if(FM.t==="friends")FM.board=await q(db.rpc("farm_board"));FM.keep=!!FM.sx;drawFarm()}
   catch(e){$("fm-world").innerHTML='<div class="panel" style="margin:80px 16px">'+emptyRow(thErr(e))+'</div>'}
   if(!FM.tick)FM.tick=setInterval(fmTick,1000)}
-function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
+function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
   if(v){h+='<div class="fpill fwho">'+avatarHtml({display_name:v.name,avatar:v.avatar})+'<div><b>ฟาร์มของ'+esc(nick(v.name)||v.name)+'</b><small>เลเวล '+v.level+' · ❤️ '+num(v.likes)+'</small></div></div><span class="fsp"></span>'+
     '<button type="button" class="fpill flike'+(v.liked?' on':'')+'" data-fmlike="'+v.emp+'"'+(v.liked?' disabled':'')+'>'+(v.liked?'❤️ ถูกใจแล้ว':'🤍 ถูกใจ')+'</button></div>'+
     '<div class="fdock"><button type="button" class="fbig" data-fmback="1"><span>🏡</span><small>ฟาร์มฉัน</small></button></div>';return h}
@@ -3980,13 +3988,12 @@ function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="ftop"><button type
   h+='<div class="fdock"><button type="button" class="fbig" data-fmt="barn"><span>🏚️</span><small>ยุ้งฉาง</small>'+(nItems?'<i>'+nItems+'</i>':'')+'</button><button type="button" class="fbig" data-fmt="shop"><span>🛒</span><small>ร้านค้า</small></button><button type="button" class="fbig" data-fmt="friends"><span>👫</span><small>เพื่อน</small></button></div>';
   return h}
 function fmSheet(){var on=FM.t!=="farm"&&!FM.v;$("fm-sheet").hidden=!on;if(!on)return;var d=FM.d,lv=fmLv(d.xp);
-  $("fm-sh-title").textContent=FM.t==="barn"?"🏚️ ยุ้งฉาง":FM.t==="shop"?"🛒 ร้านค้า":"👫 ฟาร์มเพื่อน";
-  $("fm-body").innerHTML=FM.t==="barn"?fmBarn(d):FM.t==="shop"?fmShop(d,lv.l):fmBoard()}
+  $("fm-sh-title").textContent=FM.t==="seed"?"🌱 เลือกเมล็ดพันธุ์":FM.t==="barn"?"🏚️ ยุ้งฉาง":FM.t==="shop"?"🛒 ร้านค้า":"👫 ฟาร์มเพื่อน";
+  $("fm-body").innerHTML=FM.t==="seed"?fmSeedHtml():FM.t==="barn"?fmBarn(d):FM.t==="shop"?fmShop(d,lv.l):fmBoard()}
 function drawFarm(sheetOnly){
   $("fm-hud").innerHTML=fmHud();fmSheet();if(sheetOnly)return;
   $("fm-world").innerHTML=fmScene(FM.v||FM.d,!FM.v);
-  var w=$("fm-win");if(w){var sv=w.querySelector("svg"),k=sv.clientWidth/ISO.vw,fc=iso(3.6,6.4);w.scrollLeft=FM.keep&&FM.sx!=null?FM.sx:fc[0]*k-w.clientWidth/2;w.scrollTop=FM.keep&&FM.sy!=null?FM.sy:fc[1]*k-w.clientHeight*0.48;fmPan(w)}
-  FM.keep=false;fmTick(true)}
+  fmLayout();fmCam(!(FM.keep&&FM.cam));FM.keep=false;fmTick(true)}
 /* ฉากฟาร์ม 2D มุมเฉียง (isometric) วาดด้วย SVG */
 var ISO={w:46,h:23,ox:600,oy:130,n:12,th:30,vw:1200,vh:760};
 function iso(x,y){return [ISO.ox+(x-y)*ISO.w,ISO.oy+(x+y)*ISO.h]}
@@ -4005,11 +4012,38 @@ var FMAP=(function(){var o={},k=function(x,y,v){o[x+","+y]=v};
   return {o:o,free:free}})();
 function emo(x,y,e,sz,extra){extra=extra||"";var cls=/class="/.test(extra)?"":' class="iem"';return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" style="font-size:'+sz+'px" text-anchor="middle"'+cls+extra+'>'+e+'</text>'}
 /* ลากเพื่อเลื่อนดูฟาร์ม (เมาส์) — มือถือใช้นิ้วเลื่อนได้เลย */
-function fmPan(w){var st=null,moved=false;w.onscroll=function(){FM.sx=w.scrollLeft;FM.sy=w.scrollTop};
-  w.onpointerdown=function(e){if(e.pointerType!=="mouse")return;st={x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop};moved=false};
-  w.onpointermove=function(e){if(!st)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;if(Math.abs(dx)+Math.abs(dy)>5){moved=true;w.classList.add("drag")}if(moved){w.scrollLeft=st.l-dx;w.scrollTop=st.t-dy}};
-  w.onpointerup=w.onpointerleave=function(){st=null;w.classList.remove("drag");setTimeout(function(){moved=false},0)};
+/* ---------- กล้อง: ลากเลื่อน / ถ่างนิ้วซูม / ล้อเมาส์ / ปุ่ม + − ; มือถือแนวตั้ง → หมุนเป็นแนวนอน ---------- */
+function fmIsTouch(){return window.matchMedia&&matchMedia("(pointer:coarse)").matches}
+function fmLayout(){var v=$("v-farm"),W=window.innerWidth,H=window.innerHeight,rot=S.tab==="farm"&&fmIsTouch()&&H>W;
+  FM.rot=rot;document.body.classList.toggle("farm-rot",rot);
+  if(rot){v.style.width=H+"px";v.style.height=W+"px"}else{v.style.width="";v.style.height=""}
+  var g=v.querySelector(".fgame");if(g)g.classList.toggle("fland",rot||W>H)}
+function fmView(){var w=$("fm-win");return w?{w:w,cw:FM.rot?w.clientWidth:w.clientWidth,ch:w.clientHeight}:null}
+function fmZlim(v){var mn=Math.max(v.cw/ISO.vw,v.ch/ISO.vh)*1.0;return [mn,Math.max(mn*3,2.4)]}
+function fmClamp(){var v=fmView();if(!v)return;var c=FM.cam,L=fmZlim(v);c.z=Math.max(L[0],Math.min(L[1],c.z));
+  var sw=ISO.vw*c.z,sh=ISO.vh*c.z;c.x=Math.min(0,Math.max(v.cw-sw,c.x));c.y=Math.min(0,Math.max(v.ch-sh,c.y))}
+function fmApply(){var sv=document.querySelector("#fm-win svg");if(!sv||!FM.cam)return;fmClamp();sv.style.transform="translate("+FM.cam.x.toFixed(1)+"px,"+FM.cam.y.toFixed(1)+"px) scale("+FM.cam.z.toFixed(4)+")"}
+function fmCam(reset){var v=fmView();if(!v)return;
+  if(reset||!FM.cam){var L=fmZlim(v),z=Math.min(L[1],Math.max(L[0],v.ch/ISO.vh*(v.cw>v.ch?(v.ch<500?2.1:1.6):1.9))),fc=iso(4.4,6.2);FM.cam={z:z,x:v.cw/2-fc[0]*z,y:v.ch*0.52-fc[1]*z}}
+  fmApply();fmPan()}
+function fmZoomAt(f,lx,ly){var c=FM.cam,v=fmView();if(!c||!v)return;if(lx==null){lx=v.cw/2;ly=v.ch/2}var wx=(lx-c.x)/c.z,wy=(ly-c.y)/c.z;c.z*=f;fmClamp();c.x=lx-wx*c.z;c.y=ly-wy*c.z;fmApply()}
+function fmLoc(e,w){var r=w.getBoundingClientRect();return FM.rot?{x:e.clientY-r.top,y:r.right-e.clientX}:{x:e.clientX-r.left,y:e.clientY-r.top}}
+function fmPan(){if(FM.panOn)return;FM.panOn=1;var w=$("fm-world");var P={},st=null,moved=false;
+  var start=function(){var ks=Object.keys(P);if(ks.length===1){var p=P[ks[0]];st={m:1,x:p.x,y:p.y,cx:FM.cam.x,cy:FM.cam.y}}
+    else if(ks.length>=2){var a=P[ks[0]],b=P[ks[1]];st={m:2,d:Math.hypot(a.x-b.x,a.y-b.y)||1,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,z:FM.cam.z,cx:FM.cam.x,cy:FM.cam.y}}else st=null};
+  w.addEventListener("pointerdown",function(e){P[e.pointerId]=fmLoc(e,w);moved=false;start()});
+  window.addEventListener("pointermove",function(e){if(!P[e.pointerId]||!st)return;P[e.pointerId]=fmLoc(e,w);var ks=Object.keys(P);
+    if(st.m===1&&ks.length===1){var p=P[ks[0]],dx=p.x-st.x,dy=p.y-st.y;if(Math.abs(dx)+Math.abs(dy)>6){moved=true;w.classList.add("drag")}if(moved){FM.cam.x=st.cx+dx;FM.cam.y=st.cy+dy;fmApply()}}
+    else if(st.m===2&&ks.length>=2){var a=P[ks[0]],b=P[ks[1]],d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2,z=st.z*d/st.d;moved=true;
+      var wx=(st.mx-st.cx)/st.z,wy=(st.my-st.cy)/st.z;FM.cam.z=z;fmClamp();FM.cam.x=mx-wx*FM.cam.z;FM.cam.y=my-wy*FM.cam.z;fmApply()}});
+  var end=function(e){if(!P[e.pointerId])return;delete P[e.pointerId];start();if(!Object.keys(P).length){w.classList.remove("drag");setTimeout(function(){moved=false},30)}};
+  window.addEventListener("pointerup",end);window.addEventListener("pointercancel",end);
+  w.addEventListener("wheel",function(e){e.preventDefault();var l=fmLoc(e,w);fmZoomAt(e.deltaY<0?1.12:1/1.12,l.x,l.y)},{passive:false});
   w.addEventListener("click",function(e){if(moved){e.stopPropagation();e.preventDefault()}},true)}
+window.addEventListener("resize",function(){if(S.tab!=="farm")return;clearTimeout(FM.rt);FM.rt=setTimeout(function(){fmLayout();fmCam(false)},150)});
+function fmEnter(on){try{if(on&&fmIsTouch()){var de=document.documentElement;if(!document.fullscreenElement&&de.requestFullscreen)de.requestFullscreen({navigationUI:"hide"}).then(function(){if(screen.orientation&&screen.orientation.lock)return screen.orientation.lock("landscape")}).then(function(){setTimeout(function(){fmLayout();fmCam(true)},250)}).catch(function(){})}
+  else if(!on){if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});if(screen.orientation&&screen.orientation.unlock)try{screen.orientation.unlock()}catch(e){}
+    document.body.classList.remove("farm-rot");var v=$("v-farm");if(v){v.style.width="";v.style.height=""}}}catch(e){}}
 function frand(seed){var x=Math.sin(seed*999.7)*43758.5453;return x-Math.floor(x)}
 function fmScene(d,own){var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=ISO.th;d.field.forEach(function(p){F[p.slot]=p});
   var add=function(depth,svg){S2.push([depth,svg])},shadow=function(m,rx,ry){return '<ellipse cx="'+m[0].toFixed(1)+'" cy="'+m[1].toFixed(1)+'" rx="'+rx+'" ry="'+ry+'" fill="rgba(20,60,10,.28)"/>'};
@@ -4096,7 +4130,7 @@ function fmScene(d,own){var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=ISO.th;d.fiel
     '<linearGradient id="fbarnL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dc2626"/><stop offset="1" stop-color="#b91c1c"/></linearGradient><linearGradient id="froof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4f3a"/><stop offset="1" stop-color="#4a3427"/></linearGradient>'+
     '<linearGradient id="fsilo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cbd5e1"/><stop offset=".45" stop-color="#f1f5f9"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>'+
     '<pattern id="fwave" width="120" height="40" patternUnits="userSpaceOnUse"><path d="M10 20 q15 -8 30 0" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2.5" stroke-linecap="round"/><path d="M70 34 q12 -6 24 0" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"/></pattern></defs>';
-  return '<div class="fwin" id="fm-win"><svg class="fsvg" viewBox="0 0 '+ISO.vw+' '+ISO.vh+'" role="img" aria-label="ฟาร์ม">'+defs+'<rect width="'+ISO.vw+'" height="'+ISO.vh+'" fill="url(#fsea)"/><rect width="'+ISO.vw+'" height="'+ISO.vh+'" fill="url(#fwave)" class="fsea"/>'+
+  return '<div class="fwin" id="fm-win"><svg class="fsvg" width="'+ISO.vw+'" height="'+ISO.vh+'" viewBox="0 0 '+ISO.vw+' '+ISO.vh+'" role="img" aria-label="ฟาร์ม">'+defs+'<rect width="'+ISO.vw+'" height="'+ISO.vh+'" fill="url(#fsea)"/><rect width="'+ISO.vw+'" height="'+ISO.vh+'" fill="url(#fwave)" class="fsea"/>'+
     '<g opacity=".95">'+emo(160,70,"☁️",50,' class="iem fcloud"')+emo(980,58,"☁️",40,' class="iem fcloud" style="animation-delay:-9s"')+emo(600,36,"☁️",32,' class="iem fcloud" style="animation-delay:-4s"')+'</g>'+
     G.join("")+S2.map(function(z){return z[1]}).join("")+'</svg></div>'}
 function fmVisitHead(){var v=FM.v;return '<div class="fvisit"><button type="button" class="sm" data-fmback="1">← กลับ</button><b>🏡 ฟาร์มของ'+esc(nick(v.name)||v.name)+'</b><small class="sub">'+esc(v.dept||"")+' · เลเวล '+v.level+'</small><span style="flex:1"></span><button type="button" class="sm flike'+(v.liked?' on':'')+'" data-fmlike="'+v.emp+'"'+(v.liked?' disabled':'')+'>'+(v.liked?'❤️ ถูกใจแล้ววันนี้':'🤍 ถูกใจฟาร์มนี้')+' · '+num(v.likes)+'</button></div>'}
@@ -4125,17 +4159,17 @@ function fmTick(force){if(S.tab!=="farm"&&!force)return;var now=fmNow(),flip=fal
   if(flip&&!FM.busy&&!FM.v){FM.keep=true;drawFarm()}else if(!force&&!FM.v&&!FM.busy&&now%10000<1000)$("fm-hud").innerHTML=fmHud()}
 function fmFloat(ev,txt){try{var f=document.createElement("div");f.className="ffloat";f.textContent=txt;f.style.left=ev.clientX+"px";f.style.top=ev.clientY+"px";document.body.appendChild(f);setTimeout(function(){f.remove()},1300)}catch(e){}}
 async function fmDo(fn,msg){if(FM.busy)return;FM.busy=true;try{var r=await fn();if(msg)toast(typeof msg==="function"?msg(r):msg);FM.d=await fmLoad();FM.keep=true;drawFarm()}catch(e){toast(thErr(e))}finally{FM.busy=false}}
-function fmSeed(slot){var c=FM.cat,l=fmLv(FM.d.xp).l;FM.slot=slot;$("sd-title").textContent="🌱 ปลูกที่แปลง "+slot;
-  $("sd-list").innerHTML=Object.keys(c.crops).map(function(k){var o=c.crops[k],lk=l<o.lv,poor=FM.d.coins<o.cost;
-    return '<button type="button" data-fmseed="'+k+'"'+(lk||poor?' disabled':'')+'><span class="em">'+o.e+'</span><b>'+esc(o.n)+'</b><small>'+fmc()+' '+o.cost+' · '+fmDur(o.min)+'</small><small>'+(lk?'🔒 เลเวล '+o.lv:'ขาย '+o.sell+' · +'+o.xp+' XP')+'</small></button>'}).join("");
-  $("m-seed").hidden=false}
-document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit]");if(!t)return;var D=t.dataset;
+function fmSeedHtml(){var c=FM.cat,l=fmLv(FM.d.xp).l;return '<p class="sub" style="margin:0">ปลูกที่แปลง '+FM.slot+' · มี '+fmc()+' '+num(FM.d.coins)+'</p><div class="seedgrid">'+Object.keys(c.crops).map(function(k){var o=c.crops[k],lk=l<o.lv,poor=FM.d.coins<o.cost;
+    return '<button type="button" data-fmseed="'+k+'"'+(lk||poor?' disabled':'')+'><span class="em">'+o.e+'</span><b>'+esc(o.n)+'</b><small>'+fmc()+' '+o.cost+' · '+fmDur(o.min)+'</small><small>'+(lk?'🔒 เลเวล '+o.lv:'ขาย '+o.sell+' · +'+o.xp+' XP')+'</small></button>'}).join("")+'</div>'}
+function fmSeed(slot){FM.slot=slot;FM.t="seed";fmSheet()}
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz]");if(!t)return;var D=t.dataset;
   if(D.fmexit){show("home");return}
+  if(D.fmz){fmZoomAt(D.fmz==="in"?1.25:0.8);return}
   if(D.fmclose){FM.t="farm";fmSheet();return}
   if(FM.v&&!D.fmback&&!D.fmlike)return;
   if(D.fmt){FM.t=D.fmt;if(FM.t==="friends")q(db.rpc("farm_board")).then(function(b){FM.board=b;if(FM.t==="friends")fmSheet()},function(e){toast(thErr(e))});fmSheet();return}
   if(D.fmp){fmSeed(+D.fmp);return}
-  if(D.fmseed){var cr=FM.cat.crops[D.fmseed];$("m-seed").hidden=true;fmDo(function(){return q(db.rpc("farm_plant",{p_slot:FM.slot,p_crop:D.fmseed}))},"ปลูก"+cr.n+"แล้ว 🌱 รอ "+fmDur(cr.min));return}
+  if(D.fmseed){var cr=FM.cat.crops[D.fmseed];FM.t="farm";fmDo(function(){return q(db.rpc("farm_plant",{p_slot:FM.slot,p_crop:D.fmseed}))},"ปลูก"+cr.n+"แล้ว 🌱 รอ "+fmDur(cr.min));return}
   if(D.fmh){if(D.fmh!=="all"&&D.until&&+D.until>fmNow()){toast("ยังไม่สุก อีก "+fmLeft(+D.until-fmNow()));return}
     if(D.fmh!=="all")fmFloat(ev,"+1 "+((FM.cat.crops[(FM.d.field.filter(function(p){return p.slot===+D.fmh})[0]||{}).crop]||{}).e||"🌾"));
     fmDo(function(){return q(db.rpc("farm_harvest",D.fmh==="all"?{}:{p_slot:+D.fmh}))},function(n){return "เก็บเกี่ยวแล้ว "+n+" แปลง → ไปขายที่ 🏚️ ยุ้งฉาง"});return}
@@ -4843,7 +4877,7 @@ function show(tab){
   if(tab!=="tv")document.body.classList.remove("tvmode");
   if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms"||tab==="rewardadm"||tab==="usage")&&!S.admin)tab="home";
   if(tab==="chat"){$("chat-dot").hidden=true;$("chat-dot2").hidden=true}
-  S.tab=tab;logUse(tab);document.body.classList.toggle("farm-full",tab==="farm");
+  var wasFarm=S.tab==="farm";S.tab=tab;logUse(tab);document.body.classList.toggle("farm-full",tab==="farm");if(tab==="farm"&&!wasFarm)fmEnter(true);if(wasFarm&&tab!=="farm")fmEnter(false);
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
   document.querySelectorAll("nav.tabs button").forEach(function(b){if(b.dataset.tab===(tab==="emp"?"staff":tab)||(b.dataset.tab==="menu"&&(S.mgr?MAIN:["home","log","tt","leave"]).indexOf(tab)<0))b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   renderDeptNav();
