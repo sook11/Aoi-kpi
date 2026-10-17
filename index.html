@@ -4482,6 +4482,7 @@ function fmPetLove(id,ev){var w=FP[id];if(w){w.jump=performance.now()/1000;if(!w
 var FP3C={dog:[0xd6a35a,0xf5deb3],husky:[0x6b7280,0xf8fafc],cat:[0xfbbf24,0xfde68a],bunny:[0xf5f5f4,0xfda4af],guinea:[0xfef3c7,0xb45309],hedgehog:[0x78350f,0xfde68a],
   parrot:[0xdc2626,0x2563eb,0xf5f5f4],macaw:[0x2563eb,0xfacc15,0x1f2937],cockatoo:[0xf8fafc,0xfde047,0x475569],toucan:[0x111827,0xfef9c3,0xf97316],
   flamingo:[0xf9a8d4,0xf472b6,0xffffff],pelican:[0xfafafa,0xd1d5db,0xf59e0b],swan:[0xffffff,0xeef2f7,0xef4444],blackswan:[0x1f2937,0x374151,0xdc2626],peacock:[0x1d4ed8,0x16a34a,0xa8a29e]};
+function fm3Neck(pts,r,c,par){var cv=new THREE.CatmullRomCurve3(pts.map(function(p){return new THREE.Vector3(p[0],p[1],0)}));return fm3Mesh(new THREE.TubeGeometry(cv,24,r,10,false),c,0,0,0,par)}
 function fm3Pet(k){var g=new THREE.Group(),b=new THREE.Group();g.add(b);var C=FP3C[k]||[0xdddddd,0xaaaaaa,0x333333],m=fm3Mesh,S=function(r){return new THREE.SphereGeometry(r,16,12)},wings=[];
   var eye=function(x,y,z,p){m(new THREE.SphereGeometry(.045,8,6),0x111111,x,y,z,p,false);m(new THREE.SphereGeometry(.045,8,6),0x111111,x,y,-z,p,false)};
   var wing=function(x,y,z,c,sx,sz){var wg=new THREE.Group();wg.position.set(x,y,z);var mm=m(S(.2),c,0,0,z>0?.06:-.06,wg);mm.scale.set(sx||1.4,.35,sz||.8);b.add(wg);wings.push(wg)};
@@ -4497,12 +4498,12 @@ function fm3Pet(k){var g=new THREE.Group(),b=new THREE.Group();g.add(b);var C=FP
   else if(k==="hedgehog"){var hb=m(S(.3),C[0],0,.2,0,b);hb.scale.set(1.3,.85,1);for(var i=0;i<14;i++){var sp=m(new THREE.ConeGeometry(.05,.18,6),0x57361a,0,0,0,b,false),a=Math.random()*Math.PI,a2=(Math.random()-.5)*2;sp.position.set(Math.cos(a)*.3-.05,.2+Math.sin(a)*.25,a2*.25);sp.lookAt(sp.position.x*3,sp.position.y*3-.3,sp.position.z*3);sp.rotateX(Math.PI/2)}
     m(S(.14),C[1],.36,.15,0,b);m(S(.04),0x111111,.5,.15,0,b,false);eye(.42,.22,.07,b)}
   else if(k==="swan"||k==="blackswan"){var sb=m(S(.35),C[0],0,.15,0,b);sb.scale.set(1.4,.6,.9);wing(-.05,.28,.18,C[1],1.3,.6);wing(-.05,.28,-.18,C[1],1.3,.6);
-    var nk=m(new THREE.TorusGeometry(.22,.06,8,16,Math.PI*1.2),C[0],.35,.45,0,b);nk.rotation.z=-.4;m(S(.11),C[0],.55,.85,0,b);var bk=m(new THREE.ConeGeometry(.05,.18,8),C[2],.7,.82,0,b);bk.rotation.z=-Math.PI/2;eye(.6,.9,.07,b)}
+    fm3Neck([[.25,.2],[.42,.38],[.36,.58],[.44,.78],[.55,.86]],.065,C[0],b);m(S(.065),C[0],.25,.2,0,b,false);m(S(.11),C[0],.55,.85,0,b);var bk=m(new THREE.ConeGeometry(.05,.18,8),C[2],.7,.82,0,b);bk.rotation.z=-Math.PI/2;eye(.6,.9,.07,b)}
   else{/* นก */var tall=k==="flamingo",pel=k==="pelican",pea=k==="peacock",y0=tall?1:pel?.35:.3,br=pel?.36:.24;
     [-.06,.06].forEach(function(z){m(new THREE.CylinderGeometry(.025,.025,y0,6),tall?0xf472b6:pel?0xf59e0b:0x57534e,0,y0/2,z,b,false)});
     var bb=m(S(br),C[0],0,y0+br*.6,0,b);bb.scale.set(1.3,.9,.9);wing(-.05,y0+br*.8,br*.8,C[1]);wing(-.05,y0+br*.8,-br*.8,C[1]);
     if(pea){var fan=new THREE.Group();fan.position.set(-.3,y0+.3,0);b.add(fan);for(var j=0;j<9;j++){var an=-1.2+j*.3,f=m(new THREE.CylinderGeometry(.09,.02,.9,8),0x16a34a,0,0,0,fan,false);f.position.set(-Math.cos(an)*0*.1,Math.cos(an)*.45,Math.sin(an)*.45);f.rotation.x=an;var ey=m(S(.07),0x0ea5e9,0,Math.cos(an)*.85,Math.sin(an)*.85,fan,false)}fan.rotation.z=.35}
-    var hy=tall?y0+1.05:y0+br+.25,hx=tall?.15:.2;if(tall){var nk2=m(new THREE.TorusGeometry(.25,.06,8,16,Math.PI),C[0],.15,y0+.55,0,b);nk2.rotation.z=Math.PI/2}
+    var hy=tall?y0+1.05:y0+br+.25,hx=tall?.15:.2;if(tall)fm3Neck([[.18,y0+.2],[.34,y0+.42],[.18,y0+.62],[.04,y0+.82],[hx,hy-.05]],.05,C[0],b);else fm3Neck([[.08,y0+br*.7],[hx*.7,(y0+br*.7+hy)/2],[hx,hy]],pel?.1:.08,pea?0x2563eb:C[0],b);
     m(S(tall?.12:.17),pea?0x2563eb:C[0],hx,hy,0,b);eye(hx+.07,hy+.04,tall?.06:.09,b);
     var bl=k==="toucan"?.42:pel?.6:.16,bw=k==="toucan"?.1:pel?.09:.06,bk2=m(new THREE.ConeGeometry(bw,bl,10),C[2]||0xf59e0b,hx+(tall?.08:.13)+bl/2,hy-(pel?.06:.02),0,b);bk2.rotation.z=-Math.PI/2-(tall?.6:pel?.1:.25);
     if(k==="cockatoo"){var cr=m(new THREE.ConeGeometry(.06,.3,8),C[1],hx-.05,hy+.25,0,b);cr.rotation.z=.5}
