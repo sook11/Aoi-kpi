@@ -905,7 +905,7 @@ body.farm-rot .ffly{rotate:90deg}
 .fcap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 8px}.fcap>div{flex:1;min-width:140px}.fcap .bar{height:10px;border-radius:99px;background:var(--off-bg,#e5e7eb);overflow:hidden;margin-top:4px}.fcap .bar i{display:block;height:100%;background:linear-gradient(90deg,#86efac,#16a34a)}
 .fcap.full .bar i{background:linear-gradient(90deg,#fca5a5,#dc2626)}.fcap.full b{color:#dc2626}
 .fbig i.full{background:#dc2626}
-.fsvg .ftruck.go{animation:ftruck 3.6s ease-in-out}@keyframes ftruck{0%{transform:none}35%{transform:translate(-260px,130px);opacity:0}65%{transform:translate(-260px,130px);opacity:0}100%{transform:none;opacity:1}}
+.fsvg .ftruck.go{animation:ftruck 6.5s ease-in-out both}@keyframes ftruck{0%{transform:none;opacity:1}40%{transform:translate(-420px,210px);opacity:0}60%{transform:translate(-420px,210px);opacity:0}100%{transform:none;opacity:1}}
 .fsvg .fnight{opacity:0;transition:opacity 1.2s}.fsvg.night .fnight{opacity:1}
 .fsvg.night .fwin-glow{fill:#fde047}
 .fsvg .ffly0,.fsvg .ffly1,.fsvg .ffly2{animation:ffl 4s ease-in-out infinite;transform-box:fill-box}.fsvg .ffly1{animation-duration:5.5s;animation-delay:-2s}.fsvg .ffly2{animation-duration:3.3s;animation-delay:-1s}
@@ -4227,8 +4227,15 @@ function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.d
   /* รถส่งของ */
   if(own&&FM.ord){var tk=new THREE.Group(),tp=fm3P(6.5,14.2);tk.position.set(tp[0],0,tp[1]);g.add(tk);fm3Box(tk,1.2,.5,2.8,0xb91c1c,0,.55,.3);fm3Box(tk,1.2,1,1.1,0xef4444,0,.95,-1.3);fm3Box(tk,1.1,.45,.05,0xbae6fd,0,1.15,-1.86);
     [[-.62,-1.1],[.62,-1.1],[-.62,.9],[.62,.9]].forEach(function(w){var t=fm3Mesh(new THREE.CylinderGeometry(.32,.32,.2,18),0x1f2937,w[0],.32,w[1],tk);t.rotation.z=Math.PI/2});fm3Box(tk,.5,.4,.5,0xd6a35a,0,1,.2);fm3Box(tk,.4,.35,.4,0x16a34a,.2,1,1);
-    tk.userData.pick={fmt:"orders"};FM3.pickD.push(tk)}
+    tk.userData.pick={fmt:"orders"};FM3.pickD.push(tk);FM3.truckG=tk;tk.userData.z0=tp[1]}else FM3.truckG=null;
   fm3DN()}
+/* รถส่งของ 3D: ขับออกตามถนน หายไป แล้ววิ่งกลับมาจอด */
+window.__fm3t=function(){return FM3.truckG};window.__fmtk=function(go){if(go)FM3.tkT0=performance.now();return [FM.truck,FM3.on,FM.t]};function fm3TruckStep(){var tk=FM3.truckG;if(!tk)return;if(FM.truck&&FM.truck!==FM3.tkSeen&&Date.now()-FM.truck<20000){FM3.tkSeen=FM.truck;FM3.tkT0=performance.now()}var e=FM3.tkT0?(performance.now()-FM3.tkT0)/1000:99,z0=tk.userData.z0,far=z0+22,T=6.5,ez=function(u){return u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2};
+  if(e>=T){if(tk.userData.mv){tk.position.z=z0;tk.rotation.y=0;tk.visible=true;tk.userData.mv=0}return}tk.userData.mv=1;var bob=Math.sin(e*18)*.03;
+  if(e<.6){tk.rotation.y=Math.PI*ez(e/.6);tk.position.z=z0;tk.position.y=0}
+  else if(e<3){tk.rotation.y=Math.PI;tk.position.z=z0+(far-z0)*ez((e-.6)/2.4);tk.position.y=bob}
+  else if(e<3.8){tk.visible=false;tk.position.z=far}
+  else{tk.visible=true;tk.rotation.y=0;tk.position.z=far+(z0-far)*(1-Math.pow(1-(e-3.8)/2.7,2));tk.position.y=e<6.2?bob:0}}
 function fm3DN(){if(!FM3.sun)return;var n=fmIsNight();FM3.sun.intensity=n?.25:1;FM3.hemi.intensity=n?.35:.75;FM3.scene.background.set(n?0x16234a:0x8fd3f4);if(FM3.scene.fog)FM3.scene.fog.color.set(n?0x16234a:0x8fd3f4)}
 /* ---------- สร้าง/เปิด ฉาก 3D ---------- */
 function fm3Mount(){var box=$("fm-world");if(!box)return false;box.innerHTML='<div class="fwin f3win" id="fm-win"><canvas id="fm3-cv"></canvas></div>';var cv=$("fm3-cv");
@@ -4253,6 +4260,7 @@ function fm3Loop(){FM3.raf=requestAnimationFrame(fm3Loop);if(!FM3.on||S.tab!=="f
     (A.a.userData.legs||[]).forEach(function(l){l.rotation.z=Math.sin(ph+l.userData.o)*.6*kk});fm3Drive(A.g,dt,kk,ph,kk<.05&&Math.sin(t*.35+w.x*3)>.2,0);
     var pk=kk<.05?Math.pow(Math.max(0,Math.sin(t*(ck?1.9:.6)+w.x*5)),4):0;A.a.rotation.z+=((ck?-.45:-.18)*pk-A.a.rotation.z)*Math.min(1,dt*8);
     A.g.position.set(w.x,0,w.y)});
+  fm3TruckStep();
   if(FM3.pets&&FM3.pets.length&&!FM.tool){fmPetStep(dt);FM3.pets.forEach(function(P){var w=P.w,p=fm3P(w.x,w.y);P.g.position.set(p[0],w.m==="swim"?-.08:0,p[1]);
     if(w.hd!=null)P.m.rotation.y=w.hd;var bd=P.m.userData.body,kk=Math.min(1,(w.spd||0)/(FPSPD[w.k]||.5));if(bd){bd.position.y=(w.lift||0)*1.6;bd.rotation.x=(w.tilt||0)*.012}
     (P.m.userData.legs||[]).forEach(function(l){l.rotation.z=w.fly?-.6:Math.sin((w.ph||0)+l.userData.o)*.7*kk});if(fm3Drive(P.m,dt,kk,w.ph||0,kk<.05&&Math.sin(t*.3+w.y*4)>.4,w.jump)&&bd)bd.position.y=0;
@@ -4911,7 +4919,7 @@ function fmScene(d,own){fmGrassTex();var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=
        '')+'</g>')}
   fhedge(add,.85,4.82,5.15,4.82);fhedge(add,.85,4.82,.85,8.18);fhedge(add,5.15,4.82,5.15,6.2);fhedge(add,5.15,7.2,5.15,8.18);fhedge(add,.85,8.18,2.6,8.18);fhedge(add,3.4,8.18,5.15,8.18);
   /* บ้านไร่ + รถส่งของ + ป่ารอบฟาร์ม */
-  add(16.6,fhouse());add(20.4,'<g class="fhit ftruck'+(FM.truck&&Date.now()-FM.truck<4000?' go':'')+'"'+(own&&FM.ord?' data-fmt="orders"':'')+'>'+ftruck()+'</g>');
+  add(16.6,fhouse());add(20.4,'<g class="fhit ftruck'+(FM.truck&&Date.now()-FM.truck<6500?' go" style="animation-delay:-'+((Date.now()-FM.truck)/1000).toFixed(2)+'s':'')+'"'+(own&&FM.ord?' data-fmt="orders"':'')+'>'+ftruck()+'</g>');
   add(5.3,fwindmill(iso(-1.4,6.4)));add(16.3,fhay(iso(12.6,4.3),13)+fhay(iso(13.1,4.9),13));add(16.9,fhay(iso(12.7,5.3),11));
   [[5.75,12.6],[7.25,16.2],[5.75,19.6]].forEach(function(l){add(l[0]+l[1]+.2,'<g class="flampp">'+flamp(iso(l[0],l[1]))+'</g>')});
   if(!FM.forest){FM.forest=[];for(var ty=-9;ty<=23;ty++)for(var tx=-9;tx<=23;tx++){if(tx>=-1&&tx<=12.6&&ty>=-1&&ty<=12.6)continue;var sd=tx*131+ty*71+999;if(frand(sd)<.5)continue;
@@ -5169,7 +5177,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(D.fmc){if(D.fmc!=="all"&&+D.until>fmNow()){var an0=FM.d.animals.filter(function(a){return a.id===D.fmc})[0],ax=FM.cat.animals[an0&&an0.animal]||{},pr0=FM.cat.products[ax.prod]||{};sfx("cluck");fmTimeBub(ev,+D.until,ax.min,(pr0.e||"⏳")+" "+(pr0.n||""));return}
     FM.snd="collect";if(D.fmc!=="all")fmFloat(ev,"+1 ✨");
     fmDo(function(){return q(db.rpc("farm_collect",D.fmc==="all"?{}:{p_id:D.fmc}))},function(n){return "เก็บผลผลิตแล้ว "+n+" ชิ้น → ไปขายที่ 🏚️ ยุ้งฉาง"});return}
-  if(D.fmod){var br=t.getBoundingClientRect();FM.snd="coin";FM.truck=Date.now();fmDo(function(){return q(db.rpc("farm_order_deliver",{p_slot:+D.fmod}))},function(n){fmFly(br.left+br.width/2,br.top,"💰",".fcoins",0);fmFly(br.left+br.width/2,br.top,"⭐",".flvl .star",150);return "ส่งของแล้ว +"+n+" เหรียญ 🚚"});return}
+  if(D.fmod){var br=t.getBoundingClientRect();FM.snd="coin";fmDo(function(){return q(db.rpc("farm_order_deliver",{p_slot:+D.fmod}))},function(n){FM.truck=Date.now();FM.t="farm";fmFly(br.left+br.width/2,br.top,"💰",".fcoins",0);fmFly(br.left+br.width/2,br.top,"⭐",".flvl .star",150);return "ส่งของแล้ว +"+n+" เหรียญ 🚚"});return}
   if(D.fmos){if(!armed(t,"แตะอีกครั้งเพื่อทิ้งใบสั่ง")){sfx("tap");return}FM.snd="close";fmDo(function(){return q(db.rpc("farm_order_skip",{p_slot:+D.fmos}))},"ทิ้งใบสั่งแล้ว ใบใหม่มาใน 10 นาที");return}
   if(D.fmbu){FM.snd="buy";fmDo(function(){return q(db.rpc("farm_barn_upgrade"))},function(n){return "ขยายยุ้งฉางแล้ว จุได้ "+n+" ชิ้น 🏚️"});return}
   if(D.fms){FM.snd="coin";fmDo(function(){return q(db.rpc("farm_sell",{p_item:D.fms,p_qty:+D.q}))},function(n){return "ขายได้ +"+n+" เหรียญ 💰"});return}
