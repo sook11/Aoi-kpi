@@ -4105,7 +4105,7 @@ function fm3Tree(par,x,z,s,kind){var g=new THREE.Group();g.position.set(x,0,z);g
 function fm3Box(par,w,h,d,col,x,y,z){return fm3Mesh(new THREE.BoxGeometry(w,h,d),col,x,y,z,par)}
 function fm3Roof(par,w,d,h,col,x,y,z){var sh=new THREE.Shape();sh.moveTo(-w/2-.15,0);sh.lineTo(0,h);sh.lineTo(w/2+.15,0);sh.lineTo(-w/2-.15,0);
   var m=fm3Mesh(new THREE.ExtrudeGeometry(sh,{depth:d+.3,bevelEnabled:false}),col,x,y,z-(d+.3)/2,par);return m}
-function fm3Animal(k){var g=new THREE.Group(),S=function(r,c,x,y,z,sx,sy,sz){var m=fm3Mesh(new THREE.SphereGeometry(r,18,14),c,x,y,z,g);if(sx)m.scale.set(sx,sy,sz);return m},L=function(x,z,h,c){fm3Mesh(new THREE.CylinderGeometry(.06,.06,h,8),c,x,h/2,z,g)};
+function fm3Animal(k){var g=new THREE.Group(),S=function(r,c,x,y,z,sx,sy,sz){var m=fm3Mesh(new THREE.SphereGeometry(r,18,14),c,x,y,z,g);if(sx)m.scale.set(sx,sy,sz);return m},legs=[],L=function(x,z,h,c){var pv=new THREE.Group();pv.position.set(x,h,z);g.add(pv);fm3Mesh(new THREE.CylinderGeometry(.06,.06,h,8),c,0,-h/2,0,pv);pv.userData.o=((x>0)===(z>0))?0:Math.PI;legs.push(pv)};g.userData.legs=legs;
   if(k==="chicken"){S(.32,0xffffff,0,.42,0,1.15,1,1);S(.2,0xffffff,.28,.72,0);S(.08,0xef4444,.3,.95,0,1,1.2,.6);fm3Mesh(new THREE.ConeGeometry(.06,.16,10),0xf59e0b,.5,.72,0,g).rotation.z=-Math.PI/2;S(.15,0xf5f5f4,-.3,.55,0,1,1.3,.8);L(.05,.1,.25,0xf59e0b);L(.05,-.1,.25,0xf59e0b);g.scale.setScalar(.9)}
   else if(k==="cow"){S(.5,0xffffff,0,.95,0,1.6,1,1);S(.22,0x292524,.2,1.25,.3,1.2,1,.6);S(.2,0x292524,-.45,1.1,-.35,1.2,1,.6);S(.32,0xffffff,.85,1.2,0,1.1,1,1);S(.2,0xfda4af,1.12,1.1,0,.8,.8,1);
     fm3Mesh(new THREE.ConeGeometry(.06,.25,8),0xf5e6b8,.85,1.55,.18,g);fm3Mesh(new THREE.ConeGeometry(.06,.25,8),0xf5e6b8,.85,1.55,-.18,g);[[-.45,.25],[-.45,-.25],[.45,.25],[.45,-.25]].forEach(function(p){L(p[0],p[1],.6,0x44403c)})}
@@ -4199,11 +4199,11 @@ function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.d
     if(rd){var bb=fm3Bubble("✔",true);bb.position.set(.3,1.9,0);pl.add(bb);FM3.bubs.push(bb)}}
   /* สัตว์ */
   var spots=[[8.2,6.3],[9.5,6.2],[10.4,7],[8,7.7],[9.3,7.9],[10.3,8.5],[8.4,8.6],[9.7,8.7],[8.9,5.7],[10.5,5.8],[7.8,6.9],[9.9,7.4]];
-  d.animals.forEach(function(an,j){var x=c.animals[an.animal]||{},pr=c.products[x.prod]||{},sp=spots[j%spots.length],w=FM3.wand&&FM3.wand[an.id],p=w?[w.x,w.z]:fm3P(sp[0],sp[1]),a=fm3Animal(an.animal);
+  d.animals.forEach(function(an,j){var x=c.animals[an.animal]||{},pr=c.products[x.prod]||{},sp=spots[j%spots.length],w=FM3.wand&&FM3.wand[an.id],p=w?[w.x,w.y]:fm3P(sp[0],sp[1]),a=fm3Animal(an.animal);
     var hold=new THREE.Group();hold.position.set(p[0],0,p[1]);hold.add(a);g.add(hold);var ra2=an.ready_at?new Date(an.ready_at).getTime():0,rd2=ra2&&ra2<=now;
     if(!an.ready_at){var b1=fm3Bubble("🍽️",false);b1.position.y=2;hold.add(b1);FM3.bubs.push(b1)}else if(rd2){var b2=fm3Bubble(pr.e||"✔",true);b2.position.y=2;hold.add(b2);FM3.bubs.push(b2)}
     if(own){hold.userData.pick=!an.ready_at?{fmf:an.id}:{fmc:an.id,until:String(ra2)};FM3.pickD.push(hold)}
-    FM3.wand=FM3.wand||{};FM3.wand[an.id]=FM3.wand[an.id]||{x:p[0],z:p[1],tx:p[0],tz:p[1],wait:Math.random()*3};FM3.anim.push({g:hold,a:a,w:FM3.wand[an.id],k:an.animal})});
+    FM3.wand=FM3.wand||{};FM3.wand[an.id]=FM3.wand[an.id]||{x:p[0],y:p[1],tx:p[0],ty:p[1],wait:Math.random()*3,stride:{chicken:9,cow:3.5,pig:5,sheep:4.5}[an.animal]||5};FM3.anim.push({g:hold,a:a,w:FM3.wand[an.id],k:an.animal})});
   /* ของแต่ง */
   fmDecorPos(d).forEach(function(z){var dm=fm3Decor(z.d.item),p=fm3P(z.x+.5,z.y+.5);dm.position.set(p[0],0,p[1]);dm.rotation.y=-.6;g.add(dm)});
   /* สัตว์เลี้ยง */
@@ -4231,11 +4231,16 @@ function fm3Loop(){FM3.raf=requestAnimationFrame(fm3Loop);if(!FM3.on||S.tab!=="f
   FM3.ctl.update();if(FM3.blades)FM3.blades.rotation.z+=dt*1.2;(FM3.ducks||[]).forEach(function(d){var a=t*.3+d.o;d.g.position.set(d.c[0]+Math.cos(a)*1.8,.05,d.c[1]+Math.sin(a)*.9);d.g.rotation.y=-(a+Math.PI/2)});
   (FM3.bubs||[]).forEach(function(b,i){b.children[0].position.y=Math.sin(t*3+i)*.08});
   if(FM3.dyn)FM3.dyn.traverse(function(o){if(o.userData.wheel)o.rotation.z+=dt*.3;if(o.userData.spin)o.scale.y=1+Math.sin(t*4)*.15});
-  var P0=fm3P(7.6,6.2),P1=fm3P(10.6,8.6);(FM3.anim||[]).forEach(function(A){var w=A.w;if(FM.tool)return;var dx=w.tx-w.x,dz=w.tz-w.z,dd=Math.hypot(dx,dz);
-    if(dd<.05){w.wait-=dt;if(w.wait<=0){w.tx=P0[0]+Math.random()*(P1[0]-P0[0]);w.tz=P0[1]+Math.random()*(P1[1]-P0[1]);w.wait=2+Math.random()*5}A.a.position.y=0}
-    else{var sp=(A.k==="chicken"?1.1:.6)*dt,k=Math.min(1,sp/dd);w.x+=dx*k;w.z+=dz*k;A.g.rotation.y=Math.atan2(-dz,dx);A.a.position.y=Math.abs(Math.sin(t*9))*.06}A.g.position.set(w.x,0,w.z)});
+  var P0=fm3P(7.6,6.2),P1=fm3P(10.6,8.6);(FM3.anim||[]).forEach(function(A){var w=A.w;if(FM.tool)return;var ck=A.k==="chicken",mx=ck?1.1:.6,d=Math.hypot(w.tx-w.x,w.ty-w.y);
+    if(d<.05&&!(w.spd>.004)){w.wait-=dt;if(w.wait<=0){w.tx=P0[0]+Math.random()*(P1[0]-P0[0]);w.ty=P0[1]+Math.random()*(P1[1]-P0[1]);w.wait=2+Math.random()*5}}
+    else fmSteer(w,dt,mx,ck?3.5:1.6);
+    var kk=Math.min(1,(w.spd||0)/mx),ph=w.ph||0;A.g.rotation.y=w.hd||0;A.a.position.y=Math.abs(Math.sin(ph))*(ck?.07:.04)*kk;A.a.rotation.x=Math.sin(ph)*.05*kk;
+    (A.a.userData.legs||[]).forEach(function(l){l.rotation.z=Math.sin(ph+l.userData.o)*.6*kk});
+    var pk=kk<.05?Math.pow(Math.max(0,Math.sin(t*(ck?1.9:.6)+w.x*5)),4):0;A.a.rotation.z+=((ck?-.45:-.18)*pk-A.a.rotation.z)*Math.min(1,dt*8);
+    A.g.position.set(w.x,0,w.y)});
   if(FM3.pets&&FM3.pets.length&&!FM.tool){fmPetStep(dt);FM3.pets.forEach(function(P){var w=P.w,p=fm3P(w.x,w.y);P.g.position.set(p[0],w.m==="swim"?-.08:0,p[1]);
-    if(w.mv){var dx=w.tx-w.x,dy=w.ty-w.y;P.m.rotation.y=Math.atan2(-dy,dx)}var bd=P.m.userData.body;if(bd)bd.position.y=(w.lift||0)*1.6;
+    if(w.hd!=null)P.m.rotation.y=w.hd;var bd=P.m.userData.body,kk=Math.min(1,(w.spd||0)/(FPSPD[w.k]||.5));if(bd){bd.position.y=(w.lift||0)*1.6;bd.rotation.x=(w.tilt||0)*.012}
+    (P.m.userData.legs||[]).forEach(function(l){l.rotation.z=w.fly?-.6:Math.sin((w.ph||0)+l.userData.o)*.7*kk});
     (P.m.userData.wings||[]).forEach(function(wg,i){wg.rotation.x=(w.fly&&w.mv)?Math.sin(t*28)*(i?1:-1)*.9:0})})}
   FM3.renderer.render(FM3.scene,FM3.cam)}
 /* ---------- แตะ/ลาก ในฉาก 3D → ใช้ตัวจัดการเดิมของเกม ---------- */
@@ -4455,12 +4460,21 @@ function fpTarget(w){var m=w.m,pick;
     w.tx=pick[0]+.2+Math.random()*.6;w.ty=pick[1]+.2+Math.random()*.6}
   w.d0=Math.max(.01,Math.hypot(w.tx-w.x,w.ty-w.y))}
 var FPSPD={dog:.75,husky:.8,cat:.5,bunny:.8,guinea:.35,hedgehog:.3,peacock:.32,flamingo:.32,pelican:.3,swan:.22,blackswan:.22};
+/* เดินแบบธรรมชาติ: หันตัวค่อย ๆ เลี้ยว เร่ง/ผ่อนความเร็ว ก้าวขาตามระยะทาง */
+function fmSteer(w,dt,max,turn){var dx=w.tx-w.x,dy=w.ty-w.y,d=Math.hypot(dx,dy);if(w.hd==null)w.hd=Math.atan2(-dy,dx);w.spd=w.spd||0;
+  var tgt=0;if(d>=.04){var want=Math.atan2(-dy,dx),da=Math.atan2(Math.sin(want-w.hd),Math.cos(want-w.hd));w.hd+=Math.max(-turn*dt,Math.min(turn*dt,da));tgt=Math.min(max,d*1.4+.05)*(.2+.8*Math.max(0,Math.cos(da)))}
+  w.spd+=(tgt-w.spd)*Math.min(1,dt*(tgt>w.spd?2.5:5));if(w.spd<.004&&d<.04){w.spd=0;return false}
+  var st=Math.min(w.spd*dt,d<.04?w.spd*dt:d);w.x+=Math.cos(w.hd)*st;w.y-=Math.sin(w.hd)*st;w.ph=(w.ph||0)+st*(w.stride||9);return true}
+var FPSTR={dog:10,husky:10,cat:12,peacock:9,flamingo:7,pelican:8,swan:4,blackswan:4};
 function fmPetStep(dt){var t=performance.now()/1000;Object.keys(FP).forEach(function(id){var w=FP[id];if(!w.live)return;
-    var dx=w.tx-w.x,dy=w.ty-w.y,d=Math.hypot(dx,dy);w.mv=false;
-    if(d<.03){w.wait-=dt;w.h=Math.max(0,w.h-dt*3);if(w.wait<=0){fpTarget(w);w.wait=(w.m==="bird"?1.5:2.5)+Math.random()*(w.m==="swim"?3:5)}}
-    else{var sp=w.fly?2.2:(FPSPD[w.k]||.5),k=Math.min(1,sp*dt/d);w.x+=dx*k;w.y+=dy*k;w.mv=true;var sdx=dx-dy;if(Math.abs(sdx)>.01)w.dir=sdx>0?-1:1;
-      if(w.fly){var pr=1-Math.max(0,d-sp*dt)/w.d0;w.h=Math.sin(Math.PI*Math.min(1,pr))*1.6+.2}else w.h=0}
-    var hop=0;if(w.mv&&!w.fly){hop=(w.k==="bunny"||w.m==="bird")?Math.abs(Math.sin(t*11))*.28:(w.m==="swim"?0:Math.abs(Math.sin(t*12))*.06)}
+    var dx=w.tx-w.x,dy=w.ty-w.y,d=Math.hypot(dx,dy),mx=FPSPD[w.k]||.5;w.mv=false;w.stride=w.stride||FPSTR[w.k]||14;
+    if(w.fly&&d>=.03){var sp=2.2,k=Math.min(1,sp*dt/d);w.x+=dx*k;w.y+=dy*k;w.mv=true;w.spd=0;var want=Math.atan2(-dy,dx),da=Math.atan2(Math.sin(want-(w.hd||0)),Math.cos(want-(w.hd||0)));w.hd=(w.hd||0)+da*Math.min(1,dt*6);
+      var pr=1-Math.max(0,d-sp*dt)/w.d0;w.h=Math.sin(Math.PI*Math.min(1,pr))*1.6+.2;if(d-sp*dt<=0)w.fly=0}
+    else if(d<.04&&!(w.spd>.004)){w.fly=0;w.wait-=dt;w.h=Math.max(0,w.h-dt*3);if(w.wait<=0){fpTarget(w);w.wait=(w.m==="bird"?1.5:2.5)+Math.random()*(w.m==="swim"?3:5)}}
+    else{w.h=Math.max(0,w.h-dt*3);fmSteer(w,dt,mx,w.m==="swim"?1:w.k==="bunny"||w.m==="bird"?4:2.6);w.mv=w.spd>.02}
+    if(w.hd!=null){var fx=Math.cos(w.hd)+Math.sin(w.hd);if(Math.abs(fx)>.35)w.dir=fx>0?-1:1}
+    var kk=Math.min(1,(w.spd||0)/mx),hop=0;w.tilt=0;
+    if(w.mv&&!w.fly){if(w.k==="bunny"||w.m==="bird")hop=Math.abs(Math.sin(w.ph*.5))*.26*kk;else if(w.m!=="swim"){hop=Math.abs(Math.sin(w.ph))*.05*kk;w.tilt=Math.sin(w.ph)*5*kk}}
     if(w.jump){var jt=t-w.jump;if(jt>.7)w.jump=0;else hop+=Math.sin(jt/.7*Math.PI)*.6}
     w.lift=w.h+hop;if(w.m==="swim")w.lift+=Math.sin(t*2+w.x)*.03})}
 /* วาดในฉาก 2D */
@@ -4471,11 +4485,11 @@ function fmPetsSvg(d,ed,add){Object.keys(FP).forEach(function(k){FP[k].live=0});
 function fmPetApply2D(){var els=document.querySelectorAll("#fm-world .fpet[data-pid]");els.forEach(function(g){var w=FP[g.dataset.pid];if(!w)return;var a=iso(w.x,w.y),hx=+g.dataset.hx,hy=+g.dataset.hy,
     sp=g.firstChild&&g.firstChild.nextSibling,b=sp&&sp.firstChild,L=Math.round((w.lift||0)*30*10)/10;
     if(g.firstChild){g.firstChild.setAttribute("transform","translate("+fN(a[0]-hx)+" "+fN(a[1]-hy)+")");g.firstChild.style.opacity=w.h>.05?String(Math.max(.3,1-w.h*.4)):""}
-    if(sp)sp.setAttribute("transform","translate("+fN(a[0])+" "+fN(a[1])+")"+(w.dir<0?" scale(-1 1)":""));if(b)b.setAttribute("transform","translate(0 "+(-L)+")");
+    if(sp)sp.setAttribute("transform","translate("+fN(a[0])+" "+fN(a[1])+")"+(w.dir<0?" scale(-1 1)":""));if(b)b.setAttribute("transform","translate(0 "+(-L)+")"+(w.tilt?" rotate("+fN(w.tilt)+")":""));
     var fl=w.fly&&w.mv;if(fl!==g.classList.contains("fly"))g.classList.toggle("fly",fl);if(w.mv!==g.classList.contains("mv"))g.classList.toggle("mv",w.mv)})}
 FM.plt=0;(function fpLoop(){requestAnimationFrame(fpLoop);var t=performance.now();if(t-FM.plt<(fmIsTouch()?50:33))return;var dt=Math.min(.1,(t-(FM.plt||t))/1000);FM.plt=t;
   if(S.tab!=="farm"||document.hidden||FM.tool||FM.busy)return;if(matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-  if(FM3.on&&FM3.ready)return;if(!document.querySelector("#fm-world .fpet"))return;fmPetStep(dt);fmPetApply2D()})();
+  if(FM3.on&&FM3.ready)return;fmWander(dt);if(!document.querySelector("#fm-world .fpet"))return;fmPetStep(dt);fmPetApply2D()})();
 function fmPetLove(id,ev){var w=FP[id];if(w){w.jump=performance.now()/1000;if(!w.mv)w.wait=Math.max(w.wait,1.2)}sfx("like");
   try{for(var i=0;i<3;i++){var h=document.createElement("div");h.className="fpheart";h.textContent=["❤️","💕","💖"][i];h.style.left=(ev.clientX-10+(i-1)*16)+"px";h.style.top=(ev.clientY-24)+"px";h.style.animationDelay=(i*.12)+"s";document.body.appendChild(h);setTimeout(function(e){e.remove()}.bind(null,h),1500)}}catch(e){}}
 /* โมเดล 3D ของสัตว์เลี้ยง (หันหน้าไปทาง +x) */
@@ -4484,6 +4498,7 @@ var FP3C={dog:[0xd6a35a,0xf5deb3],husky:[0x6b7280,0xf8fafc],cat:[0xfbbf24,0xfde6
   flamingo:[0xf9a8d4,0xf472b6,0xffffff],pelican:[0xfafafa,0xd1d5db,0xf59e0b],swan:[0xffffff,0xeef2f7,0xef4444],blackswan:[0x1f2937,0x374151,0xdc2626],peacock:[0x1d4ed8,0x16a34a,0xa8a29e]};
 function fm3Neck(pts,r,c,par){var cv=new THREE.CatmullRomCurve3(pts.map(function(p){return new THREE.Vector3(p[0],p[1],0)}));return fm3Mesh(new THREE.TubeGeometry(cv,24,r,10,false),c,0,0,0,par)}
 function fm3Pet(k){var g=new THREE.Group(),b=new THREE.Group();g.add(b);var C=FP3C[k]||[0xdddddd,0xaaaaaa,0x333333],m=fm3Mesh,S=function(r){return new THREE.SphereGeometry(r,16,12)},wings=[];
+  var legs=[],leg=function(x,z,h,r,c){var pv=new THREE.Group();pv.position.set(x,h,z);b.add(pv);m(new THREE.CylinderGeometry(r,r,h,8),c,0,-h/2,0,pv,false);pv.userData.o=((x>0)===(z>0))?0:Math.PI;legs.push(pv)};
   var eye=function(x,y,z,p){m(new THREE.SphereGeometry(.045,8,6),0x111111,x,y,z,p,false);m(new THREE.SphereGeometry(.045,8,6),0x111111,x,y,-z,p,false)};
   var wing=function(x,y,z,c,sx,sz){var wg=new THREE.Group();wg.position.set(x,y,z);var mm=m(S(.2),c,0,0,z>0?.06:-.06,wg);mm.scale.set(sx||1.4,.35,sz||.8);b.add(wg);wings.push(wg)};
   if(k==="dog"||k==="husky"||k==="cat"||k==="bunny"||k==="guinea"){var big=k==="dog"||k==="husky",bd=m(S(big?.32:.26),C[0],0,big?.38:.3,0,b);bd.scale.set(1.35,1,1);
@@ -4493,14 +4508,14 @@ function fm3Pet(k){var g=new THREE.Group(),b=new THREE.Group();g.add(b);var C=FP
     else if(k==="guinea"){m(S(.13),0x1f2937,-.1,.42,.12,b,false)}
     else{[-.15,.15].forEach(function(z){var e=m(S(.09),k==="husky"?0x374151:0x92400e,.4,big?.82:.6,z,b);e.scale.set(.7,1.3,.5)})}
     if(k!=="guinea"){var tl=m(new THREE.CylinderGeometry(.04,.05,.32,8),k==="bunny"?0xffffff:C[0],-.42,.5,0,b);tl.rotation.z=k==="bunny"?0:.9;if(k==="bunny")tl.scale.set(2.2,.5,2.2)}
-    if(k!=="bunny"&&k!=="guinea")[[.22,.12],[.22,-.12],[-.22,.12],[-.22,-.12]].forEach(function(l){m(new THREE.CylinderGeometry(.05,.05,.2,8),C[0],l[0],.1,l[1],b)});
+    if(k!=="bunny"&&k!=="guinea")[[.22,.12],[.22,-.12],[-.22,.12],[-.22,-.12]].forEach(function(l){leg(l[0],l[1],.22,.05,C[0])});
     b.scale.setScalar(big?1:1)}
   else if(k==="hedgehog"){var hb=m(S(.3),C[0],0,.2,0,b);hb.scale.set(1.3,.85,1);for(var i=0;i<14;i++){var sp=m(new THREE.ConeGeometry(.05,.18,6),0x57361a,0,0,0,b,false),a=Math.random()*Math.PI,a2=(Math.random()-.5)*2;sp.position.set(Math.cos(a)*.3-.05,.2+Math.sin(a)*.25,a2*.25);sp.lookAt(sp.position.x*3,sp.position.y*3-.3,sp.position.z*3);sp.rotateX(Math.PI/2)}
     m(S(.14),C[1],.36,.15,0,b);m(S(.04),0x111111,.5,.15,0,b,false);eye(.42,.22,.07,b)}
   else if(k==="swan"||k==="blackswan"){var sb=m(S(.35),C[0],0,.15,0,b);sb.scale.set(1.4,.6,.9);wing(-.05,.28,.18,C[1],1.3,.6);wing(-.05,.28,-.18,C[1],1.3,.6);
     fm3Neck([[.25,.2],[.42,.38],[.36,.58],[.44,.78],[.55,.86]],.065,C[0],b);m(S(.065),C[0],.25,.2,0,b,false);m(S(.11),C[0],.55,.85,0,b);var bk=m(new THREE.ConeGeometry(.05,.18,8),C[2],.7,.82,0,b);bk.rotation.z=-Math.PI/2;eye(.6,.9,.07,b)}
   else{/* นก */var tall=k==="flamingo",pel=k==="pelican",pea=k==="peacock",y0=tall?1:pel?.35:.3,br=pel?.36:.24;
-    [-.06,.06].forEach(function(z){m(new THREE.CylinderGeometry(.025,.025,y0,6),tall?0xf472b6:pel?0xf59e0b:0x57534e,0,y0/2,z,b,false)});
+    [-.06,.06].forEach(function(z){leg(0,z,y0,.025,tall?0xf472b6:pel?0xf59e0b:0x57534e)});
     var bb=m(S(br),C[0],0,y0+br*.6,0,b);bb.scale.set(1.3,.9,.9);wing(-.05,y0+br*.8,br*.8,C[1]);wing(-.05,y0+br*.8,-br*.8,C[1]);
     if(pea){var fan=new THREE.Group();fan.position.set(-.3,y0+.3,0);b.add(fan);for(var j=0;j<9;j++){var an=-1.2+j*.3,f=m(new THREE.CylinderGeometry(.09,.02,.9,8),0x16a34a,0,0,0,fan,false);f.position.set(-Math.cos(an)*0*.1,Math.cos(an)*.45,Math.sin(an)*.45);f.rotation.x=an;var ey=m(S(.07),0x0ea5e9,0,Math.cos(an)*.85,Math.sin(an)*.85,fan,false)}fan.rotation.z=.35}
     var hy=tall?y0+1.05:y0+br+.25,hx=tall?.15:.2;if(tall)fm3Neck([[.18,y0+.2],[.34,y0+.42],[.18,y0+.62],[.04,y0+.82],[hx,hy-.05]],.05,C[0],b);else fm3Neck([[.08,y0+br*.7],[hx*.7,(y0+br*.7+hy)/2],[hx,hy]],pel?.1:.08,pea?0x2563eb:C[0],b);
@@ -4508,7 +4523,7 @@ function fm3Pet(k){var g=new THREE.Group(),b=new THREE.Group();g.add(b);var C=FP
     var bl=k==="toucan"?.42:pel?.6:.16,bw=k==="toucan"?.1:pel?.09:.06,bk2=m(new THREE.ConeGeometry(bw,bl,10),C[2]||0xf59e0b,hx+(tall?.08:.13)+bl/2,hy-(pel?.06:.02),0,b);bk2.rotation.z=-Math.PI/2-(tall?.6:pel?.1:.25);
     if(k==="cockatoo"){var cr=m(new THREE.ConeGeometry(.06,.3,8),C[1],hx-.05,hy+.25,0,b);cr.rotation.z=.5}
     if(!tall&&!pel&&!pea){var tl2=m(new THREE.BoxGeometry(.4,.04,.14),C[1],-.35,y0+.15,0,b);tl2.rotation.z=.5}}
-  b.traverse(function(o){if(o.isMesh){o.castShadow=true}});g.userData.wings=wings;g.userData.body=b;g.scale.setScalar(k==="flamingo"?1.1:1.15);return g}
+  b.traverse(function(o){if(o.isMesh){o.castShadow=true}});g.userData.wings=wings;g.userData.body=b;g.userData.legs=legs;g.scale.setScalar(k==="flamingo"?1.1:1.15);return g}
 /* ---------- ชิ้นส่วนภาพ 3 มิติ ---------- */
 function fmGrassTex(){if(FM.gtex)return FM.gtex;try{var c=document.createElement("canvas");c.width=c.height=120;var x=c.getContext("2d"),sd=7,r=function(){sd=(sd*9301+49297)%233280;return sd/233280};
   for(var i=0;i<260;i++){var px=r()*120,py=r()*120,l=3+r()*5,dk=r()<.55;x.strokeStyle=dk?"rgba(40,110,20,"+(.18+r()*.2)+")":"rgba(220,255,160,"+(.15+r()*.2)+")";x.lineWidth=1.2;x.beginPath();x.moveTo(px,py);x.lineTo(px+(r()-.5)*3,py-l);x.stroke()}
@@ -4637,14 +4652,15 @@ function fmIsNight(){if(FDN.mode==="day")return false;if(FDN.mode==="night")retu
 function fmApplyDN(){if(FM3.on)fm3DN();var sv=document.querySelector("#fm-win svg");if(sv)sv.classList.toggle("night",fmIsNight());var b=document.querySelector('[data-fmdn]');if(b)b.textContent=FDN.mode==="auto"?(fmIsNight()?"🌙":"☀️"):FDN.mode==="night"?"🌙":"☀️"}
 /* สัตว์เดินเล่นในคอก */
 var FW={};
-function fmWander(){var R=matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;if(R||S.tab!=="farm"||document.hidden||FM.v===undefined&&false)return;var els=document.querySelectorAll("#fm-world .fanimal[data-sx]"),dt=.09;
-  els.forEach(function(g){var id=g.dataset.aid,sx=+g.dataset.sx,sy=+g.dataset.sy,w=FW[id];if(!w)w=FW[id]={x:sx,y:sy,tx:sx,ty:sy,wait:Math.random()*3,dir:1};
-    if(FM.tool||FM.busy)return;var dx=w.tx-w.x,dy=w.ty-w.y,d=Math.hypot(dx,dy);
-    if(d<.02){w.wait-=dt;if(w.wait<=0){w.tx=7.7+Math.random()*2.8;w.ty=6.3+Math.random()*2.2;w.wait=2+Math.random()*5}}
-    else{var sp=(g.dataset.k==="chicken"?.55:.3)*dt,k=Math.min(1,sp/d);w.x+=dx*k;w.y+=dy*k;var sdx=(dx-dy);if(Math.abs(sdx)>.01)w.dir=sdx>0?-1:1}
-    var a=iso(w.x,w.y),b=iso(sx,sy),sp2=g.querySelector(".fsp");g.setAttribute("transform","translate("+fN(a[0]-b[0])+" "+fN(a[1]-b[1])+")");
-    if(sp2){var base=sp2.dataset.t;sp2.setAttribute("transform",base+(w.dir<0?" scale(-1 1)":""))}})}
-setInterval(fmWander,90);setInterval(function(){if(S.tab==="farm")fmApplyDN()},60000);
+function fmWander(dt){var els=document.querySelectorAll("#fm-world .fanimal[data-sx]");
+  els.forEach(function(g){var id=g.dataset.aid,sx=+g.dataset.sx,sy=+g.dataset.sy,ck=g.dataset.k==="chicken",w=FW[id];if(!w)w=FW[id]={x:sx,y:sy,tx:sx,ty:sy,wait:Math.random()*3,dir:1,stride:ck?16:7};
+    if(FM.tool||FM.busy)return;var d=Math.hypot(w.tx-w.x,w.ty-w.y);
+    if(d<.04&&!(w.spd>.004)){w.wait-=dt;if(w.wait<=0){w.tx=7.7+Math.random()*2.8;w.ty=6.3+Math.random()*2.2;w.wait=2+Math.random()*5}}
+    else{fmSteer(w,dt,ck?.55:.3,ck?4:2);var fx=Math.cos(w.hd)+Math.sin(w.hd);if(Math.abs(fx)>.35)w.dir=fx>0?-1:1}
+    var a=iso(w.x,w.y),b=iso(sx,sy),sp2=g.querySelector(".fsp"),bob=w.spd>.02?-Math.abs(Math.sin(w.ph||0))*Math.min(1,w.spd/(ck?.55:.3))*(ck?2.5:1.5):0;
+    g.setAttribute("transform","translate("+fN(a[0]-b[0])+" "+fN(a[1]-b[1]+bob)+")");
+    if(sp2){var tr=sp2.dataset.t+(w.dir<0?" scale(-1 1)":"");if(sp2.getAttribute("transform")!==tr)sp2.setAttribute("transform",tr)}})}
+setInterval(function(){if(S.tab==="farm")fmApplyDN()},60000);
 /* ---------- อัปเดต 64: ของแต่งวาดเอง (แทนอีโมจิ) โทนเดียวกับฉาก ---------- */
 function fsh(x,y,rx,ry){return '<ellipse cx="'+fN(x+4)+'" cy="'+fN(y+2)+'" rx="'+rx+'" ry="'+ry+'" fill="rgba(20,60,10,.28)"/>'}
 function fdeco(k,m){var x=m[0],y=m[1]+8,s='';
