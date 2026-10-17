@@ -896,6 +896,10 @@ body.farm-rot .ffly{rotate:90deg}
 @keyframes ffl{0%,100%{transform:translate(0,0);opacity:.2}50%{transform:translate(14px,-12px);opacity:1}}
 .fsvg .fcshadow{animation:fcsh 70s linear infinite}@keyframes fcsh{from{transform:translateX(-400px)}to{transform:translateX(2000px)}}
 @media (prefers-reduced-motion:reduce){.fsvg .fcshadow,.fsvg .ffly0,.fsvg .ffly1,.fsvg .ffly2{animation:none}}
+.fgift{display:grid;gap:10px}.fgift label{display:grid;gap:4px;font-weight:700;font-size:13px}.fgift select,.fgift input{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--line,#d1d5db);background:var(--card,#fff);color:inherit}
+.fgift button.primary{padding:12px;font-size:16px}
+.fbig.fgift-btn{background:linear-gradient(#fce7f3,#f9a8d4);box-shadow:0 4px 0 #be185d,0 6px 14px rgba(0,0,0,.25)}
+.fcoins .fadm{font-size:10px;font-weight:800;background:#fde047;color:#713f12;border-radius:99px;padding:1px 6px;margin-left:2px}
 body.farm-rot #toast{left:52px;right:auto;top:50%;bottom:auto;width:min(80vh,520px);margin:0;transform:translate(-50%,-50%) rotate(90deg)!important;animation:none!important;z-index:30}
 body.farm-rot .ffloat{animation-name:ffloatR}
 @keyframes ffloatR{from{opacity:1;transform:translate(-50%,-50%) rotate(90deg)}to{opacity:0;transform:translate(60%,-50%) rotate(90deg)}}
@@ -4022,7 +4026,7 @@ function fmLeft(ms){if(ms<=0)return "พร้อม";var s=Math.ceil(ms/1000),h
 function fmDur(m){var h=Math.floor(m/60),x=m%60;return (h?h+" ชม.":"")+(x?(h?" ":"")+x+" นาที":"")}
 function fmNow(){return Date.now()+FM.off}
 function fmLv(xp){var l=Math.max(1,Math.floor((1+Math.sqrt(1+4*Math.max(xp,0)/5))/2));return {l:l,a:5*l*(l-1),b:5*(l+1)*l}}
-async function fmLoad(emp){var P=[q(db.rpc("farm_get",emp?{p_emp:emp}:{}))];if(!emp)P.push(q(db.rpc("farm_orders")).catch(function(){return null}));var R=await Promise.all(P),r=R[0];FM.off=new Date(r.now).getTime()-Date.now();if(!emp&&R[1]&&R[1].orders)FM.ord=R[1];return r}
+async function fmLoad(emp){var P=[q(db.rpc("farm_get",emp?{p_emp:emp}:{}))];if(!emp){P.push(q(db.rpc("farm_orders")).catch(function(){return null}));P.push(q(db.rpc("farm_gifts_pop")).catch(function(){return null}))}var R=await Promise.all(P),r=R[0];if(!emp&&R[2]&&R[2].length)fmGiftShow(R[2]);FM.off=new Date(r.now).getTime()-Date.now();if(!emp&&R[1]&&R[1].orders)FM.ord=R[1];return r}
 async function renderFarm(){
   try{if(!FM.cat)FM.cat=await q(db.rpc("farm_cat"));FM.d=await fmLoad();if(FM.v)FM.v=await fmLoad(FM.v.emp);if(FM.t==="friends")FM.board=await q(db.rpc("farm_board"));FM.keep=!!FM.sx;drawFarm()}
   catch(e){$("fm-world").innerHTML='<div class="panel" style="margin:80px 16px">'+emptyRow(thErr(e))+'</div>'}
@@ -4030,19 +4034,19 @@ async function renderFarm(){
 function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmaud="sfx" aria-label="เสียงเอฟเฟกต์" class="'+(FA.sfx?'':'off')+'">'+(FA.sfx?'🔊':'🔇')+'</button><button type="button" data-fmaud="mus" aria-label="เพลง" class="'+(FA.mus?'':'off')+'">🎵</button><button type="button" data-fmdn="1" aria-label="กลางวัน/กลางคืน" title="กลางวัน/กลางคืน">'+(fmIsNight()?'🌙':'☀️')+'</button><button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
   if(v){h+='<div class="fpill fwho">'+avatarHtml({display_name:v.name,avatar:v.avatar})+'<div><b>ฟาร์มของ'+esc(nick(v.name)||v.name)+'</b><small>เลเวล '+v.level+' · ❤️ '+num(v.likes)+'</small></div></div><span class="fsp"></span>'+
     '<button type="button" class="fpill flike'+(v.liked?' on':'')+'" data-fmlike="'+v.emp+'"'+(v.liked?' disabled':'')+'>'+(v.liked?'❤️ ถูกใจแล้ว':'🤍 ถูกใจ')+'</button></div>'+
-    '<div class="fdock"><button type="button" class="fbig" data-fmback="1"><span>🏡</span><small>ฟาร์มฉัน</small></button></div>';return h}
+    '<div class="fdock">'+(S.admin?'<button type="button" class="fbig fgift-btn" data-fmgto="'+v.emp+'"><span>🎁</span><small>มอบให้</small></button>':'')+'<button type="button" class="fbig" data-fmback="1"><span>🏡</span><small>ฟาร์มฉัน</small></button></div>';return h}
   var lv=fmLv(d.xp),pc=Math.min(100,Math.round((d.xp-lv.a)*100/(lv.b-lv.a)));
-  h+='<div class="fpill flvl"><span class="star">'+lv.l+'</span><div><small>XP '+d.xp+'/'+lv.b+'</small><div class="bar"><i style="width:'+pc+'%"></i></div></div></div><span class="fsp"></span><div class="fpill fcoins">'+fmc()+'<b>'+num(d.coins)+'</b></div></div>';
+  h+='<div class="fpill flvl"><span class="star">'+lv.l+'</span><div><small>XP '+d.xp+'/'+lv.b+'</small><div class="bar"><i style="width:'+pc+'%"></i></div></div></div><span class="fsp"></span><div class="fpill fcoins">'+fmc()+'<b>'+fmCoinTxt(d.coins)+'</b>'+(d.coins>=999999?'<small class="fadm">Admin ฟรี</small>':'')+'</div></div>';
   h+=d.kpi_today!=null?'<div class="fkpi2 ok">✅ ลงยอด KPI วันนี้แล้ว +'+d.kpi_today+' '+fmc()+'</div>':'<button type="button" class="fkpi2" data-tab="log">⏰ ลงยอด KPI วันนี้ รับสูงสุด +80 '+fmc()+'</button>';
   var rdy=d.field.filter(function(p){return new Date(p.ready_at).getTime()<=now}).length,hun=d.animals.filter(function(a){return !a.ready_at}).length,rdA=d.animals.filter(function(a){return a.ready_at&&new Date(a.ready_at).getTime()<=now}).length;
   h+='<div class="fact">'+(rdy?'<button type="button" data-fmh="all">🧺 เก็บผัก ('+rdy+')</button>':'')+(rdA?'<button type="button" data-fmc="all">🥚 เก็บผลผลิต ('+rdA+')</button>':'')+(hun?'<button type="button" data-fmf="all">🍽️ ให้อาหาร ('+hun+')</button>':'')+'</div>';
   if(FM.edit){return h.replace(/<div class="fact">[\s\S]*?<\/div>/,"").replace('<div class="fkpi2','<div style="display:none" class="fkpi2')+'<div class="fedit"><b>✏️ โหมดจัดฟาร์ม</b><span>'+(FM.sel?'แตะช่องว่างที่ต้องการวาง (แตะของแต่งชิ้นอื่นเพื่อสลับที่)':'แตะของแต่งที่ต้องการย้าย')+'</span><button type="button" data-fmedit="done">✓ เสร็จ</button></div>'}
   var nItems=0,it=d.items||{};Object.keys(it).forEach(function(k){nItems+=it[k]});
-  var ci=fmCapInfo(),nOrd=fmOrdReady();h+='<div class="fdock">'+(FM.ord?'<button type="button" class="fbig ford-btn" data-fmt="orders"><span>🚚</span><small>คำสั่งซื้อ</small>'+(nOrd?'<i>'+nOrd+'</i>':'')+'</button>':'')+'<button type="button" class="fbig" data-fmt="barn"><span>🏚️</span><small>ยุ้งฉาง</small>'+(ci.cap&&ci.free<1?'<i class="full">เต็ม</i>':nItems?'<i>'+nItems+'</i>':'')+'</button><button type="button" class="fbig" data-fmt="shop"><span>🛒</span><small>ร้านค้า</small></button><button type="button" class="fbig" data-fmt="friends"><span>👫</span><small>เพื่อน</small></button>'+(d.decor.length?'<button type="button" class="fbig" data-fmedit="on"><span>✏️</span><small>จัดฟาร์ม</small></button>':'')+'</div>';
+  var ci=fmCapInfo(),nOrd=fmOrdReady();h+='<div class="fdock">'+(FM.ord?'<button type="button" class="fbig ford-btn" data-fmt="orders"><span>🚚</span><small>คำสั่งซื้อ</small>'+(nOrd?'<i>'+nOrd+'</i>':'')+'</button>':'')+'<button type="button" class="fbig" data-fmt="barn"><span>🏚️</span><small>ยุ้งฉาง</small>'+(ci.cap&&ci.free<1?'<i class="full">เต็ม</i>':nItems?'<i>'+nItems+'</i>':'')+'</button><button type="button" class="fbig" data-fmt="shop"><span>🛒</span><small>ร้านค้า</small></button><button type="button" class="fbig" data-fmt="friends"><span>👫</span><small>เพื่อน</small></button>'+(S.admin?'<button type="button" class="fbig fgift-btn" data-fmt="gift"><span>🎁</span><small>มอบของ</small></button>':'')+(d.decor.length?'<button type="button" class="fbig" data-fmedit="on"><span>✏️</span><small>จัดฟาร์ม</small></button>':'')+'</div>';
   return h}
-function fmSheet(){var on=FM.t!=="farm"&&!FM.v;$("fm-sheet").hidden=!on;if(!on)return;var d=FM.d,lv=fmLv(d.xp);
-  $("fm-sh-title").textContent=FM.t==="orders"?"🚚 คำสั่งซื้อ":FM.t==="seed"?"🌱 เลือกเมล็ดพันธุ์":FM.t==="barn"?"🏚️ ยุ้งฉาง":FM.t==="shop"?"🛒 ร้านค้า":"👫 ฟาร์มเพื่อน";
-  $("fm-body").innerHTML=FM.t==="orders"?fmOrders():FM.t==="seed"?fmSeedHtml():FM.t==="barn"?fmBarn(d):FM.t==="shop"?fmShop(d,lv.l):fmBoard()}
+function fmSheet(){var on=FM.t!=="farm"&&(!FM.v||FM.t==="gift");$("fm-sheet").hidden=!on;if(!on)return;var d=FM.d,lv=fmLv(d.xp);
+  $("fm-sh-title").textContent=FM.t==="gift"?"🎁 Admin มอบของให้ผู้เล่น":FM.t==="orders"?"🚚 คำสั่งซื้อ":FM.t==="seed"?"🌱 เลือกเมล็ดพันธุ์":FM.t==="barn"?"🏚️ ยุ้งฉาง":FM.t==="shop"?"🛒 ร้านค้า":"👫 ฟาร์มเพื่อน";
+  $("fm-body").innerHTML=FM.t==="gift"?fmGiftHtml():FM.t==="orders"?fmOrders():FM.t==="seed"?fmSeedHtml():FM.t==="barn"?fmBarn(d):FM.t==="shop"?fmShop(d,fmL()):fmBoard()}
 function drawFarm(sheetOnly){
   $("fm-hud").innerHTML=fmHud();fmSheet();if(sheetOnly)return;
   $("fm-world").innerHTML=fmScene(FM.v||FM.d,!FM.v);
@@ -4420,7 +4424,7 @@ function fmToolClose(){var t=$("fm-tool");if(t)t.remove();FM.tool=null}
 function fmCapInfo(){var it=(FM.d&&FM.d.items)||{},u=0;Object.keys(it).forEach(function(k){u+=it[k]});var cap=FM.ord&&FM.ord.cap?FM.ord.cap:0;return {used:u,cap:cap,free:cap?Math.max(0,cap-u):999}}
 var FTOOL={seed:{sel:"[data-fmp]",at:"fmp",hint:"👆 ลากเมล็ดผ่านแปลงว่างเพื่อปลูกหลายแปลง"},sickle:{sel:"[data-fmh]",at:"fmh",hint:"👆 ลากเคียวผ่านแปลงที่สุกแล้ว"},
   basket:{sel:"[data-fmc]",at:"fmc",hint:"👆 ลากตะกร้าผ่านสัตว์ที่มีผลผลิต"},feed:{sel:"[data-fmf]",at:"fmf",hint:"👆 ลากถุงอาหารผ่านสัตว์ที่หิว"}};
-function fmToolOpen(kind,slot,ev){fmToolClose();if(FM.v)return;var w=$("fm-world"),box=document.querySelector("#v-farm .fgame");if(!w||!box)return;var L=fmLoc(ev,w),c=FM.cat,l=fmLv(FM.d.xp).l,h;
+function fmToolOpen(kind,slot,ev){fmToolClose();if(FM.v)return;var w=$("fm-world"),box=document.querySelector("#v-farm .fgame");if(!w||!box)return;var L=fmLoc(ev,w),c=FM.cat,l=fmL(),h;
   if(kind==="seed")h=Object.keys(c.crops).filter(function(k){return l>=c.crops[k].lv}).map(function(k){var o=c.crops[k];return '<button type="button" class="ftl'+(FM.d.coins<o.cost?' poor':'')+'" data-tool="'+k+'" title="'+esc(o.n)+'"><span>'+o.e+'</span><small>'+fmc()+o.cost+'</small></button>'}).join("")+'<button type="button" class="ftl more" data-fmtoolmore="'+slot+'"><span>📋</span><small>ทั้งหมด</small></button>';
   else if(kind==="sickle")h='<button type="button" class="ftl sick" data-tool="sickle"><span>'+FSICKLE+'</span><small>เคียว</small></button>';
   else if(kind==="basket")h='<button type="button" class="ftl sick" data-tool="basket"><span>🧺</span><small>ตะกร้า</small></button>';
@@ -4476,10 +4480,34 @@ function fmOrders(){var O=FM.ord,now=fmNow(),it=FM.d.items||{};if(!O)return '<di
     if(ra>now)return '<div class="ford wait" data-until="'+ra+'"><span class="fem">🚚</span><b>รถกำลังมารับใบสั่งใหม่</b><small class="tm">'+fmLeft(ra-now)+'</small></div>';
     var ok=fmCanDo(o);return '<div class="ford'+(ok?' ok':'')+'"><div class="fit">'+Object.keys(o.items).map(function(k){var x=fmItem(k),h=it[k]||0,n=o.items[k];return '<span class="'+(h>=n?'y':'n')+'" title="'+esc(x.n)+'"><i>'+x.e+'</i><small>'+Math.min(h,n)+'/'+n+'</small></span>'}).join("")+'</div>'+
       '<div class="frw">'+fmc()+'<b>'+o.coins+'</b><span>⭐ '+o.xp+'</span></div><div class="fob"><button type="button" class="sm primary" data-fmod="'+o.slot+'"'+(ok?'':' disabled')+'>🚚 ส่งของ</button><button type="button" class="sm" data-fmos="'+o.slot+'" aria-label="ทิ้งใบสั่งนี้">🗑️</button></div></div>'}).join("")+'</div>'}
-function fmSeedHtml(){var c=FM.cat,l=fmLv(FM.d.xp).l;return '<p class="sub" style="margin:0">ปลูกที่แปลง '+FM.slot+' · มี '+fmc()+' '+num(FM.d.coins)+'</p><div class="seedgrid">'+Object.keys(c.crops).map(function(k){var o=c.crops[k],lk=l<o.lv,poor=FM.d.coins<o.cost;
+/* ---------- Admin: สร้างฟาร์มฟรี + มอบของ ---------- */
+function fmL(){return S.admin?99:fmLv(FM.d.xp).l}
+function fmCoinTxt(c){return c>=999999?"∞":num(c)}
+var FGK={coins:"💰 เหรียญฟาร์ม",xp:"⭐ XP",item:"🧺 ผัก/ผลผลิต",decor:"🌳 ของแต่ง",animal:"🐄 สัตว์"};
+function fmGiftItems(k){var c=FM.cat,o=k==="item"?Object.assign({},c.crops,c.products):k==="decor"?c.decor:k==="animal"?c.animals:null;
+  return o?Object.keys(o).map(function(x){return '<option value="'+x+'">'+o[x].e+' '+esc(o[x].n)+'</option>'}).join(""):""}
+function fmGiftHtml(){var G=FM.gift||(FM.gift={k:"coins",to:"all"}),emps=S.emps.filter(function(e){return e.active}).sort(function(a,b){return String(a.display_name).localeCompare(String(b.display_name),"th")});
+  var to='<option value="all">👥 พนักงานทุกคน ('+emps.length+')</option><optgroup label="ทั้งแผนก">'+S.depts.map(function(d){var n=emps.filter(function(e){return e.department_id===d.id}).length;return n?'<option value="d:'+d.id+'">🏭 '+esc(d.name)+' ('+n+')</option>':''}).join("")+'</optgroup><optgroup label="รายคน">'+emps.map(function(e){return '<option value="e:'+e.id+'">'+esc(e.display_name)+' · '+esc(e.employee_no||"")+'</option>'}).join("")+'</optgroup>';
+  var R=FM.giftRecent||[];
+  return '<div class="panel fgift"><p class="sub" style="margin:0 0 8px">Admin เล่นฟาร์มของตัวเองได้ฟรี (เหรียญ ∞ ไม่ติดเลเวล) และมอบของให้ผู้เล่นได้ ผู้เล่นจะเห็นแจ้งเตือน 🎁 ตอนเข้าฟาร์มครั้งถัดไป</p>'+
+    '<label>มอบให้<select id="fg-to">'+to+'</select></label>'+
+    '<label>ประเภท<select id="fg-k">'+Object.keys(FGK).map(function(k){return '<option value="'+k+'"'+(G.k===k?' selected':'')+'>'+FGK[k]+'</option>'}).join("")+'</select></label>'+
+    '<label id="fg-iw"'+(G.k==="coins"||G.k==="xp"?' hidden':'')+'>ของที่มอบ<select id="fg-i">'+fmGiftItems(G.k)+'</select></label>'+
+    '<label>จำนวน (ต่อคน)<input id="fg-q" type="number" min="1" value="'+(G.k==="coins"?100:G.k==="xp"?20:1)+'" inputmode="numeric"></label>'+
+    '<label>ข้อความถึงผู้เล่น (ไม่บังคับ)<input id="fg-n" maxlength="120" placeholder="เช่น รางวัลยอดผลิตเกินเป้า"></label>'+
+    '<button type="button" class="primary" data-fmgive="1">🎁 มอบของ</button></div>'+
+    '<div class="panel"><h3>ประวัติการมอบล่าสุด</h3><div class="rows">'+(R.length?R.map(function(r){var o=fmGiftLbl(r);return '<div class="row"><span class="em">'+o.e+'</span><div class="l"><b>'+esc(o.t)+'</b><small>'+(r.people>1?'ให้ '+r.people+' คน':esc(r.name||""))+(r.note?' · '+esc(r.note):'')+' · '+new Date(r.at).toLocaleString("th-TH",{dateStyle:"short",timeStyle:"short"})+'</small></div></div>'}).join(""):emptyRow("ยังไม่เคยมอบของ"))+'</div></div>'}
+function fmGiftLbl(g){var c=FM.cat,o=g.kind==="item"?(c.crops[g.item]||c.products[g.item]):g.kind==="decor"?c.decor[g.item]:g.kind==="animal"?c.animals[g.item]:null;
+  return g.kind==="coins"?{e:"💰",t:"เหรียญฟาร์ม "+num(g.qty)}:g.kind==="xp"?{e:"⭐",t:"XP +"+num(g.qty)}:{e:(o||{}).e||"🎁",t:((o||{}).n||g.item)+" × "+g.qty}}
+function fmGiftOpen(to){FM.t="gift";FM.gift=FM.gift||{k:"coins"};FM.gift.to=to||"all";fmSheet();var s=$("fg-to");if(s&&to)s.value=to;
+  q(db.rpc("farm_gifts_recent")).then(function(r){FM.giftRecent=r||[];if(FM.t==="gift"){var keep={to:$("fg-to").value,q:$("fg-q").value,n:$("fg-n").value,i:$("fg-i").value};fmSheet();$("fg-to").value=keep.to;$("fg-q").value=keep.q;$("fg-n").value=keep.n;if(keep.i)$("fg-i").value=keep.i}},function(){})}
+document.addEventListener("change",function(e){if(e.target.id==="fg-k"){FM.gift.k=e.target.value;var k=FM.gift.k;$("fg-iw").hidden=k==="coins"||k==="xp";$("fg-i").innerHTML=fmGiftItems(k);$("fg-q").value=k==="coins"?100:k==="xp"?20:1}});
+function fmGiftShow(L){if(!L||!L.length)return;var t=L.map(function(g){return fmGiftLbl(g).e+" "+fmGiftLbl(g).t}).join(" · ");sfx("level");
+  setTimeout(function(){toast("🎁 ได้รับของขวัญจาก "+(L[0].giver||"Admin")+": "+t+(L[L.length-1].note?" — "+L[L.length-1].note:""));var c=document.querySelector(".fcoins");if(c){var r=c.getBoundingClientRect();for(var i=0;i<Math.min(L.length,6);i++)fmFly(innerWidth/2,innerHeight/2,fmGiftLbl(L[i]).e,L[i].kind==="coins"?".fcoins":L[i].kind==="xp"?".flvl .star":'.fdock [data-fmt="barn"]',i*150)}},700)}
+function fmSeedHtml(){var c=FM.cat,l=fmL();return '<p class="sub" style="margin:0">ปลูกที่แปลง '+FM.slot+' · มี '+fmc()+' '+fmCoinTxt(FM.d.coins)+'</p><div class="seedgrid">'+Object.keys(c.crops).map(function(k){var o=c.crops[k],lk=l<o.lv,poor=FM.d.coins<o.cost;
     return '<button type="button" data-fmseed="'+k+'"'+(lk||poor?' disabled':'')+'><span class="em">'+o.e+'</span><b>'+esc(o.n)+'</b><small>'+fmc()+' '+o.cost+' · '+fmDur(o.min)+'</small><small>'+(lk?'🔒 เลเวล '+o.lv:'ขาย '+o.sell+' · +'+o.xp+' XP')+'</small></button>'}).join("")+'</div>'}
 function fmSeed(slot){FM.slot=slot;FM.t="seed";fmSheet()}
-document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud],[data-fmedit],[data-fmdec],[data-fmtile],[data-fmod],[data-fmos],[data-fmbu],[data-fmdn]");if(!t)return;var D=t.dataset;
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud],[data-fmedit],[data-fmdec],[data-fmtile],[data-fmod],[data-fmos],[data-fmbu],[data-fmdn],[data-fmgive],[data-fmgto]");if(!t)return;var D=t.dataset;
   if(D.fmexit){sfx("close");FM.edit=false;FM.sel=null;show("home");return}
   if(D.fmedit){FM.edit=D.fmedit==="on";FM.sel=null;FM.t="farm";sfx(FM.edit?"open":"buy");if(!FM.edit)toast("บันทึกการจัดฟาร์มแล้ว ✨");FM.keep=true;drawFarm();return}
   if(D.fmdec&&FM.edit){var sw=FM.sel&&FM.sel!==D.fmdec?FM.sel:null;
@@ -4488,6 +4516,12 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(D.fmtile&&FM.edit){if(!FM.sel){sfx("tap");toast("แตะของแต่งที่ต้องการย้ายก่อน");return}var xy=D.fmtile.split(",").map(Number),cur=fmDecorPos(FM.d).filter(function(z){return z.d.id===FM.sel})[0];fmMoveDecor(FM.sel,xy[0],xy[1],cur&&cur.x,cur&&cur.y);return}
   if(FM.edit&&!D.fmz&&!D.fmaud)return;
   if(D.fmz){sfx("tap");fmZoomAt(D.fmz==="in"?1.25:0.8);return}
+  if(D.fmgto){sfx("open");fmGiftOpen("e:"+D.fmgto);return}
+  if(D.fmgive){var to=$("fg-to").value,k=$("fg-k").value,it=$("fg-i").value,qq=Math.floor(+$("fg-q").value||0),nt=$("fg-n").value.trim(),ids=to==="all"?null:to.indexOf("d:")===0?S.emps.filter(function(e){return e.active&&e.department_id===to.slice(2)}).map(function(e){return e.id}):[to.slice(2)];
+    if(qq<1){toast("ใส่จำนวนก่อน");return}var who=to==="all"?"ทุกคน":to.indexOf("d:")===0?(ids.length+" คนในแผนก"):((S.emps.filter(function(e){return e.id===to.slice(2)})[0]||{}).display_name||"");
+    if(!armed(t,"แตะอีกครั้งเพื่อยืนยัน: มอบ "+fmGiftLbl({kind:k,item:it,qty:qq}).t+" ให้ "+who)){sfx("tap");return}
+    t.disabled=true;q(db.rpc("farm_admin_give",{p_emps:ids,p_kind:k,p_item:(k==="coins"||k==="xp")?null:it,p_qty:qq,p_note:nt})).then(function(n){sfx("buy");toast("🎁 มอบแล้ว "+n+" คน");$("fg-n").value="";fmGiftOpen(to)},function(e){sfx("error");toast(thErr(e));t.disabled=false});return}
+  if(D.fmt==="gift"){sfx("open");fmGiftOpen();return}
   if(D.fmdn){FDN.mode=FDN.mode==="auto"?(fmIsNight()?"day":"night"):FDN.mode==="day"?"night":"auto";try{localStorage.setItem("aoi-farm-dn",FDN.mode)}catch(e){}sfx("tap");fmApplyDN();toast(FDN.mode==="auto"?"🕒 กลางวัน/กลางคืนตามเวลาจริง":FDN.mode==="night"?"🌙 โหมดกลางคืน":"☀️ โหมดกลางวัน");return}
   if(D.fmaud){if(D.fmaud==="sfx"){FA.sfx=!FA.sfx;sfx("tap")}else{FA.mus=!FA.mus;faMusic(FA.mus)}faSave();$("fm-hud").innerHTML=fmHud();return}
   if(D.fmclose){sfx("close");FM.t="farm";fmSheet();return}
