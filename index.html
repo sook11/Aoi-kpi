@@ -4150,6 +4150,7 @@ function fm3Decor(k){var g=new THREE.Group();
 function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
   var gr=fm3Mesh(new THREE.CircleGeometry(60,48),0x4f9f2b,0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
   var farm=fm3Mesh(new THREE.BoxGeometry(24.6,.3,24.6),0x7ccf4f,0,-.15,0,st,false);farm.receiveShadow=true;
+  [[.75,5.15],[8.25,12.65]].forEach(function(r){var a=fm3P(r[0],12.05),b=fm3P(r[1],14.75),lz=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0x86d457,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,st,false);lz.receiveShadow=true});
   FMAP&&Object.keys(FMAP.o).forEach(function(k){var t=FMAP.o[k],xy=k.split(",").map(Number),p=fm3P(xy[0]+.5,xy[1]+.5);
     if(t==="path"){var m=fm3Mesh(new THREE.BoxGeometry(2,.06,2),0xe9c98f,p[0],.03,p[1],st,false);m.receiveShadow=true}
     else if(t==="tree")fm3Tree(st,p[0],p[1],.85+((xy[0]*7+xy[1]*3)%5)/12,((xy[0]+xy[1])%3===0)?"fruit":((xy[0]*3+xy[1])%4===0?"pine":"round"))});
@@ -4184,7 +4185,7 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
   var cp=fm3P(7.75,5.75),coop=new THREE.Group();coop.position.set(cp[0],0,cp[1]);st.add(coop);fm3Box(coop,1.2,.9,1,0xdc2626,0,.75,0);fm3Roof(coop,1.2,1,.6,0x1f2937,0,1.2,0);[[-.5,-.4],[.5,-.4],[-.5,.4],[.5,.4]].forEach(function(p){fm3Box(coop,.08,.3,.08,0x57534e,p[0],.15,p[1])});
   /* ป่ารอบฟาร์ม (หลายต้น แต่วาดเป็นชุดเดียว — เบาสำหรับมือถือ) */
   var pts=[];for(var ty=-9;ty<=23;ty++)for(var tx=-9;tx<=23;tx++){if(tx>=-1&&tx<=12.6&&ty>=-1&&ty<=12.6)continue;var sd=tx*131+ty*71+999;if(frand(sd)<.5)continue;var fx=tx+frand(sd+1)*.8,fy=ty+frand(sd+2)*.8;
-    if(fx>4.9&&fx<8.3&&fy>12)continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;var p=fm3P(fx,fy);if(Math.hypot(p[0],p[1])>56)continue;pts.push([p[0],p[1],.8+frand(sd+4)*.6,frand(sd+3)])}
+    if(fx>4.9&&fx<8.3&&fy>12)continue;if(fmInLand(fx,fy)||fmInLand(fx+.6,fy+.6))continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;var p=fm3P(fx,fy);if(Math.hypot(p[0],p[1])>56)continue;pts.push([p[0],p[1],.8+frand(sd+4)*.6,frand(sd+3)])}
   var n=pts.length,tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(.16,.24,1.2,8),fm3Mat(0x8b5a2b),n),cr=new THREE.InstancedMesh(new THREE.SphereGeometry(1.1,14,10),fm3Mat(0x3f9a35),n),pn=new THREE.InstancedMesh(new THREE.ConeGeometry(1.1,2.8,14),fm3Mat(0x2f8f40),n),M=new THREE.Matrix4(),Z=new THREE.Matrix4().makeScale(0,0,0);
   pts.forEach(function(p,i){var s=p[2];M.compose(new THREE.Vector3(p[0],.6*s,p[1]),new THREE.Quaternion(),new THREE.Vector3(s,s,s));tr.setMatrixAt(i,M);
     if(p[3]<.6){M.compose(new THREE.Vector3(p[0],2.2*s,p[1]),new THREE.Quaternion(),new THREE.Vector3(s,s,s));pn.setMatrixAt(i,M);cr.setMatrixAt(i,Z)}else{M.compose(new THREE.Vector3(p[0],1.9*s,p[1]),new THREE.Quaternion(),new THREE.Vector3(s,s*.95,s));cr.setMatrixAt(i,M);pn.setMatrixAt(i,Z)}});
@@ -4193,7 +4194,7 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
 /* ---------- ของที่เปลี่ยนตามข้อมูล (ผัก สัตว์ ของแต่ง รถ) ---------- */
 function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.dyn.traverse(function(o){if(o.geometry)o.geometry.dispose()})}
   var g=new THREE.Group();sc.add(g);FM3.dyn=g;FM3.pickD=[];FM3.anim=[];FM3.bubs=[];var c=FM.cat,now=fmNow(),F={};d.field.forEach(function(p){F[p.slot]=p});
-  for(var i=1;i<=c.max_plots;i++){var gx=1+((i-1)%4),gy=5+Math.floor((i-1)/4),p=fm3P(gx+.5,gy+.5),pl=new THREE.Group();pl.position.set(p[0],0,p[1]);g.add(pl);
+  for(var i=1;i<=fmCap(d);i++){var pxy=fmPlotXY(i),gx=pxy[0],gy=pxy[1],p=fm3P(gx+.5,gy+.5),pl=new THREE.Group();pl.position.set(p[0],0,p[1]);g.add(pl);
     if(i>d.plots){if(own&&i===d.plots+1){var lk=fm3Mesh(new THREE.BoxGeometry(1.8,.1,1.8),new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.45}),0,.06,0,pl,false);var ic=fm3Emoji("🔒",.8);ic.position.y=.7;pl.add(ic);pl.userData.pick={fmx:"1"};FM3.pickD.push(pl)}continue}
     var soil=fm3Mesh(new THREE.BoxGeometry(1.85,.28,1.85),0x7a4a26,0,.14,0,pl);for(var r=-2;r<=2;r++)fm3Mesh(new THREE.BoxGeometry(1.7,.06,.16),0x5e3518,0,.3,r*.36,pl,false);
     var cp2=F[i];if(own){pl.userData.pick=cp2?{fmh:String(i)}:{fmp:String(i)};FM3.pickD.push(pl)}
@@ -4209,6 +4210,11 @@ function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.d
     FM3.wand=FM3.wand||{};FM3.wand[an.id]=FM3.wand[an.id]||{x:p[0],y:p[1],tx:p[0],ty:p[1],wait:Math.random()*3,stride:{chicken:9,cow:3.5,pig:5,sheep:4.5}[an.animal]||5};FM3.anim.push({g:hold,a:a,w:FM3.wand[an.id],k:an.animal})});
   /* ของแต่ง */
   fmDecorPos(d).forEach(function(z){var dm=fm3Decor(z.d.item),p=fm3P(z.x+.5,z.y+.5);dm.position.set(p[0],0,p[1]);dm.rotation.y=-.6;g.add(dm)});
+  /* ที่ดินที่ยังไม่ได้ซื้อ */
+  var LL=c.land||[];FLAND.forEach(function(b,k){if(k<(d.land||0)||!LL[k])return;var lg=new THREE.Group(),cp=fm3P(b[0]+1,b[1]+1);lg.position.set(cp[0],0,cp[1]);g.add(lg);
+    [[-1.3,-1.2,.9],[1.4,-1.3,.8],[-1.1,1.3,.75],[1.2,1.1,.85]].forEach(function(t){var bu=fm3Mesh(new THREE.SphereGeometry(t[2],14,10),0x3f9a35,t[0],t[2]*.7,t[1],lg);bu.scale.y=.8});
+    var nx=k===(d.land||0);fm3Box(lg,.15,1.4,.15,0x78350f,0,.7,0);fm3Box(lg,1.9,nx?.9:.6,.12,0xfef3c7,0,1.5,0).rotation.y=-.6;
+    var sp=fm3Emoji(nx?"🪧":"🔒",.9);sp.position.set(0,2.4,0);lg.add(sp);if(own&&nx){lg.userData.pick={fmland:"1"};FM3.pickD.push(lg)}});
   /* สัตว์เลี้ยง */
   Object.keys(FP).forEach(function(k){FP[k].live=0});FM3.pets=[];fmPets(d).forEach(function(x,i){var w=fpInit(x,i);w.live=1;var pm=fm3Pet(x.item),hold=new THREE.Group(),p=fm3P(w.x,w.y);hold.position.set(p[0],0,p[1]);hold.add(pm);g.add(hold);
     hold.userData.pick={fmpet:x.id};FM3.pickD.push(hold);FM3.pets.push({g:hold,m:pm,w:w})});
@@ -4394,6 +4400,18 @@ function fmDecorPos(d){var ok={},used={},out=[],fi=0;FMAP.free.forEach(function(
   var L=d.decor.filter(function(x){return !fmIsPet(x.item)});var fixed=L.map(function(x){var k=x.gx+","+x.gy;if(x.gx!=null&&x.gy!=null&&ok[k]&&!used[k]){used[k]=1;return true}return false});
   L.forEach(function(x,i){if(fixed[i]){out.push({d:x,x:x.gx,y:x.gy});return}
     while(fi<FMAP.free.length&&used[FMAP.free[fi][0]+","+FMAP.free[fi][1]])fi++;var t=FMAP.free[fi%FMAP.free.length]||[1,1];used[t[0]+","+t[1]]=1;fi++;out.push({d:x,x:t[0],y:t[1],auto:true})});return out}
+/* ---------- อัปเดต 74: ที่ดินขยายฟาร์ม (ทางใต้ 4 แปลง) ---------- */
+var FLAND=[[1,12.35],[3,12.35],[8.4,12.35],[10.4,12.35]];
+function fmCap(d){var c=FM.cat||{};return (c.max_plots||12)+(c.plots_per_land||4)*((d&&d.land)||0)}
+function fmPlotXY(i){if(i<=12)return [1+((i-1)%4),5+Math.floor((i-1)/4)];var z=Math.floor((i-13)/4),j=(i-13)%4,b=FLAND[z]||FLAND[0];return [b[0]+(j%2),b[1]+Math.floor(j/2)]}
+function fmInLand(fx,fy){return fy>11.95&&fy<14.9&&fx>.5&&fx<12.7}
+function fmLandSvg(d,own,add){var L=(FM.cat&&FM.cat.land)||[],n=d.land||0;FLAND.forEach(function(b,k){if(k<n||!L[k])return;var x0=b[0]-.05,y0=b[1]-.1,cx=b[0]+1,cy=b[1]+1;
+    var sv='';[[.2,.3,"round",.55],[1.6,.25,"pine",.6],[.4,1.6,"dark",.5],[1.7,1.5,"round",.5]].forEach(function(t){sv+=ftree(iso(x0+t[0],y0+t[1]),t[2],t[3],true)});
+    [[1,.9],[.6,1.2]].forEach(function(t){var m=iso(x0+t[0],y0+t[1]);sv+='<ellipse cx="'+fN(m[0])+'" cy="'+fN(m[1])+'" rx="9" ry="5" fill="#92400e"/><ellipse cx="'+fN(m[0])+'" cy="'+fN(m[1]-3)+'" rx="9" ry="5" fill="#d6a35a"/>'});
+    var nx=k===n,m=iso(cx,cy),z=L[k],lk=nx&&!S.admin&&(d.level||fmLv(d.xp).l)<z.lv,lab=nx?(lk?'🔒 เลเวล '+z.lv:'ขายที่ดิน'):'🔒',sub=nx?(fmc()+' '+num(z.cost)):'';
+    sv+='<g'+(own&&nx?' class="fhit" data-fmland="1"':'')+'><rect x="'+fN(m[0]-2)+'" y="'+fN(m[1]-40)+'" width="4" height="40" fill="#78350f"/><rect x="'+fN(m[0]-44)+'" y="'+fN(m[1]-66)+'" width="88" height="'+(nx?40:28)+'" rx="7" fill="#fef3c7" stroke="#92400e" stroke-width="3"/>'+
+      '<text x="'+fN(m[0])+'" y="'+fN(m[1]-(nx?50:47))+'" text-anchor="middle" style="font:800 13px var(--sans,system-ui)" fill="#78350f">'+lab+'</text>'+(nx?'<text x="'+fN(m[0])+'" y="'+fN(m[1]-33)+'" text-anchor="middle" style="font:800 12px var(--sans,system-ui)" fill="#b45309">'+sub.replace(/<[^>]+>/g,"🪙")+'</text>':'')+'</g>';
+    add(cx+cy+2,sv)})}
 /* ---------- อัปเดต 69: สัตว์เลี้ยงเดินเล่น (หมา แมว กระต่าย นกบินได้ หงส์ว่ายน้ำ ฟลามิงโกเดินริมบ่อ) ---------- */
 function fmIsPet(k){var o=FM.cat&&FM.cat.decor&&FM.cat.decor[k];return !!(o&&o.pet)}
 function fmPets(d){return (d&&d.decor||[]).filter(function(x){return fmIsPet(x.item)})}
@@ -4725,7 +4743,7 @@ function fmScene(d,own){fmGrassTex();var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=
   G.push(ipoly([iso(6,12),iso(7,12),iso(7,24),iso(6,24)],"#e2bd80",' stroke="#c99e5e" stroke-width="2"'));
   [6.3,6.7].forEach(function(tx){var a=iso(tx,12),b=iso(tx,24);G.push('<line x1="'+fN(a[0])+'" y1="'+fN(a[1])+'" x2="'+fN(b[0])+'" y2="'+fN(b[1])+'" stroke="#c99e5e" stroke-width="5" stroke-linecap="round" opacity=".7"/>')});
   for(var rs=0;rs<14;rs++){var rm=iso(6.1+frand(rs*7)*.8,12.2+rs*.85);G.push('<ellipse cx="'+fN(rm[0])+'" cy="'+fN(rm[1])+'" rx="3" ry="1.8" fill="#b88d55"/>')}
-  G.push(ipoly([c00,c10,c11,c01],"url(#fgrass)"));if(FM.gtex)G.push(ipoly([c00,c10,c11,c01],"url(#fgpat)"));
+  G.push(ipoly([c00,c10,c11,c01],"url(#fgrass)"));[[.75,5.15],[8.25,12.65]].forEach(function(r){G.push(ipoly([iso(r[0],12.05),iso(r[1],12.05),iso(r[1],14.75),iso(r[0],14.75)],"#86d457",' stroke="#6cbf45" stroke-width="3"'))});if(FM.gtex)G.push(ipoly([c00,c10,c11,c01],"url(#fgpat)"));
   /* หญ้าเป็นหย่อม ๆ */
   for(var y=0;y<12;y++)for(var x=0;x<12;x++){var t=FMAP.o[x+","+y];
     if(t==="path"){G.push(ipoly([iso(x,y),iso(x+1,y),iso(x+1,y+1),iso(x,y+1)],"#e9c98f",' stroke="#d6b071" stroke-width="1"'));
@@ -4743,7 +4761,7 @@ function fmScene(d,own){fmGrassTex();var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=
   add(5.5,[0,1].map(function(q){return '<g>'+emo(0,8,"🦆",q?22:26,q?' class="iem" transform="scale(-1 1)"':'')+'<animateMotion path="M'+(pc[0]+55)+' '+pc[1]+' a55 22 0 1 0 -110 0 a55 22 0 1 0 110 0" dur="'+(q?26:20)+'s" begin="-'+(q*9)+'s" repeatCount="indefinite"/></g>'}).join(""));add(3.4,emo(pc[0]-80,pc[1]-6,"🌿",24));
   var GS0=G.length;
   /* แปลงผัก */
-  for(var i=1;i<=c.max_plots;i++){var gx=1+((i-1)%4),gy=5+Math.floor((i-1)/4),a=iso(gx,gy),b=iso(gx+1,gy),cc=iso(gx+1,gy+1),dd=iso(gx,gy+1),ctr=iso(gx+.5,gy+.5);
+  for(var i=1;i<=fmCap(d);i++){var pxy=fmPlotXY(i),gx=pxy[0],gy=pxy[1],a=iso(gx,gy),b=iso(gx+1,gy),cc=iso(gx+1,gy+1),dd=iso(gx,gy+1),ctr=iso(gx+.5,gy+.5);
     var ins=function(p,k){return [ctr[0]+(p[0]-ctr[0])*k,ctr[1]+(p[1]-ctr[1])*k]},A=ins(a,.92),B=ins(b,.92),C=ins(cc,.92),D=ins(dd,.92),A2=ins(a,.74),B2=ins(b,.74),C2=ins(cc,.74),D2=ins(dd,.74);
     if(i>d.plots){if(own&&i===d.plots+1)add(gx+gy+.9,'<g class="fhit" data-fmx="1">'+ipoly([A,B,C,D],"rgba(255,255,255,.4)",' stroke="#fff" stroke-dasharray="6 4" stroke-width="2.5"')+emo(ctr[0],ctr[1]+4,"🔒",20)+'<text x="'+ctr[0]+'" y="'+(ctr[1]+20)+'" class="itx" style="font-size:12px">'+(30*(d.plots-3))+'</text></g>');continue}
     var A3=ins(a,.98),B3=ins(b,.98),C3=ins(cc,.98),D3=ins(dd,.98);
@@ -4766,7 +4784,7 @@ function fmScene(d,own){fmGrassTex();var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=
   add(5.3,fwindmill(iso(-1.4,6.4)));add(16.3,fhay(iso(12.6,4.3),13)+fhay(iso(13.1,4.9),13));add(16.9,fhay(iso(12.7,5.3),11));
   [[5.75,12.6],[7.25,16.2],[5.75,19.6]].forEach(function(l){add(l[0]+l[1]+.2,'<g class="flampp">'+flamp(iso(l[0],l[1]))+'</g>')});
   if(!FM.forest){FM.forest=[];for(var ty=-9;ty<=23;ty++)for(var tx=-9;tx<=23;tx++){if(tx>=-1&&tx<=12.6&&ty>=-1&&ty<=12.6)continue;var sd=tx*131+ty*71+999;if(frand(sd)<.5)continue;
-      var fx=tx+frand(sd+1)*.8,fy=ty+frand(sd+2)*.8;if(fx>4.9&&fx<8.3&&fy>12)continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>12.1&&fx<14&&fy>3.4&&fy<6)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;
+      var fx=tx+frand(sd+1)*.8,fy=ty+frand(sd+2)*.8;if(fx>4.9&&fx<8.3&&fy>12)continue;if(fmInLand(fx,fy)||fmInLand(fx+.6,fy+.6))continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>12.1&&fx<14&&fy>3.4&&fy<6)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;
       var fm=iso(fx,fy);if(fm[0]<-50||fm[0]>ISO.vw+50||fm[1]<30||fm[1]>ISO.vh+100)continue;var r=frand(sd+3);
       FM.forest.push([fx+fy,r<.06?'<ellipse cx="'+fN(fm[0])+'" cy="'+fN(fm[1]-4)+'" rx="16" ry="10" fill="#a8a29e"/><ellipse cx="'+fN(fm[0]-4)+'" cy="'+fN(fm[1]-8)+'" rx="8" ry="4" fill="#d6d3d1"/>':ftree(fm,r<.62?"pine":r<.82?"dark":r<.9?"fruit":"round",.95+frand(sd+4)*.45,true)])}}
   if(!FM.forestSorted){FM.forest.sort(function(a,b){return a[0]-b[0]});FM.forestSorted=1}
@@ -4814,7 +4832,7 @@ function fmScene(d,own){fmGrassTex();var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=
   if(ed)FMAP.free.forEach(function(t2){if(taken[t2[0]+","+t2[1]])return;G.push('<g class="ftile" data-fmtile="'+t2[0]+","+t2[1]+'">'+ipoly([iso(t2[0],t2[1]),iso(t2[0]+1,t2[1]),iso(t2[0]+1,t2[1]+1),iso(t2[0],t2[1]+1)],FM.sel?"rgba(255,255,255,.38)":"rgba(255,255,255,.16)",' stroke="rgba(255,255,255,.85)" stroke-width="1.5" stroke-dasharray="4 3"')+'</g>')});
   DP.forEach(function(p2){var x=p2.d,o=c.decor[x.item]||{},m=iso(p2.x+.5,p2.y+.5),big=o.cost>=250,sel=ed&&FM.sel===x.id;
     add(p2.x+p2.y+1,'<g class="fdecor'+(ed?' fhit':'')+(sel?' sel':'')+'"'+(ed?' data-fmdec="'+x.id+'"':'')+'>'+(sel?'<ellipse cx="'+m[0]+'" cy="'+(m[1]+2)+'" rx="34" ry="16" fill="rgba(253,224,71,.55)" stroke="#facc15" stroke-width="3"/>':'')+(fdeco(x.item,m)||shadow([m[0]+4,m[1]+4],big?24:16,big?8:6)+emo(m[0],m[1]+6,o.e||"",big?42:32))+'</g>')});
-  fmPetsSvg(d,ed,add);
+  fmPetsSvg(d,ed,add);fmLandSvg(d,own&&!ed,add);
   S2.sort(function(a,b){return a[0]-b[0]});
   var defs='<defs><radialGradient id="fglow"><stop offset="0" stop-color="#fde68a" stop-opacity=".85"/><stop offset=".35" stop-color="#fbbf24" stop-opacity=".35"/><stop offset="1" stop-color="#fbbf24" stop-opacity="0"/></radialGradient><radialGradient id="fforest" cx=".5" cy=".45" r=".75"><stop offset="0" stop-color="#6cbf3c"/><stop offset=".6" stop-color="#4f9f2b"/><stop offset="1" stop-color="#2f6f1a"/></radialGradient><linearGradient id="fsea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7dd3fc"/><stop offset=".5" stop-color="#38bdf8"/><stop offset="1" stop-color="#0284c7"/></linearGradient>'+
     '<linearGradient id="fgrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9be15d"/><stop offset=".55" stop-color="#7ccf4f"/><stop offset="1" stop-color="#5fb63a"/></linearGradient>'+
@@ -4858,7 +4876,10 @@ function fmShop(d,l){var c=FM.cat,cnt={};d.animals.forEach(function(a){cnt[a.ani
     return '<div class="fitem fpitem'+(lk?' lock':'')+'"><span class="em">'+fpetIcon(k)+'</span><b>'+esc(o.n)+'</b><small>'+({walk:"เดินเล่น",bird:"บินได้",swim:"ว่ายในบ่อ",wade:"เดินริมบ่อ"}[o.pet]||"")+' · +'+o.xp+' XP</small><small>มีแล้ว '+n+'/'+mxp+'</small>'+(lk?'<small>🔒 เลเวล '+o.lv+'</small>':'<button type="button" class="sm primary" data-fmbd="'+k+'"'+(n>=mxp?' disabled':'')+'>ซื้อ '+fmc()+' '+o.cost+'</button>')+'</div>'}).join("")+'</div></div>';
   h+='<div class="panel"><h3>🌳 ของแต่งฟาร์ม</h3><p class="sub">ได้ XP ทันที · โชว์ในฟาร์มให้เพื่อนมาเยี่ยม</p><div class="fshop">'+Object.keys(c.decor).filter(function(k){return !c.decor[k].pet}).map(function(k){var o=c.decor[k],lk=l<o.lv;
     return item(o,'<small>+'+o.xp+' XP</small>'+(lk?'<small>🔒 เลเวล '+o.lv+'</small>':'<button type="button" class="sm primary" data-fmbd="'+k+'">ซื้อ '+fmc()+' '+o.cost+'</button>'),lk)}).join("")+'</div></div>';
-  h+='<div class="panel"><h3>🔓 ขยายแปลงผัก</h3><p class="sub">ตอนนี้ '+d.plots+'/'+c.max_plots+' แปลง</p>'+(d.plots<c.max_plots?'<button type="button" class="primary slim" data-fmx="1">ขยายแปลงที่ '+(d.plots+1)+' · '+fmc()+' '+(30*(d.plots-3))+'</button>':'<p>ขยายครบแล้ว 🎉</p>')+'</div>';
+  var LDS=c.land||[],nl=d.land||0;if(LDS.length)h+='<div class="panel"><h3>🏞️ ซื้อที่ดินขยายฟาร์ม</h3><p class="sub">ที่ดินทางใต้ของฟาร์ม ซื้อเรียงทีละแปลง · ได้พื้นที่ปลูกผักเพิ่มแปลงละ '+(c.plots_per_land||4)+' แปลง · มีแล้ว '+nl+'/'+LDS.length+'</p><div class="fshop">'+
+    LDS.map(function(z,k){var own2=k<nl,nx=k===nl,lk=!S.admin&&l<z.lv;return '<div class="fitem'+(own2?'':lk||!nx?' lock':'')+'"><span class="em">'+(own2?'✅':'🏞️')+'</span><b>'+esc(z.n)+'</b><small>+'+(c.plots_per_land||4)+' แปลงผัก</small>'+
+      (own2?'<small>ซื้อแล้ว</small>':!nx?'<small>🔒 ซื้อที่ดินก่อนหน้าก่อน</small>':lk?'<small>🔒 เลเวล '+z.lv+'</small>':'<button type="button" class="sm primary" data-fmland="1">ซื้อ '+fmc()+' '+num(z.cost)+'</button>')+'</div>'}).join("")+'</div></div>';
+  h+='<div class="panel"><h3>🔓 ขยายแปลงผัก</h3><p class="sub">ตอนนี้ '+d.plots+'/'+fmCap(d)+' แปลง'+(d.plots>=fmCap(d)&&nl<LDS.length?' · ซื้อที่ดินเพิ่มเพื่อขยายต่อ':'')+'</p>'+(d.plots<fmCap(d)?'<button type="button" class="primary slim" data-fmx="1">ขยายแปลงที่ '+(d.plots+1)+' · '+fmc()+' '+(30*(d.plots-3))+'</button>':'<p>ขยายครบแล้ว 🎉</p>')+'</div>';
   return h}
 /* แตะผัก/สัตว์ที่ยังไม่พร้อม → ป้ายบอกเวลาที่เหลือ (นับถอยหลังสด ๆ 4 วินาที) */
 function fmTimeBub(ev,until,mins,label,slot){try{var o=document.getElementById("fm-tbub");if(o)o.remove();var b=document.createElement("div");b.id="fm-tbub";b.className="ftbub";document.body.appendChild(b);
@@ -4974,7 +4995,7 @@ function fmGiftShow(L){if(!L||!L.length)return;var t=L.map(function(g){return fm
 function fmSeedHtml(){var c=FM.cat,l=fmL();return '<p class="sub" style="margin:0">ปลูกที่แปลง '+FM.slot+' · มี '+fmc()+' '+fmCoinTxt(FM.d.coins)+'</p><div class="seedgrid">'+Object.keys(c.crops).map(function(k){var o=c.crops[k],lk=l<o.lv,poor=FM.d.coins<o.cost;
     return '<button type="button" data-fmseed="'+k+'"'+(lk||poor?' disabled':'')+'><span class="em">'+o.e+'</span><b>'+esc(o.n)+'</b><small>'+fmc()+' '+o.cost+' · '+fmDur(o.min)+'</small><small>'+(lk?'🔒 เลเวล '+o.lv:'ขาย '+o.sell+' · +'+o.xp+' XP')+'</small></button>'}).join("")+'</div>'}
 function fmSeed(slot){FM.slot=slot;FM.t="seed";fmSheet()}
-document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud],[data-fmedit],[data-fmdec],[data-fmtile],[data-fmod],[data-fmos],[data-fmbu],[data-fmdn],[data-fmgive],[data-fmgto],[data-fm3d],[data-fmpet],[data-fmboost],[data-fmbp]");if(!t)return;var D=t.dataset;
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud],[data-fmedit],[data-fmdec],[data-fmtile],[data-fmod],[data-fmos],[data-fmbu],[data-fmdn],[data-fmgive],[data-fmgto],[data-fm3d],[data-fmpet],[data-fmboost],[data-fmbp],[data-fmland]");if(!t)return;var D=t.dataset;
   if(D.fmexit){sfx("close");FM.edit=false;FM.sel=null;show("home");return}
   if(D.fmedit&&FM3.on&&D.fmedit==="on"){FM3.on=false;FM3.back=1;toast("จัดฟาร์มใช้มุมมอง 2D ชั่วคราว")}if(D.fmedit&&D.fmedit!=="on"&&FM3.back){FM3.back=0;FM.edit=false;FM.sel=null;FM.t="farm";toast("บันทึกการจัดฟาร์มแล้ว ✨");fm3Toggle(true);return}
   if(D.fmedit){FM.edit=D.fmedit==="on";FM.sel=null;FM.t="farm";sfx(FM.edit?"open":"buy");if(!FM.edit)toast("บันทึกการจัดฟาร์มแล้ว ✨");FM.keep=true;drawFarm();return}
@@ -5015,6 +5036,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(D.fms){FM.snd="coin";fmDo(function(){return q(db.rpc("farm_sell",{p_item:D.fms,p_qty:+D.q}))},function(n){return "ขายได้ +"+n+" เหรียญ 💰"});return}
   if(D.fmba){var a=FM.cat.animals[D.fmba];if(!armed(t,"แตะอีกครั้ง ซื้อ"+a.n+" "+a.buy+" เหรียญ")){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_buy_animal",{p_animal:D.fmba}))},"ได้"+a.n+"แล้ว "+a.e+" ไปให้อาหารที่หน้า ฟาร์ม");return}
   if(D.fmpet){fmPetLove(D.fmpet,ev);return}
+  if(D.fmland){var LZ=(FM.cat.land||[])[FM.d.land||0];if(!LZ)return;if(!S.admin&&fmLv(FM.d.xp).l<LZ.lv){sfx("error");toast("ต้องเลเวล "+LZ.lv+" ก่อนถึงจะซื้อ"+LZ.n+"ได้");return}if(!armed(t,"แตะอีกครั้ง จ่าย "+num(LZ.cost))){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_land_buy"))},"🏞️ ซื้อ"+LZ.n+"แล้ว! ขยายแปลงผักเพิ่มได้อีก "+((FM.cat.plots_per_land)||4)+" แปลง");return}
   if(D.fmboost){var bo=FM.cat.boosts[D.fmboost];if(!armed(t,"แตะอีกครั้ง จ่าย "+bo.cost)){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_boost_buy",{p_kind:D.fmboost}))},bo.e+" ใช้"+bo.n+"แล้ว ผักโตเร็ว x2 นาน "+fmDur(bo.mins));return}
   if(D.fmbp){var tb=document.getElementById("fm-tbub");if(!armed(t,"แตะอีกครั้งเพื่อยืนยัน")){sfx("tap");return}if(tb)tb.remove();FM.snd="coin";fmDo(function(){return q(db.rpc("farm_boost_plot",{p_slot:+D.fmbp}))},function(n){return "⚡ สุกทันที ใช้ "+n+" เหรียญ · แตะเก็บได้เลย"});return}
   if(D.fmbd){var o=FM.cat.decor[D.fmbd];if(!armed(t,"แตะอีกครั้ง จ่าย "+o.cost)){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_buy_decor",{p_item:D.fmbd}))},"ซื้อ"+o.n+"แล้ว "+o.e+" +"+o.xp+" XP");return}
