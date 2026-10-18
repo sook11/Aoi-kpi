@@ -4090,7 +4090,7 @@ var FM3={on:false,ready:false,loading:null};
 try{FM3.on=localStorage.getItem("aoi-farm-3d")==="1"}catch(e){}
 function fm3Load(){if(window.THREE&&THREE.OrbitControls)return Promise.resolve();if(FM3.loading)return FM3.loading;
   var add=function(src){return new Promise(function(ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})};
-  FM3.loading=add("https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js").then(function(){return add("https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js")});
+  FM3.loading=add("https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js").then(function(){return add("https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js")}).then(function(){return add("https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/geometries/RoundedBoxGeometry.js").catch(function(){})});
   FM3.loading.catch(function(){FM3.loading=null});return FM3.loading}
 function fm3Ok(){try{var c=document.createElement("canvas");return !!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")))}catch(e){return false}}
 /* พิกัดช่อง (x,y) → โลก 3D : ช่องละ 2 หน่วย กลางฟาร์มที่ (6,6) */
@@ -4168,6 +4168,65 @@ function fm3Decor(k){var g=new THREE.Group();
   default:var sp2=fm3Emoji((FM.cat.decor[k]||{}).e||"🎁",1.2);sp2.position.y=.6;g.add(sp2)}
   return g}
 /* ---------- สร้างฉากคงที่ (ครั้งเดียว) ---------- */
+/* ---------- อัปเดต 86: อาคารแบบมน มีรายละเอียด (ยุ้งฉาง ไซโล บ้าน กังหัน ร้านริมทาง รถส่งของ) ---------- */
+function fm3RB(par,w,h,d,r,col,x,y,z){var g=THREE.RoundedBoxGeometry?new THREE.RoundedBoxGeometry(w,h,d,3,Math.min(r,w/2-.001,h/2-.001,d/2-.001)):new THREE.BoxGeometry(w,h,d);return fm3Mesh(g,col,x,y,z,par)}
+function fm3Ext(par,pts,depth,col,x,y,z,bev){var sh=new THREE.Shape();pts.forEach(function(p,i){i?sh.lineTo(p[0],p[1]):sh.moveTo(p[0],p[1])});
+  var g=new THREE.ExtrudeGeometry(sh,{depth:depth,bevelEnabled:!!bev,bevelSize:bev||0,bevelThickness:bev||0,bevelSegments:2,curveSegments:4});g.translate(0,0,-depth/2);return fm3Mesh(g,col,x,y,z,par)}
+function fm3Shell(outer,inner){return outer.concat(inner.slice().reverse())}
+function fm3Barn(par){var g=new THREE.Group();par.add(g);var W=6.4,D=4,H=2.7,RED=0xc23a2c,DRK=0x9e2c21,WHT=0xfaf7f0,ROOF=0x6b4630;
+  fm3RB(g,W+.3,.35,D+.3,.08,0xa8a29e,0,.17,0);
+  fm3RB(g,W,H,D,.1,RED,0,.35+H/2,0);
+  for(var i=-6;i<=6;i++){if(i===0||Math.abs(i)===1)continue;fm3Box(g,.05,H-.1,.03,DRK,i*.46,.35+H/2,D/2+.005);fm3Box(g,.05,H-.1,.03,DRK,i*.46,.35+H/2,-D/2-.005)}
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(c){fm3RB(g,.18,H+.05,.18,.05,WHT,c[0]*W/2,.35+H/2,c[1]*D/2)});fm3RB(g,W+.12,.16,D+.12,.05,WHT,0,.35+H,0);
+  var b=.35+H,gam=[[-W/2-.05,0],[-W/2+.45,1.25],[-1.35,2.2],[0,2.45],[1.35,2.2],[W/2-.45,1.25],[W/2+.05,0]];
+  fm3Ext(g,gam,D-.02,RED,0,b,0);
+  var out=gam.map(function(p){return [p[0]*1.07,p[1]*1.08+.12]});out[0]=[-W/2-.42,-.12];out[out.length-1]=[W/2+.42,-.12];
+  var shell=fm3Ext(g,fm3Shell(out,gam.map(function(p){return [p[0],p[1]]})),D+.5,ROOF,0,b,0,.04);
+  fm3Ext(g,fm3Shell(out.map(function(p){return [p[0],p[1]+.02]}),out.map(function(p){return [p[0]*.995,p[1]-.08]})),D+.56,0xf5f0e6,0,b,0);
+  fm3RB(g,2.1,2.1,.14,.05,WHT,0,1.4,D/2+.04);fm3RB(g,1.8,1.9,.16,.04,DRK,0,1.33,D/2+.06);
+  [[.75],[-.75]].forEach(function(s){var x=fm3Box(g,.13,2.5,.06,WHT,0,1.33,D/2+.15);x.rotation.z=s[0]});fm3Box(g,.06,1.9,.07,WHT,0,1.33,D/2+.15);
+  fm3RB(g,1.05,.95,.12,.05,WHT,0,b+1.2,D/2-.02);fm3RB(g,.8,.72,.14,.04,0x4a2a1a,0,b+1.2,D/2);fm3Box(g,.06,.72,.16,WHT,0,b+1.2,D/2);
+  fm3Mesh(new THREE.ConeGeometry(.1,.5,8),0x57534e,0,b+2.85,0,g);fm3Mesh(new THREE.SphereGeometry(.12,10,8),0xf59e0b,0,b+3.1,0,g);
+  fm3RB(g,.9,.45,.6,.12,0xe8c15a,-2.4,.58,D/2+.55);fm3RB(g,.9,.45,.6,.12,0xe8c15a,-2.1,1.03,D/2+.5);fm3RB(g,.9,.45,.6,.12,0xe2b84c,2.5,.58,D/2+.6);
+  return g}
+function fm3Silo(par,x,z){var g=new THREE.Group();g.position.set(x,0,z);par.add(g);fm3Mesh(new THREE.CylinderGeometry(1.05,1.1,.3,28),0xa8a29e,0,.15,0,g);
+  fm3Mesh(new THREE.CylinderGeometry(1,1,4.8,28),0xdfe5ea,0,2.7,0,g);[1.2,2.4,3.6,4.8].forEach(function(h){fm3Mesh(new THREE.TorusGeometry(1.01,.045,6,32),0x94a3b8,0,h,0,g).rotation.x=Math.PI/2});
+  fm3Mesh(new THREE.SphereGeometry(1.06,28,14,0,Math.PI*2,0,Math.PI/2),0x2f7d8c,0,5.1,0,g);fm3Mesh(new THREE.SphereGeometry(.14,10,8),0x2f7d8c,0,6.15,0,g);
+  for(var i=0;i<12;i++)fm3Box(g,.36,.04,.04,0x6b7280,0,.6+i*.38,1.05);[-.17,.17].forEach(function(s){fm3Box(g,.04,4.6,.04,0x6b7280,s,2.6,1.07)});return g}
+function fm3House(par){var g=new THREE.Group();par.add(g);var CR=0xfdf3dc,BM=0x8a5a3b,RF=0x3f6fa8;
+  fm3RB(g,3.9,.3,3.3,.06,0xa8a29e,0,.15,0);fm3RB(g,3.6,2.1,3,.1,CR,0,1.35,0);
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(c){fm3RB(g,.16,2.1,.16,.04,BM,c[0]*1.8,1.35,c[1]*1.5)});fm3RB(g,3.7,.14,3.1,.04,BM,0,2.38,0);
+  var rp=[[-2.15,-.05],[0,1.55],[2.15,-.05]];fm3Ext(g,[[-1.8,0],[0,1.3],[1.8,0]],2.98,CR,0,2.4,0);
+  fm3Ext(g,fm3Shell([[-2.2,-.1],[0,1.62],[2.2,-.1]],[[-1.95,-.1],[0,1.38],[1.95,-.1]]),3.6,RF,0,2.4,0,.05);
+  fm3RB(g,.5,1.3,.5,.05,0xa0522d,1,3.6,-.4);fm3RB(g,.62,.14,.62,.04,0x7c3a1d,1,4.28,-.4);
+  fm3RB(g,.85,1.35,.12,.08,0x8a4b25,0,.98,1.52);fm3Mesh(new THREE.SphereGeometry(.05,8,6),0xfacc15,.28,.95,1.6,g);
+  [-1.1,1.1].forEach(function(x){fm3RB(g,.78,.72,.1,.05,0xffffff,x,1.6,1.52);fm3RB(g,.6,.54,.12,.04,0x9ad4f5,x,1.6,1.53);fm3Box(g,.04,.54,.14,0xffffff,x,1.6,1.54);
+    [-1,1].forEach(function(s){fm3RB(g,.2,.72,.08,.03,0x4f8a4a,x+s*.5,1.6,1.54)});fm3RB(g,.8,.16,.22,.04,0x8a5a3b,x,1.17,1.62);[0xf472b6,0xfde047,0xf87171].forEach(function(c,i){fm3Mesh(new THREE.SphereGeometry(.08,8,6),c,x-.24+i*.24,1.3,1.64,g)})});
+  fm3RB(g,1.4,.12,.8,.04,0xb07a4a,0,.36,1.85);fm3RB(g,1,.12,.35,.04,0xb07a4a,0,.2,2.3);
+  fm3Ext(g,[[-1,0],[0,.45],[1,0]],.9,RF,0,2.15,1.95);[-.6,.6].forEach(function(x){fm3Box(g,.1,1.7,.1,BM,x,1.3,2.2)});
+  fm3Mesh(new THREE.SphereGeometry(.45,12,10),0x4f9a2e,-2.2,.4,1.2,g).scale.y=.8;fm3Mesh(new THREE.SphereGeometry(.38,12,10),0x5aa832,2.15,.35,1.3,g).scale.y=.8;return g}
+function fm3Windmill(par){var g=new THREE.Group();par.add(g);fm3Mesh(new THREE.CylinderGeometry(1.25,1.3,.35,20),0xa8a29e,0,.17,0,g);
+  fm3Mesh(new THREE.CylinderGeometry(.78,1.15,4.6,20),0xeadbc1,0,2.6,0,g);[1.2,2.6,4].forEach(function(h,i){fm3Mesh(new THREE.TorusGeometry(1.12-h*.083,.05,6,24),0xb8a582,0,h,0,g).rotation.x=Math.PI/2});
+  fm3RB(g,.6,1.05,.2,.1,0x8a4b25,0,.85,1.08).rotation.x=-.06;fm3Mesh(new THREE.CircleGeometry(.22,16),0x6aa9d6,0,3.2,.97,g).rotation.x=-.08;fm3Mesh(new THREE.TorusGeometry(.23,.04,6,16),0xffffff,0,3.2,.98,g).rotation.x=-.08;
+  var cap=fm3Mesh(new THREE.SphereGeometry(.98,20,12,0,Math.PI*2,0,Math.PI/2),0xb5452f,0,4.85,0,g);cap.scale.set(1,1.1,1.25);fm3Mesh(new THREE.TorusGeometry(.92,.07,8,24),0x7c3a1d,0,4.88,0,g).rotation.x=Math.PI/2;
+  fm3Mesh(new THREE.CylinderGeometry(.14,.14,.6,12),0x57534e,0,4.6,1,g).rotation.x=Math.PI/2;
+  var bl=new THREE.Group();bl.position.set(0,4.6,1.3);g.add(bl);for(var i=0;i<4;i++){var arm=new THREE.Group();arm.rotation.z=i*Math.PI/2+.4;bl.add(arm);
+    fm3Box(arm,.12,2.7,.08,0x8a5a3b,0,1.4,0);fm3Box(arm,.72,2.05,.03,0xf5ecd7,.38,1.65,-.03);for(var k=0;k<5;k++)fm3Box(arm,.78,.05,.06,0x8a5a3b,.38,.75+k*.46,0);fm3Box(arm,.05,2.05,.06,0x8a5a3b,.76,1.65,0)}
+  fm3Mesh(new THREE.SphereGeometry(.2,12,10),0x57534e,0,0,.05,bl);g.userData.blades=bl;return g}
+function fm3Stall(par){var g=new THREE.Group();par.add(g);var WD=0xb7824a,DK=0x8a5a3b;
+  fm3RB(g,2,.95,1.15,.08,WD,0,.48,0);for(var i=-2;i<=2;i++)fm3Box(g,.04,.85,.02,DK,i*.4,.48,.58);fm3RB(g,2.15,.1,1.3,.04,DK,0,.98,0);
+  [[-.92,.55],[.92,.55],[-.92,-.5],[.92,-.5]].forEach(function(p){fm3RB(g,.11,2.05,.11,.04,DK,p[0],1.03,p[1])});
+  for(var s=0;s<6;s++){var c=s%2?0xffffff:0xe23b3b,st=fm3Box(g,.37,.07,1.55,c,-.93+s*.372,2.1,.08);st.rotation.x=.18;var sc=fm3Mesh(new THREE.CylinderGeometry(.186,.186,.07,12,1,false,0,Math.PI),c,-.93+s*.372,1.93,.87,g);sc.rotation.z=Math.PI/2;sc.rotation.y=Math.PI/2}
+  [[0xef4444,-.6],[0xf97316,-.05],[0xfacc15,.5]].forEach(function(f){fm3RB(g,.46,.22,.42,.04,0xc8955a,f[1],1.13,.05);for(var k=0;k<4;k++)fm3Mesh(new THREE.SphereGeometry(.09,10,8),f[0],f[1]-.1+(k%2)*.2,1.28,-.05+Math.floor(k/2)*.18,g)});
+  fm3RB(g,.55,.42,.45,.05,0xc8955a,1.35,.21,.3);fm3RB(g,.5,.4,.45,.05,0xc08a4a,-1.35,.2,.35);return g}
+function fm3Truck(par){var g=new THREE.Group();par.add(g);var R=0xd6362b,RD=0xa82a22;
+  fm3RB(g,1.3,.32,3,.08,0x3f3f46,0,.42,-.1);
+  fm3RB(g,1.32,1.05,1.15,.22,R,0,1.02,-1.25);fm3RB(g,1.3,.55,.65,.18,R,0,.78,-2.02);fm3RB(g,1.12,.48,.06,.05,0xbfe6f7,0,1.25,-1.84);
+  [-.67,.67].forEach(function(x){fm3RB(g,.05,.38,.6,.04,0xbfe6f7,x,1.25,-1.2)});fm3RB(g,1.36,.12,.14,.05,0xd4d4d8,0,.55,-2.36);
+  [-.42,.42].forEach(function(x){fm3Mesh(new THREE.SphereGeometry(.1,10,8),0xfff3b0,x,.85,-2.34,g)});fm3RB(g,.5,.18,.04,.03,0x9ca3af,0,.82,-2.35);
+  fm3RB(g,1.34,.12,1.75,.04,0x8a5a3b,0,.62,.55);[-.66,.66].forEach(function(x){fm3RB(g,.06,.5,1.75,.03,0xb7824a,x,.9,.55)});fm3RB(g,1.34,.5,.06,.03,0xb7824a,0,.9,1.4);
+  [[-1,-1.35],[1,-1.35],[-1,.85],[1,.85]].forEach(function(w){var t=fm3Mesh(new THREE.TorusGeometry(.24,.11,10,20),0x1f2937,w[0]*.62,.33,w[1],g);t.rotation.y=Math.PI/2;var h=fm3Mesh(new THREE.CylinderGeometry(.14,.14,.14,14),0xe5e7eb,w[0]*.64,.33,w[1],g);h.rotation.z=Math.PI/2;fm3RB(g,.3,.1,.78,.04,RD,w[0]*.62,.68,w[1])});
+  fm3RB(g,.48,.42,.48,.05,0xd6a35a,-.28,.9,.3);fm3RB(g,.48,.42,.48,.05,0xc89448,.3,.9,.75);fm3RB(g,.44,.38,.44,.05,0x16a34a,-.25,1.3,.35);fm3Mesh(new THREE.SphereGeometry(.12,8,6),0xef4444,.3,1.18,.75,g);return g}
 function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
   var gr=fm3Mesh(new THREE.CircleGeometry(60,48),fm3TexMat("field",[22,22]),0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
   var farm=fm3Mesh(new THREE.BoxGeometry(24.6,.3,24.6),fm3TexMat("grass",[7,7]),0,-.15,0,st,false);farm.receiveShadow=true;
@@ -4184,20 +4243,16 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
     var n=Math.round(len*2);for(var i=0;i<n;i++){var t=(i+.5)/n;fm3Mesh(new THREE.SphereGeometry(.06,8,6),i%2?0xfde047:0xffffff,a[0]+(b[0]-a[0])*t,.52,a[1]+(b[1]-a[1])*t,st,false)}};
   hedge(.85,4.82,5.15,4.82);hedge(.85,4.82,.85,8.18);hedge(5.15,4.82,5.15,6.2);hedge(5.15,7.2,5.15,8.18);hedge(.85,8.18,2.6,8.18);hedge(3.4,8.18,5.15,8.18);
   /* ยุ้งฉาง + ไซโล */
-  var bc=fm3P(8.9,1.45),barn=new THREE.Group();barn.position.set(bc[0],0,bc[1]);st.add(barn);fm3Box(barn,6.4,3,4,0xc8372d,0,1.5,0);fm3Roof(barn,6.4,4,2,0x5a3a22,0,3,0).rotation.y=0;
-  fm3Box(barn,2,2.2,.1,0xf5f0e6,0,1.1,2.02);fm3Box(barn,1.8,2,.12,0x9c2a22,0,1.05,2.05);var x1=fm3Box(barn,.15,2.6,.05,0xf5f0e6,0,1.05,2.12);x1.rotation.z=.75;var x2=fm3Box(barn,.15,2.6,.05,0xf5f0e6,0,1.05,2.12);x2.rotation.z=-.75;
-  var lb=fm3Label("ยุ้งฉาง");lb.position.set(0,5.6,1.5);barn.add(lb);barn.userData.pick={fmt:"barn"};FM3.pickables.push(barn);
-  var sl=fm3P(10.9,.9);fm3Mesh(new THREE.CylinderGeometry(1,1,5,24),0xd8d8d0,sl[0],2.5,sl[1],st);fm3Mesh(new THREE.SphereGeometry(1,24,12,0,Math.PI*2,0,Math.PI/2),0x8a8f99,sl[0],5,sl[1],st);
+  var bc=fm3P(8.9,1.45),barn=new THREE.Group();barn.position.set(bc[0],0,bc[1]);st.add(barn);fm3Barn(barn);
+  var lb=fm3Label("ยุ้งฉาง");lb.position.set(0,6.4,1.5);barn.add(lb);barn.userData.pick={fmt:"barn"};FM3.pickables.push(barn);
+  var sl=fm3P(10.9,.9);fm3Silo(st,sl[0],sl[1]);
   /* บ้านไร่ */
-  var hc=fm3P(13.6,1.25),ho=new THREE.Group();ho.position.set(hc[0],0,hc[1]);st.add(ho);fm3Box(ho,3.6,2.2,3,0xfafaf9,0,1.1,0);var rf=fm3Roof(ho,3.6,3,1.4,0x475569,0,2.2,0);
-  fm3Box(ho,.7,1.2,.08,0x92400e,0,.6,1.52);fm3Box(ho,.6,.6,.08,0x7dd3fc,-1.1,1.3,1.52);fm3Box(ho,.6,.6,.08,0x7dd3fc,1.1,1.3,1.52);fm3Box(ho,.4,1,.4,0xb45309,1,3.2,0);
+  var hc=fm3P(13.6,1.25),ho=new THREE.Group();ho.position.set(hc[0],0,hc[1]);st.add(ho);fm3House(ho);
   /* กังหันลม */
-  var wc=fm3P(-1.4,6.4),wm=new THREE.Group();wm.position.set(wc[0],0,wc[1]);st.add(wm);fm3Mesh(new THREE.CylinderGeometry(.7,1.1,5,20),0xf5ecd7,0,2.5,0,wm);fm3Mesh(new THREE.ConeGeometry(.95,1.2,20),0xdc2626,0,5.6,0,wm);
-  var bl=new THREE.Group();bl.position.set(0,4.6,.9);wm.add(bl);for(var i=0;i<4;i++){var arm=new THREE.Group();arm.rotation.z=i*Math.PI/2;bl.add(arm);fm3Box(arm,.6,2.4,.05,0xffffff,0,1.3,0)}fm3Mesh(new THREE.SphereGeometry(.2,12,10),0x57534e,0,0,0,bl);wm.rotation.y=.8;FM3.blades=bl;
+  var wc=fm3P(-1.4,6.4),wm=new THREE.Group();wm.position.set(wc[0],0,wc[1]);st.add(wm);var wmm=fm3Windmill(wm);wm.rotation.y=.8;FM3.blades=wmm.userData.blades;
   /* ร้านค้า + ตู้จดหมาย */
-  var sp=fm3P(1.5,10.5),shop=new THREE.Group();shop.position.set(sp[0],0,sp[1]);st.add(shop);fm3Box(shop,1.8,.9,1.2,0xc68a3a,0,.45,0);for(var s2=0;s2<5;s2++)fm3Box(shop,.36,.08,1.5,s2%2?0xffffff:0xef4444,-.72+s2*.36,1.9,0);
-  [[-.6,0],[.6,0]].forEach(function(p){fm3Box(shop,.08,1.9,.08,0x92400e,p[0],.95,.6)});[0xef4444,0xf97316,0xfacc15].forEach(function(c,i){fm3Mesh(new THREE.SphereGeometry(.15,12,10),c,-.4+i*.4,1,0,shop)});
-  var l2=fm3Label("ร้านริมทาง");l2.position.set(0,2.8,0);shop.add(l2);shop.userData.pick={fmt:"stall"};FM3.pickables.push(shop);
+  var sp=fm3P(1.5,10.5),shop=new THREE.Group();shop.position.set(sp[0],0,sp[1]);st.add(shop);fm3Stall(shop);
+  var l2=fm3Label("ร้านริมทาง");l2.position.set(0,3.1,0);shop.add(l2);shop.userData.pick={fmt:"stall"};FM3.pickables.push(shop);
   var mp=fm3P(5.5,10.5),mb=new THREE.Group();mb.position.set(mp[0],0,mp[1]);st.add(mb);fm3Box(mb,.1,1,.1,0x78350f,0,.5,0);fm3Box(mb,.5,.4,.6,0xef4444,0,1.15,0);var l3=fm3Label("เพื่อน");l3.position.set(0,2.1,0);mb.add(l3);mb.userData.pick={fmt:"friends"};FM3.pickables.push(mb);
   /* คอกสัตว์: ดิน + รั้วขาว + เล้า */
   var pc0=fm3P(7,5),pc1=fm3P(11,9),pen=fm3Mesh(new THREE.BoxGeometry(pc1[0]-pc0[0],.05,pc1[1]-pc0[1]),0xc9a46b,(pc0[0]+pc1[0])/2,.03,(pc0[1]+pc1[1])/2,st,false);pen.receiveShadow=true;
@@ -4243,8 +4298,7 @@ function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.d
   Object.keys(FP).forEach(function(k){FP[k].live=0});FM3.pets=[];fmPets(d).forEach(function(x,i){var w=fpInit(x,i);w.live=1;var pm=fm3Pet(FM3MK[x.item]&&!FP3C[x.item]?"dog":x.item),hold=new THREE.Group(),p=fm3P(w.x,w.y);hold.position.set(p[0],0,p[1]);hold.add(pm);g.add(hold);
     hold.userData.pick={fmpet:x.id};FM3.pickD.push(hold);FM3.pets.push({g:hold,m:pm,w:w});fm3Attach(pm,pm.userData.body,x.item)});
   /* รถส่งของ */
-  if(own&&FM.ord){var tk=new THREE.Group(),tp=fm3P(6.5,14.2);tk.position.set(tp[0],0,tp[1]);g.add(tk);fm3Box(tk,1.2,.5,2.8,0xb91c1c,0,.55,.3);fm3Box(tk,1.2,1,1.1,0xef4444,0,.95,-1.3);fm3Box(tk,1.1,.45,.05,0xbae6fd,0,1.15,-1.86);
-    [[-.62,-1.1],[.62,-1.1],[-.62,.9],[.62,.9]].forEach(function(w){var t=fm3Mesh(new THREE.CylinderGeometry(.32,.32,.2,18),0x1f2937,w[0],.32,w[1],tk);t.rotation.z=Math.PI/2});fm3Box(tk,.5,.4,.5,0xd6a35a,0,1,.2);fm3Box(tk,.4,.35,.4,0x16a34a,.2,1,1);
+  if(own&&FM.ord){var tk=new THREE.Group(),tp=fm3P(6.5,14.2);tk.position.set(tp[0],0,tp[1]);g.add(tk);fm3Truck(tk);
     tk.userData.pick={fmt:"orders"};FM3.pickD.push(tk);FM3.truckG=tk;tk.userData.z0=tp[1]}else FM3.truckG=null;
   fm3DN()}
 /* รถส่งของ 3D: ขับออกตามถนน หายไป แล้ววิ่งกลับมาจอด */
