@@ -4175,7 +4175,7 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
   [[.75,5.15],[8.25,12.65]].forEach(function(r){var a=fm3P(r[0],12.05),b=fm3P(r[1],14.75),lz=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0x86d457,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,st,false);lz.receiveShadow=true});
   FMAP&&Object.keys(FMAP.o).forEach(function(k){var t=FMAP.o[k],xy=k.split(",").map(Number),p=fm3P(xy[0]+.5,xy[1]+.5);
     if(t==="path"){var m=fm3Mesh(new THREE.BoxGeometry(2,.06,2),FM3.pathMat||(FM3.pathMat=fm3TexMat("path",[.6,.6])),p[0],.03,p[1],st,false);m.receiveShadow=true}
-    else if(t==="tree")fm3Tree(st,p[0],p[1],.85+((xy[0]*7+xy[1]*3)%5)/12,((xy[0]+xy[1])%3===0)?"fruit":((xy[0]*3+xy[1])%4===0?"pine":"round"))});
+    else if(t==="tree"&&frand(xy[0]*53+xy[1]*29+7)>.4)fm3Tree(st,p[0],p[1],.68+((xy[0]*7+xy[1]*3)%5)/16,((xy[0]+xy[1])%3===0)?"fruit":((xy[0]*3+xy[1])%4===0?"pine":"round"))});
   var rd=fm3Mesh(new THREE.BoxGeometry(2,.06,26),fm3TexMat("path",[.6,7.8]),fm3P(6.5,0)[0],.03,fm3P(0,12)[1]+13,st,false);rd.receiveShadow=true;
   var pc=fm3P(3.5,2);var pondR=fm3Mesh(new THREE.CylinderGeometry(3,3,.12,40),0xc8a36b,pc[0],.04,pc[1],st,false);pondR.scale.z=.6;var pond=fm3Mesh(new THREE.CylinderGeometry(2.8,2.8,.14,40),new THREE.MeshPhongMaterial({color:0x38bdf8,shininess:80}),pc[0],.06,pc[1],st,false);pond.scale.z=.58;
   FM3.ducks=[0,1].map(function(i){var d=new THREE.Group();st.add(d);fm3Mesh(new THREE.SphereGeometry(.22,14,10),0xffffff,0,.15,0,d);fm3Mesh(new THREE.SphereGeometry(.13,12,10),0x15803d,.18,.38,0,d);fm3Mesh(new THREE.ConeGeometry(.05,.14,8),0xf59e0b,.33,.36,0,d).rotation.z=-Math.PI/2;return {g:d,o:i*Math.PI,c:pc}});
@@ -4206,8 +4206,9 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
   fence(7,5,11,5);fence(7,5,7,9);fence(7,9,11,9);fence(11,5,11,9);fence(9,5,9,9);fence(7,7,11,7);fence(.3,11.92,5.8,11.92);fence(7.2,11.92,11.92,11.92);fence(11.92,.4,11.92,11.92);
   var cp=fm3P(7.75,5.75),coop=new THREE.Group();coop.position.set(cp[0],0,cp[1]);st.add(coop);fm3Box(coop,1.2,.9,1,0xdc2626,0,.75,0);fm3Roof(coop,1.2,1,.6,0x1f2937,0,1.2,0);[[-.5,-.4],[.5,-.4],[-.5,.4],[.5,.4]].forEach(function(p){fm3Box(coop,.08,.3,.08,0x57534e,p[0],.15,p[1])});
   /* ป่ารอบฟาร์ม (หลายต้น แต่วาดเป็นชุดเดียว — เบาสำหรับมือถือ) */
-  var pts=[];for(var ty=-9;ty<=23;ty++)for(var tx=-9;tx<=23;tx++){if(tx>=-1&&tx<=12.6&&ty>=-1&&ty<=12.6)continue;var sd=tx*131+ty*71+999;if(frand(sd)<.5)continue;var fx=tx+frand(sd+1)*.8,fy=ty+frand(sd+2)*.8;
-    if(fx>4.9&&fx<8.3&&fy>12)continue;if(fmInLand(fx,fy)||fmInLand(fx+.6,fy+.6)||fmInYard(fx,fy)||fmInYard(fx+.6,fy+.6))continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;var p=fm3P(fx,fy);if(Math.hypot(p[0],p[1])>56)continue;pts.push([p[0],p[1],.8+frand(sd+4)*.6,frand(sd+3)])}
+  var pts=[];for(var ty=-9;ty<=23;ty++)for(var tx=-9;tx<=23;tx++){if(tx>=-1&&tx<=12.6&&ty>=-1&&ty<=12.6)continue;var sd=tx*131+ty*71+999,ox=Math.max(-.5-tx,tx-12.5,0),oy=Math.max(-.5-ty,ty-12.5,0),dd=Math.hypot(ox,oy);if(dd<2.6)continue;if(frand(sd)<(dd<5?.72:.5))continue;var fx=tx+frand(sd+1)*.8,fy=ty+frand(sd+2)*.8;
+    if(fx>4.9&&fx<8.3&&fy>12)continue;if(fmInLand(fx,fy)||fmInLand(fx+.6,fy+.6)||fmInYard(fx,fy)||fmInYard(fx+.6,fy+.6))continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;var p=fm3P(fx,fy);if(Math.hypot(p[0],p[1])>56)continue;pts.push([p[0],p[1],(dd<5?.62:.78)+frand(sd+4)*.45,frand(sd+3)])}
+  fm3Meadow(st);
   var n=pts.length,tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(.16,.24,1.2,8),fm3Mat(0x8b5a2b),n),cr=new THREE.InstancedMesh(new THREE.SphereGeometry(1.1,14,10),fm3Mat(0x3f9a35),n),pn=new THREE.InstancedMesh(new THREE.ConeGeometry(1.1,2.8,14),fm3Mat(0x2f8f40),n),M=new THREE.Matrix4(),Z=new THREE.Matrix4().makeScale(0,0,0);
   pts.forEach(function(p,i){var s=p[2];M.compose(new THREE.Vector3(p[0],.6*s,p[1]),new THREE.Quaternion(),new THREE.Vector3(s,s,s));tr.setMatrixAt(i,M);
     if(p[3]<.6){M.compose(new THREE.Vector3(p[0],2.2*s,p[1]),new THREE.Quaternion(),new THREE.Vector3(s,s,s));pn.setMatrixAt(i,M);cr.setMatrixAt(i,Z)}else{M.compose(new THREE.Vector3(p[0],1.9*s,p[1]),new THREE.Quaternion(),new THREE.Vector3(s,s*.95,s));cr.setMatrixAt(i,M);pn.setMatrixAt(i,Z)}});
@@ -4260,12 +4261,12 @@ function fm3Mount(){var box=$("fm-world");if(!box)return false;box.innerHTML='<d
   var R=FM3.renderer;R.setPixelRatio(Math.min(window.devicePixelRatio||1,fmIsTouch()?1.5:2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
   if(!FM3.scene){var sc=FM3.scene=new THREE.Scene();sc.background=fm3Sky(0);sc.fog=new THREE.Fog(0xcfe9d0,60,120);
     FM3.hemi=new THREE.HemisphereLight(0xfff3dc,0x6b5a3a,.72);sc.add(FM3.hemi);var sun=FM3.sun=new THREE.DirectionalLight(0xffdcae,1.05);sun.position.set(20,26,6);sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;sun.castShadow=true;sun.shadow.mapSize.set(fmIsTouch()?1024:2048,fmIsTouch()?1024:2048);
-    Object.assign(sun.shadow.camera,{left:-20,right:20,top:20,bottom:-20,near:1,far:80});sc.add(sun);FM3.pickables=[];fm3Static();FM3.cam=new THREE.PerspectiveCamera(40,1,.1,300);FM3.cam.position.set(16,20,22)}
+    Object.assign(sun.shadow.camera,{left:-20,right:20,top:20,bottom:-20,near:1,far:80});sc.add(sun);FM3.pickables=[];fm3Static();FM3.cam=new THREE.PerspectiveCamera(32,1,.1,300);FM3.cam.position.set(18,24,25)}
   if(FM3.ctl)FM3.ctl.dispose();var ctl=FM3.ctl=new THREE.OrbitControls(FM3.cam,cv);ctl.enableDamping=true;ctl.dampingFactor=.12;ctl.maxPolarAngle=Math.PI*.42;ctl.minPolarAngle=.35;ctl.minDistance=8;ctl.maxDistance=55;
   ctl.target.copy(FM3.target||new THREE.Vector3(-1,0,1));ctl.screenSpacePanning=false;ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
   ctl.addEventListener("change",function(){FM3.target=ctl.target.clone();var t=ctl.target;t.x=Math.max(-22,Math.min(22,t.x));t.z=Math.max(-22,Math.min(26,t.z));t.y=0});
   fm3Pointer(cv);fm3Resize();FM3.ready=true;if(!FM3.raf)fm3Loop();return true}
-function fm3Resize(){if(!FM3.renderer)return;var w=$("fm-win");if(!w)return;var W=w.clientWidth,H=w.clientHeight;if(!W||!H)return;FM3.renderer.setSize(W,H,false);FM3.cam.aspect=W/H;FM3.cam.updateProjectionMatrix()}
+function fm3Resize(){if(!FM3.renderer)return;var w=$("fm-win");if(!w)return;var W=w.clientWidth,H=w.clientHeight;if(!W||!H)return;FM3.renderer.setSize(W,H,false);FM3.cam.aspect=W/H;FM3.cam.fov=Math.min(50,32*Math.pow(Math.max(1,H/W),.5));FM3.cam.updateProjectionMatrix()}
 function fm3Loop(){FM3.raf=requestAnimationFrame(fm3Loop);if(!FM3.on||S.tab!=="farm"||document.hidden||!FM3.renderer)return;var t=performance.now()/1000,dt=Math.min(.05,t-(FM3.lt||t));FM3.lt=t;
   FM3.ctl.update();if(FM3.blades)FM3.blades.rotation.z+=dt*1.2;(FM3.ducks||[]).forEach(function(d){var a=t*.3+d.o;d.g.position.set(d.c[0]+Math.cos(a)*1.8,.05,d.c[1]+Math.sin(a)*.9);d.g.rotation.y=-(a+Math.PI/2)});
   (FM3.bubs||[]).forEach(function(b,i){b.children[0].position.y=Math.sin(t*3+i)*.08});
@@ -4513,6 +4514,16 @@ var FM3DK={tree:["forest",["oak"]],oak:["forest",["oak"]],pine2:["forest",["pine
   FM3DS={tree:.62,oak:.62,pine2:.58,sakura:.62,birch:.62,bush:1,rock:1,xmastree:.85,snowman:.9,gingerhouse:.95,presents:1.2,xlamp:.75,toytrain:1.1};
 function fm3DecorModel(g,k){var d=FM3DK[k];if(!d)return;fm3File(d[0]).then(function(G){if(!g.parent&&!g.userData.keep)return;var w=new THREE.Group();d[1].forEach(function(pn,i){var n=G.scene.getObjectByName("K_"+pn);if(!n)return;var c=n.clone();c.position.set([0,.55,-.45][i]||0,0,[0,.4,.35][i]||0);if(k==="rock"&&i)c.scale.setScalar(.7);w.add(c)});
   w.scale.setScalar(FM3DS[k]||1);g.children.slice().forEach(function(ch){ch.visible=false});g.add(w)},function(){})}
+/* ทุ่งโล่งรอบฟาร์ม: กอดอกไม้ ฟาง ถังไม้ ลังไม้ (instanced เบาเครื่อง) */
+function fm3Meadow(st){var fl=[],hay=[],bar=[],crt=[],i,sd,fx,fy,ok=function(x,y){var ox=Math.max(-.6-x,x-12.6,0),oy=Math.max(-.6-y,y-12.6,0),d=Math.hypot(ox,oy);return d>.4&&d<2.7&&!fmInLand(x,y)&&!fmInYard(x,y)&&!(x>4.9&&x<8.3&&y>12)&&!(x>12.2&&x<15.6&&y>-.6&&y<3.4)&&!(x>-3.2&&x<.3&&y>4.6&&y<8)};
+  for(i=0;i<420;i++){sd=i*977+31;fx=-3.4+frand(sd)*19.8;fy=-3.4+frand(sd+1)*19.8;if(!ok(fx,fy))continue;var r=frand(sd+2);if(r<.78)fl.push([fx,fy,frand(sd+3)]);else if(r<.86)hay.push([fx,fy,frand(sd+4)]);else if(r<.93)bar.push([fx,fy,frand(sd+5)]);else crt.push([fx,fy,frand(sd+6)])}
+  var M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),V=new THREE.Vector3(),S=new THREE.Vector3(),put=function(geo,mat,L,f){if(!L.length)return;var im=new THREE.InstancedMesh(geo,mat,L.length);L.forEach(function(p,j){var q=fm3P(p[0],p[1]);f(p,q);im.setMatrixAt(j,M)});im.castShadow=true;im.receiveShadow=false;st.add(im);return im};
+  var cols=[0xffffff,0xfde047,0xf9a8d4,0xfb923c,0xc4b5fd];
+  cols.forEach(function(c,ci){var L=fl.filter(function(p){return Math.floor(p[2]*cols.length)===ci});put(new THREE.IcosahedronGeometry(.09,0),fm3Mat(c),[].concat.apply([],L.map(function(p){return [0,1,2,3,4].map(function(k){return [p[0]+Math.cos(k*1.3+p[2]*9)*.18,p[1]+Math.sin(k*1.3+p[2]*9)*.12,p[2]]})})),function(p,q){V.set(q[0],.16,q[1]);S.set(1,1,1);M.compose(V,Q.identity(),S)})});
+  put(new THREE.SphereGeometry(.28,8,6),fm3Mat(0x4f9a2e),fl.filter(function(p,j){return j%2===0}),function(p,q){V.set(q[0]+.05,.08,q[1]+.05);S.set(1.3,.55,1);M.compose(V,Q.identity(),S)});
+  put(new THREE.CylinderGeometry(.42,.42,.7,14),fm3Mat(0xe8c15a),hay,function(p,q){V.set(q[0],.42,q[1]);Q.setFromEuler(new THREE.Euler(Math.PI/2,0,p[2]*3));S.set(1,1,1);M.compose(V,Q,S)});
+  put(new THREE.CylinderGeometry(.28,.24,.62,12),fm3Mat(0x9a5b2c),bar,function(p,q){V.set(q[0],.31,q[1]);Q.identity();S.set(1,1,1);M.compose(V,Q,S)});
+  put(new THREE.BoxGeometry(.55,.45,.55),fm3Mat(0xc08a4a),crt,function(p,q){V.set(q[0],.23,q[1]);Q.setFromAxisAngle(Y,p[2]*3);S.set(1,1,1);M.compose(V,Q,S)})}
 function fm3ForestModels(){if(!FM3.forestPts||FM3.forestNew)return;FM3.forestNew=1;fm3File("forest").then(function(G){var st=FM3.forestSt,pts=FM3.forestPts,vars=["pine2","slim","oak","round"],groups={};
   pts.forEach(function(p){var v=p[3]<.35?"pine2":p[3]<.55?"slim":p[3]<.82?"oak":"round";(groups[v]=groups[v]||[]).push(p)});
   pts.forEach(function(p,i){if(frand(i*7+3)<.22)(groups.bush=groups.bush||[]).push([p[0]+1.4,p[1]-.9,.9+frand(i)*.6,frand(i+5)]);if(frand(i*5+1)<.08)(groups.rock=groups.rock||[]).push([p[0]-1.2,p[1]+1,1+frand(i+2),frand(i+9)])});
