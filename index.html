@@ -1198,6 +1198,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div class="filters">
       <label class="searchbox">ค้นหา<input type="search" id="s-q" placeholder="ค้นหาชื่อหรือรหัสพนักงาน..."></label>
       <label>แผนก<select id="s-dept"></select></label>
+      <label>เดือน / ปี<input type="month" id="s-month"></label>
     </div>
     <div class="chips" id="s-chips"></div>
     <p class="sub">Import Excel: หัวคอลัมน์ รหัสพนักงาน, ชื่อ-นามสกุล, แผนก, กะ (A, B หรือ เช้าตลอด) รหัสที่มีอยู่แล้วจะถูกข้าม</p>
@@ -2405,11 +2406,12 @@ function renderDeptNav(){
 async function renderStaff(){
   if(!S.mgr)return;
   renderDeptNav();
-  var dept=$("s-dept").value,qq=$("s-q").value.trim().toLowerCase(),now=new Date(),y=now.getFullYear(),mo=now.getMonth(),n=new Date(y,mo+1,0).getDate(),td=now.getDate();
-  var logs=await month(today().slice(0,7)),sum={};
+  var dept=$("s-dept").value,qq=$("s-q").value.trim().toLowerCase(),sm=$("s-month").value||today().slice(0,7),tm=today().slice(0,7);if(sm>tm){sm=tm;$("s-month").value=tm}
+  var y=+sm.slice(0,4),mo=+sm.slice(5,7)-1,n=new Date(y,mo+1,0).getDate(),td=sm===tm?+today().slice(8):n;
+  var logs=await month(sm),sum={};
   logs.forEach(function(r){var h=sum[r.employee_id]||(sum[r.employee_id]={});h[r.work_date]=(h[r.work_date]||0)+(+r.output||0)});
   var list=S.emps.filter(function(e){return (!dept||e.department_id===dept)&&(!qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0)});
-  $("s-sum").textContent="รายชื่อพนักงานแยกตามแผนก · "+list.length+" คน";
+  $("s-sum").textContent="รายชื่อพนักงานแยกตามแผนก · "+list.length+" คน · ยอดผลิตเดือน "+MONTHS[mo]+" "+(y+543);
   function card(e){
     var h=sum[e.id]||{},cells="",logged=0,miss=[];
     for(var d=1;d<=n;d++){
@@ -2432,7 +2434,7 @@ async function renderStaff(){
     }
     return '<div class="emp"><div class="emphead" data-open="'+e.id+'" title="ดูรายละเอียด"><span class="avatar">'+(okAvatar(e.avatar)?'<img alt="" src="'+okAvatar(e.avatar)+'">':esc(String(e.display_name).trim().charAt(0)))+'</span><div><b>'+esc(e.display_name)+(e.active?"":" (ปิดใช้งาน)")+'</b><small>'+esc([e.employee_no,SHIFT[e.shift],kpiName(e.workstation_id),e.phone,e.role!=="employee"?ROLE[e.role]:null,e.user_id?null:"ยังไม่สมัครใช้งาน"].filter(Boolean).join(" · "))+'</small></div></div>'+
       (e.kpi_required===false?'<small class="okline">ไม่ต้องลงยอดผลิต (ใช้สินค้า / ติ่งต๊อง / แชต)</small>':
-      '<small>บันทึกยอดผลิต — ถึงวันที่ '+td+' ('+logged+' วัน)</small><div class="days">'+cells+'</div>'+
+      '<small>บันทึกยอดผลิต '+(sm===tm?'— ถึงวันที่ '+td:'เดือน '+MONTHS[mo]+' '+(y+543))+' ('+logged+' วัน)</small><div class="days">'+cells+'</div>'+
       '<small class="'+(miss.length?"missline":"okline")+'">'+(miss.length?"ไม่ได้บันทึก: วันที่ "+miss.join(", "):"บันทึกครบทุกวัน")+'</small>')+
       (b?'<div class="acts">'+b+'</div>':'')+ed+'</div>';
   }
@@ -6165,7 +6167,7 @@ function armed(btn,label){
 document.addEventListener("click",function(ev){
   if(ev.target.closest("#who-av")){show("settings");return}
   var dl=ev.target.closest("[data-daylog]");if(dl){dayLogEdit(dl.dataset.daylog,dl.dataset.d).catch(function(e){toast(thErr(e))});return}
-  var head=ev.target.closest(".emphead[data-open]");if(head&&!ev.target.closest("button,label")){S.empId=head.dataset.open;show("emp");return}
+  var head=ev.target.closest(".emphead[data-open]");if(head&&!ev.target.closest("button,label")){S.empId=head.dataset.open;if(S.tab==="staff"&&$("s-month").value)$("ed-month").value=$("s-month").value;show("emp");return}
   var b=ev.target.closest("button");if(!b)return;var d=b.dataset;
   if(b.hasAttribute("data-sdept")){$("s-dept").value=d.sdept;if(S.tab==="staff"){refresh();window.scrollTo(0,0)}else show("staff");return}
   if(d.close){closeModal(d.close);return}
@@ -6207,7 +6209,7 @@ document.addEventListener("click",function(ev){
   if(d.ordst){if(d.ordst==="cancelled"&&!armed(b,"แตะอีกครั้งเพื่อยกเลิก"))return;
     act(function(){return q(db.from("product_orders").update({status:d.ordst}).eq("id",d.id))},{confirmed:"ยืนยันคำสั่งซื้อแล้ว ตัดสต็อกให้แล้ว",done:"บันทึกว่าส่งของแล้ว",cancelled:"ยกเลิกคำสั่งซื้อแล้ว"}[d.ordst]).then(function(ok){if(ok)refresh()});return}
   if(d.newemp){empModal(null);return}
-  if(d.open){S.empId=d.open;show("emp");return}
+  if(d.open){S.empId=d.open;if(S.tab==="staff"&&$("s-month").value)$("ed-month").value=$("s-month").value;show("emp");return}
   if(d.editlog){logModal(d.editlog,d.d).catch(function(e){toast(thErr(e))});return}
   if(d.tab){show(d.tab);return}
   if(d.pick){$("f-date").value=d.pick;$("f-out").focus();return}
@@ -6227,7 +6229,7 @@ document.addEventListener("click",function(ev){
 });
 ["h-date","h-dept"].forEach(function(id){$(id).addEventListener("change",renderHomeSafe)});
 function renderHomeSafe(){refresh()}
-["d-date","d-dept","m-month","m-dept","s-dept","t-mode","t-month","t-date","t-dept","t-n","al-year","tg-month","ad-month","ed-month","am-month","am-dept","tl-date","tl-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
+["d-date","d-dept","m-month","m-dept","s-dept","s-month","t-mode","t-month","t-date","t-dept","t-n","al-year","tg-month","ad-month","ed-month","am-month","am-dept","tl-date","tl-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
 $("s-q").addEventListener("input",refresh);
 $("sh-q").addEventListener("input",function(){if(S.tab==="shop")drawShop()});
 
@@ -6312,7 +6314,7 @@ async function start(){
   $("ta-on").checked=(S.settings.telegram_daily||{enabled:true}).enabled!==false;$("ss-month").value=today().slice(0,7);
   var lr=S.settings.log_restriction||{};$("r-on").checked=!!lr.enabled;if(lr.max_backdate_days!=null)$("r-days").value=lr.max_backdate_days;
   $("hdate").textContent=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
-  $("f-date").value=today();$("f-date").max=today();$("h-date").value=today();$("d-date").value=today();$("m-month").value=today().slice(0,7);
+  $("f-date").value=today();$("f-date").max=today();$("h-date").value=today();$("d-date").value=today();$("m-month").value=today().slice(0,7);$("s-month").value=today().slice(0,7);$("s-month").max=today().slice(0,7);
   ["t-date","tl-date"].forEach(function(id){$(id).value=today()});["t-month","am-month","tg-month","ad-month","ed-month"].forEach(function(id){$(id).value=today().slice(0,7)});
   $("auth").hidden=true;$("app").hidden=false;
   show("tt");                                   /* เปิดแอปทุกครั้งเริ่มที่หน้าติ่งต๊อง */
