@@ -3043,9 +3043,31 @@ async function renderTT(){
 }
 /* จัดอันดับ "สำหรับคุณ": หัวใจ x3, คอมเมนต์ x4, เข้าชม x1 แล้วให้โพสต์ใหม่ได้เปรียบ (คะแนนลดลงตามอายุโพสต์) */
 function ttScore(p){var h=(Date.now()-new Date(p.created_at).getTime())/3600000;return ((p.like_count||0)*3+(p.comment_count||0)*4+(p.view_count||0)+2)/Math.pow(h+2,0.6)}
+/* ไฟล์ติ๊งต่อง: โหลดจาก Supabase ครั้งเดียวแล้วเก็บในเครื่อง (Cache Storage) — ครั้งต่อไปเปิดจากเครื่องเลย ไม่กินโควตา Egress
+   โหลดเฉพาะคลิปที่ใกล้จะเลื่อนถึง · ในหน่วยความจำเก็บแค่ 12 ไฟล์ล่าสุด */
+var TTM={u:{},p:{},dead:{},ord:[],cn:"aoi-tt-media-v1",max:80,mem:12};
+function ttSigned(path){if(TT.urls[path])return Promise.resolve(TT.urls[path]);return db.storage.from("tingtong").createSignedUrl(path,3600).then(function(r){if(r.error)throw r.error;TT.urls[path]=r.data.signedUrl;return r.data.signedUrl})}
+function ttMediaKey(path){return "https://tt-media.local/"+encodeURIComponent(path)}
+function ttMediaTrim(){try{caches.open(TTM.cn).then(function(c){return c.keys().then(function(ks){if(ks.length>TTM.max)return Promise.all(ks.slice(0,ks.length-TTM.max).map(function(k){return c.delete(k)}))})}).catch(function(){})}catch(e){}}
+function ttMediaDrop(path){if(TTM.u[path]){TTM.dead[TTM.u[path]]=1;try{URL.revokeObjectURL(TTM.u[path])}catch(e){}delete TTM.u[path]}try{if(window.caches)caches.open(TTM.cn).then(function(c){c.delete(ttMediaKey(path))})}catch(e){}}
+function ttMedia(path){if(!path)return Promise.resolve("");if(TTM.u[path]){TTM.ord=TTM.ord.filter(function(x){return x!==path});TTM.ord.push(path);return Promise.resolve(TTM.u[path])}if(TTM.p[path])return TTM.p[path];
+  var key=ttMediaKey(path),C=null,open=function(){try{return window.caches?caches.open(TTM.cn):Promise.reject(0)}catch(e){return Promise.reject(e)}};
+  TTM.p[path]=open().then(function(c){C=c;return c.match(key)}).catch(function(){return null}).then(function(r){if(r)return r.blob();
+      return ttSigned(path).then(function(u){return fetch(u)}).then(function(r2){if(!r2.ok)throw new Error("media "+r2.status);return r2.blob()}).then(function(b){if(C)C.put(key,new Response(b,{headers:{"content-type":b.type||"application/octet-stream"}})).then(ttMediaTrim).catch(function(){});return b})})
+    .then(function(b){var u=URL.createObjectURL(b);TTM.u[path]=u;TTM.ord.push(path);delete TTM.p[path];
+      while(TTM.ord.length>TTM.mem){var old=TTM.ord.shift();if(TTM.u[old]){TTM.dead[TTM.u[old]]=1;try{URL.revokeObjectURL(TTM.u[old])}catch(e){}delete TTM.u[old]}}return u})
+    .catch(function(){delete TTM.p[path];return ttSigned(path)});
+  return TTM.p[path]}
+/* ใส่ไฟล์ให้ <video>/<img> ที่ใกล้จะเลื่อนถึง */
+function ttLoadEl(el){var path=el.getAttribute("data-mp");if(!path)return;ttMedia(path).then(function(u){if(!u)return;if(el.getAttribute("data-u")!==u){el.setAttribute("data-u",u);el.src=u}
+  if(el.tagName==="VIDEO"){var f=$("tt-feed"),r=f.getBoundingClientRect(),b=el.getBoundingClientRect();if(S.tab==="tt"&&b.top<r.top+r.height/2&&b.bottom>r.top+r.height/2)ttPlay(el)}})}
+function ttLazy(els){if(!("IntersectionObserver" in window)){els.forEach(ttLoadEl);return}
+  if(!TT.lobs)TT.lobs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)ttLoadEl(e.target)})},{root:$("tt-feed"),rootMargin:"150% 0px"});
+  els.forEach(function(el){TT.lobs.observe(el)})}
 function ttItem(p,rank){
   var url=TT.urls[p.media_path]||"",own=p.author_id===S.me.id,thumb=okImg(p.thumb);
-  var media=p.media_type==="video"?'<video class="ttmedia" crossorigin="anonymous" src="'+esc(url)+'"'+(thumb?' poster="'+thumb+'"':'')+fxStyle(p.filter)+' playsinline muted loop preload="metadata"></video>':'<img class="ttmedia" alt="" src="'+esc(url)+'"'+fxStyle(p.filter)+'>';
+  var mu=TTM.u[p.media_path]||"",mp=' data-mp="'+esc(p.media_path||"")+'"'+(mu?' data-u="'+mu+'" src="'+mu+'"':'');
+  var media=p.media_type==="video"?'<video class="ttmedia" crossorigin="anonymous"'+mp+(thumb?' poster="'+thumb+'"':'')+fxStyle(p.filter)+' playsinline muted loop preload="none"></video>':'<img class="ttmedia" alt=""'+mp+fxStyle(p.filter)+'>';
   return '<article class="ttitem" data-pid="'+p.id+'">'+media+
     '<div class="ttside">'+avHtml(p.author_avatar,p.author_name)+
       '<button type="button" class="ttbtn'+(TT.liked[p.id]?' liked':'')+'" data-ttlike="'+p.id+'" aria-label="ถูกใจ">'+ico("heart")+'<span>'+num(p.like_count)+'</span></button>'+
@@ -3082,9 +3104,10 @@ async function ttOpenProf(aid){TT.prof=aid;TT.mode="prof";
     $("tt-prof").innerHTML='<div class="tpf-head">'+avHtml(e.avatar||p0.author_avatar,name)+'<h3>'+esc(name)+'</h3><small>'+esc(p0.author_dept||deptName(e.department_id)||"")+'</small>'+
       '<div class="tpf-stats"><div><b>'+num(list.length)+'</b><small>โพสต์</small></div><div><b>'+num(likes)+'</b><small>ถูกใจ</small></div><div><b>'+num(views)+'</b><small>ยอดดู</small></div></div>'+
       '<div class="tpf-acts">'+(me?'<button type="button" class="primary slim" data-ttpost="1" data-ico="plus">'+ico("plus")+'โพสต์ใหม่</button>':'')+'<button type="button" class="slim" data-ttmode="all">กลับหน้าฟีด</button></div></div>'+
-      (list.length?'<div class="tpf-grid">'+list.map(function(p){var th=okImg(p.thumb)||(p.media_type==="image"?TT.urls[p.media_path]:"");
+      (list.length?'<div class="tpf-grid">'+list.map(function(p){var th=okImg(p.thumb)||(p.media_type==="image"?TTM.u[p.media_path]||"":"");
         return '<button type="button" class="tpf-t" data-ttopen="'+p.id+'"><i class="tpf-img"'+' style="'+(th?'background-image:url('+esc(th)+');':'')+(fxCss(p.filter)?'filter:'+fxCss(p.filter):'')+'"></i>'+(p.media_type==="image"?'<em>รูป</em>':'')+'<span>'+ico("playf")+num(p.view_count||0)+'</span></button>'}).join("")+'</div>'
         :'<div class="tpf-empty">'+(me?"ยังไม่มีโพสต์ กด “โพสต์ใหม่” เพื่อลงคลิปแรก":"ยังไม่มีโพสต์")+'</div>');
+    list.forEach(function(p){if(p.media_type!=="image"||okImg(p.thumb)||TTM.u[p.media_path])return;ttMedia(p.media_path).then(function(u){var b=document.querySelector('#tt-prof [data-ttopen="'+p.id+'"] .tpf-img');if(b&&u)b.style.backgroundImage="url("+u+")"})});
   }catch(err){$("tt-prof").innerHTML='<div class="tpf-empty">'+esc(thErr(err))+'</div>'}}
 function ttCloseProf(){$("tt-prof").hidden=true;$("tt-feed").hidden=false;$("v-tt").classList.remove("tt-prof")}
 document.addEventListener("click",function(ev){
@@ -3111,6 +3134,7 @@ function drawTT(){
     TT.vobs=new IntersectionObserver(function(es){es.forEach(function(e){var it=e.target;clearTimeout(it._vt);if(e.isIntersecting&&S.tab==="tt")it._vt=setTimeout(function(){ttSeen(it.dataset.pid)},1500)})},{root:$("tt-feed"),threshold:.6});
     document.querySelectorAll("#tt-feed .ttitem[data-pid]").forEach(function(it){TT.vobs.observe(it)});
   }
+  if(TT.lobs){TT.lobs.disconnect();TT.lobs=null}ttLazy([].slice.call(document.querySelectorAll("#tt-feed .ttmedia[data-mp]")));
 }
 /* เลื่อนจนสุดแล้ว วนกลับมาเล่นโพสต์เดิมซ้ำต่อไปเรื่อย ๆ */
 function ttMore(){
@@ -3118,7 +3142,7 @@ function ttMore(){
   if(f.scrollTop+f.clientHeight*2<f.scrollHeight)return;
   TT.loops++;var wrap=document.createElement("div");wrap.innerHTML=TT.view.map(function(p){return ttItem(p,TT.hot[p.id])}).join("");
   var items=[].slice.call(wrap.children);items.forEach(function(it){f.appendChild(it)});
-  items.forEach(function(it){var v=it.querySelector("video");if(v&&TT.obs)TT.obs.observe(v);if(TT.vobs)TT.vobs.observe(it)});
+  items.forEach(function(it){var v=it.querySelector("video");if(v&&TT.obs)TT.obs.observe(v);if(TT.vobs)TT.vobs.observe(it)});ttLazy(items.map(function(it){return it.querySelector(".ttmedia[data-mp]")}).filter(Boolean));
   TT.view.forEach(ttPaint);
 }
 $("tt-feed").addEventListener("scroll",function(){clearTimeout(TT._mt);TT._mt=setTimeout(ttMore,80)},{passive:true});
@@ -3149,6 +3173,7 @@ function ttCantPlay(v){var it=v.closest(".ttitem");if(!it||it.querySelector(".tt
   var p=ttPost(it.dataset.pid),th=p&&okImg(p.thumb);
   it.insertAdjacentHTML("beforeend",'<div class="ttnoplay">'+(th?'<img alt="" src="'+th+'">':'')+'<div><b>เบราว์เซอร์นี้เปิดภาพวิดีโอนี้ไม่ได้</b><small>ไฟล์เป็นแบบ HEVC ดูได้ในมือถือ'+(p&&p.author_id===S.me.id?' หรือกด “แก้ไข” แล้วเลือกวิดีโอเดิมอีกครั้งจากมือถือ ระบบจะแปลงไฟล์ให้เปิดได้ทุกเครื่อง':'')+'</small></div></div>')}
 function ttPlay(v){
+  var mp=v.getAttribute("data-mp");if(mp&&(!v.getAttribute("src")||TTM.dead[v.getAttribute("data-u")])){ttLoadEl(v);return}
   if(!v._dcb){v._dcb=1;v.addEventListener("playing",function(){ttCheckDecode(v)});v.addEventListener("error",function(){ttCantPlay(v)})}
   v.muted=TT.muted;var pr=v.play();
   if(pr&&pr.catch)pr.catch(function(){if(!v.muted){v.muted=true;TT.muted=true;TT.autoMuted=true;ttMuteIcons();var p2=v.play();if(p2&&p2.catch)p2.catch(function(){})}});
@@ -3232,7 +3257,7 @@ $("tp-file").addEventListener("change",async function(ev){
     if(info.dur>61){toast("วิดีโอยาว "+Math.round(info.dur)+" วินาที เกิน 60 วินาที");ttReset();return}
     if(info.bad){toast("เครื่องนี้เปิดวิดีโอนี้ไม่ได้ ลองเลือกไฟล์อื่น");ttReset();return}
     var codec=await videoCodec(f);
-    TT.conv=codec==="hevc"||f.size>25*1024*1024;
+    TT.conv=codec==="hevc"||f.size>6*1024*1024;
     if(TT.conv&&!canConvert()){TT.conv=false;if(codec==="hevc")toast("ไฟล์นี้เป็น HEVC บางเครื่อง (เช่นคอม) อาจเปิดไม่ได้");if(f.size>30*1024*1024){toast("วิดีโอใหญ่เกิน 30 MB");ttReset();return}}
     if(TT.conv)$("tp-prev").insertAdjacentHTML("beforeend",'<p class="convnote">'+(codec==="hevc"?"ไฟล์นี้เป็นแบบ HEVC ซึ่งคอมและมือถือบางเครื่องเปิดไม่ได้ (จอดำ)":"ไฟล์นี้ใหญ่")+' ระบบจะแปลงไฟล์ให้เล่นได้ทุกเครื่องตอนกดโพสต์ ใช้เวลาประมาณ '+Math.ceil(info.dur)+' วินาที ระหว่างนั้นอย่าปิดหน้าจอ</p>');
   }else{$("tp-prev").innerHTML='<img alt="" src="'+url+'">';try{TT.thumb=await resizeImg(url,360,.7)}catch(e){TT.thumb=null}}
@@ -3257,12 +3282,12 @@ function convertVideo(f,onp){return new Promise(function(res,rej){
   function cleanup(){cancelAnimationFrame(raf);try{v.pause()}catch(e){}v.remove();URL.revokeObjectURL(url);if(ctx)try{ctx.close()}catch(e){}}
   v.onerror=function(){fail(new Error("เปิดวิดีโอเพื่อแปลงไม่ได้"))};
   v.onloadedmetadata=function(){
-    var k=Math.min(1,1280/Math.max(v.videoWidth,v.videoHeight)),cw=Math.round(v.videoWidth*k/2)*2,ch=Math.round(v.videoHeight*k/2)*2;
+    var k=Math.min(1,960/Math.max(v.videoWidth,v.videoHeight)),cw=Math.round(v.videoWidth*k/2)*2,ch=Math.round(v.videoHeight*k/2)*2;
     if(!cw||!ch){fail(new Error("เครื่องนี้เปิดภาพวิดีโอนี้ไม่ได้"));return}
     var c=document.createElement("canvas");c.width=cw;c.height=ch;var g=c.getContext("2d");
     var stream=c.captureStream(30);
     try{var AC=window.AudioContext||window.webkitAudioContext;ctx=new AC();var src=ctx.createMediaElementSource(v),dst=ctx.createMediaStreamDestination();src.connect(dst);dst.stream.getAudioTracks().forEach(function(t){stream.addTrack(t)})}catch(e){v.muted=true}
-    try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000,audioBitsPerSecond:128000})}catch(e){fail(e);return}
+    try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:1400000,audioBitsPerSecond:96000})}catch(e){fail(e);return}
     rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
     rec.onstop=function(){if(done)return;done=true;var base=mime.split(";")[0];cleanup();res({blob:new Blob(chunks,{type:base}),type:base,ext:base==="video/mp4"?"mp4":"webm"})};
     function draw(){g.drawImage(v,0,0,cw,ch);if(onp&&v.duration)onp(Math.min(.99,v.currentTime/v.duration));if(!v.ended)raf=requestAnimationFrame(draw)}
@@ -3292,7 +3317,7 @@ $("ttform").addEventListener("submit",async function(ev){
     if(TT.edit){var old=TT.edit.media_path;
       try{await q(db.from("posts").update({media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim(),product_id:$("tp-prod").value||null,filter:TT.fx||""}).eq("id",TT.edit.id))}
       catch(e){await db.storage.from("tingtong").remove([path]);throw e}
-      await db.storage.from("tingtong").remove([old]);delete TT.urls[old];
+      await db.storage.from("tingtong").remove([old]);delete TT.urls[old];ttMediaDrop(old);
       closeModal("m-ttpost");ttReset();toast("บันทึกการแก้ไขแล้ว");refresh();return}
     try{await q(db.from("posts").insert({author_id:S.me.id,media_type:TT.kind,media_path:path,thumb:TT.thumb,caption:$("tp-cap").value.trim(),product_id:$("tp-prod").value||null,filter:TT.fx||""}))}
     catch(e){await db.storage.from("tingtong").remove([path]);throw e}
@@ -6553,7 +6578,7 @@ document.addEventListener("click",function(ev){
   if(d.ttcom){$("tc-list").innerHTML=emptyRow("กำลังโหลด...");openModal("m-ttcom");ttComments(d.ttcom).catch(function(e){toast(thErr(e))});return}
   if(d.ttmute){if(TT.muted){ttUnmute();var cv=ttVisible();if(cv&&cv.paused)ttPlay(cv)}else{TT.muted=true;document.querySelectorAll("#tt-feed video").forEach(function(v){v.muted=true});ttMuteIcons()}return}
   if(d.ttdel){if(!armed(b,"แตะอีกครั้ง"))return;var tp=ttPost(d.ttdel);if(!tp)return;
-    act(async function(){await q(db.from("posts").delete().eq("id",tp.id));await db.storage.from("tingtong").remove([tp.media_path])},"ลบโพสต์แล้ว").then(function(ok){if(ok)refresh()});return}
+    act(async function(){await q(db.from("posts").delete().eq("id",tp.id));await db.storage.from("tingtong").remove([tp.media_path]);ttMediaDrop(tp.media_path)},"ลบโพสต์แล้ว").then(function(ok){if(ok)refresh()});return}
   if(d.tcdel){if(!armed(b,"แตะอีกครั้ง"))return;act(function(){return q(db.from("post_comments").delete().eq("id",d.tcdel))},"ลบความคิดเห็นแล้ว").then(function(ok){if(ok)ttComments(TT.cur)});return}
   if(d.dk){openDeduct(d.dk);return}
   if(d.editemp){var ee=empOf(d.editemp);if(ee)empModal(ee);return}
