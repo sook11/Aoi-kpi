@@ -4095,6 +4095,19 @@ function fm3Load(){if(window.THREE&&THREE.OrbitControls)return Promise.resolve()
 function fm3Ok(){try{var c=document.createElement("canvas");return !!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")))}catch(e){return false}}
 /* พิกัดช่อง (x,y) → โลก 3D : ช่องละ 2 หน่วย กลางฟาร์มที่ (6,6) */
 function fm3P(x,y){return [(x-6)*2,(y-6)*2]}
+/* ลายพื้นวาดด้วย canvas (หญ้าหลายเฉด ดอกไม้ ดิน) ให้ฉากมีรายละเอียดแบบเกมฟาร์ม */
+function fm3Tex(kind){FM3.tex=FM3.tex||{};if(FM3.tex[kind])return FM3.tex[kind];var N=256,c=document.createElement("canvas");c.width=c.height=N;var x=c.getContext("2d"),rnd=(function(sd){return function(){sd=(sd*16807)%2147483647;return sd/2147483647}})(kind.length*977+13);
+  var dot=function(px,py,r,col){for(var ox=-1;ox<=1;ox++)for(var oy=-1;oy<=1;oy++){x.beginPath();x.arc(px+ox*N,py+oy*N,r,0,7);x.fillStyle=col;x.fill()}};
+  var P={grass:["#74c043",["#68b33a","#83cc4e","#6fba3f","#90d65a"],["#5aa232","#9ad866"],1],field:["#5fa33a",["#559632","#6bb043","#4f8d2e"],["#47822a","#78bd4c"],1],path:["#e8cd96",["#ddbf85","#f0d7a4","#d9b97c"],["#c9a46a","#f6e2b8"],0],soil:["#8a5630",["#7d4c29","#94603a","#744525"],["#5e3a1e","#a06a40"],0]}[kind];
+  x.fillStyle=P[0];x.fillRect(0,0,N,N);
+  for(var i=0;i<70;i++)dot(rnd()*N,rnd()*N,10+rnd()*26,P[1][i%P[1].length]+"66");
+  for(i=0;i<(kind==="path"||kind==="soil"?260:520);i++){var px=rnd()*N,py=rnd()*N;x.strokeStyle=P[2][i%2];x.globalAlpha=.55;x.lineWidth=1.2;x.beginPath();
+    if(kind==="path"||kind==="soil"){x.arc(px,py,.8+rnd()*1.6,0,7);x.fillStyle=P[2][i%2];x.fill()}else{x.moveTo(px,py);x.lineTo(px+(rnd()-.5)*3,py-3-rnd()*4);x.stroke()}}
+  x.globalAlpha=1;if(P[3])for(i=0;i<26;i++){var fx=rnd()*N,fy=rnd()*N,fc=["#ffffff","#fde047","#f9a8d4","#ffffff"][i%4];for(var k=0;k<5;k++)dot(fx+Math.cos(k*1.26)*2.2,fy+Math.sin(k*1.26)*2.2,1.7,fc);dot(fx,fy,1.3,"#f59e0b")}
+  var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=4;FM3.tex[kind]=t;return t}
+function fm3TexMat(kind,rep){var t=fm3Tex(kind).clone();t.needsUpdate=true;t.repeat.set(rep[0],rep[1]);return new THREE.MeshLambertMaterial({map:t})}
+function fm3Sky(n){var c=document.createElement("canvas");c.width=2;c.height=256;var x=c.getContext("2d"),g=x.createLinearGradient(0,0,0,256);
+  if(n){g.addColorStop(0,"#0b1430");g.addColorStop(1,"#26386b")}else{g.addColorStop(0,"#6cc4f0");g.addColorStop(.7,"#b9e4f7");g.addColorStop(1,"#fff1d0")}x.fillStyle=g;x.fillRect(0,0,2,256);return new THREE.CanvasTexture(c)}
 function fm3Mat(c,o){var k=c+"|"+(o?JSON.stringify(o):"");FM3.mats=FM3.mats||{};if(!FM3.mats[k]){var m=new THREE.MeshLambertMaterial(Object.assign({color:c},o||{}));FM3.mats[k]=m}return FM3.mats[k]}
 function fm3Mesh(g,mat,x,y,z,par,sh){var m=new THREE.Mesh(g,typeof mat==="number"||typeof mat==="string"?fm3Mat(mat):mat);m.position.set(x||0,y||0,z||0);if(sh!==false){m.castShadow=true;m.receiveShadow=true}(par||FM3.scene).add(m);return m}
 function fm3Emoji(e,sz){FM3.emo=FM3.emo||{};if(!FM3.emo[e]){var c=document.createElement("canvas");c.width=c.height=128;var x=c.getContext("2d");x.font="96px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(e,64,70);
@@ -4156,14 +4169,14 @@ function fm3Decor(k){var g=new THREE.Group();
   return g}
 /* ---------- สร้างฉากคงที่ (ครั้งเดียว) ---------- */
 function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);
-  var gr=fm3Mesh(new THREE.CircleGeometry(60,48),0x4f9f2b,0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
-  var farm=fm3Mesh(new THREE.BoxGeometry(24.6,.3,24.6),0x7ccf4f,0,-.15,0,st,false);farm.receiveShadow=true;
+  var gr=fm3Mesh(new THREE.CircleGeometry(60,48),fm3TexMat("field",[22,22]),0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
+  var farm=fm3Mesh(new THREE.BoxGeometry(24.6,.3,24.6),fm3TexMat("grass",[7,7]),0,-.15,0,st,false);farm.receiveShadow=true;
   (function(){var a=fm3P(12.2,5.85),b=fm3P(15.1,11.6),yd=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0xd6b98c,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,st,false);yd.receiveShadow=true})();
   [[.75,5.15],[8.25,12.65]].forEach(function(r){var a=fm3P(r[0],12.05),b=fm3P(r[1],14.75),lz=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0x86d457,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,st,false);lz.receiveShadow=true});
   FMAP&&Object.keys(FMAP.o).forEach(function(k){var t=FMAP.o[k],xy=k.split(",").map(Number),p=fm3P(xy[0]+.5,xy[1]+.5);
-    if(t==="path"){var m=fm3Mesh(new THREE.BoxGeometry(2,.06,2),0xe9c98f,p[0],.03,p[1],st,false);m.receiveShadow=true}
+    if(t==="path"){var m=fm3Mesh(new THREE.BoxGeometry(2,.06,2),FM3.pathMat||(FM3.pathMat=fm3TexMat("path",[.6,.6])),p[0],.03,p[1],st,false);m.receiveShadow=true}
     else if(t==="tree")fm3Tree(st,p[0],p[1],.85+((xy[0]*7+xy[1]*3)%5)/12,((xy[0]+xy[1])%3===0)?"fruit":((xy[0]*3+xy[1])%4===0?"pine":"round"))});
-  var rd=fm3Mesh(new THREE.BoxGeometry(2,.06,26),0xe2bd80,fm3P(6.5,0)[0],.03,fm3P(0,12)[1]+13,st,false);rd.receiveShadow=true;
+  var rd=fm3Mesh(new THREE.BoxGeometry(2,.06,26),fm3TexMat("path",[.6,7.8]),fm3P(6.5,0)[0],.03,fm3P(0,12)[1]+13,st,false);rd.receiveShadow=true;
   var pc=fm3P(3.5,2);var pondR=fm3Mesh(new THREE.CylinderGeometry(3,3,.12,40),0xc8a36b,pc[0],.04,pc[1],st,false);pondR.scale.z=.6;var pond=fm3Mesh(new THREE.CylinderGeometry(2.8,2.8,.14,40),new THREE.MeshPhongMaterial({color:0x38bdf8,shininess:80}),pc[0],.06,pc[1],st,false);pond.scale.z=.58;
   FM3.ducks=[0,1].map(function(i){var d=new THREE.Group();st.add(d);fm3Mesh(new THREE.SphereGeometry(.22,14,10),0xffffff,0,.15,0,d);fm3Mesh(new THREE.SphereGeometry(.13,12,10),0x15803d,.18,.38,0,d);fm3Mesh(new THREE.ConeGeometry(.05,.14,8),0xf59e0b,.33,.36,0,d).rotation.z=-Math.PI/2;return {g:d,o:i*Math.PI,c:pc}});
   /* แนวพุ่มไม้รอบแปลง */
@@ -4205,7 +4218,7 @@ function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.d
   var g=new THREE.Group();sc.add(g);FM3.dyn=g;FM3.pickD=[];FM3.anim=[];FM3.bubs=[];var c=FM.cat,now=fmNow(),F={};d.field.forEach(function(p){F[p.slot]=p});
   for(var i=1;i<=fmCap(d);i++){var pxy=fmPlotXY(i),gx=pxy[0],gy=pxy[1],p=fm3P(gx+.5,gy+.5),pl=new THREE.Group();pl.position.set(p[0],0,p[1]);g.add(pl);
     if(i>d.plots){if(own&&i===d.plots+1){var lk=fm3Mesh(new THREE.BoxGeometry(1.8,.1,1.8),new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.45}),0,.06,0,pl,false);var ic=fm3Emoji("🔒",.8);ic.position.y=.7;pl.add(ic);pl.userData.pick={fmx:"1"};FM3.pickD.push(pl)}continue}
-    var soil=fm3Mesh(new THREE.BoxGeometry(1.85,.28,1.85),0x7a4a26,0,.14,0,pl);for(var r=-2;r<=2;r++)fm3Mesh(new THREE.BoxGeometry(1.7,.06,.16),0x5e3518,0,.3,r*.36,pl,false);
+    var soil=fm3Mesh(new THREE.BoxGeometry(1.85,.28,1.85),FM3.soilMat||(FM3.soilMat=fm3TexMat("soil",[.7,.7])),0,.14,0,pl);for(var r=-2;r<=2;r++)fm3Mesh(new THREE.BoxGeometry(1.7,.06,.16),0x5e3518,0,.3,r*.36,pl,false);
     var cp2=F[i];if(own){pl.userData.pick=cp2?{fmh:String(i)}:{fmp:String(i)};FM3.pickD.push(pl)}
     if(!cp2){if(own){var plus=fm3Emoji("➕",.55);plus.position.y=.75;pl.add(plus)}continue}
     var cr=c.crops[cp2.crop]||{min:1},ra=new Date(cp2.ready_at).getTime(),stt=ra-cr.min*60000,rd=ra<=now,pc2=(now-stt)/(ra-stt),cg=fm3Crop(cp2.crop,rd?2:pc2>.55?1:0);cg.position.y=.3;pl.add(cg);pl.userData.crop=cg;
@@ -4240,13 +4253,13 @@ window.__fm3t=function(){return FM3.truckG};window.__fmtk=function(go){if(go)FM3
   else if(e<3){tk.rotation.y=Math.PI;tk.position.z=z0+(far-z0)*ez((e-.6)/2.4);tk.position.y=bob}
   else if(e<3.8){tk.visible=false;tk.position.z=far}
   else{tk.visible=true;tk.rotation.y=0;tk.position.z=far+(z0-far)*(1-Math.pow(1-(e-3.8)/2.7,2));tk.position.y=e<6.2?bob:0}}
-function fm3DN(){if(!FM3.sun)return;var n=fmIsNight();FM3.sun.intensity=n?.25:1;FM3.hemi.intensity=n?.35:.75;FM3.scene.background.set(n?0x16234a:0x8fd3f4);if(FM3.scene.fog)FM3.scene.fog.color.set(n?0x16234a:0x8fd3f4)}
+function fm3DN(){if(!FM3.sun)return;var n=fmIsNight();FM3.sun.intensity=n?.3:1.05;FM3.hemi.intensity=n?.4:.72;if(FM3.skyN!==n){FM3.skyN=n;if(FM3.scene.background&&FM3.scene.background.dispose)FM3.scene.background.dispose();FM3.scene.background=fm3Sky(n)}if(FM3.scene.fog)FM3.scene.fog.color.set(n?0x16234a:0xcfe9d0)}
 /* ---------- สร้าง/เปิด ฉาก 3D ---------- */
 function fm3Mount(){var box=$("fm-world");if(!box)return false;box.innerHTML='<div class="fwin f3win" id="fm-win"><canvas id="fm3-cv"></canvas></div>';var cv=$("fm3-cv");
   if(!FM3.renderer){FM3.renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:"high-performance"})}else{FM3.renderer.dispose();FM3.renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true})}
   var R=FM3.renderer;R.setPixelRatio(Math.min(window.devicePixelRatio||1,fmIsTouch()?1.5:2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
-  if(!FM3.scene){var sc=FM3.scene=new THREE.Scene();sc.background=new THREE.Color(0x8fd3f4);sc.fog=new THREE.Fog(0x8fd3f4,55,110);
-    FM3.hemi=new THREE.HemisphereLight(0xffffff,0x5d8f3a,.75);sc.add(FM3.hemi);var sun=FM3.sun=new THREE.DirectionalLight(0xfff3d6,1);sun.position.set(18,30,12);sun.castShadow=true;sun.shadow.mapSize.set(fmIsTouch()?1024:2048,fmIsTouch()?1024:2048);
+  if(!FM3.scene){var sc=FM3.scene=new THREE.Scene();sc.background=fm3Sky(0);sc.fog=new THREE.Fog(0xcfe9d0,60,120);
+    FM3.hemi=new THREE.HemisphereLight(0xfff3dc,0x6b5a3a,.72);sc.add(FM3.hemi);var sun=FM3.sun=new THREE.DirectionalLight(0xffdcae,1.05);sun.position.set(20,26,6);sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;sun.castShadow=true;sun.shadow.mapSize.set(fmIsTouch()?1024:2048,fmIsTouch()?1024:2048);
     Object.assign(sun.shadow.camera,{left:-20,right:20,top:20,bottom:-20,near:1,far:80});sc.add(sun);FM3.pickables=[];fm3Static();FM3.cam=new THREE.PerspectiveCamera(40,1,.1,300);FM3.cam.position.set(16,20,22)}
   if(FM3.ctl)FM3.ctl.dispose();var ctl=FM3.ctl=new THREE.OrbitControls(FM3.cam,cv);ctl.enableDamping=true;ctl.dampingFactor=.12;ctl.maxPolarAngle=Math.PI*.42;ctl.minPolarAngle=.35;ctl.minDistance=8;ctl.maxDistance=55;
   ctl.target.copy(FM3.target||new THREE.Vector3(-1,0,1));ctl.screenSpacePanning=false;ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
