@@ -784,7 +784,7 @@ body:not(.tt-full) .mepill{background:var(--surface);color:var(--ink);border-col
 
 .fworld{display:grid;gap:8px}
 .fwin{position:relative;border-radius:22px;overflow:hidden;height:min(560px,68vh);cursor:grab;touch-action:none;box-shadow:0 10px 30px rgba(14,116,144,.25);background:#d9f3ff;-webkit-overflow-scrolling:touch}
-.fsvg{position:absolute;left:0;top:0;display:block;max-width:none;user-select:none;-webkit-user-select:none;transform-origin:0 0}
+.fsvg{position:absolute;left:0;top:0;display:block;max-width:none;user-select:none;-webkit-user-select:none;transform-origin:0 0;will-change:transform}
 .fsvg .iem{fill:#222;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;dominant-baseline:auto}
 .fsvg text.itx.sg{stroke:none}.fsvg text.itx{font:700 13px var(--sans,system-ui);fill:#fff;text-anchor:middle;paint-order:stroke;stroke:rgba(0,0,0,.45);stroke-width:3px}
 .fsvg .fpet .pin{transform-box:fill-box;transform-origin:center bottom;animation:pbr 2.6s ease-in-out infinite}
@@ -4493,17 +4493,20 @@ function faMusic(on){if(!on){clearInterval(FA.timer);FA.timer=null;try{if(FA.ael
       if(FA.step%2===1)faTone(5200,FA.next,.03,"square",.012,null,FA.mg);
       FA.step++;FA.next+=spb}},150)}
 /* ---------- กล้อง: ลากเลื่อน / ถ่างนิ้วซูม / ล้อเมาส์ / ปุ่ม + − ; มือถือแนวตั้ง → หมุนเป็นแนวนอน ---------- */
-function fmIsTouch(){return window.matchMedia&&matchMedia("(pointer:coarse)").matches}
-function fmLayout(){var v=$("v-farm"),W=window.innerWidth,H=window.innerHeight,rot=S.tab==="farm"&&fmIsTouch()&&H>W&&!FM3.on;
+var FMQ={};function fmMQ(q){if(!window.matchMedia)return false;if(!FMQ[q]){var m=matchMedia(q);FMQ[q]=m}return FMQ[q].matches}
+function fmIsTouch(){return fmMQ("(pointer:coarse)")}
+function fmLayout(){FM.vsz=null;var v=$("v-farm"),W=window.innerWidth,H=window.innerHeight,rot=S.tab==="farm"&&fmIsTouch()&&H>W&&!FM3.on;
   FM.rot=rot;document.body.classList.toggle("farm-rot",rot);
   if(rot){v.style.width=H+"px";v.style.height=W+"px"}else{v.style.width="";v.style.height=""}
   var g=v.querySelector(".fgame");if(g)g.classList.toggle("fland",rot||W>H)}
-function fmView(){var w=$("fm-win");return w?{w:w,cw:FM.rot?w.clientWidth:w.clientWidth,ch:w.clientHeight}:null}
+/* ขนาดกรอบฟาร์ม: จำไว้ ไม่อ่านจาก DOM ทุกครั้งที่ลากนิ้ว (การอ่าน clientWidth บังคับเบราว์เซอร์คำนวณหน้าใหม่ = กระตุก) */
+function fmView(){var w=$("fm-win");if(!w)return null;var c=FM.vsz;if(!c||c.w!==w||!c.cw||!c.ch){c=FM.vsz={w:w,cw:w.clientWidth,ch:w.clientHeight}}return c}
+window.addEventListener("resize",function(){FM.vsz=null});
 function fmZlim(v){var mn=Math.max(v.cw/ISO.vw,v.ch/ISO.vh)*1.0;return [mn,Math.max(mn*3,2.4)]}
 function fmClamp(){var v=fmView();if(!v)return;var c=FM.cam,L=fmZlim(v);c.z=Math.max(L[0],Math.min(L[1],c.z));
   var sw=ISO.vw*c.z,sh=ISO.vh*c.z;c.x=Math.min(0,Math.max(v.cw-sw,c.x));c.y=Math.min(0,Math.max(v.ch-sh,c.y))}
 /* กล้อง: ระหว่างลาก/ซูม แค่เลื่อนภาพที่วาดไว้แล้ว (เร็ว) — หยุดนิ้วแล้วค่อยวาดใหม่ให้คมเฉพาะส่วนที่เห็น (+ขอบเผื่อ) */
-var FMRG=.3;
+var FMRG=.45;
 function fmCommit(){var sv=document.querySelector("#fm-win svg"),v=fmView();if(!sv||!FM.cam||!v)return;var c=FM.cam,mw=v.cw*FMRG,mh=v.ch*FMRG,W=v.cw+2*mw,H=v.ch+2*mh;
   sv.style.left=(-mw).toFixed(1)+"px";sv.style.top=(-mh).toFixed(1)+"px";sv.style.transformOrigin=mw.toFixed(1)+"px "+mh.toFixed(1)+"px";
   if(sv.getAttribute("width")!=String(Math.round(W)))sv.setAttribute("width",Math.round(W));if(sv.getAttribute("height")!=String(Math.round(H)))sv.setAttribute("height",Math.round(H));
@@ -4513,11 +4516,15 @@ function fmApply(){var sv=document.querySelector("#fm-win svg");if(!sv||!FM.cam)
   if(!b||sv.dataset.vb!=="1"){sv.dataset.vb="1";fmCommit();return}
   var k=c.z/b.z;sv.style.transform="translate("+(c.x-b.x*k).toFixed(1)+"px,"+(c.y-b.y*k).toFixed(1)+"px) scale("+k.toFixed(4)+")";
   clearTimeout(FM.ct);FM.ct=setTimeout(fmCommitLater,160)}
-function fmCommitLater(){if(FM.panning){FM.ct=setTimeout(fmCommitLater,120);return}fmCommit();if(FM.snapOn)fmSnapOff()}
+function fmCommitLater(){if(FM.panning){FM.ct=setTimeout(fmCommitLater,120);return}
+  /* เลื่อนเฉยๆ (ไม่ซูม) และยังอยู่ในขอบเผื่อ → แค่ขยับภาพเดิม ไม่ต้องวาดฟาร์มใหม่ (วาดใหม่ทำให้กระตุก) */
+  var sv=document.querySelector("#fm-win svg"),c=FM.cam,b=FM.vb,v=fmView();
+  if(sv&&b&&v&&c&&Math.abs(c.z/b.z-1)<1e-4&&Math.abs(c.x-b.x)<v.cw*FMRG*.85&&Math.abs(c.y-b.y)<v.ch*FMRG*.85)sv.style.transform="translate("+(c.x-b.x).toFixed(1)+"px,"+(c.y-b.y).toFixed(1)+"px)";else fmCommit();
+  if(FM.snapOn)fmSnapOff()}
 /* ภาพนิ่งทั้งฟาร์ม: ใช้แทนตอนลาก/ซูม (มือถือเลื่อนรูปเดียวได้ลื่นมาก) */
 function fmSnapPos(){var im=$("fm-snap"),c=FM.cam;if(im&&c)im.style.transform="translate("+c.x.toFixed(1)+"px,"+c.y.toFixed(1)+"px) scale("+c.z.toFixed(4)+")"}
 function fmSnapOn(){if(FM.snapOn)return true;var im=$("fm-snap"),sv=document.querySelector("#fm-win svg");if(!im||!sv||!FM.snapUrl||im.dataset.ok!=="1")return false;
-  FM.snapOn=1;fmSnapPos();im.hidden=false;sv.style.visibility="hidden";return true}
+  FM.snapOn=1;fmSnapPos();im.hidden=false;return true}
 function fmSnapOff(){var im=$("fm-snap"),sv=document.querySelector("#fm-win svg");FM.snapOn=0;if(sv)sv.style.visibility="";if(im)requestAnimationFrame(function(){requestAnimationFrame(function(){if(!FM.snapOn)im.hidden=true})})}
 function fmSnapCss(){if(FM.snapCss!=null)return FM.snapCss;var t="";try{[].forEach.call(document.styleSheets,function(sh){try{[].forEach.call(sh.cssRules||[],function(r){if(r.selectorText&&r.selectorText.indexOf("fsvg")>=0)t+=r.cssText})}catch(e){}})}catch(e){}
   return FM.snapCss=t+".fsvg *{animation:none!important}.fsvg text{font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}"}
@@ -4798,8 +4805,8 @@ function fmPetApply2D(){var els=document.querySelectorAll("#fm-world .fpet[data-
     if(FPSPR[w.k]){var im=g.querySelectorAll(".pspr image"),fi=w.mv?1+(Math.floor((w.ph||0)/(Math.PI/2))%4+4)%4:0;if(g.__fi!==fi){g.__fi=fi;im.forEach(function(e,i){e.style.display=i===fi?"":"none"})}}
     var fl=w.fly&&w.mv;if(fl!==g.classList.contains("fly"))g.classList.toggle("fly",fl);if(w.mv!==g.classList.contains("mv"))g.classList.toggle("mv",w.mv)})}
 FM.plt=0;(function fpLoop(){requestAnimationFrame(fpLoop);var t=performance.now();if(t-FM.plt<(fmIsTouch()?50:33))return;var dt=Math.min(.1,(t-(FM.plt||t))/1000);FM.plt=t;
-  if(S.tab!=="farm"||document.hidden||FM.tool||FM.busy)return;if(matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-  if(FM3.on&&FM3.ready)return;fmWander(dt);if(!document.querySelector("#fm-world .fpet"))return;fmPetStep(dt);fmPetApply2D()})();
+  if(S.tab!=="farm"||document.hidden||FM.tool||FM.busy)return;if(fmMQ("(prefers-reduced-motion:reduce)"))return;
+  if(FM3.on&&FM3.ready)return;if(FM.panning||FM.snapOn)return;fmWander(dt);if(!document.querySelector("#fm-world .fpet"))return;fmPetStep(dt);fmPetApply2D()})();
 function fmPetLove(id,ev){var w=FP[id];if(w){w.jump=performance.now()/1000;if(!w.mv)w.wait=Math.max(w.wait,1.2)}sfx("like");
   try{for(var i=0;i<3;i++){var h=document.createElement("div");h.className="fpheart";h.textContent=["❤️","💕","💖"][i];h.style.left=(ev.clientX-10+(i-1)*16)+"px";h.style.top=(ev.clientY-24)+"px";h.style.animationDelay=(i*.12)+"s";document.body.appendChild(h);setTimeout(function(e){e.remove()}.bind(null,h),1500)}}catch(e){}}
 /* โมเดล 3D ของสัตว์เลี้ยง (หันหน้าไปทาง +x) */
