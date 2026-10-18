@@ -72,7 +72,7 @@ h3{font-size:14.5px;font-weight:600;margin:0}
 .alert .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .days{display:flex;flex-wrap:wrap;gap:4px}
 .days i{font-style:normal;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-variant-numeric:tabular-nums;background:var(--off-bg);color:var(--off-ink)}
-.days i.ok{background:var(--tint);color:var(--good);font-weight:600}
+.days i.ok{background:var(--tint);color:var(--good);font-weight:600}.days i[data-daylog]{cursor:pointer}.days i[data-daylog]:hover{outline:2px solid var(--good)}
 .days i.miss{background:var(--miss-bg);color:var(--miss-ink)}
 .emp{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
 .emp:first-child{border-top:0;padding-top:0}
@@ -1972,6 +1972,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
         <label>ยอดผลงาน<input type="number" id="lg-out" min="0" step="any" inputmode="decimal" required></label>
         <label>กะ<select id="lg-shift"><option value="A">กะ A</option><option value="B">กะ B</option><option value="D">กะเช้าตลอด</option></select></label>
       </div>
+      <label id="lg-dwrap" hidden>วันที่ทำงาน (แก้ได้ถ้าลงผิดวัน)<input type="date" id="lg-date"></label>
       <label>หมายเหตุ<input type="text" id="lg-note" maxlength="200"></label>
       <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-log">ยกเลิก</button><button class="primary slim" type="submit">บันทึกการแก้ไข</button></div>
     </form>
@@ -2413,7 +2414,7 @@ async function renderStaff(){
     var h=sum[e.id]||{},cells="",logged=0,miss=[];
     for(var d=1;d<=n;d++){
       var key=y+"-"+pad(mo+1)+"-"+pad(d);
-      if(key in h){logged++;cells+='<i class="ok" title="วันที่ '+d+'">'+num(h[key])+'</i>'}
+      if(key in h){logged++;cells+='<i class="ok" role="button" tabindex="0" data-daylog="'+e.id+'" data-d="'+key+'" title="วันที่ '+d+' · แตะเพื่อแก้ไขยอด">'+num(h[key])+'</i>'}
       else if(d<=td){miss.push(d);cells+='<i class="miss">'+d+'</i>'}
       else cells+='<i>'+d+'</i>';
     }
@@ -5950,15 +5951,24 @@ $("empform").addEventListener("submit",function(ev){
 
 /* ---------- แก้ไขยอดที่ลงผิด ---------- */
 var LG=null;
+/* แตะยอดในปฏิทินรายชื่อพนักงาน: วันนั้นมีรายการเดียว → เปิดแก้ไขเลย, หลายรายการ → ไปหน้ารายละเอียดพนักงานเดือนนั้น */
+async function dayLogEdit(emp,date){
+  var rs=(await month(date.slice(0,7))).filter(function(x){return x.employee_id===emp&&x.work_date===date});
+  if(rs.length===1)return logModal(rs[0].id,date);
+  S.empId=emp;show("emp");var m=$("ed-month");if(m&&m.value!==date.slice(0,7)){m.value=date.slice(0,7);renderEmp()}toast("วันที่ "+(+date.slice(8))+" มี "+rs.length+" รายการ · กดแก้ไขที่รายการด้านล่าง");
+}
 async function logModal(id,date){
   var r=(await month(date.slice(0,7))).filter(function(x){return x.id===id})[0];if(!r)return;
   LG=r;$("lg-sub").textContent=empName(r.employee_id)+" · "+dmy(r.work_date)+" · "+r.kpi_name+(r.target==null?"":" · เป้า "+num(r.target));
-  $("lg-out").value=r.output;$("lg-shift").value=r.shift;$("lg-note").value=r.note||"";openModal("m-log");
+  $("lg-out").value=r.output;$("lg-shift").value=r.shift;$("lg-note").value=r.note||"";
+  var cm=S.admin||(S.mgr&&(S.me.allowed_departments||[]).indexOf(r.department_id)>=0);$("lg-dwrap").hidden=!cm;$("lg-date").value=r.work_date;$("lg-date").max=today();openModal("m-log");
 }
 $("logedit").addEventListener("submit",function(ev){
   ev.preventDefault();var o=parseFloat($("lg-out").value),r=LG;if(!r||isNaN(o)){toast("กรอกยอดผลงาน");return}
-  act(function(){return q(db.from("work_logs").update({output:o,shift:$("lg-shift").value,note:$("lg-note").value.trim()}).eq("id",r.id))},"แก้ไขยอดแล้ว")
-    .then(function(ok){if(ok){closeModal("m-log");dirty(r.work_date)}});
+  var up={output:o,shift:$("lg-shift").value,note:$("lg-note").value.trim()},nd=$("lg-date").value;
+  if(!$("lg-dwrap").hidden&&nd&&nd!==r.work_date){if(nd>today()){toast("เลือกวันในอนาคตไม่ได้");return}up.work_date=nd}
+  act(function(){return q(db.from("work_logs").update(up).eq("id",r.id))},"แก้ไขยอดแล้ว")
+    .then(function(ok){if(ok){closeModal("m-log");dirty(r.work_date);if(up.work_date)dirty(up.work_date)}});
 });
 
 /* ---------- หน้า: รายละเอียดพนักงาน ---------- */
@@ -6154,6 +6164,7 @@ function armed(btn,label){
 }
 document.addEventListener("click",function(ev){
   if(ev.target.closest("#who-av")){show("settings");return}
+  var dl=ev.target.closest("[data-daylog]");if(dl){dayLogEdit(dl.dataset.daylog,dl.dataset.d).catch(function(e){toast(thErr(e))});return}
   var head=ev.target.closest(".emphead[data-open]");if(head&&!ev.target.closest("button,label")){S.empId=head.dataset.open;show("emp");return}
   var b=ev.target.closest("button");if(!b)return;var d=b.dataset;
   if(b.hasAttribute("data-sdept")){$("s-dept").value=d.sdept;if(S.tab==="staff"){refresh();window.scrollTo(0,0)}else show("staff");return}
