@@ -5445,7 +5445,14 @@ function fmBoard(){var B0=FM.board||[],B=B0.filter(function(x){return !x.is_admi
     return '<div class="row"><b style="width:28px;text-align:center">'+(i<3?["🥇","🥈","🥉"][i]:i+1)+'</b>'+avatarHtml({display_name:x.display_name,avatar:x.avatar})+'<div class="l"><b>'+esc(x.display_name)+(me?' (ฉัน)':'')+'</b><small>'+esc([x.department,"เลเวล "+x.level,"❤️ "+x.likes,"มูลค่าฟาร์ม "+num(x.value),x.animals+" สัตว์",x.decor+" ของแต่ง"].filter(Boolean).join(" · "))+'</small></div>'+(me?'':'<button type="button" class="sm" data-fmv="'+x.employee_id+'">เยี่ยม</button>')+'</div>'}).join(""):emptyRow("ยังไม่มีใครเริ่มทำฟาร์ม"))+'</div></div>'+
     (AD.length?'<div class="panel"><h3>👑 ฟาร์ม Admin</h3><p class="sub">ไม่นับอันดับ · เข้าไปเยี่ยมและกดถูกใจได้</p><div class="rows">'+AD.map(function(x){var me=x.employee_id===S.me.id;return '<div class="row"><b style="width:28px;text-align:center">👑</b>'+avatarHtml({display_name:x.display_name,avatar:x.avatar})+'<div class="l"><b>'+esc(x.display_name)+(me?' (ฉัน)':'')+'</b><small>'+esc([x.department,"Admin","❤️ "+x.likes,x.animals+" สัตว์",x.decor+" ของแต่ง"].filter(Boolean).join(" · "))+'</small></div>'+(me?'':'<button type="button" class="sm" data-fmv="'+x.employee_id+'">เยี่ยม</button>')+'</div>'}).join("")+'</div></div>':'')}
 function fmCropSig(dd,now){return dd.field.map(function(p){var cr=FM.cat.crops[p.crop]||{min:1},ra=new Date(p.ready_at).getTime(),pc=(now-(ra-cr.min*60000))/(cr.min*60000);return FCS[p.crop]?fmStage5(ra<=now,pc):ra<=now?2:pc>.55?1:0}).join("")}
-function fmTick(force){if(S.tab!=="farm"&&!force)return;var now=fmNow(),flip=false;
+/* อัปเดต 104: เยี่ยมฟาร์ม — ส่งสัญญาณ "ยังอยู่" ทุก 1 นาที, กดกลับ = ออกทันที; เจ้าของเช็กคนที่อยู่ทุก 30 วิ */
+function fmLeave(emp){if(emp)q(db.rpc("farm_visit_leave",{p_owner:emp})).catch(function(){})}
+window.addEventListener("pagehide",function(){if(FM.v)fmLeave(FM.v.emp)});
+function fmPresence(){var t=Date.now();
+  if(FM.v&&S.tab==="farm"&&!document.hidden){if(t-(FM.vhb||0)>60000){FM.vhb=t;q(db.rpc("farm_visit",{p_owner:FM.v.emp})).catch(function(){})}}
+  else if(!FM.v&&FM.d&&S.tab==="farm"&&!document.hidden&&t-(FM.ghb||0)>30000){FM.ghb=t;q(db.rpc("farm_guests",{})).then(function(G){if(!Array.isArray(G)||FM.v||!FM.d)return;var a=(FM.d.guests||[]).map(function(x){return x.id}).join(),b=G.map(function(x){return x.id}).join();
+    FM.d.guests=G;if(a!==b&&!FM.edit&&!FM.busy&&!FM3.tp){FM.keep=true;drawFarm()}}).catch(function(){})}}
+function fmTick(force){if(S.tab!=="farm"&&!force)return;if(!force)fmPresence();var now=fmNow(),flip=false;
   if(!FM3.on&&!force&&!FM.busy&&FM.d&&!FM.panning){var cs2=fmCropSig(FM.v||FM.d,now);if(FM.csig&&FM.csig!==cs2){FM.csig=cs2;FM.keep=true;drawFarm();return}FM.csig=cs2}
   if(!force&&!FM.v&&!FM.busy&&FM.vis){var vc=fmVisNow().length;if(FM.vcnt!=null&&vc!==FM.vcnt&&!FM.panning){FM.vcnt=vc;FM.keep=true;drawFarm();return}FM.vcnt=vc}
   if(FM3.on&&FM3.ready&&!force&&!FM.busy&&FM.d){var dd=FM.v||FM.d,sig=fmCropSig(dd,now)+"|"+dd.animals.map(function(a){return !a.ready_at?0:new Date(a.ready_at).getTime()<=now?2:1}).join("")+"|"+(dd.decor||[]).map(function(x){return x.ready_at&&new Date(x.ready_at).getTime()>now?1:0}).join("")+"|"+(dd.jobs||[]).map(function(j){return new Date(j.ready_at).getTime()<=now?1:0}).join("");
@@ -5740,8 +5747,8 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(D.fmboost){var bo=FM.cat.boosts[D.fmboost];if(!armed(t,"แตะอีกครั้ง จ่าย "+bo.cost)){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_boost_buy",{p_kind:D.fmboost}))},bo.e+" ใช้"+bo.n+"แล้ว ผักโตเร็ว x2 นาน "+fmDur(bo.mins));return}
   if(D.fmbp){var tb=document.getElementById("fm-tbub");if(!armed(t,"แตะอีกครั้งเพื่อยืนยัน")){sfx("tap");return}if(tb)tb.remove();FM.snd="coin";fmDo(function(){return q(db.rpc("farm_boost_plot",{p_slot:+D.fmbp}))},function(n){return "⚡ สุกทันที ใช้ "+n+" เหรียญ · แตะเก็บได้เลย"});return}
   if(D.fmbd){var o=FM.cat.decor[D.fmbd];if(!armed(t,"แตะอีกครั้ง จ่าย "+o.cost)){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_buy_decor",{p_item:D.fmbd}))},function(st){return st===true?"พื้นที่วางเต็ม — "+o.n+" เข้า 📦 คลังส่วนตัวแล้ว (+"+o.xp+" XP)":"ซื้อ"+o.n+"แล้ว "+o.e+" +"+o.xp+" XP"});return}
-  if(D.fmv){q(db.rpc("farm_visit",{p_owner:D.fmv})).catch(function(){});fmLoad(D.fmv).then(function(v){FM.v=v;FM.t=FM.t==="market"?"stall":"farm";drawFarm()},function(e){toast(thErr(e))});return}
-  if(D.fmback){FM.v=null;FM.t="friends";drawFarm();return}
+  if(D.fmv){if(FM.v&&FM.v.emp!==D.fmv)fmLeave(FM.v.emp);FM.vhb=Date.now();q(db.rpc("farm_visit",{p_owner:D.fmv})).catch(function(){});fmLoad(D.fmv).then(function(v){FM.v=v;FM.t=FM.t==="market"?"stall":"farm";drawFarm()},function(e){toast(thErr(e))});return}
+  if(D.fmback){if(FM.v)fmLeave(FM.v.emp);FM.v=null;FM.t="friends";drawFarm();return}
   if(D.fmlike){q(db.rpc("farm_like",{p_owner:D.fmlike})).then(function(){sfx("like");toast("ส่งหัวใจให้ฟาร์มนี้แล้ว ❤️");return q(db.rpc("farm_get",{p_emp:D.fmlike}))}).then(function(v){FM.v=v;drawFarm(true)},function(e){toast(thErr(e))});return}
 });
 
