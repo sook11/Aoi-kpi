@@ -955,7 +955,7 @@ body.farm-rot .ffly{rotate:90deg}
 .fcprice{border:0;border-radius:12px;background:#fde047;color:#422006;font-weight:800;font-size:12px;padding:4px 8px;box-shadow:0 2px 0 #a16207;cursor:pointer;white-space:nowrap}
 .fcx{border:0;background:rgba(255,255,255,.25);color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer}
 .fcrate.empty{cursor:pointer}.fcrate.empty .fcbox{opacity:.45}.fcrate.empty.on{outline:3px solid #fde047}
-.fcrate.sold .fcbox{filter:grayscale(.7);opacity:.6}.fcsold{color:#86efac!important}
+.fcrate.sold .fcbox{filter:grayscale(.7);opacity:.6}.fcsold{color:#86efac!important}.fccol{background:#4ade80;color:#052e16;box-shadow:0 2px 0 #15803d;animation:fpulse 1.2s ease-in-out infinite}
 .fcrate.lock .fcbox{background:#57534e;border-color:#44403c}
 .fnewsp{background:#f5ecd7;border-radius:12px;padding:10px;box-shadow:inset 0 0 0 2px #d6c7a1}
 .fnhead{text-align:center;font:900 18px Sarabun,serif;color:#3f2d14;border-bottom:3px double #8a7550;padding-bottom:6px;margin-bottom:6px}
@@ -4787,7 +4787,7 @@ function fmStallHtml(){var own=!FM.v,d=FM.v||FM.d,L=d.stall||[],SI=FM.stallInfo|
     return top+c+bot+'<p class="sub" style="text-align:center">แตะราคาเพื่อซื้อ · ของเข้ายุ้งฉางของคุณ</p>'}
   var sold=L.filter(function(x){return x.sold}),tot=sold.reduce(function(a,x){return a+x.price},0),it=d.items||{},keys=Object.keys(it).filter(function(k){return it[k]>0}),h='',ed='';
   for(var s=1;s<=N;s++){var x=L.filter(function(z){return z.slot===s})[0];
-    if(x){var o=fmIt(x.item);h+=fmCrate(o,x.qty,x.sold?'<small class="fcsold">✓ ขายแล้ว</small>':'<span class="fcprice">'+fmc()+' '+num(x.price)+'</span><button type="button" class="fcx" data-fmsc="'+x.id+'" aria-label="ยกเลิก">✕</button>',x.sold?'sold':'',x.sold&&x.buyer?' title="ขายให้ '+esc(nick(x.buyer)||x.buyer)+'"':'');continue}
+    if(x){var o=fmIt(x.item);h+=fmCrate(o,x.qty,x.sold?'<button type="button" class="fcprice fccol" data-fmscol="1">💰 เก็บ +'+num(x.price)+'</button>':'<span class="fcprice">'+fmc()+' '+num(x.price)+'</span><button type="button" class="fcx" data-fmsc="'+x.id+'" aria-label="ยกเลิก">✕</button>',x.sold?'sold':'',x.sold?' data-fmscol="1" role="button" title="ขายแล้ว'+(x.buyer?' ให้ '+esc(nick(x.buyer)||x.buyer):'')+' — แตะเพื่อเก็บเงิน ช่องจะว่าง"':'');continue}
     if(FM.slEdit===s){h+=fmCrate(null,0,'<small>กำลังตั้งขาย…</small>','empty on');var sk=FM.slItem&&it[FM.slItem]?FM.slItem:keys[0];
       if(!sk){ed='<div class="fsl edit"><small>ยุ้งฉางว่าง ไม่มีของให้ขาย</small><button type="button" class="sm" data-fmsl="0">ปิด</button></div>';continue}
       var o2=fmIt(sk),mxq=Math.min(10,it[sk]),qq=Math.min(FM.slQty||1,mxq),pp=FM.slPrice||o2.sell*qq;
@@ -5770,7 +5770,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(D.fmslok){var se2=$("fm-sl-item"),k3=se2&&se2.value,o4=fmIt(k3),q3=Math.min(FM.slQty||1,(FM.d.items||{})[k3]||0),p3=FM.slPrice||o4.sell*q3;if(!k3||q3<1)return;FM.snd="coin";FM.slEdit=0;
     fmDo(function(){return q(db.rpc("farm_stall_list",{p_slot:+D.fmslok,p_item:k3,p_qty:q3,p_price:p3}))},"🧺 วางขาย "+o4.n+" ×"+q3+" ราคา "+p3+" แล้ว");return}
   if(D.fmsc){FM.snd="tap";fmDo(function(){return q(db.rpc("farm_stall_cancel",{p_id:+D.fmsc}))},"ยกเลิกแล้ว ของกลับเข้ายุ้งฉาง");return}
-  if(D.fmscol){FM.snd="coin";fmDo(function(){return q(db.rpc("farm_stall_collect"))},function(n){return "💰 ได้เงินจากร้านริมทาง +"+n+" เหรียญ"});return}
+  if(D.fmscol){FM.snd="coin";fmDo(function(){return q(db.rpc("farm_stall_collect"))},function(n){return "💰 ได้เงินจากร้านริมทาง +"+n+" เหรียญ · ช่องที่ขายแล้วว่าง ตั้งขายใหม่ได้"});return}
   if(D.fmsb){if(!armed(t,"แตะอีกครั้งเพื่อซื้อ")){sfx("tap");return}if(FM.busy)return;FM.busy=true;q(db.rpc("farm_stall_buy",{p_id:+D.fmsb})).then(function(n){sfx("coin");toast("🛍️ ซื้อแล้ว จ่าย "+n+" เหรียญ ของเข้ายุ้งฉางของคุณ");return fmStallReload()}).catch(function(e){sfx("error");toast(thErr(e));return fmStallReload()}).finally(function(){FM.busy=false});return}
   if(D.fmmach){if(FM.v)return;sfx("open");FM.t="mach:"+D.fmmach;fmSheet();return}
   if(D.fmmb){var mo=FM.cat.machines[D.fmmb];if(!armed(t,"แตะอีกครั้ง จ่าย "+num(mo.cost))){sfx("tap");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_machine_buy",{p_machine:D.fmmb}))},"🏭 สร้าง"+mo.n+"แล้ว! แตะเครื่องที่ลานโรงงานเพื่อเริ่มผลิต");return}
