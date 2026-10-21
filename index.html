@@ -5792,7 +5792,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(D.fmuns){FM.snd="tap";var uid=D.fmuns;fmDo(function(){return q(db.rpc("farm_decor_store",{p_id:uid,p_store:false}))},function(){FM.stor=null;q(db.rpc("farm_storage")).then(function(x){FM.stor=x;if(FM.t==="storage")fmSheet()});return "นำออกมาวางในฟาร์มแล้ว ✨ ย้ายตำแหน่งได้ที่ ✏️ จัดฟาร์ม"});return}
   if(D.fmsto){FM.snd="tap";var sid=D.fmsto;fmDo(function(){return q(db.rpc("farm_decor_store",{p_id:sid,p_store:true}))},function(){FM.sel=null;if(/^tree:/.test(FM.t))FM.t="farm";return "📦 เก็บเข้าคลังส่วนตัวแล้ว"});return}
   if(D.fmchop){if(FM.v)return;var ax=(FM.d.items||{}).axe||0,cid=D.fmchop;if(ax<1){sfx("error");toast("🪓 ต้องมีขวานก่อน — ซื้อในร้านค้า หรือหา 🎁 กล่องสุ่มในฟาร์มเพื่อน");FM.t="shop";fmSheet();return}
-    if(!armed(t,"แตะอีกครั้งเพื่อตัดด้วยขวาน (มี "+ax+")")){sfx("tap");toast("🪓 แตะต้นไม้อีกครั้งเพื่อตัด (มีขวาน "+ax+" อัน)");return}FM.snd="harvest";fmFloat(ev,"🪓");fmDo(function(){return q(db.rpc("farm_tree_chop",{p_id:cid}))},function(n){FM.sel=null;if(/^tree:/.test(FM.t))FM.t="farm";return "🪓 ตัดต้นไม้แล้ว ได้ +"+n+" เหรียญ · ที่ว่างแล้ว ปลูกต้นใหม่ได้"});return}
+    var ca=FM.chopArm;if(!(ca&&ca.id===cid&&Date.now()-ca.at<5000)){FM.chopArm={id:cid,at:Date.now()};sfx("tap");toast("🪓 แตะอีกครั้งเพื่อตัด (มีขวาน "+ax+" อัน)");return}FM.chopArm=null;FM.snd="harvest";fmFloat(ev,"🪓");fmDo(function(){return q(db.rpc("farm_tree_chop",{p_id:cid}))},function(n){FM.sel=null;if(/^tree:/.test(FM.t))FM.t="farm";return "🪓 ตัดต้นไม้แล้ว ได้ +"+n+" เหรียญ · ที่ว่างแล้ว ปลูกต้นใหม่ได้"});return}
   if(D.fmbox&&FM.v){var bo2=FM.v.emp;sfx("open");fmFloat(ev,"🎁");fmDo(function(){return q(db.rpc("farm_box_open",{p_owner:bo2}))},function(r){var it2=r&&r.item?((FM.cat.tools||{})[r.item]||FM.cat.crops[r.item]||FM.cat.products[r.item]||{}):null;setTimeout(function(){fmLoad(bo2).then(function(v){if(FM.v&&FM.v.emp===bo2){FM.v=v;FM.keep=true;drawFarm()}})},50);return "🎁 เปิดกล่องสุ่มได้ "+(it2?(it2.e||"")+" "+(it2.n||"")+" ×"+r.qty:"💰 "+(r&&r.coins)+" เหรียญ")+"!"});return}
   if(D.fmtree){if(FM.v)return;if(D.fmtree!=="all"){var td=FM.d.decor.filter(function(x){return x.id===D.fmtree})[0],to=FM.cat.decor[td&&td.item]||{},tra=td&&td.ready_at?new Date(td.ready_at).getTime():0;
       if(tra>fmNow()){sfx("tap");fmTimeBub(ev,tra,to.min,(to.e||"🌳")+" "+(to.n||""));return}fmFloat(ev,"+"+(to.yield||1)+" "+((FM.cat.products[to.fruit]||{}).e||""))}
@@ -6769,6 +6769,8 @@ $("logout").addEventListener("click",function(){db.auth.signOut().then(function(
 /* two-tap confirm: the first tap arms the button, the second runs it */
 function armed(btn,label){
   if(btn.dataset.armed)return true;
+  /* ปุ่มรูปภาพ/SVG (เช่น ต้นไม้ ป้ายในฟาร์ม): ห้ามเปลี่ยนข้อความ ไม่งั้นรูปหาย — จำสถานะไว้เฉย ๆ แล้วแจ้งเตือนแทน */
+  if(!(btn instanceof HTMLElement)||btn.tagName!=="BUTTON"&&btn.children.length){btn.dataset.armed="1";if(typeof toast==="function")toast(label||"แตะอีกครั้งเพื่อยืนยัน");setTimeout(function(){delete btn.dataset.armed},4000);return false}
   btn.dataset.armed="1";btn.dataset.label=btn.textContent;btn.textContent=label||"แตะอีกครั้งเพื่อยืนยัน";
   setTimeout(function(){if(btn.isConnected){delete btn.dataset.armed;btn.textContent=btn.dataset.label}},3000);
   return false;
