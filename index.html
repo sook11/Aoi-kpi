@@ -902,7 +902,7 @@ body.farm-rot .ffly{rotate:90deg}
 .ford{background:linear-gradient(#fffbeb,#fef3c7);border:2px solid #fcd34d;border-radius:16px;padding:10px;display:grid;gap:8px;box-shadow:0 3px 0 #f59e0b;color:#78350f}
 .ford.ok{border-color:#4ade80;box-shadow:0 3px 0 #16a34a;background:linear-gradient(#f0fdf4,#dcfce7)}
 .ford.wait{place-items:center;text-align:center;opacity:.8;background:#f1f5f9;border-color:#cbd5e1;box-shadow:none;color:#475569}.ford .fem{font-size:30px}
-.fit{display:flex;flex-wrap:wrap;gap:6px}.fit span{display:grid;place-items:center;width:62px;padding:4px 2px;border-radius:12px;background:#fff;border:2px solid #fde68a}.fit span .fitn{display:block;font-size:10px;font-weight:700;color:#57534e;line-height:1.15;text-align:center;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fit i{font-style:normal;font-size:22px;line-height:1}.fit small{font-weight:800;font-size:11px}
+.fit{display:flex;flex-wrap:wrap;gap:6px}.fit span{display:grid;place-items:center;width:62px;padding:4px 2px;border-radius:12px;background:#fff;border:2px solid #fde68a}.fit span[data-fminfo]{cursor:pointer}.fit span .fitn{display:block;font-size:10px;font-weight:700;color:#57534e;line-height:1.15;text-align:center;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fit i{font-style:normal;font-size:22px;line-height:1}.fit small{font-weight:800;font-size:11px}
 .fit span.y{border-color:#4ade80}.fit span.y small{color:#15803d}.fit span.n small{color:#dc2626}
 .frw{display:flex;align-items:center;gap:6px;font-weight:800}.frw .fcoin{width:18px;height:18px}.frw span{margin-left:auto;color:#a16207}
 .fob{display:flex;gap:6px}.fob button:first-child{flex:1}
@@ -4779,6 +4779,12 @@ function fmDecorPos(d){var ok={},used={},out=[],fi=0;FMAP.free.forEach(function(
 /* ---------- อัปเดต 79: ร้านริมทาง + ตลาดรวม ---------- */
 /* อัปเดต 115: สินค้าแปรรูปบางอย่างใช้ไอคอนซ้ำกับวัตถุดิบ — เปลี่ยนให้ต่างกัน */
 var FEMO={cornbread:"🥖",smoothie:"🧋",strawjam:"🍯",cherryjam:"🫙",coconutcandy:"🍡",sweater:"🧥",chilipop:"🌶️🍿",cloth:"🪡"};
+function fmItemInfo(k){var c=FM.cat,o=fmIt(k),have=((FM.d&&FM.d.items)||{})[k]||0,src="";
+  if(c.crops[k])src="🌱 ปลูกในแปลง ("+fmDur(c.crops[k].min)+")";
+  else{Object.keys(c.animals||{}).forEach(function(a){if(c.animals[a].prod===k)src=c.animals[a].e+" ได้จาก"+c.animals[a].n});
+    Object.keys(c.decor||{}).forEach(function(d){if(c.decor[d].fruit===k)src=c.decor[d].e+" เก็บจาก"+c.decor[d].n});
+    Object.keys(c.machines||{}).forEach(function(m){var r=(c.machines[m].recipes||{})[k];if(r)src=c.machines[m].e+" ทำที่"+c.machines[m].n+" จาก "+Object.keys(r.in||{}).map(function(i){return fmIt(i).n+" "+r.in[i]}).join(" + ")})}
+  return o.e+" "+o.n+(src?" — "+src:"")+" · มีในยุ้ง "+have}
 function fmCatFix(c){try{Object.keys(FEMO).forEach(function(k){if(c&&c.products&&c.products[k])c.products[k].e=FEMO[k]})}catch(e){}return c}
 function fmIt(k){var c=FM.cat;return c.crops[k]||c.products[k]||{n:k,e:"📦",sell:1}}
 /* อัปเดต 108: ร้านริมทางเป็นแผงไม้ มีลังผลไม้วางในช่อง · ป้ายตลาดเป็นแค็ตตาล็อก · ช่องเพิ่มตามเลเวล/ปลดล็อก */
@@ -5650,7 +5656,7 @@ function fmVisHtml(slot){var v=(FM.vis&&FM.vis.visitors||[]).filter(function(x){
   if(!v||new Date(v.arrive_at).getTime()>now)return '<div class="panel">'+emptyRow("ชาวบ้านคนนี้กลับไปแล้ว")+'</div>';
   var P={n:FKKN[v.npc%FKKN.length]},ok=fmVisOk(v);
   return '<div class="fvis-hd"><img src="'+FVSPR[v.npc%FVSPR.length]+'" alt=""><div><b>'+esc(P.n)+'</b><p>“'+esc(FKKSAY[v.npc%FKKSAY.length])+'”</p></div></div>'+
-    '<div class="ford'+(ok?' ok':'')+'"><div class="fit">'+Object.keys(v.items).map(function(k){var x=fmItem(k),h=it[k]||0,n=v.items[k];return '<span class="'+(h>=n?'y':'n')+'" title="'+esc(x.n)+'"><i>'+x.e+'</i><b class="fitn">'+esc(x.n)+'</b><small>'+Math.min(h,n)+'/'+n+'</small></span>'}).join("")+'</div>'+
+    '<div class="ford'+(ok?' ok':'')+'"><div class="fit">'+Object.keys(v.items).map(function(k){var x=fmItem(k),h=it[k]||0,n=v.items[k];return '<span class="'+(h>=n?'y':'n')+'" data-fminfo="'+k+'" role="button" title="'+esc(x.n)+'"><i>'+x.e+'</i><b class="fitn">'+esc(x.n)+'</b><small>'+Math.min(h,n)+'/'+n+'</small></span>'}).join("")+'</div>'+
     '<div class="frw">'+fmc()+'<b>'+v.coins+'</b><span>⭐ '+v.xp+'</span></div><div class="fob"><button type="button" class="sm primary" data-fmvs="'+v.slot+'"'+(ok?'':' disabled')+'>🤝 ขายให้</button><button type="button" class="sm" data-fmvk="'+v.slot+'">🙅 ไม่ขาย</button></div></div>'+
     (ok?'':'<p class="sub" style="margin:0">ของในยุ้งฉางยังไม่พอ — ปลูก/ผลิตเพิ่มแล้วกลับมาขายได้ ชาวบ้านจะรออยู่หน้าฟาร์ม</p>')}
 /* ภารกิจรายวัน */
@@ -5679,7 +5685,7 @@ function fmOrders(){var O=FM.ord,now=fmNow(),it=FM.d.items||{};if(!O)return '<di
   var mxd=O.max_day||0,dn=O.done_today||0,full=mxd&&dn>=mxd;
   return '<p class="sub" style="margin:0">ส่งของครบตามใบสั่ง ได้เหรียญ + ⭐ XP (ของที่ผลิตยาก/ใช้เวลานาน ได้ XP มากกว่า) · ส่งได้ไม่จำกัด · ทิ้งใบสั่งได้ (ใบใหม่มาใน 10 นาที)'+(mxd?' · <b>วันนี้ส่งแล้ว '+dn+'/'+mxd+' ใบ</b>'+(full?' — ครบแล้ว พรุ่งนี้ส่งใหม่ได้':''):'')+'</p><div class="fords">'+O.orders.map(function(o){var ra=new Date(o.ready_at).getTime();
     if(ra>now)return '<div class="ford wait" data-until="'+ra+'"><span class="fem">🚚</span><b>รถกำลังมารับใบสั่งใหม่</b><small class="tm">'+fmLeft(ra-now)+'</small></div>';
-    var ok=fmCanDo(o);return '<div class="ford'+(ok?' ok':'')+'"><div class="fit">'+Object.keys(o.items).map(function(k){var x=fmItem(k),h=it[k]||0,n=o.items[k];return '<span class="'+(h>=n?'y':'n')+'" title="'+esc(x.n)+'"><i>'+x.e+'</i><b class="fitn">'+esc(x.n)+'</b><small>'+Math.min(h,n)+'/'+n+'</small></span>'}).join("")+'</div>'+
+    var ok=fmCanDo(o);return '<div class="ford'+(ok?' ok':'')+'"><div class="fit">'+Object.keys(o.items).map(function(k){var x=fmItem(k),h=it[k]||0,n=o.items[k];return '<span class="'+(h>=n?'y':'n')+'" data-fminfo="'+k+'" role="button" title="'+esc(x.n)+'"><i>'+x.e+'</i><b class="fitn">'+esc(x.n)+'</b><small>'+Math.min(h,n)+'/'+n+'</small></span>'}).join("")+'</div>'+
       '<div class="frw">'+fmc()+'<b>'+o.coins+'</b><span>⭐ '+o.xp+'</span></div><div class="fob"><button type="button" class="sm primary" data-fmod="'+o.slot+'"'+(ok&&!full?'':' disabled')+'>🚚 ส่งของ</button><button type="button" class="sm" data-fmos="'+o.slot+'" aria-label="ทิ้งใบสั่งนี้">🗑️</button></div></div>'}).join("")+'</div>'}
 /* ---------- Admin: สร้างฟาร์มฟรี + มอบของ ---------- */
 function fmL(){return S.admin?99:fmLv(FM.d.xp).l}
@@ -5709,7 +5715,7 @@ function fmSeedHtml(){var c=FM.cat,l=fmL(),it=FM.d.items||{},SH=FM.short||[];ret
     return '<button type="button" data-fmseed="'+k+'"'+(dis?' disabled':'')+'><span class="em">'+o.e+'</span><b>'+esc(o.n)+'</b><small>'+(h?'🌾 ในยุ้ง '+h+' · ปลูกฟรี':sh?'🚫 ขาดตลาด':fmc()+' '+o.cost)+' · '+fmDur(o.min)+'</small><small>'+(lk?'🔒 เลเวล '+o.lv:'ขาย '+o.sell+' · +'+o.xp+' XP')+'</small></button>'}).join("")+'</div>'}
 function fmSeed(slot){FM.slot=slot;FM.t="seed";fmSheet()}
 document.addEventListener("change",function(ev){if(ev.target&&ev.target.id==="fm-sl-item"){FM.slItem=ev.target.value;FM.slQty=1;FM.slPrice=0;fmSheet()}});
-document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmsunlock],[data-fmava],[data-fmtact],[data-fmtp],[data-fmveh],[data-fmvuse],[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud],[data-fmedit],[data-fmdec],[data-fmtile],[data-fmod],[data-fmos],[data-fmbu],[data-fmdn],[data-fmgive],[data-fmgto],[data-fm3d],[data-fmpet],[data-fmboost],[data-fmbp],[data-fmland],[data-fmtree],[data-fmmach],[data-fmmb],[data-fmmake],[data-fmjc],[data-fmsl],[data-fmslok],[data-fmsq],[data-fmsp],[data-fmsc],[data-fmscol],[data-fmsb],[data-fmvis],[data-fmvs],[data-fmvk],[data-fmqc],[data-fmst],[data-fmpf],[data-fmpfc],[data-fmrep],[data-fmup],[data-fmtool],[data-fmuns],[data-fmsto],[data-fmchop],[data-fmbox],[data-fmad],[data-fmadup],[data-fmadclr]");if(!t)return;var D=t.dataset;
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fminfo],[data-fmsunlock],[data-fmava],[data-fmtact],[data-fmtp],[data-fmveh],[data-fmvuse],[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud],[data-fmedit],[data-fmdec],[data-fmtile],[data-fmod],[data-fmos],[data-fmbu],[data-fmdn],[data-fmgive],[data-fmgto],[data-fm3d],[data-fmpet],[data-fmboost],[data-fmbp],[data-fmland],[data-fmtree],[data-fmmach],[data-fmmb],[data-fmmake],[data-fmjc],[data-fmsl],[data-fmslok],[data-fmsq],[data-fmsp],[data-fmsc],[data-fmscol],[data-fmsb],[data-fmvis],[data-fmvs],[data-fmvk],[data-fmqc],[data-fmst],[data-fmpf],[data-fmpfc],[data-fmrep],[data-fmup],[data-fmtool],[data-fmuns],[data-fmsto],[data-fmchop],[data-fmbox],[data-fmad],[data-fmadup],[data-fmadclr]");if(!t)return;var D=t.dataset;
   if(D.fmexit){sfx("close");FM.edit=false;FM.sel=null;show("home");return}
   if(D.fmedit&&FM3.on&&D.fmedit==="on"){FM3.on=false;FM3.back=1;toast("จัดฟาร์มใช้มุมมอง 2D ชั่วคราว")}if(D.fmedit&&D.fmedit!=="on"&&FM3.back){FM3.back=0;FM.edit=false;FM.sel=null;FM.t="farm";toast("บันทึกการจัดฟาร์มแล้ว ✨");fm3Toggle(true);return}
   if(D.fmedit){FM.edit=D.fmedit==="on";FM.sel=null;FM.t="farm";sfx(FM.edit?"open":"buy");if(!FM.edit)toast("บันทึกการจัดฟาร์มแล้ว ✨");FM.keep=true;drawFarm();return}
@@ -5720,6 +5726,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(FM.edit&&!D.fmz&&!D.fmaud&&!D.fmsto&&!D.fmchop&&D.fmt!=="storage"&&!D.fmuns&&!D.fmclose)return;
   if(D.fmz){sfx("tap");if(FM3.on&&FM3.ready)fm3Zoom(D.fmz==="in"?1.25:0.8);else fmZoomAt(D.fmz==="in"?1.25:0.8);return}
   if(D.fm3d){sfx("tap");if(FM3.tp)fm3TPToggle(false);fm3Toggle(!FM3.on);return}
+  if(D.fminfo){sfx("tap");toast(fmItemInfo(D.fminfo));return}
   if(D.fmtp){sfx("tap");fm3TPToggle();return}
   if(D.fmsunlock&&!FM.v){var nc=(FM.stallInfo||{}).next_cost;if(!armed(t,"แตะอีกครั้ง จ่าย "+num(nc||0))){sfx("tap");toast("🔓 แตะอีกครั้งเพื่อปลดล็อกช่องร้าน "+num(nc||0)+" เหรียญ");return}FM.snd="buy";fmDo(function(){return q(db.rpc("farm_stall_unlock"))},function(n){return "🔓 ร้านริมทางมี "+n+" ช่องแล้ว"});return}
   if(D.fmava){sfx("tap");try{localStorage.setItem("aoi-farm-ava",D.fmava)}catch(e){}if(FM3.tp){fm3TPToggle(false);fm3TPToggle(true)}else{FM.keep=true;drawFarm()}return}
