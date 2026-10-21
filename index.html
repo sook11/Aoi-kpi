@@ -858,10 +858,14 @@ body.farm-full .fwin{height:100%;border-radius:0;box-shadow:none;background:#3f8
 @keyframes fsea{from{transform:translateX(0)}to{transform:translateX(120px)}}
 body.farm-full.farm-rot #v-farm{inset:auto;top:0;left:0;transform-origin:0 0;transform:rotate(90deg) translateY(-100%)}
 .fzoom{position:absolute;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:1}
+.fzoom{flex-wrap:wrap;align-content:flex-start;max-height:calc(100% - 150px - env(safe-area-inset-bottom,0px))}
+@media (max-height:520px){.fzoom{gap:6px;max-height:calc(100% - 128px)}.fzoom button{width:38px!important;height:38px!important;font-size:18px!important;border-width:2px!important}.fzoom button.f3btn{font-size:13px!important}}
 .fzoom button.off{opacity:.55}.fzoom button{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:rgba(15,40,70,.75);color:#fff;font:900 22px system-ui;box-shadow:0 3px 8px rgba(0,0,0,.25);cursor:pointer}
 .fhud .fact{padding-left:64px}
 .fgame.fland .fsheet{left:auto;right:92px;top:8px;bottom:8px;max-height:none;width:min(440px,58%);border-radius:20px}
-.fgame.fland .fdock{gap:6px}.fgame.fland .fbig{width:52px;height:52px;border-radius:16px}.fgame.fland .fbig span{font-size:21px}.fgame.fland .fbig small{font-size:9.5px}
+.fgame.fland .fdock{gap:6px}
+.fdock{flex-wrap:wrap-reverse;align-content:flex-end;max-height:calc(100% - 78px - env(safe-area-inset-bottom,0px))}
+@media (max-height:520px){.fgame .fdock{gap:5px}.fgame .fbig{width:46px!important;height:46px!important;border-radius:14px!important}.fgame .fbig span{font-size:20px}.fgame .fbig small{font-size:9px}}.fgame.fland .fbig{width:52px;height:52px;border-radius:16px}.fgame.fland .fbig span{font-size:21px}.fgame.fland .fbig small{font-size:9.5px}
 .fsh-body .seedgrid{margin-top:4px}
 .fedit{margin-top:auto;align-self:center;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:rgba(15,40,70,.85);color:#fff;border:2px solid #fde047;border-radius:18px;padding:8px 10px 8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
 .fedit b{color:#fde047}.fedit span{font-size:13px}
