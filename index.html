@@ -1056,7 +1056,7 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 .calgrid .cd.k-sun,.calgrid .cd.k-co{background:var(--miss-bg)}.calgrid .cd.k-rot{background:#fef9c3}
 @media (prefers-color-scheme: dark){.calgrid .cd.k-rot{background:#3a3214}}
 .cdh{display:flex;justify-content:space-between;align-items:center;gap:2px}.cdh b{font-size:13px}
-.rotb{background:#facc15;color:#422006;font-size:9.5px;font-weight:700;border-radius:4px;padding:0 4px}
+.rotb{background:#facc15;color:#422006;font-size:9.5px;font-weight:700;border-radius:4px;padding:0 4px}.rotb.cob{background:#ef4444;color:#fff}
 .cds{font-size:9.5px;color:var(--muted);line-height:1.2}.hol{font-size:9.5px;color:#c2410c;line-height:1.2}.hol.co{color:var(--bad);font-weight:600}
 .cev{display:block;font-size:10.5px;line-height:1.3;border-radius:4px;padding:1px 4px;background:color-mix(in srgb,var(--tc) 18%,transparent);border-left:3px solid var(--tc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cev.pend{border-left-style:dashed;opacity:.75}
@@ -6144,7 +6144,7 @@ async function lvMeta(force){
   if(LV.loaded&&!force)return;
   var r=await Promise.all([q(db.from("leave_types").select("*").order("sort_order").order("id")),q(db.from("holidays").select("*").order("date"))]);
   LV.types=r[0];LV.hol={};LV.holList=r[1];
-  r[1].forEach(function(h){var x=LV.hol[h.date]||(LV.hol[h.date]={co:false,pu:false,names:[]});x[h.type==="company"?"co":"pu"]=true;if(x.names.indexOf(h.name)<0)x.names.push(h.name)});
+  r[1].forEach(function(h){var x=LV.hol[h.date]||(LV.hol[h.date]={co:false,pu:false,names:[]});x[h.type==="company"?"co":"pu"]=true;if(x.names.indexOf(h.name)<0)x.names.push(h.name);if(h.type==="company"){x.cn=x.cn||[];if(x.cn.indexOf(h.name)<0)x.cn.push(h.name)}});
   LV.loaded=true;
 }
 async function lvPendingDot(){if(!lvAppr())return;try{var r=await db.from("leave_requests").select("id",{count:"exact",head:true}).eq("status","pending");var n=r.count||0;["lv-dot","lv-dot2"].forEach(function(id){var el=$(id);if(el){el.hidden=!n;el.textContent=n}})}catch(e){}}
@@ -6185,7 +6185,7 @@ function lvDays(){
   var old={};document.querySelectorAll("#lv-subs select").forEach(function(s){old[s.dataset.d]=s.value});
   var opts=function(d){return '<option value="">'+(mates.length?"เลือกคู่กะที่มาแทน (กะ "+(opp?shiftLbl(opp):"A / B")+")":"— ไม่มีพนักงานอีกกะในแผนกนี้ —")+'</option>'+mates.map(function(m){return '<option value="'+m.id+'"'+(old[d]===m.id?" selected":"")+'>'+esc(m.display_name+" (กะ "+shiftLbl(m.shift)+")")+'</option>'}).join("")};
   $("lv-subs").innerHTML=ds.length>62?'<p class="sub">ช่วงยาวเกิน 62 วัน ไม่ต้องระบุผู้มาแทนรายวัน</p>':ds.map(function(d){var k=dayKind(d),ri=rotInfo(d),sl=my==="D"?"เช้า":my===ri.day?"เช้า":"ดึก";
-    return '<div class="subrow k-'+k+'"><span class="sd">'+esc(wdD(d))+'<small>'+(k==="work"?"กะ"+shiftLbl(my)+" เข้า"+sl:"")+'</small></span>'+(k==="work"?'<select data-d="'+d+'">'+opts(d)+'</select>':'<span class="soff">'+(k==="rot"?"ควงกะ (ไม่ต้องมีผู้มาแทน)":k==="co"?"วันหยุดโรงงาน · "+esc(LV.hol[d].names.join(", ")):"วันหยุด (อาทิตย์)")+'</span>')+'</div>'}).join("");
+    return '<div class="subrow k-'+k+'"><span class="sd">'+esc(wdD(d))+'<small>'+(k==="work"?"กะ"+shiftLbl(my)+" เข้า"+sl:"")+'</small></span>'+(k==="work"?'<select data-d="'+d+'">'+opts(d)+'</select>':'<span class="soff">'+(k==="rot"?"ควงกะ (ไม่ต้องมีผู้มาแทน)":k==="co"?"วันหยุดโรงงาน · "+esc((LV.hol[d].cn||LV.hol[d].names).join(", ")):"วันหยุด (อาทิตย์)")+'</span>')+'</div>'}).join("");
   lvConflict();
 }
 async function lvConflict(){
@@ -6245,9 +6245,9 @@ async function renderLeaveCal(){
   ["อา","จ","อ","พ","พฤ","ศ","ส"].forEach(function(w){h+='<div class="cw">'+w+'</div>'});
   for(var i=0;i<start;i++)h+='<div class="cd empty"></div>';
   days.forEach(function(d){var k=dayKind(d),ri=rotInfo(d),hol=LV.hol[d],list=by[d]||[];
-    h+='<div class="cd k-'+k+(d===today()?" today":"")+'"><div class="cdh"><b>'+(+d.slice(8))+'</b>'+(k==="rot"?'<span class="rotb">ควงกะ</span>':'')+'</div>'+
-      (k==="work"||k==="rot"?'<small class="cds">เช้า '+ri.day+' · ดึก '+ri.night+'</small>':'')+
-      (hol?'<small class="hol'+(hol.co?" co":"")+'">'+(hol.co?"🏭 ":"🇹🇭 ")+esc(hol.names.join(", "))+'</small>':(k==="sun"?'<small class="hol co">วันหยุด</small>':''))+
+    h+='<div class="cd k-'+k+(d===today()?" today":"")+'"><div class="cdh"><b>'+(+d.slice(8))+'</b>'+(k==="rot"?'<span class="rotb">ควงกะ</span>':k==="co"?'<span class="rotb cob">หยุด</span>':'')+'</div>'+
+      (k==="work"||k==="rot"||k==="co"?'<small class="cds">เช้า '+ri.day+' · ดึก '+ri.night+'</small>':'')+
+      (hol?'<small class="hol'+(hol.co?" co":"")+'">'+(hol.co?"🏭 วันหยุดโรงงาน: ":"🇹🇭 ")+esc((hol.co&&hol.cn?hol.cn:hol.names).join(", "))+'</small>':(k==="sun"?'<small class="hol co">วันหยุด</small>':''))+
       list.map(function(r){var t=lvType(r.leave_type_id);return '<span class="cev'+(r.status==="pending"?" pend":"")+'" style="--tc:'+esc(t.color)+'" title="'+esc(r.name+" · "+t.name+" · "+(r.status==="pending"?"รออนุมัติ":"อนุมัติแล้ว"))+'">'+esc(String(r.name).replace(/^(นางสาว|นาง|นาย)\s*/,"").split(/\s+/)[0])+'</span>'}).join("")+'</div>'});
   $("lc-grid").innerHTML=h;
   $("lc-list").innerHTML=rows.length?rows.map(function(r){return '<div class="row"><div class="l"><b>'+esc(r.name)+'</b><div class="lvl1">'+typeChip(r.leave_type_id)+'<span>'+esc(rangeTxt(r.start_date,r.end_date))+' · '+num(r.total_days)+' วัน</span></div><small>'+esc([deptName(r.department_id),"กะ "+shiftLbl(r.shift)].join(" · "))+'</small>'+subsHtml(r.substitutes)+'</div>'+lvStatus(r.status)+'</div>'}).join(""):emptyRow("ไม่มีคนลาในเดือนนี้");
@@ -6465,7 +6465,7 @@ async function exportLeaveCalendar(y,dept,shift){
         var k=dayKind(d),ri=rotInfo(d),hol=LV.hol[d];dc.value=+d.slice(8);dc.alignment={horizontal:"center",vertical:"middle"};ic.alignment={wrapText:true,vertical:"top"};
         if(k==="rot"){hasRot=true;dc.fill=xf("FFFFF176");dc.font={name:"Calibri",bold:true,color:{argb:"FFD32F2F"}};ic.value="ควงกะ\nกะ"+ri.day+" เข้า 20.00 ออก 13.00\nกะ"+ri.night+" เข้า 13.00 ออก 08.00";ic.fill=xf("FFFFF176");ic.font={name:"Calibri",bold:true,size:9,color:{argb:"FF5D4037"}}}
         else if(k==="sun"){dc.fill=xf("FFEF5350");dc.font={name:"Calibri",bold:true,color:{argb:"FFFFFFFF"}};ic.value="วันหยุด";ic.fill=xf("FFEF5350");ic.font={name:"Calibri",bold:true,size:9,color:{argb:"FFFFFFFF"}}}
-        else if(k==="co"){dc.fill=xf("FFFFCDD2");dc.font={name:"Calibri",bold:true,color:{argb:"FFB71C1C"}};ic.value="วันหยุดโรงงาน: "+hol.names.join(", ");ic.fill=xf("FFFFCDD2");ic.font={name:"Calibri",bold:true,size:9,color:{argb:"FFB71C1C"}}}
+        else if(k==="co"){dc.fill=xf("FFFFCDD2");dc.font={name:"Calibri",bold:true,color:{argb:"FFB71C1C"}};ic.value="วันหยุดโรงงาน: "+(hol.cn||hol.names).join(", ");ic.fill=xf("FFFFCDD2");ic.font={name:"Calibri",bold:true,size:9,color:{argb:"FFB71C1C"}}}
         else{dc.font={name:"Calibri",bold:true,color:{argb:ci===6?"FF1565C0":"FF000000"}};ic.value="เช้า "+ri.day+" · ดึก "+ri.night+(hol&&hol.pu?"\nวันหยุดราชการ: "+hol.names.join(", "):"");ic.font={name:"Calibri",size:9,color:{argb:"FF555555"}}}
         if(hol&&hol.pu&&k!=="co")hasRot=true;
         (byDay[d]||[]).forEach(function(r,li){var cl=ws.getRow(r0+2+li).getCell(ci+1),t=lvType(r.leave_type_id),sub=(r.substitutes||[]).filter(function(x){return x.date===d})[0],ok=r.status==="approved";
