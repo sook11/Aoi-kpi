@@ -1026,7 +1026,7 @@ body.farm-rot .ffly{rotate:90deg}
 .fk-it{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;font:inherit}.fk-it>span{font-size:34px;line-height:1.1}
 .fk-it.own{border-color:#22c55e;background:#f0fdf4}.fk-it.dark{background:#f1f5f9}.fk-it small{font-size:11px;color:#64748b}.fk-it small.ok{color:#16a34a;font-weight:800}
 button.fk-it{cursor:pointer}
-.fk-tabs{display:flex;gap:6px;margin-bottom:8px}.fk-tabs button{border:1px solid #cbd5e1;background:#fff;border-radius:14px;padding:5px 12px;font-weight:700;cursor:pointer}.fk-tabs button.on{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
+.fk-sell1{margin-top:6px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;font-weight:800;border-radius:12px;padding:6px 12px;cursor:pointer}.fk-sellall{width:100%;margin-bottom:8px}.fk-tabs{display:flex;gap:6px;margin-bottom:8px}.fk-tabs button{border:1px solid #cbd5e1;background:#fff;border-radius:14px;padding:5px 12px;font-weight:700;cursor:pointer}.fk-tabs button.on{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
 .fk-shb .row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px}.fk-shb .row .l{display:flex;align-items:center;gap:8px;min-width:0}.fk-shb .row .l small{display:block;color:#64748b}.fk-shb .row .r{text-align:right;white-space:nowrap}.fk-rk{width:30px;text-align:center;font-size:18px}.row.me{background:#fef9c3;border-radius:10px}
 @media (max-height:520px){.fk-me img{width:60px;height:60px}.fk-side button{width:48px;height:44px;font-size:18px}.fk-bar,.fk-prog{height:130px}.fk-cast{padding:9px 20px;font-size:16px}}
 
@@ -4552,7 +4552,7 @@ function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.d
   if(!own&&d.vo)d.vo.forEach(function(v){var sp=FVSPOT[(v.slot-1)%3],p2=fm3P(sp[0],sp[1]),hold=new THREE.Group(),vm=fm3Villager(v.npc);hold.add(vm);g.add(hold);
     var vb=fm3Bubble("🛒",false);vb.position.y=2.15;hold.add(vb);FM3.bubs.push(vb);var w2=fm3P(sp[0]+(v.slot%2?-.35:.35),sp[1]+.12),VE={g:hold,m:vm,to:p2,t0:performance.now()/1000-30,b:vb,wv:[w2[0]-p2[0],w2[1]-p2[1]],ph:v.slot*2.7};FM3.vill.push(VE);fm3KK(VE,v.npc)});
   /* คนเดินในฟาร์ม: ฟาร์มตัวเอง = เพื่อนที่มาเยี่ยมวันนี้ · ฟาร์มเพื่อน = ตัวเรา (Admin มีมงกุฎ) */
-  FM3.walk=[];fmWalkers(d,own).forEach(function(w,i){var hold=new THREE.Group();g.add(hold);var vm=fm3Villager(w.c);hold.add(vm);var tg=fm3Tag(w.label,false);tg.position.y=w.adm?3:2.4;hold.add(tg);var E={g:hold,m:vm,ph:i*9.7+w.c,walker:1};FM3.walk.push(E);if(w.self)fm3Body(E,w.adm,w.c);else if(w.adm)fm3Admin(E);else fm3KK(E,w.c)});
+  FM3.walk=[];fmWalkers(d,own).forEach(function(w,i){var hold=new THREE.Group();g.add(hold);var vm=fm3Villager(w.c);hold.add(vm);var tg=fm3Tag(w.label,false);tg.position.y=w.adm?3:2.4;hold.add(tg);var E={g:hold,m:vm,ph:i*9.7+w.c,walker:1};FM3.walk.push(E);if(w.self)fm3Body(E,w.adm,w.c);else if(w.adm)fm3Admin(E);else fm3BodyKey(E,FKF[w.c%FKF.length])});
   fm3Billboard(g,d,own);fm3NewsBoard(g);
   fm3DN()}
 /* รถส่งของ 3D: ขับออกตามถนน หายไป แล้ววิ่งกลับมาจอด */
@@ -4576,7 +4576,7 @@ function fm3TPToggle(on){if(on==null)on=!FM3.tp;if(!FM3.on||!FM3.ready)on=false;
   if(FM3.tp)return;var p0=fm3P(6.5,12.6),g=new THREE.Group();g.position.set(p0[0],0,p0[1]);g.rotation.y=Math.PI/2;FM3.scene.add(g);
   var T={g:g,keys:{},jx:0,jy:0,cp:FM3.cam.position.clone(),ct:FM3.ctl.target.clone()},off=FM3.cam.position.clone().sub(FM3.ctl.target);T.cy=Math.atan2(off.x,off.z);FM3.tp=T;FM3.ctl.enabled=false;
   var c0=fmHash(S.me&&S.me.id)%6,vm=fm3Villager(c0);g.add(vm);T.E={g:g,m:vm};fm3Body(T.E,S.admin,c0);
-  var box=document.querySelector("#v-farm .fgame"),jy=document.createElement("div");jy.id="fm-joy";jy.innerHTML='<div class="fjb"><div class="fjk"></div></div><div class="fjh">ลากปุ่มกลมเพื่อเดิน · ลากจอเพื่อหมุนกล้อง</div><button type="button" class="fjx" data-fmtp="1">✕ ออกจากโหมดเดิน</button><div class="fjava">'+fmAvaList().map(function(a){return '<button type="button" data-fmava="'+a[0]+'"'+(fmAva()===a[0]?' class="on"':'')+'>'+a[1]+'</button>'}).join("")+'</div>';box.appendChild(jy);
+  var box=document.querySelector("#v-farm .fgame"),jy=document.createElement("div");jy.id="fm-joy";jy.innerHTML='<div class="fjb"><div class="fjk"></div></div><div class="fjh">ลากปุ่มกลมเพื่อเดิน · ลากจอเพื่อหมุนกล้อง</div><button type="button" class="fjx" data-fmtp="1">✕ ออกจากโหมดเดิน</button><div class="fjava">'+(S.admin?fmAvaList().map(function(a){return '<button type="button" data-fmava="'+a[0]+'"'+(fmAva()===a[0]?' class="on"':'')+'>'+a[1]+'</button>'}).join(""):'')+'</div>';box.appendChild(jy);
   var base=jy.querySelector(".fjb"),knob=jy.querySelector(".fjk"),pid=null,set=function(e){var r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy),R=r.width/2;if(m>R){dx=dx/m*R;dy=dy/m*R}T.jx=dx/R;T.jy=dy/R;knob.style.transform="translate("+dx+"px,"+dy+"px)"};
   base.addEventListener("pointerdown",function(e){pid=e.pointerId;base.setPointerCapture(pid);set(e);e.stopPropagation()});base.addEventListener("pointermove",function(e){if(e.pointerId===pid)set(e)});
   var end=function(e){if(e.pointerId!==pid)return;pid=null;T.jx=T.jy=0;knob.style.transform=""};base.addEventListener("pointerup",end);base.addEventListener("pointercancel",end);
@@ -5050,10 +5050,11 @@ function fk3Resize(){if(!FK3.on||!FK3.R)return;var cv=$("fk3-cv");if(!cv)return;
 /* ตัวละคร (ร่างที่เลือก) + คันเบ็ด — โมเดลหันหน้าไป +x ในพิกัดของกลุ่ม */
 function fk3Char(key,seed,name,admin){var V={g:new THREE.Group()};FK3.g.add(V.g);
   var ph=new THREE.Group();fk3M(new THREE.CapsuleGeometry?new THREE.CapsuleGeometry(.32,.7,6,12):new THREE.CylinderGeometry(.32,.32,1.3,12),0x60a5fa,0,.85,0,ph);fk3M(new THREE.SphereGeometry(.3,16,12),0xfcd9b6,0,1.65,0,ph);V.g.add(ph);V.m=ph;
-  var a=key||"auto";if(a==="auto")a=admin?"nathan":"kk"+(fmHash(seed||"x")%6);if(a==="nathan")fm3Admin(V);else if(a==="baker")fm3Baker(V);else fm3KK(V,+String(a).slice(2)||0);V.key=a;
-  var rod=new THREE.Group();rod.position.set(.32,.95,.32);rod.rotation.z=-.95;V.g.add(rod);var L=2.6;fk3M(new THREE.CylinderGeometry(.018,.045,L,8),0x3f2a14,0,L/2,0,rod);fk3M(new THREE.CylinderGeometry(.07,.07,.12,10),0x111827,0,.35,.06,rod,false).rotation.x=Math.PI/2;
-  var tip=new THREE.Object3D();tip.position.set(0,L,0);rod.add(tip);V.rod=rod;V.tip=tip;
-  var tg=fk3Tag((admin?"👑 ":"")+name,admin?"#92400e":"#14532d");tg.position.set(0,2.55,0);V.g.add(tg);V.tag=tg;return V}
+  var a=fkBody(key,seed,admin);fm3BodyKey(V,a);V.key=a;
+  var rod=new THREE.Group();rod.position.set(.32,.95,.32);rod.rotation.z=-.95;V.g.add(rod);var L1=1.55,L2=1.15;fk3M(new THREE.CylinderGeometry(.03,.048,L1,8),0x3f2a14,0,L1/2,0,rod);fk3M(new THREE.CylinderGeometry(.07,.07,.12,10),0x111827,0,.35,.06,rod,false).rotation.x=Math.PI/2;
+  var jt=new THREE.Group();jt.position.y=L1;rod.add(jt);fk3M(new THREE.CylinderGeometry(.012,.03,L2,6),0x1f2937,0,L2/2,0,jt,false);
+  var tip=new THREE.Object3D();tip.position.set(0,L2,0);jt.add(tip);V.rod=rod;V.bend=jt;V.tip=tip;
+  var tg=fk3Tag((admin?"👑 ":"")+name,admin?"#92400e":"#14532d");tg.position.set(0,a==="nathan"?3.75:a==="baker"?3.4:3.1,0);tg.scale.multiplyScalar(.85);V.g.add(tg);V.tag=tg;return V}
 function fk3Face(V,tx,tz){var p=V.g.position;V.g.rotation.y=Math.atan2(-(tz-p.z),tx-p.x)}
 function fk3Kill(V){if(!V)return;if(V.g.parent)V.g.parent.remove(V.g);V.g.traverse(function(o){if(o.userData.shared)return;if(o.geometry&&o.geometry.dispose)o.geometry.dispose();if(o.isSprite&&o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}});if(V.bob&&V.bob.parent)V.bob.parent.remove(V.bob);if(V.line&&V.line.parent)V.line.parent.remove(V.line)}
 function fk3Me(){if(!FK3.on)return;fk3Kill(FK3.me);var V=FK3.me=fk3Char(fmAva(),S.me&&S.me.id,"คุณ",!!S.admin);if(!FK3.pos){var sp=null;try{sp=JSON.parse(localStorage.getItem("aoi-fish-spot")||"null")}catch(e){}if(!sp||!fk3Walkable(sp.x,sp.z))sp={x:0,z:4.9};FK3.pos={x:sp.x,z:sp.z};FK3.spot={x:sp.x,z:sp.z};FK3.hd=0}
@@ -5066,15 +5067,23 @@ function fk3Others(){if(!FK3.on)return;var now=Date.now(),seen={},L=(FK.pres||[]
       C.bob=fk3BobMesh();fk3OthBob(C);FK3.g.add(C.bob);
       C.line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(new Array(10).fill(0).map(function(){return new THREE.Vector3()})),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.7}));C.line.frustumCulled=false;FK3.g.add(C.line);C.ph=frand(i*7)*6;FK3.chars[p.id]=C}
     var Lc=p.last,brag=Lc&&now-new Date(Lc.at).getTime()<90000?"🎉 "+fkFish(Lc.fish).n+" "+Lc.weight+" กก.":"";
-    if(brag!==C.brag){C.brag=brag;if(C.bt){C.g.remove(C.bt);C.bt.material.map.dispose();C.bt.material.dispose();C.bt=null}if(brag){C.bt=fk3Tag(brag,"#7c2d12","#fde68a");C.bt.position.set(0,3.1,0);C.g.add(C.bt)}}});
+    if(brag!==C.brag){C.brag=brag;if(C.bt){C.g.remove(C.bt);C.bt.material.map.dispose();C.bt.material.dispose();C.bt=null}if(brag){C.bt=fk3Tag(brag,"#7c2d12","#fde68a");C.bt.position.set(0,C.tag.position.y+.55,0);C.g.add(C.bt)}}});
   Object.keys(FK3.chars).forEach(function(id){if(!seen[id]){fk3Kill(FK3.chars[id]);delete FK3.chars[id]}})}
+function fk3E(x){return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2}
+/* ท่าเหวี่ยงเบ็ด: เงื้อคันไปด้านหลังเหนือไหล่ → สะบัดไปข้างหน้า (ปลายคันโค้ง) → ทุ่นพุ่งออกไป · ตอนดึงคันโก่งตามแรงปลา */
+function fk3RodPose(V,t){var r=V.rod,b=V.bend,z=-.95,bd=0,w=FK3.wind,e=w?t-w:9,st=FK.st;
+  if(e<1.05){if(e<.4){var u=fk3E(e/.4);z=-.95+(.55+.95)*u;bd=.22*u}else if(e<.54){var u2=(e-.4)/.14;z=.55-(2.05*u2);bd=.22-.75*u2}else{var u3=fk3E(Math.min(1,(e-.54)/.5));z=-1.5+.5*u3;bd=-.53*(1-u3)}}
+  else if(st==="reel"){z=-.42+Math.sin(t*14)*.05;bd=-.75+Math.sin(t*9)*.12}
+  else if(st==="bite"){z=-.85+Math.sin(t*30)*.05;bd=-.45+Math.sin(t*24)*.15}
+  else if(st==="wait"){z=-1.0+Math.sin(t*1.3)*.02;bd=-.12}
+  r.rotation.z+=(z-r.rotation.z)*(e<1.05?1:Math.min(1,FK3.dt*10));b.rotation.z+=(bd-b.rotation.z)*Math.min(1,FK3.dt*(e<1.05?30:10))}
 function fk3OthBob(C){var x=C.to[0],z=C.to[1],d=fk3Dir(x,z),dist=fk3OnDock(x,z)?4:3.2,bx=x+d[0]*dist,bz=z+d[1]*dist;C.bob.position.set(bx,.06,bz);C.bob.visible=true;fk3Face(C,bx,bz)}
 function fk3OthStep(C,dt){var p=C.g.position,dx=C.to[0]-p.x,dz=C.to[1]-p.z,l=Math.hypot(dx,dz);if(l<.05){if(C.walking){C.walking=false;C.rod.visible=true;fk3OthBob(C)}return}
   C.walking=true;C.rod.visible=false;C.line.visible=false;var st=Math.min(l,3.6*dt);p.x+=dx/l*st;p.z+=dz/l*st;p.y=fk3OnDock(p.x,p.z)?.5:0;C.g.rotation.y=Math.atan2(-dz,dx)}
 function fk3Line(line,a,b,sag){var P=line.geometry.attributes.position,n=P.count;for(var i=0;i<n;i++){var u=i/(n-1),y=a.y+(b.y-a.y)*u-Math.sin(u*Math.PI)*sag;P.setXYZ(i,a.x+(b.x-a.x)*u,y,a.z+(b.z-a.z)*u)}P.needsUpdate=true}
 function fk3Ripple(x,z,s,life){var r=FK3.rip.reduce(function(m,o){return o.t0<m.t0?o:m},FK3.rip[0]);r.t0=FK3.t;r.s=s||1;r.life=life||1.6;r.m.position.x=x;r.m.position.z=z;r.m.visible=true}
 function fk3Catch(f,bx,by){if(!FK3.on)return;var b=fk3BobXZ(bx,by),s=fk3Sprite(f.e,1.3,f.hue);s.position.set(b[0],.3,b[1]);FK3.g.add(s);FK3.jumps.push({s:s,t0:FK3.t,a:[b[0],b[1]],b:[(FK3.spot||{x:0}).x,(FK3.spot||{z:4.9}).z],big:1,life:1.25});fk3Ripple(b[0],b[1],1.6,1.4);fk3Ripple(b[0],b[1],.9,1)}
-function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||document.hidden)return;var t=performance.now()/1000,dt=Math.min(.05,t-FK3.lt);FK3.lt=t;FK3.t=t;
+function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||document.hidden)return;var t=performance.now()/1000,dt=Math.min(.05,t-FK3.lt);FK3.lt=t;FK3.t=t;FK3.dt=dt;
   if(FK3.walk)fk3WalkStep(dt);else FK3.ctl.update();Object.keys(FK3.chars).forEach(function(k){fk3OthStep(FK3.chars[k],dt)});fk3SceneStep(t,dt);(FK3.pads||[]).forEach(function(p){p.position.y=.07+Math.sin(t*1.3+p.userData.pad)*.012});
   var all=[FK3.me].concat(Object.keys(FK3.chars).map(function(k){return FK3.chars[k]}));
   all.forEach(function(V){if(!V)return;var K=V.kk;if(K){var d=Math.min(.1,Math.max(0,t-(K.lt||t)));K.lt=t;fm3KKPlay(K,(V===FK3.me?FK3.walk&&FK3.moving:V.walking)?"Walking_A":"Idle_A");K.mx.update(d)}V.rod.rotation.x=Math.sin(t*1.1+(V.ph||0))*.04});
@@ -5083,16 +5092,16 @@ function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||do
     var a=C.tip.getWorldPosition(new THREE.Vector3());fk3Line(C.line,a,b.position.clone().add(new THREE.Vector3(0,.15,0)),.5)});
   /* ทุ่นของเรา ตามสถานะมินิเกม */
   var bel=$("fk-bob"),show=bel&&!bel.hidden,B=FK3.bob,tip=FK3.me&&FK3.me.tip?FK3.me.tip.getWorldPosition(new THREE.Vector3()):new THREE.Vector3(0,3,4);
-  if(show&&!FK3.cast){var p=fk3BobXZ(FK.bx,FK.by);FK3.cast={t0:t,to:p};B.visible=true;FK3.line.visible=true;FK3.splashed=0}
+  if(show&&!FK3.cast){var p=fk3BobXZ(FK.bx,FK.by);FK3.cast={t0:Math.max(t,(FK3.wind||0)+.5),to:p};FK3.splashed=0}
   if(!show&&FK3.cast){FK3.cast=null;B.visible=false;FK3.line.visible=false}
-  if(FK3.cast){var c=FK3.cast,u=Math.min(1,(t-c.t0)/.65),tx=c.to[0],tz=c.to[1];
-    if(u<1){B.position.set(tip.x+(tx-tip.x)*u,tip.y+(0.06-tip.y)*u+Math.sin(u*Math.PI)*2.2,tip.z+(tz-tip.z)*u)}
+  if(FK3.cast){var c=FK3.cast,u=Math.max(0,Math.min(1,(t-c.t0)/.7)),tx=c.to[0],tz=c.to[1];B.visible=t>=c.t0;FK3.line.visible=t>=c.t0;
+    if(u<1){var uu=1-Math.pow(1-u,1.6);B.position.set(tip.x+(tx-tip.x)*uu,tip.y+(0.06-tip.y)*u+Math.sin(u*Math.PI)*2.6,tip.z+(tz-tip.z)*uu)}
     else{if(!FK3.splashed){FK3.splashed=1;fk3Ripple(tx,tz,.7,1.2)}var st=FK.st,y=.06+Math.sin(t*2.2)*.035,x=tx,z=tz;
       if(st==="bite"){y=-.06+Math.sin(t*28)*.07;if(t>FK3.nextRip-1.2){FK3.nextRip=t+1.45;fk3Ripple(x,z,.8,.7)}}
       else if(st==="reel"){var R=FK.R||{};x=tx+Math.sin(t*2.6)*.9*(R.f!=null?(R.f-.5)*2:1);var sp2=FK3.spot||{x:0,z:4.9},kx=sp2.x-tx,kz=sp2.z-tz,kl=Math.hypot(kx,kz)||1,pull=Math.min(4,(R.pg||0)*3.5);x+=kx/kl*pull;z=tz+Math.cos(t*1.9)*.4+kz/kl*pull;y=-.02+Math.sin(t*20)*.05;if(t>FK3.nextRip-1.15){FK3.nextRip=t+1.3;fk3Ripple(x,z,.6,.6)}}
       B.position.set(x,y,z)}
     fk3Line(FK3.line,tip,B.position.clone().add(new THREE.Vector3(0,.15,0)),FK.st==="reel"?.05:u<1?0:.6)}
-  if(FK3.me)FK3.me.rod.rotation.z=FK.st==="reel"?-.55+Math.sin(t*16)*.06:FK.st==="bite"?-.8+Math.sin(t*30)*.05:-.95;
+  if(FK3.me)fk3RodPose(FK3.me,t);
   /* ระลอกคลื่นสุ่ม + ปลากระโดด */
   if(t>FK3.nextRip){FK3.nextRip=t+1+Math.random()*1.4;var ra=Math.random()*6.28,rr=Math.random()*.8;fk3Ripple(Math.cos(ra)*FK3RX*rr,Math.sin(ra)*FK3RZ*rr,.5+Math.random()*.5,2)}
   if(t>FK3.nextJump){FK3.nextJump=t+5+Math.random()*7;var ja=Math.random()*6.28,jr=.25+Math.random()*.55,jx=Math.cos(ja)*FK3RX*jr,jz=Math.sin(ja)*FK3RZ*jr,js=fk3Sprite("🐟",.8);g2(js);FK3.jumps.push({s:js,t0:t,a:[jx,jz],b:[jx+1.6,jz+.3],life:1})}
@@ -5105,7 +5114,7 @@ function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||do
 var FK={on:false,st:"idle",bait:"",info:null,pres:[],raf:0,hb:0};
 var FKR=["ธรรมดา","ไม่ธรรมดา","หายาก","หายากมาก","ตำนาน"],FKC=["#94a3b8","#22c55e","#3b82f6","#a855f7","#f59e0b"];
 var FKSPOT=[[13,25],[26,23],[39,22],[61,22],[74,23],[87,25],[20,96],[32,97],[70,97],[82,96],[50,21],[93,96]];
-function fkSpr(key,seed){var a=key||"auto";if(a==="auto")a="kk"+(fmHash(seed||"x")%6);return a==="nathan"?FADSPR:a==="baker"?FBKSPR:FVSPR[(+String(a).slice(2)||0)%FVSPR.length]}
+function fkSpr(key,seed){var a=key||"auto";if(a==="auto")a=FKF[fmHash(seed||"x")%FKF.length];return a==="nathan"?FADSPR:a==="baker"?FBKSPR:FVSPR[(+String(a).slice(2)||0)%FVSPR.length]}
 function fkFish(k){var c=FM.cat||{},f=(c.fish||{})[k]||{n:k,e:"🐟",r:1};return f}
 function fkFE(f,sz){return '<span class="fkfe" style="font-size:'+(sz||40)+'px'+(f.hue?';filter:hue-rotate('+f.hue+'deg) saturate(1.3)':'')+'">'+f.e+'</span>'}
 function fkOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||FK.on)return;FK.on=true;FK.st="idle";
@@ -5131,12 +5140,12 @@ function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},r
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+'</div>'+
     '<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
-    '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="ava">🧍<small>ร่าง</small></button>'+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'<button type="button" data-fk="d3">'+(FK3.on||fk3Want()?'🗺️<small>แบบ 2D</small>':'🧊<small>แบบ 3D</small>')+'</button></div>'+
-    '<div class="fk-baits"><button type="button" data-fkbait=""'+(FK.bait===""?' class="on"':'')+'>🎣 ฟรี <b>'+(I.free_left!=null?I.free_left:"…")+'</b></button>'+
+    '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'<button type="button" data-fk="d3">'+(FK3.on||fk3Want()?'🗺️<small>แบบ 2D</small>':'🧊<small>แบบ 3D</small>')+'</button></div>'+
+    '<div class="fk-baits"><button type="button" data-fkbait=""'+(FK.bait===""?' class="on"':'')+'>🎣 '+(I.free_unlimited||(FK.info&&I.free_left==null)?'ไม่ใช้เหยื่อ <b>∞</b>':'ฟรี <b>'+(I.free_left!=null?I.free_left:"…")+'</b>')+'</button>'+
     Object.keys(c.baits||{}).map(function(k){var o=c.baits[k],n=B[k]||0;return '<button type="button" data-fkbait="'+k+'"'+(FK.bait===k?' class="on"':'')+(n?'':' disabled')+' title="'+esc(o.n)+'">'+o.e+' <b>'+n+'</b></button>'}).join("")+'</div>'}
 function fkOthers(){var el=$("fk-others");if(!el)return;var now=Date.now();
   el.innerHTML=(FK.pres||[]).slice(0,FKSPOT.length).map(function(p,i){var s=FKSPOT[(fmHash(p.id)+i)%FKSPOT.length],L=p.last,lb=L&&now-new Date(L.at).getTime()<90000?'<em class="fk-brag">🎉 '+esc(fkFish(L.fish).n)+' '+L.weight+' กก.</em>':'';
-    return '<div class="fk-oth" style="left:'+s[0]+'%;top:'+s[1]+'%">'+lb+'<img alt="" src="'+fkSpr(p.body,p.id)+'"><span class="fk-rod">🎣</span><small>'+(p.admin?"👑 ":"")+esc(nick(p.name)||p.name)+'</small></div>'}).join("");if(FK3.on)fk3Others()}
+    return '<div class="fk-oth" style="left:'+s[0]+'%;top:'+s[1]+'%">'+lb+'<img alt="" src="'+fkSpr(fkBody(p.body,p.id,p.admin),p.id)+'"><span class="fk-rod">🎣</span><small>'+(p.admin?"👑 ":"")+esc(nick(p.name)||p.name)+'</small></div>'}).join("");if(FK3.on)fk3Others()}
 /* ---------- มินิเกม: เหวี่ยง → รอ → ปลากินเบ็ด (กดทัน) → ดึง (ประคองให้ปลาอยู่ในแถบเขียว) ---------- */
 function fkPlay(){var el=$("fk-play");if(!el)return;var st=FK.st;
   if(FK3.walk){el.innerHTML='<button type="button" class="fk-cast" data-fk="here">🎣 ตกปลาตรงนี้</button><p class="fk-tip">ลากปุ่มกลมซ้ายล่าง (หรือ W A S D) เดินรอบทะเลสาบ · ไปยืนริมน้ำหรือบนท่าเรือแล้วกดตกปลาตรงนี้</p>';
@@ -5148,9 +5157,9 @@ function fkPlay(){var el=$("fk-play");if(!el)return;var st=FK.st;
   else if(st==="reel")el.innerHTML='<div class="fk-reel"><div class="fk-bar"><i id="fk-zone"></i><b id="fk-fish">🐟</b></div><div class="fk-prog"><i id="fk-pg"></i></div></div><button type="button" class="fk-cast hold" id="fk-hold">💪 กดค้างเพื่อดึง</button><p class="fk-tip">ประคองแถบเขียวให้ทับตัวปลา จนหลอดเต็ม</p>';
   else if(st==="busy")el.innerHTML='<p class="fk-say">…</p>'}
 function fkBob(x,y,show){var b=$("fk-bob"),p=$("fk-path");if(!b||!p)return;b.hidden=!show;if(!show){p.setAttribute("d","");return}b.style.left=x+"%";b.style.top=y+"%";p.setAttribute("d","M53 74 Q "+((53+x)/2)+" "+(Math.min(74,y)-12)+" "+x+" "+(y+1.5))}
-async function fkCast(){if(FK.st!=="idle")return;FK.st="busy";fkPlay();
-  try{var r=await q(db.rpc("fish_cast",{p_bait:FK.bait||null}));FK.cur=r;sfx("swish");
-    if(FK.info){if(!FK.bait)FK.info.free_left=Math.max(0,(FK.info.free_left||0)-1);else FK.info.bait[FK.bait]=Math.max(0,(FK.info.bait[FK.bait]||0)-1);if(FK.bait&&!FK.info.bait[FK.bait])FK.bait="";fkHud()}
+async function fkCast(){if(FK.st!=="idle")return;FK.st="busy";if(FK3.on){FK3.wind=performance.now()/1000;sfx("swish")}fkPlay();
+  try{var r=await q(db.rpc("fish_cast",{p_bait:FK.bait||null}));FK.cur=r;if(!FK3.on)sfx("swish");
+    if(FK.info){if(!FK.bait&&FK.info.free_left!=null)FK.info.free_left=Math.max(0,(FK.info.free_left||0)-1);else FK.info.bait[FK.bait]=Math.max(0,(FK.info.bait[FK.bait]||0)-1);if(FK.bait&&!FK.info.bait[FK.bait])FK.bait="";fkHud()}
     var tx=32+Math.random()*36,ty=34+Math.random()*18;FK.bx=tx;FK.by=ty;fkBob(tx,ty,true);var b=$("fk-bob");b.classList.remove("dip");b.classList.add("fly");setTimeout(function(){b&&b.classList.remove("fly")},600);
     FK.st="wait";fkPlay();var wait=1600+Math.random()*3200;FK.t1=setTimeout(function(){if(FK.st!=="wait")return;FK.st="bite";sfx("pop");var bb=$("fk-bob");if(bb)bb.classList.add("dip");fkPlay();
       FK.t2=setTimeout(function(){if(FK.st==="bite"){fkEnd(false,"ช้าไปนิด ปลากินเหยื่อแล้วหนีไป 🐟💨")}},Math.max(1100,1700-FK.cur.r*90))},wait)}
@@ -5170,28 +5179,37 @@ async function fkEnd(ok,msg){cancelAnimationFrame(FK.raf);var c=FK.cur;FK.st="bu
     if(!res.ok){sfx("error");var f0=fkFish(res.fish);fkCard('<div class="fk-miss"><b>😢 '+esc(msg||"ปลาหลุด")+'</b><small>ตัวที่หลุดเป็นปลา'+FKR[res.r-1]+' ('+esc(f0.n)+')</small></div>')}
     else{sfx("collect");var f=fkFish(res.fish);fk3Catch(f,FK.bx,FK.by);if(FK.info){FK.info.week_points=(FK.info.week_points||0)+res.points;var bk=FK.info.book||(FK.info.book={}),o=bk[res.fish]||{n:0,best:0};o.n++;o.best=Math.max(o.best,res.weight);bk[res.fish]=o;fkHud()}
       fkCard('<div class="fk-got" style="--rc:'+FKC[res.r-1]+'"><em>'+FKR[res.r-1]+' '+"★".repeat(res.r)+'</em>'+fkFE(f,72)+'<b>'+esc(f.n)+'</b><span class="fk-w">'+res.weight+' กก.</span><small>+'+res.points+' คะแนน · +'+res.xp+' XP · เข้ายุ้งฉาง</small>'+
-        (res.record?'<i class="fk-flag gold">🏆 สถิติใหม่ของทั้งบริษัท!</i>':res.first?'<i class="fk-flag">📖 ปลาใหม่ในสมุด!</i>':res.new_best?'<i class="fk-flag">⬆️ ตัวใหญ่ที่สุดของคุณ!</i>':'')+'</div>')}}
+        (res.record?'<i class="fk-flag gold">🏆 สถิติใหม่ของทั้งบริษัท!</i>':res.first?'<i class="fk-flag">📖 ปลาใหม่ในสมุด!</i>':res.new_best?'<i class="fk-flag">⬆️ ตัวใหญ่ที่สุดของคุณ!</i>':'')+'<button type="button" class="sm fk-sell1" data-fksell="'+esc(res.fish)+':1">💰 ขายตัวนี้ '+fmc()+' +'+num(fkPrice(res.fish))+'</button></div>')}}
   catch(e){fkBob(0,0,false);sfx("error");toast(thErr(e));FK.st="idle";fkPlay()}}
 function fkCard(html){var el=$("fk-play");FK.st="result";el.innerHTML='<div class="fk-card">'+html+'<button type="button" class="fk-cast" data-fk="again">🎣 ตกต่อ</button></div>'}
 /* ---------- แผง: ร้านอุปกรณ์ / อันดับ / สมุดปลา / เลือกร่าง ---------- */
-function fkSheet(kind){var el=$("fk-sheet");if(!el)return;if(!kind){el.hidden=true;return}el.hidden=false;var c=FM.cat||{},I=FK.info||{},lv=I.level||1,ttl="",body="";
+function fkSheet(kind){var el=$("fk-sheet");if(!el)return;FK.sheetKind=kind;if(!kind){el.hidden=true;return}el.hidden=false;var c=FM.cat||{},I=FK.info||{},lv=I.level||1,ttl="",body="";
   if(kind==="shop"){ttl="🛒 ร้านอุปกรณ์ตกปลา";var R=c.rods||{};
     body='<h4>เบ็ด (ยิ่งดี แถบเขียวยิ่งกว้าง · เจอปลาหายาก/ตัวใหญ่ง่ายขึ้น)</h4><div class="fk-grid">'+Object.keys(R).map(function(k){var o=R[k],own=(I.rod||1)>=+k,lk=!S.admin&&lv<o.lv;
       return '<div class="fk-it'+(own?' own':'')+'"><span>'+o.e+'</span><b>'+esc(o.n)+'</b><small>ระดับ '+k+'</small>'+(own?'<small class="ok">✓ มีแล้ว</small>':lk?'<small>🔒 เลเวล '+o.lv+'</small>':'<button type="button" class="sm primary" data-fkbuy="rod:'+k+'">'+fmc()+' '+num(o.cost)+'</button>')+'</div>'}).join("")+'</div>'+
       '<h4>เหยื่อ (ใช้ 1 ชิ้นต่อการเหวี่ยง · ช่วยให้เจอปลาหายาก)</h4><div class="fk-grid">'+Object.keys(c.baits||{}).map(function(k){var o=c.baits[k],lk=!S.admin&&lv<o.lv;
-      return '<div class="fk-it"><span>'+o.e+'</span><b>'+esc(o.n)+'</b><small>มี '+((I.bait||{})[k]||0)+' · โอกาสปลา'+FKR[o.min_r-1]+'+ ×'+o.boost+'</small>'+(lk?'<small>🔒 เลเวล '+o.lv+'</small>':'<div class="inline"><button type="button" class="sm" data-fkbuy="bait:'+k+':1">×1 · '+num(o.cost)+'</button><button type="button" class="sm primary" data-fkbuy="bait:'+k+':10">×10 · '+num(o.cost*10)+'</button></div>')+'</div>'}).join("")+'</div><p class="sub">เหวี่ยงฟรีวันละ '+(c.fish_free||15)+' ครั้ง (ไม่ใช้เหยื่อ) · ปลาที่ได้เข้ายุ้งฉาง ขายหรือตั้งร้านริมทางได้</p>'}
+      return '<div class="fk-it"><span>'+o.e+'</span><b>'+esc(o.n)+'</b><small>มี '+((I.bait||{})[k]||0)+' · โอกาสปลา'+FKR[o.min_r-1]+'+ ×'+o.boost+'</small>'+(lk?'<small>🔒 เลเวล '+o.lv+'</small>':'<div class="inline"><button type="button" class="sm" data-fkbuy="bait:'+k+':1">×1 · '+num(o.cost)+'</button><button type="button" class="sm primary" data-fkbuy="bait:'+k+':10">×10 · '+num(o.cost*10)+'</button></div>')+'</div>'}).join("")+'</div><p class="sub">'+((c.fish_free||0)>0?'เหวี่ยงฟรีวันละ '+c.fish_free+' ครั้ง (ไม่ใช้เหยื่อ)':'เหวี่ยงแบบไม่ใช้เหยื่อได้ไม่จำกัด · เหยื่อช่วยให้เจอปลาหายากขึ้น')+' · ปลาที่ได้เข้ายุ้งฉาง ขายได้ที่ปุ่ม 💰 ขายปลา</p>'}
   else if(kind==="board"){ttl="🏆 อันดับนักตกปลา";var sc=FK.scope||"week",B=FK.board;
     body='<div class="fk-tabs"><button type="button" data-fkscope="week"'+(sc==="week"?' class="on"':'')+'>สัปดาห์นี้</button><button type="button" data-fkscope="all"'+(sc==="all"?' class="on"':'')+'>ตลอดกาล</button><button type="button" data-fkscope="rec"'+(sc==="rec"?' class="on"':'')+'>สถิติตัวใหญ่สุด</button></div>';
     if(sc==="rec"){var RC=FK.rec;body+=!RC?'<p class="sub">กำลังโหลด…</p>':'<div class="rows">'+Object.keys(c.fish||{}).sort(function(a,b){return c.fish[b].r-c.fish[a].r}).map(function(k){var f=c.fish[k],x=RC[k];return '<div class="row"><div class="l">'+fkFE(f,26)+' <b>'+esc(f.n)+'</b> <small style="color:'+FKC[f.r-1]+'">'+FKR[f.r-1]+'</small></div><div class="r">'+(x?'<b>'+x.weight+' กก.</b> <small>'+esc(nick(x.name)||x.name)+'</small>':'<small>ยังไม่มีใครตกได้</small>')+'</div></div>'}).join("")+'</div>'}
     else body+=!B?'<p class="sub">กำลังโหลด…</p>':B.length?'<div class="rows">'+B.map(function(x,i){var bf=x.best?fkFish(x.best.fish):null;return '<div class="row'+(S.me&&x.id===S.me.id?' me':'')+'"><div class="l"><b class="fk-rk">'+(i<3?["🥇","🥈","🥉"][i]:i+1)+'</b>'+avatarHtml({display_name:x.name,avatar:x.avatar})+'<div><b>'+esc(nick(x.name)||x.name)+'</b><small>'+x.catches+' ตัว'+(bf?' · เด็ด: '+bf.e+' '+esc(bf.n)+' '+x.best.weight+' กก.':'')+'</small></div></div><div class="r"><b>'+num(x.points)+'</b><small> คะแนน</small></div></div>'}).join("")+'</div>':emptyRow("ยังไม่มีใครตกปลาได้ — เป็นคนแรกเลย!")}
   else if(kind==="book"){ttl="📖 สมุดปลา";var bk=I.book||{},keys=Object.keys(c.fish||{}).sort(function(a,b){return c.fish[a].r-c.fish[b].r}),got=keys.filter(function(k){return bk[k]}).length;
     body='<p class="sub">สะสมแล้ว '+got+' / '+keys.length+' ชนิด · ปลาที่ยังไม่เคยตกได้จะเป็นเงา</p><div class="fk-grid">'+keys.map(function(k){var f=c.fish[k],x=bk[k];return '<div class="fk-it'+(x?'':' dark')+'" style="--rc:'+FKC[f.r-1]+'"><span>'+(x?fkFE(f,34):'<span class="fkfe" style="font-size:34px;filter:brightness(0) opacity(.35)">'+f.e+'</span>')+'</span><b>'+(x?esc(f.n):"???")+'</b><small style="color:'+FKC[f.r-1]+'">'+FKR[f.r-1]+'</small>'+(x?'<small>ได้ '+x.n+' ตัว · ใหญ่สุด '+x.best+' กก.</small>':'<small>'+f.w[0]+'–'+f.w[1]+' กก.</small>')+'</div>'}).join("")+'</div>'}
+  else if(kind==="sell"){ttl="💰 ขายปลา";var IT=FK.items,keys2=Object.keys(c.fish||{}).filter(function(k){return IT&&IT[k]>0}).sort(function(a,b){return c.fish[b].r-c.fish[a].r}),tot=keys2.reduce(function(a,k){return a+IT[k]*fkPrice(k)},0);
+    body=!IT?'<p class="sub">กำลังโหลด…</p>':!keys2.length?emptyRow("ยังไม่มีปลาในยุ้งฉาง — ไปตกมาก่อนนะ 🎣"):'<button type="button" class="primary fk-sellall" data-fksell="*">💰 ขายปลาทั้งหมด '+fmc()+' +'+num(tot)+'</button><div class="rows">'+keys2.map(function(k){var f=c.fish[k],n=IT[k],pr=fkPrice(k);
+      return '<div class="row"><div class="l">'+fkFE(f,28)+' <div><b>'+esc(f.n)+'</b><small style="color:'+FKC[f.r-1]+'">'+FKR[f.r-1]+' · ตัวละ '+num(pr)+' · มี '+n+' ตัว</small></div></div><div class="r inline"><button type="button" class="sm" data-fksell="'+k+':1">ขาย 1</button>'+(n>1?'<button type="button" class="sm primary" data-fksell="'+k+':'+n+'">ขาย '+n+' · +'+num(n*pr)+'</button>':'')+'</div></div>'}).join("")+'</div><p class="sub">ปลาเก็บไว้ในยุ้งฉางของฟาร์ม · จะเก็บไว้ส่งคำสั่งซื้อหรือตั้งร้านริมทางก็ได้</p>'}
   else if(kind==="ava"){ttl="🧍 เลือกร่างที่ใช้ตกปลา";var cur=fmAva();
     body='<div class="fk-grid">'+fmAvaList().map(function(a){return '<button type="button" class="fk-it'+(cur===a[0]?' own':'')+'" data-fkava="'+a[0]+'"><img alt="" src="'+fkSpr(a[0],S.me&&S.me.id)+'" style="width:64px;height:64px;object-fit:contain"><b>'+esc(a[1])+'</b></button>'}).join("")+'</div><p class="sub">เพื่อนที่มาทะเลสาบจะเห็นคุณเป็นร่างนี้ (ใช้กับโหมดเดินเที่ยวในฟาร์มด้วย)</p>'}
   el.innerHTML='<div class="fk-sh"><div class="fk-shh"><b>'+ttl+'</b><button type="button" data-fk="x" aria-label="ปิด">✕</button></div><div class="fk-shb">'+body+'</div></div>'}
+function fkPrice(k){var c=FM.cat||{};return +(((c.products||{})[k]||{}).sell||((c.fish||{})[k]||{}).sell||0)}
+function fkItemsLoad(){FK.items=null;fkSheet("sell");q(db.rpc("farm_get")).then(function(d){FK.items=(d&&d.items)||{};if(d){FM.d=d}if(!$("fk-sheet").hidden)fkSheet("sell")},function(e){toast(thErr(e))})}
+async function fkSell(spec,btn){var c=FM.cat||{},L=[];if(spec==="*"){Object.keys(c.fish||{}).forEach(function(k){var n=(FK.items||{})[k]||0;if(n>0)L.push([k,n])})}else{var p=spec.split(":");L.push([p[0],+p[1]||1])}
+  if(!L.length)return;if(btn)btn.disabled=true;var got=0;try{for(var i=0;i<L.length;i++){got+=+(await q(db.rpc("farm_sell",{p_item:L[i][0],p_qty:L[i][1]})))||0;if(FK.items)FK.items[L[i][0]]=Math.max(0,(FK.items[L[i][0]]||0)-L[i][1])}
+    sfx("buy");toast("💰 ขายปลาได้ "+num(got)+" เหรียญ");if(FK.info&&FK.info.coins!=null)FK.info.coins+=got;fkHud();if(btn&&btn.classList.contains("fk-sell1")){btn.textContent="✓ ขายแล้ว +"+num(got)}}
+  catch(e){sfx("error");toast(thErr(e));if(btn)btn.disabled=false}if(!$("fk-sheet").hidden&&FK.sheetKind==="sell")fkSheet("sell")}
 function fkBoardLoad(){var sc=FK.scope||"week";if(sc==="rec"){FK.rec=null;fkSheet("board");q(db.rpc("fish_records")).then(function(r){FK.rec=r||{};fkSheet("board")},function(e){toast(thErr(e))})}
   else{FK.board=null;fkSheet("board");q(db.rpc("fish_board",{p_scope:sc})).then(function(b){FK.board=b||[];fkSheet("board")},function(e){toast(thErr(e))})}}
-document.addEventListener("click",function(ev){if(!FK.on)return;var t=ev.target.closest("[data-fk],[data-fkbait],[data-fkbuy],[data-fkscope],[data-fkava]");if(!t||!t.closest("#fm-lake"))return;var D=t.dataset;
+document.addEventListener("click",function(ev){if(!FK.on)return;var t=ev.target.closest("[data-fk],[data-fkbait],[data-fkbuy],[data-fkscope],[data-fkava],[data-fksell]");if(!t||!t.closest("#fm-lake"))return;var D=t.dataset;
   if(D.fk==="close"){sfx("close");fkClose();return}
   if(D.fk==="cast"){if(FK3.walk)fk3Walk(false);fkCast();return}if(D.fk==="hook"){fkHook();return}if(D.fk==="again"){FK.st="idle";fkPlay();return}
   if(D.fk==="x"){sfx("close");fkSheet(null);return}
@@ -5200,9 +5218,11 @@ document.addEventListener("click",function(ev){if(!FK.on)return;var t=ev.target.
   if(D.fk==="d3"){if(FK.st!=="idle"&&FK.st!=="result"){toast("ตกปลาให้จบรอบนี้ก่อนนะ");return}var to=FK3.on||fk3Want()?"0":"1";if(to==="1"&&!fm3Ok()){toast("เครื่องนี้ไม่รองรับ 3D");return}try{localStorage.setItem("aoi-fish-3d",to)}catch(e){}sfx("tap");FK.st="idle";fkDraw();return}
   if(D.fk==="shop"||D.fk==="book"||D.fk==="ava"){sfx("open");fkSheet(D.fk);if(D.fk!=="ava")fkLoad().then(function(){if(!$("fk-sheet").hidden)fkSheet(D.fk)});return}
   if(D.fk==="board"){sfx("open");fkBoardLoad();return}
+  if(D.fk==="sell"){sfx("open");fkItemsLoad();return}
+  if(D.fksell){if(D.fksell!=="*"&&!FK.items){FK.items={};FK.items[D.fksell.split(":")[0]]=+D.fksell.split(":")[1]||1}fkSell(D.fksell,t);return}
   if(D.fkscope){FK.scope=D.fkscope;fkBoardLoad();return}
   if(D.fkbait!=null){if(FK.st!=="idle"&&FK.st!=="result")return;FK.bait=D.fkbait;sfx("tap");fkHud();return}
-  if(D.fkava){try{localStorage.setItem("aoi-farm-ava",D.fkava)}catch(e){}sfx("tap");var im=document.querySelector("#fk-me img");if(im)im.src=fkSpr(D.fkava,S.me&&S.me.id);fk3Me();fkSheet("ava");fkPres();return}
+  if(D.fkava){if(!S.admin)return;try{localStorage.setItem("aoi-farm-ava",D.fkava)}catch(e){}sfx("tap");var im=document.querySelector("#fk-me img");if(im)im.src=fkSpr(D.fkava,S.me&&S.me.id);fk3Me();fkSheet("ava");fkPres();return}
   if(D.fkbuy){var p=D.fkbuy.split(":");t.disabled=true;q(db.rpc("fish_buy",{p_kind:p[0],p_key:p[1],p_qty:+(p[2]||1)})).then(function(i){FK.info=i;sfx("buy");toast(p[0]==="rod"?"🎣 ได้เบ็ดใหม่แล้ว!":"🪱 ซื้อเหยื่อแล้ว");if(p[0]==="bait")FK.bait=p[1];fkHud();fkSheet("shop")},function(e){t.disabled=false;sfx("error");toast(thErr(e))});return}});
 document.addEventListener("keydown",function(e){if(!FK.on||e.code!=="Space"||$("fk-sheet")&&!$("fk-sheet").hidden)return;e.preventDefault();if(FK3.walk){fk3Walk(false);return}if(FK.st==="reel"){FK.space=true;return}if(e.repeat)return;if(FK.st==="idle")fkCast();else if(FK.st==="wait"||FK.st==="bite")fkHook();else if(FK.st==="result"){FK.st="idle";fkPlay()}});
 document.addEventListener("keyup",function(e){if(e.code==="Space")FK.space=false});
@@ -6072,8 +6092,11 @@ function fm3Baker(V){fm3File("admin2").then(function(G){if(!V.g.parent||V.kk)ret
   var K={o:o,adm:2,walk:0,t:0,lt:performance.now()/1000,A:{}};K.mx={update:function(dt){K.t+=dt;var k=Math.min(1,dt*10);if(K.walk){var ph=K.t*9;b.position.y=Math.abs(Math.sin(ph))*.045;b.rotation.x=Math.sin(ph)*.09;b.rotation.z=0}else{b.position.y+=(Math.sin(K.t*2)*.006-b.position.y)*k;b.rotation.x*=1-k;b.rotation.z=Math.sin(K.t*1.3)*.025}}};V.kk=K},function(){})}
 /* ร่างที่ใช้เดิน: เลือกได้ เก็บไว้ในเครื่อง */
 function fmAvaList(){return [["auto","อัตโนมัติ"],["nathan","👨 Nathan"],["baker","👩‍🍳 สาวเบเกอร์"]].concat(FKK.map(function(k,i){return ["kk"+i,"🧝 "+FKKN[i]]}))}
-function fmAva(){var v="auto";try{v=localStorage.getItem("aoi-farm-ava")||"auto"}catch(e){}return v}
-function fm3Body(E,isAdm,c){var a=fmAva();if(a==="auto")a=isAdm?"nathan":"kk"+c;if(a==="nathan")fm3Admin(E);else if(a==="baker")fm3Baker(E);else fm3KK(E,+a.slice(2)||0)}
+var FKF=["baker","kk2","kk4","kk5"];/* ร่างผู้หญิง สำหรับผู้เล่นทั่วไป (สุ่มตามรหัสพนักงาน) */
+function fkBody(key,id,admin){if(admin)return !key||key==="auto"?"nathan":key;return FKF.indexOf(key)>=0?key:FKF[fmHash(id||"x")%FKF.length]}
+function fm3BodyKey(E,a){if(a==="nathan")fm3Admin(E);else if(a==="baker")fm3Baker(E);else fm3KK(E,+String(a).slice(2)||0)}
+function fmAva(){if(!S.admin)return fkBody(null,S.me&&S.me.id,false);var v="auto";try{v=localStorage.getItem("aoi-farm-ava")||"auto"}catch(e){}return v}
+function fm3Body(E,isAdm,c){var a=fmAva();if(a==="auto")a=isAdm?"nathan":FKF[c%FKF.length];fm3BodyKey(E,a)}
 function fm3KKPlay(K,n){if(K.adm===2){K.walk=n==="Walking_A";return}if(K.adm){var aa=K.A.Walking_A;if(!K.cur){aa.play();K.cur=aa}aa.timeScale=n==="Walking_A"?1:0;return}var a=K.A[n];if(!a||K.cur===a)return;a.reset().setLoop(THREE.LoopRepeat,Infinity).fadeIn(.2).play();if(K.cur)K.cur.fadeOut(.2);K.cur=a}
 function kkArmUp(ch,w){ch.updateMatrixWorld(true);var wq0=ch.getWorldQuaternion(new THREE.Quaternion());[["upperarml","lowerarml",1],["upperarmr","lowerarmr",-1]].forEach(function(p){var a=ch.getObjectByName(p[0]),b=ch.getObjectByName(p[1]);if(!a||!b)return;
   [[a,b],[b,ch.getObjectByName(p[1].replace("lowerarm","wrist"))]].forEach(function(ab){var A=ab[0],B=ab[1];if(!B)return;ch.updateMatrixWorld(true);var pa=new THREE.Vector3(),pb=new THREE.Vector3();A.getWorldPosition(pa);B.getWorldPosition(pb);
