@@ -305,6 +305,13 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
 .filters .searchbox{flex:2 1 220px}
 #v-news{max-width:820px;margin:0 auto}.nwhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}.nwhead .inline{display:flex;gap:8px;align-items:center}
 #nw-qwrap input{width:100%}.nwchips{display:flex;gap:6px;flex-wrap:wrap}.nwchips .chipsel.on{background:var(--primary,#2563eb);color:#fff;border-color:transparent}
+.otchips{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}.otchips span{background:color-mix(in srgb,var(--c) 12%,transparent);border:1px solid color-mix(in srgb,var(--c) 35%,transparent);border-radius:12px;padding:6px;text-align:center;display:flex;flex-direction:column}.otchips small{font-size:11px;font-weight:800;color:var(--c)}.otchips b{font-size:18px}
+.otbar{height:8px;border-radius:5px;background:#e2e8f0;overflow:hidden}.otbar i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444)}
+.ottbl{display:flex;flex-direction:column;overflow-x:auto}.otr{display:grid;grid-template-columns:minmax(170px,2.4fr) repeat(5,minmax(48px,.7fr)) repeat(3,minmax(54px,.8fr));gap:4px;align-items:center;padding:8px 6px;border-bottom:1px solid #e2e8f0;cursor:pointer;font-size:13px;text-align:right}.otr:hover{background:rgba(37,99,235,.05)}.otr.oth{font-weight:800;font-size:12px;color:#64748b;cursor:default;position:sticky;top:0;background:var(--surface,#fff)}.otr .otn,.otr.oth span:first-child{text-align:left}.otn small{display:block;color:#64748b;font-size:11px}.otover{color:#dc2626;font-weight:800}
+.otbase{background:#eff6ff;border-radius:10px;padding:8px 10px;font-size:13px}.otems{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.otems em{font-style:normal;font-size:12px;font-weight:700;padding:1px 7px;border-radius:8px;background:color-mix(in srgb,var(--c,#64748b) 14%,transparent);color:var(--c,#475569)}
+.otef{display:flex;flex-direction:column;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px;margin-top:8px}.otin{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.otin label{font-size:12px}.otin input{width:100%}.otrg{display:flex;flex-direction:column;gap:4px;margin:6px 0}.otrg>span{font-weight:700;font-size:13px}.otdays{max-height:50vh;overflow:auto}.otaddd{margin-top:8px}
+@media (max-width:640px){.otr{grid-template-columns:minmax(120px,2fr) repeat(5,44px) repeat(3,48px);font-size:12px}.otchips b{font-size:15px}}
+@media (prefers-color-scheme:dark){.otbase{background:#1e293b}.otef{background:#0f172a;border-color:#334155}.otr{border-color:#334155}}
 .nwfeed{display:grid;gap:16px}.nwcard{background:var(--surface,#fff);border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(15,23,42,.1);cursor:pointer;border:1px solid rgba(148,163,184,.25);transition:transform .15s}.nwcard:active{transform:scale(.99)}.nwcard.draft{opacity:.65;border-style:dashed}
 .nwcar{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:#0f172a}.nwcar::-webkit-scrollbar{display:none}.nwsl{flex:0 0 100%;scroll-snap-align:center;position:relative;aspect-ratio:16/9;display:grid;place-items:center}.nwcar.big .nwsl{aspect-ratio:auto;min-height:200px;max-height:70vh}
 .nwsl img,.nwsl video{width:100%;height:100%;object-fit:cover;display:block}.nwcar.big .nwsl img,.nwcar.big .nwsl video{object-fit:contain;max-height:70vh}.nwsl iframe{width:100%;aspect-ratio:16/9;border:0}
@@ -1634,6 +1641,17 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <div class="scroll"><table class="tbl emtbl"><thead><tr><th>รหัส</th><th>พนักงาน</th><th>แผนก</th><th>กะ</th><th>ตำแหน่ง</th><th>อายุงาน</th><th>เบอร์โทร</th><th>บัญชี</th><th class="n">จัดการ</th></tr></thead><tbody id="em2-rows"></tbody></table></div></div>
   </section>
 
+  <!-- OT ล่วงเวลา -->
+  <section class="view" id="v-ot" hidden>
+    <div class="nwhead"><div><h2>⏱️ OT (ล่วงเวลา)</h2><p class="sub">ยอดจากไฟล์ HR + นับเพิ่มอัตโนมัติเมื่อสแกนเข้างาน · ดูย้อนหลังได้ทุกเดือน</p></div>
+      <div class="inline"><label>เดือน<select id="ot-ym"></select></label></div></div>
+    <div class="panel" id="ot-mine" hidden></div>
+    <div class="filters" id="ot-deptw" hidden><label>แผนก<select id="ot-dept"></select></label><label>ค้นหา<input type="search" id="ot-q" placeholder="ชื่อ / รหัส"></label><button type="button" class="sm" id="ot-export">⬇️ Excel</button></div>
+    <div class="panel"><div id="ot-sum"></div><div id="ot-list"></div></div>
+    <div class="panel g2" id="ot-adm" hidden><div><b>📥 นำเข้าไฟล์ OT จาก HR (Excel)</b><p class="sub">ไฟล์ "รายงานเปรียบเทียบ Budget" — ใช้คอลัมน์ รหัสพนักงาน, ประเภทพนักงาน, BG_1…BG_4 (งบ) และ OT_1_…OT_4 (ทำจริง) · นำเข้าซ้ำได้ (ทับเดือนเดิม)</p>
+      <label class="filebtn" data-ico="upload">เลือกไฟล์ Excel<input type="file" id="ot-file" accept=".xlsx,.xls,.csv" hidden></label><div id="ot-imp"></div></div><div id="ot-rules"></div></div>
+  </section>
+
   <!-- NEWS ประชาสัมพันธ์ -->
   <section class="view" id="v-news" hidden>
     <div class="nwhead"><div><h2>📢 ข่าวประชาสัมพันธ์</h2><p class="sub">ข่าวสาร กิจกรรม และสื่อการสอนของบริษัท</p></div>
@@ -1648,6 +1666,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div><h2>เมนู</h2><p class="sub">เลือกหน้าที่ต้องการ</p></div>
     <div class="menugrid">
       <button data-tab="news">📢 ประชาสัมพันธ์<i class="navdot num" id="nw-dot2" hidden></i></button>
+      <button data-tab="ot">⏱️ OT (ล่วงเวลา)</button>
       <button data-tab="staff" class="mgr">พนักงาน</button>
       <button data-tab="top" class="mgr">Top 5 ยอดผลิต</button>
       <button data-tab="tt">ติ่งต๊อง</button>
@@ -2035,6 +2054,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <span class="navlabel" data-g="soc">🛍️ ร้านค้า · ติ่งต๊อง · แชต</span>
   <button data-tab="shop" class="navx">สินค้า</button>
   <button data-tab="news" class="navx">📢 ประชาสัมพันธ์<i class="navdot num" id="nw-dot" hidden></i></button>
+  <button data-tab="ot" class="navx">⏱️ OT (ล่วงเวลา)</button>
   <button data-tab="tt" class="navx">ติ่งต๊อง</button>
   <button data-tab="chat" class="navx">แชต<i class="navdot" id="chat-dot" hidden></i></button>
   <button data-tab="ideas" class="navx">ไอเดียปรับปรุงงาน</button>
@@ -2076,6 +2096,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 <div id="rc" class="rc" hidden><div class="rcbg" data-rcclose="1"></div><div class="rcwrap" id="rc-wrap"></div></div>
 <div id="stage" class="stage" hidden><div class="curtain l"></div><div class="curtain r"></div><div class="spot"></div><div class="stbody" id="st-body"></div>
   <div class="stbtns"><button type="button" class="primary" id="st-again">🎲 สุ่มคนต่อไป</button><button type="button" id="st-close">ปิด</button></div></div>
+<div class="modal" id="m-ot" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="ot-det"></div></div>
 <div class="modal" id="m-news" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="nw-view"></div></div>
 <div class="modal" id="m-newsed" hidden><div class="box nwbox" role="dialog" aria-modal="true"><div class="headrow"><h3 style="font-size:18px">📢 โพสต์ประชาสัมพันธ์</h3><button type="button" class="iconbtn" data-close="m-newsed" data-ico="x" aria-label="ปิด"></button></div><div id="nwe-body" class="nwebody"></div><button type="button" class="primary" id="nwe-save">💾 บันทึก / โพสต์</button></div></div>
 <div class="modal" id="m-perm" hidden>
@@ -4139,7 +4160,7 @@ function openPerm(id){
     return h+'<label class="check"><input type="checkbox" class="pm-p" value="'+x[1]+'"'+(ps.indexOf(x[1])>=0?" checked":"")+'><span class="pmt"><b>'+esc(x[2])+'</b><small>'+esc(x[3])+'</small></span></label>'}).join("");
   $("pm-kpi").checked=e.kpi_required!==false;pmSync();openModal("m-perm");
 }
-$("pm-role").addEventListener("change",function(){pmSync();if($("pm-role").value==="dept_admin"&&!document.querySelector(".pm-d:checked")){var e=empOf(PMX.id);var c=e&&document.querySelector('.pm-d[value="'+e.department_id+'"]');if(c)c.checked=true}});
+$("pm-role").addEventListener("change",function(){pmSync();if($("pm-role").value!=="employee")$("pm-kpi").checked=false;if($("pm-role").value==="dept_admin"&&!document.querySelector(".pm-d:checked")){var e=empOf(PMX.id);var c=e&&document.querySelector('.pm-d[value="'+e.department_id+'"]');if(c)c.checked=true}});
 document.addEventListener("click",function(ev){
   var b=ev.target.closest("[data-perm-edit]");if(b){openPerm(b.dataset.permEdit);return}
   var pr=ev.target.closest("[data-pmpre]");if(pr){var set=PERM_PRE[pr.dataset.pmpre]||[];document.querySelectorAll(".pm-p").forEach(function(c){c.checked=set.indexOf(c.value)>=0})}
@@ -4183,6 +4204,7 @@ async function renderMeCard(){
     else t.push(meTile("leave","ขอลางาน","📝","ลาได้ในแอป",""));
     if(d.kpi){var km=+d.kpi.month.slice(5,7),ky=+d.kpi.month.slice(0,4),pm=km===12?1:km+1,py=km===12?ky+1:ky,pd=py+"-"+String(pm).padStart(2,"0")+"-05",paid=today()>=pd;
       t.push(meTile("allowance","KPI "+SMON[km-1]+" จ่ายจริง",num(d.kpi.amount)+' <small style="font-size:13px">บาท</small>',(paid?"✓ จ่ายแล้ว ":"⏳ จ่าย ")+"5 "+SMON[pm-1],""))}
+    try{var otr=await q(db.rpc("ot_report",{p_ym:today().slice(0,7),p_emp:me.id}));if(otr&&otr[0]){var ots=otSum(otr[0]);t.push(meTile("ot","OT เดือนนี้",otH(ots.tot)+' <small style="font-size:13px">ชม.</small>',ots.bg?"งบ "+otH(ots.bg)+" · เหลือ "+otH(ots.bal):"กดดูรายวัน",ots.bg&&ots.pct>100?"warn":""))}}catch(e){}
     if(d.pts)t.push(meTile("rewards","แต้มสะสม ⭐",num(d.pts.balance),"กดดูของรางวัล",""));
     /* กะสัปดาห์หน้า + วันหยุดโรงงานถัดไป */
     try{await lvMeta();var t0=utcMs(today()),nd=isoOf(t0+(((8-new Date(t0).getUTCDay())%7)||7)*864e5),my=me.shift;
@@ -7327,10 +7349,94 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-nw
   if(t.id==="nwe-addurl"){nwEdSync();var u=($("nwe-url").value||"").trim();if(!/^https?:\/\//.test(u)){toast("ใส่ลิงก์ที่ขึ้นต้นด้วย https://");return}NW.ed.add.push(nwYT(u)?{t:"yt",u:u,n:"YouTube"}:{t:"link",u:u,n:u.replace(/^https?:\/\//,"").slice(0,60)});nwEdDraw();return}
   if(t.id==="nwe-save"){nwSave(t);return}});
 
-var RENDER={news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+/* ===================== อัปเดต 131: OT (ล่วงเวลา) — ต่อจากไฟล์ HR + เพิ่มอัตโนมัติจากการสแกนเข้างาน ===================== */
+var OT={ym:null,rows:null,months:[],dept:"",q:"",det:null,imp:null};
+var OTR=["1","1.5","2","3","4"],OTN={"1":"OT 1","1.5":"OT 1.5","2":"OT 2","3":"OT 3","4":"OT 4"},OTC={"1":"#0ea5e9","1.5":"#2563eb","2":"#7c3aed","3":"#f59e0b","4":"#dc2626"};
+function otMgr(){return !!(S.admin||S.mgr||can("att_view")||can("att_check")||can("leave_view"))}
+function otH(v){v=+v||0;return (Math.round(v*100)/100).toLocaleString("th-TH",{maximumFractionDigits:2})}
+function otSum(r){var t={},tot=0,bg=0;OTR.forEach(function(k){var v=(+((r.base||{})[k])||0)+(+((r.add||{})[k])||0);t[k]=v;tot+=v;bg+=+((r.budget||{})[k])||0});return {r:t,tot:tot,bg:bg,bal:bg-tot,pct:bg?tot/bg*100:0}}
+function otYmName(ym){var y=+ym.slice(0,4),m=+ym.slice(5,7);return MONTHS[m-1]+" "+(y+543)}
+async function renderOT(){var cur=today().slice(0,7);if(!OT.ym)OT.ym=cur;
+  try{OT.months=await q(db.rpc("ot_months_list"))||[]}catch(e){OT.months=[]}
+  if(OT.months.indexOf(cur)<0)OT.months.unshift(cur);if(OT.months.indexOf(OT.ym)<0)OT.months.unshift(OT.ym);
+  $("ot-ym").innerHTML=OT.months.map(function(m){return '<option value="'+m+'"'+(m===OT.ym?' selected':'')+'>'+otYmName(m)+'</option>'}).join("");
+  $("ot-adm").hidden=!S.admin;$("ot-deptw").hidden=!(otMgr());
+  if(otMgr()){var ds=S.depts||[];$("ot-dept").innerHTML='<option value="">ทุกแผนก</option>'+ds.map(function(d){return '<option value="'+d.id+'"'+(OT.dept===d.id?' selected':'')+'>'+esc(d.name)+'</option>'}).join("")}
+  $("ot-list").innerHTML='<p class="sub">กำลังโหลด…</p>';
+  try{OT.rows=await q(db.rpc("ot_report",{p_ym:OT.ym}))||[]}catch(e){$("ot-list").innerHTML=emptyRow(esc(thErr(e)));return}
+  otDraw();if(S.admin)otRulesDraw()}
+function otChips(s){return '<div class="otchips">'+OTR.map(function(k){return '<span style="--c:'+OTC[k]+'"><small>'+OTN[k]+'</small><b>'+otH(s.r[k])+'</b></span>'}).join("")+'</div>'}
+function otDraw(){var me=S.me&&S.me.id,mine=(OT.rows||[]).filter(function(r){return r.id===me})[0],qq=OT.q.trim().toLowerCase();
+  var my=$("ot-mine");if(mine){var s=otSum(mine);my.hidden=false;my.innerHTML='<div class="headrow"><b>⏱️ OT ของฉัน · '+otYmName(OT.ym)+'</b><button type="button" class="sm" data-otdet="'+mine.id+'">ดูรายวัน</button></div>'+otChips(s)+
+      '<div class="otbar"><i style="width:'+Math.min(100,s.pct).toFixed(1)+'%"></i></div><small class="sub">รวม <b>'+otH(s.tot)+'</b> ชม.'+(s.bg?' จากงบ '+otH(s.bg)+' ชม. ('+s.pct.toFixed(1)+'%) · คงเหลือ '+otH(s.bal)+' ชม.':'')+(mine.base_until?' · ยอดจากไฟล์ถึง '+shortD(mine.base_until)+' + สแกนหลังจากนั้น':'')+'</small>'}
+  else{my.hidden=!(OT.rows&&!(otMgr()));my.innerHTML='<p class="sub">ยังไม่มีข้อมูล OT ของคุณในเดือนนี้</p>'}
+  var L=(OT.rows||[]).filter(function(r){return (!OT.dept||r.dept_id===OT.dept)&&(!qq||(r.name+" "+r.no+" "+(r.dept_name||"")).toLowerCase().indexOf(qq)>=0)});
+  if(!(otMgr())){$("ot-list").innerHTML="";$("ot-sum").innerHTML="";return}
+  var T={r:{},tot:0,bg:0};OTR.forEach(function(k){T.r[k]=0});L.forEach(function(r){var s=otSum(r);OTR.forEach(function(k){T.r[k]+=s.r[k]});T.tot+=s.tot;T.bg+=s.bg});
+  $("ot-sum").innerHTML=L.length?'<b>รวม '+L.length+' คน · '+otH(T.tot)+' ชม.'+(T.bg?' / งบ '+otH(T.bg)+' ('+(T.tot/T.bg*100).toFixed(1)+'%)':'')+'</b>'+otChips(T):'';
+  $("ot-list").innerHTML=L.length?'<div class="ottbl"><div class="otr oth"><span>พนักงาน</span>'+OTR.map(function(k){return '<span>'+OTN[k]+'</span>'}).join("")+'<span>รวม</span><span>งบ</span><span>%</span></div>'+L.map(function(r){var s=otSum(r),hot=s.bg&&s.pct>100;
+    return '<div class="otr" data-otdet="'+r.id+'"><span class="otn"><b>'+esc(r.name)+'</b><small>'+esc(r.no)+' · '+esc(r.dept_name||"")+' · '+esc(r.pay_type||"")+'</small></span>'+OTR.map(function(k){return '<span>'+(s.r[k]?otH(s.r[k]):'<i class="sub">-</i>')+'</span>'}).join("")+'<span><b>'+otH(s.tot)+'</b></span><span>'+(s.bg?otH(s.bg):'-')+'</span><span class="'+(hot?'otover':'')+'">'+(s.bg?s.pct.toFixed(0)+'%':'-')+'</span></div>'}).join("")+'</div>':emptyRow("ยังไม่มีข้อมูล OT เดือนนี้"+(S.admin?" — นำเข้าไฟล์ OT ด้านล่าง":""))}
+/* ---------- รายวัน + แก้ไข ---------- */
+async function otDet(id){var r=(OT.rows||[]).filter(function(x){return x.id===id})[0];$("ot-det").innerHTML='<p class="sub">กำลังโหลด…</p>';openModal("m-ot");
+  try{var D=await q(db.rpc("ot_days_of",{p_emp:id,p_ym:OT.ym}))}catch(e){$("ot-det").innerHTML=emptyRow(esc(thErr(e)));return}OT.det={id:id,r:r,D:D};otDetDraw()}
+function otDetDraw(){var X=OT.det,D=X.D,r=X.r||{},by={},att={};(D.days||[]).forEach(function(x){(by[x.d]=by[x.d]||{h:{},src:x.src,note:x.note}).h[x.rate]=+x.h;if(x.src==="manual")by[x.d].src="manual"});(D.att||[]).forEach(function(a){att[a.d]=a});
+  var days=Object.keys(by).concat(Object.keys(att)).filter(function(v,i,a){return a.indexOf(v)===i}).sort(),s=r.id?otSum(r):null,bu=D.month&&D.month.base_until;
+  $("ot-det").innerHTML='<div class="headrow"><div><h3 style="margin:0">⏱️ '+esc(r.name||"")+'</h3><small class="sub">'+esc(r.no||"")+' · '+esc(r.dept_name||"")+' · '+esc(r.pay_type||"")+' · '+otYmName(OT.ym)+'</small></div><button type="button" class="iconbtn" data-close="m-ot" aria-label="ปิด">✕</button></div>'+
+    (s?otChips(s)+'<small class="sub">รวม '+otH(s.tot)+' ชม.'+(s.bg?' / งบ '+otH(s.bg)+' · คงเหลือ '+otH(s.bal):'')+'</small>':'')+
+    (bu?'<div class="otbase">📄 ยอดจากไฟล์ HR ถึงวันที่ '+shortD(bu)+': '+OTR.filter(function(k){return +((r.base||{})[k])}).map(function(k){return OTN[k]+' '+otH(r.base[k])}).join(" · ")+'</div>':'')+
+    '<div class="rows otdays">'+(days.length?days.map(function(d){var o=by[d],a=att[d],inFile=bu&&d<=bu,hs=o?OTR.filter(function(k){return o.h[k]}).map(function(k){return '<em style="--c:'+OTC[k]+'">'+OTN[k]+' '+otH(o.h[k])+'</em>'}).join(""):'';
+      return '<div class="row"><div class="l"><b>'+shortD(d)+' '+new Date(d+"T00:00:00").toLocaleDateString("th-TH",{weekday:"short"})+'</b><small>'+(a?esc(a.st)+(a.t?' '+a.t:''):'ไม่มีเช็คชื่อ')+(inFile?' · อยู่ในไฟล์แล้ว':'')+(o&&o.src==="manual"?' · ✏️ แก้โดยหัวหน้า'+(o.note?' ('+esc(o.note)+')':''):o?' · อัตโนมัติ':'')+'</small><div class="otems">'+(hs||(o&&o.src==="manual"?'<em>ไม่ได้ทำ OT</em>':''))+'</div></div>'+
+        (D.can_edit&&!inFile?'<button type="button" class="sm" data-otedit="'+d+'">แก้</button>':'')+'</div>'}).join(""):emptyRow("ยังไม่มีรายการในเดือนนี้"))+'</div>'+
+    (D.can_edit?'<div class="inline otaddd"><input type="date" id="ot-newd" min="'+OT.ym+'-01" max="'+OT.ym+'-31"><button type="button" class="sm" id="ot-addday">＋ ใส่ OT วันอื่น</button></div>':'')+'<div id="ot-edit"></div>'}
+function otEditForm(d){var X=OT.det,cur={},src="";(X.D.days||[]).forEach(function(x){if(x.d===d){cur[x.rate]=+x.h;src=x.src}});
+  $("ot-edit").innerHTML='<div class="otef"><b>แก้ OT วันที่ '+shortD(d)+'</b><div class="otin">'+OTR.map(function(k){return '<label>'+OTN[k]+'<input type="number" min="0" max="24" step="0.5" data-otk="'+k+'" value="'+(cur[k]||"")+'" placeholder="0"></label>'}).join("")+'</div>'+
+    '<input type="text" id="ot-note" maxlength="200" placeholder="หมายเหตุ (ถ้ามี)"><div class="inline"><button type="button" class="primary sm" data-otsave="'+d+'">บันทึก</button>'+(src==="manual"?'<button type="button" class="sm" data-otreset="'+d+'">ใช้ค่าอัตโนมัติ</button>':'')+'<button type="button" class="sm" data-otcancel="1">ยกเลิก</button></div><small class="sub">ใส่ 0 ทุกช่อง = วันนี้ไม่ได้ทำ OT</small></div>';
+  $("ot-edit").scrollIntoView({block:"nearest"})}
+async function otReloadDet(){var id=OT.det.id;try{OT.rows=await q(db.rpc("ot_report",{p_ym:OT.ym}))||[];OT.det.r=OT.rows.filter(function(x){return x.id===id})[0]||OT.det.r;OT.det.D=await q(db.rpc("ot_days_of",{p_emp:id,p_ym:OT.ym}))}catch(e){toast(thErr(e))}otDetDraw();otDraw()}
+/* ---------- Admin: นำเข้าไฟล์ Excel + กฎ ---------- */
+async function otReadFile(f){if(!window.XLSX){toast("โหลดตัวอ่าน Excel ไม่สำเร็จ ลองใหม่");return}var wb=XLSX.read(await f.arrayBuffer(),{type:"array"}),rows=[],ym0=null;
+  wb.SheetNames.forEach(function(sn){var A=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:false,defval:""}),hi=-1;for(var i=0;i<Math.min(A.length,30);i++){if(A[i].some(function(c){return String(c).trim()==="รหัสพนักงาน"})&&A[i].some(function(c){return /^OT_1/.test(String(c).trim())})){hi=i;break}}if(hi<0)return;
+    var H=A[hi].map(function(c){return String(c).trim()}),ix=function(n){return H.indexOf(n)},num2=function(v){var x=parseFloat(String(v).replace(/,/g,""));return isNaN(x)?0:x};
+    var cM=ix("เดือน"),cY=ix("ปี"),cNo=ix("รหัสพนักงาน"),cDc=ix("รหัสแผนก"),cDn=ix("ชื่อแผนก"),cPt=ix("ประเภทพนักงาน"),BG={"1":ix("BG_1"),"1.5":ix("BG_1.5"),"2":ix("BG_2"),"3":ix("BG_3"),"4":ix("BG_4")},AD={"1":ix("เพิ่ม_BG_1"),"1.5":ix("เพิ่ม_BG_1.5"),"2":ix("เพิ่ม_BG_2"),"3":ix("เพิ่ม_BG_3"),"4":ix("เพิ่ม_BG_4")},OTc={"1":ix("OT_1_")>=0?ix("OT_1_"):ix("OT_1"),"1.5":ix("OT_1.5"),"2":ix("OT_2"),"3":ix("OT_3"),"4":ix("OT_4")};
+    for(var r=hi+1;r<A.length;r++){var R=A[r],no=String(R[cNo]||"").trim();if(!no)continue;var y=+R[cY]||+today().slice(0,4),m=+R[cM]||+today().slice(5,7);if(y>2400)y-=543;var ym=y+"-"+String(m).padStart(2,"0");ym0=ym0||ym;
+      var bg={},ot={};OTR.forEach(function(k){var b=(BG[k]>=0?num2(R[BG[k]]):0)+(AD[k]>=0?num2(R[AD[k]]):0),o=OTc[k]>=0?num2(R[OTc[k]]):0;if(b)bg[k]=b;if(o)ot[k]=o});
+      rows.push({no:no,ym:ym,pay_type:String(R[cPt]||"").trim(),dept_code:String(R[cDc]||"").trim(),dept_name:String(R[cDn]||"").trim(),bg:bg,ot:ot})}});
+  if(!rows.length){toast("ไม่พบตาราง OT ในไฟล์ (ต้องมีหัวคอลัมน์ รหัสพนักงาน และ OT_1_)");return}
+  var m=String(f.name).match(/(\d{1,2})[-_.](\d{1,2})[-_.](\d{2,4})/),bu="";if(m){var yy=+m[3];if(yy<100)yy+=2000;if(yy>2400)yy-=543;bu=yy+"-"+String(+m[2]).padStart(2,"0")+"-"+String(+m[1]).padStart(2,"0")}
+  OT.imp={rows:rows,name:f.name,ym:ym0};var known={};(S.emps||[]).forEach(function(e){known[e.employee_no]=1});var miss=rows.filter(function(x){return !known[x.no]}).length;
+  $("ot-imp").innerHTML='<div class="otef"><b>📄 '+esc(f.name)+'</b><small>พบ '+rows.length+' คน · เดือน '+otYmName(ym0)+(miss?' · ⚠️ ไม่พบรหัสในระบบ '+miss+' คน (จะข้าม)':'')+'</small>'+
+    '<label>ยอด OT ในไฟล์นับถึงวันที่ (วันหลังจากนี้ระบบจะนับเพิ่มจากการสแกนเข้างาน)<input type="date" id="ot-bu" value="'+bu+'"></label><button type="button" class="primary" id="ot-impgo">นำเข้า</button></div>'}
+async function otImport(btn){var I=OT.imp,bu=$("ot-bu").value;if(!I)return;if(!bu){toast("เลือกวันที่ที่ยอดในไฟล์นับถึง");return}btn.disabled=true;var ok=0,miss=[];
+  try{for(var i=0;i<I.rows.length;i+=250){btn.textContent="กำลังนำเข้า "+Math.min(i+250,I.rows.length)+"/"+I.rows.length+"…";var r=await q(db.rpc("ot_import",{p_rows:I.rows.slice(i,i+250),p_base_until:bu}));ok+=r.ok;miss=miss.concat(r.missing||[])}
+    toast("นำเข้า OT แล้ว "+ok+" คน"+(miss.length?" · ข้าม "+miss.length+" รหัสที่ไม่มีในระบบ":""));$("ot-imp").innerHTML='<p class="sub">✓ นำเข้าแล้ว '+ok+' คน'+(miss.length?' · ไม่พบรหัส: '+esc(miss.slice(0,30).join(", "))+(miss.length>30?' …':''):'')+'</p>';OT.ym=I.ym;OT.imp=null;renderOT()}
+  catch(e){toast(thErr(e));btn.disabled=false;btn.textContent="นำเข้า"}}
+function otRulesDraw(){var R=Object.assign({work:{"1.5":2.5},hol_monthly:{"1":8,"3":2.5},hol_daily:{"2":8,"3":2.5},sunday:true},(S.settings||{}).ot_rules||{}),inp=function(g,k){return '<label>'+OTN[k]+'<input type="number" min="0" max="24" step="0.5" data-otr="'+g+':'+k+'" value="'+(((R[g]||{})[k])||0)+'"></label>'};
+  $("ot-rules").innerHTML='<b>กฎนับ OT อัตโนมัติเมื่อสแกน/เช็คชื่อมาทำงาน</b><small class="sub">ใช้กับวันหลังจากวันที่ของไฟล์ที่นำเข้า · หัวหน้าแก้รายวันได้ถ้าไม่ได้ทำ OT หรือทำไม่ครบ</small>'+
+    '<div class="otrg"><span>วันทำงานปกติ</span><div class="otin">'+OTR.map(function(k){return inp("work",k)}).join("")+'</div></div>'+
+    '<div class="otrg"><span>วันหยุด · รายเดือน</span><div class="otin">'+OTR.map(function(k){return inp("hol_monthly",k)}).join("")+'</div></div>'+
+    '<div class="otrg"><span>วันหยุด · รายวัน</span><div class="otin">'+OTR.map(function(k){return inp("hol_daily",k)}).join("")+'</div></div>'+
+    '<label class="check"><input type="checkbox" id="ot-sun"'+(R.sunday!==false?' checked':'')+'> นับวันอาทิตย์เป็นวันหยุด (วันหยุดโรงงานในปฏิทินลานับเป็นวันหยุดเสมอ)</label><button type="button" class="sm primary" id="ot-rsave">บันทึกกฎ</button>'}
+function otExport(){var L=(OT.rows||[]).filter(function(r){return !OT.dept||r.dept_id===OT.dept});exportXlsx("OT_"+OT.ym+".xlsx",[{name:"OT "+OT.ym,rows:L.map(function(r){var s=otSum(r),o={"รหัสพนักงาน":r.no,"ชื่อพนักงาน":r.name,"แผนก":r.dept_name||"","ประเภทพนักงาน":r.pay_type||""};
+  OTR.forEach(function(k){o["BG_"+k]=+((r.budget||{})[k])||0});OTR.forEach(function(k){o["OT_"+k]=s.r[k]});o["Total_BG"]=s.bg;o["Total_OT"]=s.tot;o["OT_%"]=s.bg?+s.pct.toFixed(2):"";o["Balance"]=s.bal;o["ยอดไฟล์ถึง"]=r.base_until||"";return o})}])}
+document.addEventListener("change",function(ev){var t=ev.target;if(t.id==="ot-ym"){OT.ym=t.value;renderOT()}else if(t.id==="ot-dept"){OT.dept=t.value;otDraw()}else if(t.id==="ot-file"&&t.files[0]){otReadFile(t.files[0]);t.value=""}});
+document.addEventListener("input",function(ev){if(ev.target.id==="ot-q"){OT.q=ev.target.value;otDraw()}});
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-otdet],[data-otedit],[data-otsave],[data-otreset],[data-otcancel],#ot-addday,#ot-impgo,#ot-rsave,#ot-export");if(!t)return;var D=t.dataset;
+  if(D.otdet){otDet(D.otdet);return}
+  if(D.otedit){otEditForm(D.otedit);return}
+  if(t.id==="ot-addday"){var d=$("ot-newd").value;if(!d){toast("เลือกวันที่ก่อน");return}otEditForm(d);return}
+  if(D.otcancel){$("ot-edit").innerHTML="";return}
+  if(D.otsave){var h={};document.querySelectorAll("#ot-edit [data-otk]").forEach(function(i){var v=parseFloat(i.value);if(v>0)h[i.dataset.otk]=v});t.disabled=true;
+    q(db.rpc("ot_set_day",{p_emp:OT.det.id,p_date:D.otsave,p_hours:h,p_note:$("ot-note").value||""})).then(function(){toast("บันทึก OT แล้ว");otReloadDet()},function(e){t.disabled=false;toast(thErr(e))});return}
+  if(D.otreset){q(db.rpc("ot_reset_day",{p_emp:OT.det.id,p_date:D.otreset})).then(function(){toast("กลับไปใช้ค่าอัตโนมัติแล้ว");otReloadDet()},function(e){toast(thErr(e))});return}
+  if(t.id==="ot-impgo"){otImport(t);return}
+  if(t.id==="ot-export"){otExport();return}
+  if(t.id==="ot-rsave"){var R={work:{},hol_monthly:{},hol_daily:{},sunday:$("ot-sun").checked};document.querySelectorAll("[data-otr]").forEach(function(i){var p=i.dataset.otr.split(":"),v=parseFloat(i.value);if(v>0)R[p[0]][p[1]]=v});t.disabled=true;
+    q(db.from("app_settings").upsert({key:"ot_rules",value:R})).then(function(){S.settings.ot_rules=R;t.disabled=false;toast("บันทึกกฎ OT แล้ว — ใช้กับการสแกนครั้งต่อไป")},function(e){t.disabled=false;toast(thErr(e))});return}});
+
+var RENDER={ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
+var TABS=["ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
