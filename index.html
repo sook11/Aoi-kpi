@@ -4257,7 +4257,7 @@ async function renderFarm(){
   try{if(!FM.cat)FM.cat=fmCatFix(await q(db.rpc("farm_cat")));FM.d=await fmLoad();if(FM.v)FM.v=await fmLoad(FM.v.emp);if(FM.t==="friends")FM.board=await q(db.rpc("farm_board"));FM.keep=!!FM.sx;drawFarm();fmTheftNotify()}
   catch(e){$("fm-world").innerHTML='<div class="panel" style="margin:80px 16px">'+emptyRow(thErr(e))+'</div>'}
   if(!FM.tick)FM.tick=setInterval(fmTick,1000)}
-function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmaud="sfx" aria-label="เสียงเอฟเฟกต์" class="'+(FA.sfx?'':'off')+'">'+(FA.sfx?'🔊':'🔇')+'</button><button type="button" data-fmaud="mus" aria-label="เพลง" class="'+(FA.mus?'':'off')+'">🎵</button><button type="button" data-fmdn="1" aria-label="กลางวัน/กลางคืน" title="กลางวัน/กลางคืน">'+(fmIsNight()?'🌙':'☀️')+'</button><button type="button" data-fm3d="1" class="f3btn" aria-label="สลับ 2D/3D">'+(FM3.on?'2D':'3D')+'</button>'+(FM3.on?'<button type="button" data-fmtp="1" class="f3btn'+(FM3.tp?' on':'')+'" aria-label="โหมดเดินเที่ยว" title="เดินเที่ยว (กล้องบุคคลที่ 3)">🚶</button>':'')+'<button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
+function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmaud="sfx" aria-label="เสียงเอฟเฟกต์" class="'+(FA.sfx?'':'off')+'">'+(FA.sfx?'🔊':'🔇')+'</button><button type="button" data-fmaud="mus" aria-label="เพลง" class="'+(FA.mus?'':'off')+'">🎵</button><button type="button" data-fmdn="1" aria-label="กลางวัน/กลางคืน" title="กลางวัน/กลางคืน">'+(fmIsNight()?'🌙':'☀️')+'</button>'+(FM3.on?'<button type="button" data-fmtp="1" class="f3btn'+(FM3.tp?' on':'')+'" aria-label="โหมดเดินเที่ยว" title="เดินเที่ยว (กล้องบุคคลที่ 3)">🚶</button>':'')+'<button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
   if(v){h+='<div class="fpill fwho">'+avatarHtml({display_name:v.name,avatar:v.avatar})+'<div><b>ฟาร์มของ'+esc(nick(v.name)||v.name)+'</b><small>เลเวล '+v.level+' · ❤️ '+num(v.likes)+(fmPI(v).debt?' · <span class="frep" data-fmrep="1">😈 ชื่อเสียง -'+fmPI(v).debt+'</span>':'')+'</small></div></div><span class="fsp"></span>'+
     '<button type="button" class="fpill flike'+(v.liked?' on':'')+'" data-fmlike="'+v.emp+'"'+(v.liked?' disabled':'')+'>'+(v.liked?'❤️ ถูกใจแล้ว':'🤍 ถูกใจ')+'</button></div>'+
     '<div class="fdock"><button type="button" class="fbig" data-fmt="stall"><span>🧺</span><small>ร้านริมทาง</small>'+((v.stall||[]).length?'<i>'+(v.stall||[]).length+'</i>':'')+'</button>'+(S.admin?'<button type="button" class="fbig fgift-btn" data-fmgto="'+v.emp+'"><span>🎁</span><small>มอบให้</small></button>':'')+'<button type="button" class="fbig" data-fmback="1"><span>🏡</span><small>ฟาร์มฉัน</small></button></div>';return h}
@@ -4288,7 +4288,7 @@ function fm2Amb(){var w=$("fm-win");if(!w||w.querySelector(".f2amb"))return;var 
     for(var k=0;k<9;k++)h+='<i class="f2pt" style="left:'+(frand(k*7.7)*100)+'%;animation-delay:-'+(frand(k*1.3)*14).toFixed(1)+'s;animation-duration:'+(10+frand(k*4)*8).toFixed(1)+'s;background:'+["#fbcfe8","#fde68a","#ffffff"][k%3]+'"></i>'}
   w.insertAdjacentHTML("beforeend",h+'</div>')}
 function drawFarm(sheetOnly){
-  $("fm-hud").innerHTML=fmHud();fmSheet();if(sheetOnly)return;
+  $("fm-hud").innerHTML=fmHud();fmDockFit();fmSheet();if(sheetOnly)return;
   if(FM3.on&&window.THREE&&THREE.OrbitControls){fmLayout();fm3Render(FM.v||FM.d,!FM.v);FM.keep=false;fmTick(true);return}
   if(FM3.on&&!FM3.loadTry){FM3.loadTry=1;fm3Load().then(function(){if(FM3.on){FM3.ready=false;drawFarm()}},function(){FM3.on=false})}
   $("fm-world").innerHTML=fmScene(FM.v||FM.d,!FM.v);FM3.ready=false;fm2Amb();
@@ -4296,7 +4296,7 @@ function drawFarm(sheetOnly){
   fmLayout();fmCam(!(FM.keep&&FM.cam));FM.keep=false;fmApplyDN();fmTick(true);fmSnap()}
 /* ===================== ฟาร์ม 3 มิติ (Three.js) — หมุน/ซูมได้ ใช้ข้อมูลและระบบเกมเดิม ===================== */
 var FM3={on:false,ready:false,loading:null};
-try{FM3.on=localStorage.getItem("aoi-farm-3d")==="1"}catch(e){}
+FM3.on=fm3Ok();/* อัปเดต 130: ใช้ 3D อย่างเดียว (2D เป็นสำรองเฉพาะเครื่องที่ไม่รองรับ 3D / ตอนจัดฟาร์ม) */
 function fm3Load(){if(window.THREE&&THREE.OrbitControls)return Promise.resolve();if(FM3.loading)return FM3.loading;
   var add=function(src){return new Promise(function(ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})};
   FM3.loading=add("https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js").then(function(){return add("https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js")}).then(function(){return add("https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/geometries/RoundedBoxGeometry.js").catch(function(){})});
@@ -5123,7 +5123,7 @@ function fk3SceneStep(t,dt){var X=FK3.fx;if(!X)return;if(X.ft)X.ft.offset.y=t*1.
   ;X.flies.forEach(function(b){var D=b.userData,a=t*.7+D.o;b.position.set(D.c[0]+Math.sin(a)*1.6,.9+Math.sin(t*3+D.o)*.35,D.c[1]+Math.cos(a*1.3)*1.2);b.material.rotation=Math.sin(t*14+D.o)*.3;var fl=.4+Math.abs(Math.sin(t*12+D.o))*.2;b.scale.set(fl,.55,1)})}
 /* ===================== อัปเดต 118: ทะเลสาบตกปลาแบบ 3D ===================== */
 var FK3={on:false},FK3RX=15,FK3RZ=10;
-function fk3Want(){var v="1";try{v=localStorage.getItem("aoi-fish-3d")||"1"}catch(e){}return v==="1"&&fm3Ok()}
+function fk3Want(){return fm3Ok()&&!FK.no3d}
 function fk3Spot(i){var A=[-160,-140,-118,-96,-74,-52,-30,-12,168,150,28,14],a=A[i%A.length]*Math.PI/180;return [Math.cos(a)*FK3RX*1.1,Math.sin(a)*FK3RZ*1.12]}
 function fk3BobXZ(bx,by){var P=FK3.spot||{x:0,z:4.9},d=fk3Dir(P.x,P.z),dist=5+(52-(by||44))/18*4,lat=((bx||50)-50)/18*3,x=P.x+d[0]*dist-d[1]*lat,z=P.z+d[1]*dist+d[0]*lat,n=Math.hypot(x/FK3RX,z/FK3RZ);
   if(n>.84){x*=.84/n;z*=.84/n}var ix=x+10,iz=z+5,id=Math.hypot(ix,iz);if(id<2.8){x=-10+ix/(id||1)*2.8;z=-5+iz/(id||1)*2.8}return [x,z]}
@@ -5155,7 +5155,7 @@ document.addEventListener("keydown",function(e){if(!FK3.walk)return;var k=e.key.
 document.addEventListener("keyup",function(e){if(!FK3.keys)return;var k=e.key.length===1?e.key.toLowerCase():e.key;FK3.keys[k]=false});
 function fk3Start(){var el=$("fm-lake");if(!el)return;FK3.tok=(FK3.tok||0)+1;var tok=FK3.tok;
   fm3Load().then(function(){return fm3LoadExtra()}).then(function(){if(tok!==FK3.tok||!FK.on||!$("fk3-cv"))return;fk3Build();fkHud();var ld=document.querySelector("#fm-lake .fk3-load");if(ld)ld.remove()})
-  .catch(function(){if(tok!==FK3.tok)return;toast("โหลดฉาก 3D ไม่ได้ ใช้แบบ 2D แทน");try{localStorage.setItem("aoi-fish-3d","0")}catch(e){}FK3.on=false;fkDraw()})}
+  .catch(function(){if(tok!==FK3.tok)return;toast("โหลดฉาก 3D ไม่ได้ ใช้แบบ 2D แทนชั่วคราว");FK.no3d=true;FK3.on=false;fkDraw()})}
 function fk3Stop(){FK3.tok=(FK3.tok||0)+1;cancelAnimationFrame(FK3.raf);FK3.raf=0;if(!FK3.on)return;FK3.on=false;
   if(FK3.sc)FK3.sc.traverse(function(o){if(o.userData.shared)return;if(o.geometry&&o.geometry.dispose)o.geometry.dispose();[].concat(o.material||[]).forEach(function(m){if(m.map&&m.map.dispose&&!m.map.userData.shared)m.map.dispose();if(m.dispose&&!FK3.keepMat[m.uuid])m.dispose()})});
   if(FK3.ctl)FK3.ctl.dispose();if(FK3.R){FK3.R.dispose();try{FK3.R.forceContextLoss()}catch(e){}}window.removeEventListener("resize",fk3Resize);FK3={on:false,tok:FK3.tok}}
@@ -5396,7 +5396,7 @@ function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},r
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+'</div>'+
     '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button><div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
-    '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'<button type="button" data-fk="d3">'+(FK3.on||fk3Want()?'🗺️<small>แบบ 2D</small>':'🧊<small>แบบ 3D</small>')+'</button></div>'+
+    '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'</div>'+
     '<div class="fk-baits"><small class="fk-bt">เหยื่อ</small>'+
     Object.keys(c.baits||{}).map(function(k){var o=c.baits[k],n=B[k]||0;return '<button type="button" data-fkbait="'+k+'"'+(FK.bait===k?' class="on"':'')+(n?'':' disabled')+' title="'+esc(o.n)+'">'+o.e+' <b>'+n+'</b></button>'}).join("")+'</div>';fkTickUpd()}
 function fkHasBait(){var B=(FK.info||{}).bait||{};return Object.keys(B).some(function(k){return B[k]>0})}
@@ -6465,7 +6465,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
     t.disabled=true;q(db.rpc("farm_admin_give",{p_emps:ids,p_kind:k,p_item:(k==="coins"||k==="xp")?null:it,p_qty:qq,p_note:nt})).then(function(n){sfx("buy");toast("🎁 มอบแล้ว "+n+" คน");$("fg-n").value="";fmGiftOpen(to)},function(e){sfx("error");toast(thErr(e));t.disabled=false});return}
   if(D.fmt==="gift"){sfx("open");fmGiftOpen();return}
   if(D.fmdn){FDN.mode=FDN.mode==="auto"?(fmIsNight()?"day":"night"):FDN.mode==="day"?"night":"auto";try{localStorage.setItem("aoi-farm-dn",FDN.mode)}catch(e){}sfx("tap");fmApplyDN();toast(FDN.mode==="auto"?"🕒 กลางวัน/กลางคืนตามเวลาจริง":FDN.mode==="night"?"🌙 โหมดกลางคืน":"☀️ โหมดกลางวัน");return}
-  if(D.fmaud){if(D.fmaud==="sfx"){FA.sfx=!FA.sfx;sfx("tap")}else{FA.mus=!FA.mus;faMusic(FA.mus)}faSave();$("fm-hud").innerHTML=fmHud();return}
+  if(D.fmaud){if(D.fmaud==="sfx"){FA.sfx=!FA.sfx;sfx("tap")}else{FA.mus=!FA.mus;faMusic(FA.mus)}faSave();$("fm-hud").innerHTML=fmHud();fmDockFit();return}
   if(D.fmclose){sfx("close");FM.t="farm";fmSheet();return}
   if(FM.v&&!D.fmback&&!D.fmlike&&D.fmt!=="stall"&&D.fmt!=="market"&&!D.fmsb&&!D.fmst&&!D.fmpf&&!D.fmpfc&&!D.fmh&&!D.fmrep&&!D.fmbox&&!D.fmad&&!D.fmadup&&!D.fmadclr)return;
   if(D.fmt){sfx("open");FM.t=D.fmt;FM.slEdit=0;if(FM.t==="market"){FM.market=null;q(db.rpc("farm_stall_market")).then(function(m){FM.market=m;if(FM.t==="market")fmSheet()},function(e){toast(thErr(e))})}if(FM.t==="storage"){FM.stor=null;q(db.rpc("farm_storage")).then(function(x){FM.stor=x;if(FM.t==="storage")fmSheet()},function(e){toast(thErr(e))})}if(FM.t==="friends")q(db.rpc("farm_board")).then(function(b){FM.board=b;if(FM.t==="friends")fmSheet()},function(e){toast(thErr(e))});fmSheet();return}
@@ -7781,6 +7781,6 @@ async function start(){
 start().catch(function(e){$("auth").hidden=false;$("a-msg").textContent=thErr(e)});
 })();
 </script>
-<div id="fm-rotate" aria-live="polite"><div class="frot-ic">📱</div><b>หมุนโทรศัพท์เป็นแนวนอน</b><small>ฟาร์ม 3D เล่นได้เฉพาะแนวนอน<br>ถ้าเครื่องล็อกการหมุนไว้ ให้ปิดล็อกก่อน</small><button type="button" id="fm-rotbtn">↻ เต็มจอ + แนวนอน</button><button type="button" data-fm3d="1" class="ghost">ใช้แบบ 2D (หมุนให้อัตโนมัติ)</button><button type="button" id="fm-rotexit" class="ghost">ออกจากเกม</button></div>
+<div id="fm-rotate" aria-live="polite"><div class="frot-ic">📱</div><b>หมุนโทรศัพท์เป็นแนวนอน</b><small>ฟาร์ม 3D เล่นได้เฉพาะแนวนอน<br>ถ้าเครื่องล็อกการหมุนไว้ ให้ปิดล็อกก่อน</small><button type="button" id="fm-rotbtn">↻ เต็มจอ + แนวนอน</button><button type="button" id="fm-rotexit" class="ghost">ออกจากเกม</button></div>
 </body>
 </html>
