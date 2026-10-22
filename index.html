@@ -997,7 +997,7 @@ body.farm-rot .ffly{rotate:90deg}
 #fk-hud{position:absolute;inset:0;pointer-events:none;z-index:10}#fk-hud>*{pointer-events:auto}
 .fk-back{position:absolute;left:12px;top:12px;border:0;border-radius:18px;padding:8px 14px;font-weight:800;background:#ef4444;color:#fff;box-shadow:0 3px 0 #991b1b}
 .fk-pill{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(15,40,70,.78);color:#fff;font-weight:700;font-size:13px;border-radius:16px;padding:6px 14px;white-space:nowrap;max-width:60%;overflow:hidden;text-overflow:ellipsis}
-.fk-pill.fk-coin{left:auto;right:12px;transform:none}
+.fk-pill.fk-coin{left:auto;right:12px;transform:none}.fk-mus{left:150px;transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}
 .fk-side{position:absolute;right:10px;top:56px;display:flex;flex-direction:column;gap:6px}
 .fk-side button{width:58px;height:54px;border-radius:16px;border:3px solid #fff;background:linear-gradient(#fef3c7,#fcd34d);box-shadow:0 3px 0 #b45309;font-size:22px;display:grid;place-items:center;line-height:1;cursor:pointer}.fk-side small{font-size:10px;font-weight:800;color:#78350f}
 .fk-baits{position:absolute;left:10px;bottom:12px;display:flex;flex-direction:column;gap:5px}
@@ -4754,17 +4754,84 @@ function sfx(k){if(!FA.sfx||!faCtx())return;var t=FA.ctx.currentTime+.01;
     case "like":faTone(880,t,.12,"sine",.14,1320);faTone(1320,t+.1,.25,"sine",.12,1760);break;
     case "pop":faNoise(t,.07,.09,3500);faTone(1100,t,.07,"triangle",.1,1700);break;
     case "swish":faNoise(t,.12,.1,2200);break;
-    case "cluck":faTone(900,t,.05,"square",.06,600);faTone(1100,t+.07,.06,"square",.05,700);break}}
-/* เพลงพื้นหลังสบาย ๆ (เพนทาโทนิก) */
-var FAMEL=[67,69,72,74,76,74,72,69, 67,64,67,69,72,69,67,64, 62,64,67,69,72,74,72,69, 67,69,67,64,62,60,62,64],FABASS=[48,48,55,55,45,45,52,52,41,41,48,48,43,43,50,50];
+    case "cluck":faTone(900,t,.05,"square",.06,600);faTone(1100,t+.07,.06,"square",.05,700);break
+    /* อัปเดต 123: เสียงตกปลา + เดิน */
+    case "cast":faNoise(t,.35,.12,900);faTone(300,t,.32,"sine",.05,1400);for(var j=0;j<9;j++)faTone(2400,t+.1+j*.035,.012,"square",.025);break;
+    case "splash":faNoise(t,.25,.14,350);faTone(420,t,.16,"sine",.14,110);faNoise(t+.05,.35,.05,2500);break;
+    case "bite":faTone(260,t,.12,"sine",.2,90);faNoise(t,.12,.1,500);faTone(240,t+.16,.1,"sine",.16,90);break;
+    case "reel":faTone(2100+Math.random()*300,t,.012,"square",.03);break;
+    case "catch":faNoise(t,.3,.12,400);[784,988,1175,1568].forEach(function(f,i){faTone(f,t+.12+i*.08,.2,"triangle",.14)});faTone(2093,t+.45,.35,"sine",.06);break;
+    case "catchbig":faNoise(t,.4,.16,300);[523,659,784,1046,1318,1568].forEach(function(f,i){faTone(f,t+.1+i*.09,i>4?.6:.18,"triangle",.15)});[1046,1318,1568].forEach(function(f){faTone(f,t+.7,.7,"sine",.06)});faNoise(t+.6,.6,.05,6000);break;
+    case "lose":[392,370,349,311].forEach(function(f,i){faTone(f,t+i*.16,i>2?.45:.16,"triangle",.1,i>2?260:null)});break;
+    case "step":faNoise(t,.06,.05,300);break;
+    case "stepwood":faTone(180,t,.05,"triangle",.08,120);faNoise(t,.04,.04,1200);break}}
+/* ===================== อัปเดต 123: ดนตรีประกอบแยกตามฉาก ===================== */
+/* ฟาร์มกลางวัน = เพลงคันทรีสนุก ๆ (แบนโจ + โอคาริน่า + กลอง) · ฟาร์มกลางคืน = กล่องดนตรีกล่อมนอน + เสียงจิ้งหรีด
+   ทะเลสาบตกปลา = เพลงผ่อนคลาย (พิณ + ขลุ่ย + pad) + เสียงน้ำตก/นก · เปลี่ยนฉากเพลงค่อย ๆ เฟดเปลี่ยนเอง */
 function faMidi(m){return 440*Math.pow(2,(m-69)/12)}
-function faMusic(on){if(!on){clearInterval(FA.timer);FA.timer=null;try{if(FA.ael)FA.ael.pause()}catch(e){}return}if(FA.timer||!FA.mus||!faCtx())return;FA.next=FA.ctx.currentTime+.1;
-  FA.timer=setInterval(function(){if(!FA.ctx||document.hidden)return;var spb=.32;while(FA.next<FA.ctx.currentTime+.6){var i=FA.step%FAMEL.length;
-      if(FA.step%4!==3||i%8===0){faTone(faMidi(FAMEL[i]),FA.next,spb*.95,"triangle",.32,null,FA.mg);faTone(faMidi(FAMEL[i]+12),FA.next,spb*.6,"sine",.08,null,FA.mg)}
-      if(FA.step%2===0)faTone(faMidi(FABASS[(FA.step/2)%FABASS.length]),FA.next,spb*1.9,"sine",.42,null,FA.mg);
-      if(FA.step%8===0){var rt=FABASS[(FA.step/2)%FABASS.length]+12;[0,4,7].forEach(function(iv){faTone(faMidi(rt+iv),FA.next,spb*7.5,"sine",.07,null,FA.mg)})}
-      if(FA.step%2===1)faTone(5200,FA.next,.03,"square",.012,null,FA.mg);
-      FA.step++;FA.next+=spb}},150)}
+function faNote(m,t,d,o){o=o||{};var c=FA.ctx,f=m>200?m:faMidi(m),os=c.createOscillator(),g=c.createGain();os.type=o.type||"sine";os.frequency.setValueAtTime(f*(o.det||1),t);
+  if(o.vib){var l=c.createOscillator(),lg=c.createGain();l.frequency.value=o.vib;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*(o.vd||.012),t+Math.min(d*.6,.35));l.connect(lg);lg.connect(os.frequency);l.start(t);l.stop(t+d+.1)}
+  var a=o.a||.008,v=o.v||.15;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);if(o.sus)g.gain.setValueAtTime(v,t+Math.max(a+.01,d-(o.r||.25)));g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  os.connect(g);g.connect(o.dest||FA.mg);os.start(t);os.stop(t+d+.05)}
+function faNz(t,d,v,hp,lp,dest){var c=FA.ctx;if(!FA.nzb){var n=c.sampleRate,b=c.createBuffer(1,n,n),a=b.getChannelData(0);for(var i=0;i<n;i++)a[i]=Math.random()*2-1;FA.nzb=b}
+  var s=c.createBufferSource(),g=c.createGain(),f1=c.createBiquadFilter(),f2=c.createBiquadFilter();s.buffer=FA.nzb;f1.type="highpass";f1.frequency.value=hp||1000;f2.type="lowpass";f2.frequency.value=lp||12000;
+  g.gain.setValueAtTime(v||.1,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f1);f1.connect(f2);f2.connect(g);g.connect(dest||FA.mg);s.start(t,Math.random()*.5);s.stop(t+d+.05)}
+function faKick(t,v){var c=FA.ctx,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(45,t+.14);g.gain.setValueAtTime(v||.3,t);g.gain.exponentialRampToValueAtTime(.0001,t+.22);o.connect(g);g.connect(FA.mg);o.start(t);o.stop(t+.25)}
+function faChirp(t,dest,v){var f=2600+Math.random()*1600,n=2+Math.floor(Math.random()*3);for(var i=0;i<n;i++){var c=FA.ctx,o=c.createOscillator(),g=c.createGain(),t1=t+i*.11;o.type="sine";o.frequency.setValueAtTime(f,t1);o.frequency.exponentialRampToValueAtTime(f*(1.25+Math.random()*.3),t1+.05);o.frequency.exponentialRampToValueAtTime(f*.85,t1+.09);
+    g.gain.setValueAtTime(.0001,t1);g.gain.exponentialRampToValueAtTime(v||.05,t1+.01);g.gain.exponentialRampToValueAtTime(.0001,t1+.1);o.connect(g);g.connect(dest||FA.ag);o.start(t1);o.stop(t1+.12)}}
+/* ทำนองเขียนเป็นแถว 8 ช่องต่อห้อง: ตัวเลข = โน้ต MIDI · 0 = หยุด · -1 = ลากเสียงต่อ */
+function faLen(arr,i){var n=1;while(arr[i+n]===-1)n++;return n}
+var FAT={
+  farm:{spb:.25,bar:8,
+    bass:[48,53,55,48,57,53,55,48],
+    ch:[[60,64,67],[60,65,69],[59,62,67],[60,64,67],[60,64,69],[60,65,69],[59,62,65],[60,64,67]],
+    mel:[72,0,76,0,79,-1,76,0, 77,-1,76,74,72,0,69,0, 71,0,74,0,79,-1,77,76, 76,-1,-1,0,72,0,0,0,
+         76,0,79,0,81,-1,79,76, 77,-1,81,-1,79,77,76,74, 74,0,79,0,77,76,74,71, 72,-1,-1,-1,0,0,79,77,
+         79,-1,77,76,77,-1,76,74, 72,-1,69,-1,72,74,76,0, 74,-1,71,-1,67,0,71,74, 72,-1,-1,-1,0,0,0,0,
+         69,72,76,72,69,72,76,79, 81,-1,79,-1,77,-1,76,77, 79,-1,74,-1,71,74,77,-1, 72,-1,-1,-1,-1,0,0,0]},
+  night:{spb:.46,bar:8,
+    bass:[41,38,46,48,41,38,46,48],
+    ch:[[65,69,72],[62,65,69],[62,65,70],[60,64,67],[65,69,72],[62,65,69],[62,65,70],[64,67,72]],
+    mel:[77,-1,76,-1,74,-1,72,-1, 74,-1,-1,-1,69,-1,-1,-1, 70,-1,74,-1,77,-1,74,-1, 72,-1,-1,-1,-1,-1,0,0,
+         81,-1,79,-1,77,-1,76,-1, 77,-1,-1,-1,74,-1,-1,-1, 74,-1,72,-1,70,-1,67,-1, 65,-1,-1,-1,-1,-1,0,0]},
+  lake:{spb:.4,bar:8,
+    bass:[50,47,43,45,40,43,42,45],
+    ch:[[62,66,69,73],[59,62,66,69],[55,59,62,66],[57,61,64,69],[55,59,62,67],[55,59,62,66],[57,62,66,69],[57,62,64,69]],
+    mel:[0,0,78,-1,-1,76,-1,-1, 74,-1,-1,-1,71,-1,73,-1, 74,-1,78,-1,-1,-1,81,-1, 76,-1,-1,-1,-1,-1,0,0,
+         0,0,79,-1,78,-1,76,-1, 74,-1,-1,71,-1,-1,74,-1, 73,-1,74,-1,76,-1,78,-1, 76,-1,-1,-1,-1,-1,-1,0,
+         0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 81,-1,-1,-1,78,-1,-1,-1, 76,-1,-1,-1,73,-1,74,-1,
+         0,0,0,0,0,0,0,0, 0,0,74,-1,76,-1,78,-1, 81,-1,-1,-1,-1,-1,78,-1, 76,-1,-1,-1,-1,-1,-1,0]}};
+function faPick(){return FK.on?"lake":(typeof fmIsNight==="function"&&fmIsNight())?"night":"farm"}
+function faStep(th,s,t){var T=FAT[th],sp=T.spb,bi=Math.floor(s/T.bar)%T.bass.length,bs=s%T.bar,ch=T.ch[bi],mi=s%T.mel.length,m=T.mel[mi];
+  if(th==="farm"){
+    if(m>0)faNote(m,t,sp*faLen(T.mel,mi)*.95,{type:"sine",v:.15,a:.02,sus:1,r:.08,vib:5.5,vd:.008}),faNote(m+12,t,sp*faLen(T.mel,mi)*.7,{type:"triangle",v:.025,a:.02});
+    var pat=[0,1,2,1,0,2,1,2],ar=ch[pat[bs]]+12;faNote(ar,t,.22,{type:"triangle",v:.06}),faNote(ar,t,.06,{type:"square",v:.012});
+    if(bs===0||bs===4)faNote(bs?T.bass[bi]+7:T.bass[bi],t,sp*1.6,{type:"triangle",v:.26});
+    if(bs===2||bs===6)ch.forEach(function(n){faNote(n,t,.1,{type:"triangle",v:.035})});
+    if(bs===0||bs===4)faKick(t,.22);if(bs===2||bs===6)faNz(t,.09,.05,1500,6000);if(bs%2===1)faNz(t,.03,.025,7000);
+    if(bs===0&&Math.random()<.35)faChirp(t+Math.random()*sp*6,FA.ag,.035)}
+  else if(th==="night"){
+    if(m>0){faNote(m,t,1.6,{type:"sine",v:.12}),faNote(m+12,t,.9,{type:"sine",v:.035}),faNote(m+19,t,.4,{type:"triangle",v:.01})}
+    if(bs%2===0){var nb=ch[(bs/2)%ch.length]+12;faNote(nb,t,1.1,{type:"sine",v:.04})}
+    if(bs===0)faNote(T.bass[bi],t,sp*7.5,{type:"sine",v:.16,a:.3,sus:1,r:1});
+    if(Math.random()<.5){for(var k=0;k<3;k++)faNote(4300+Math.random()*200,t+k*.05,.03,{type:"sine",v:.018,dest:FA.ag})}}
+  else{
+    if(bs===0){ch.forEach(function(n){faNote(n,t,sp*8.4,{type:"triangle",v:.03,a:1.1,sus:1,r:1.1,det:.997});faNote(n,t,sp*8.4,{type:"sine",v:.025,a:1.3,sus:1,r:1.1,det:1.004})});faNote(T.bass[bi],t,sp*7.8,{type:"sine",v:.17,a:.08,sus:1,r:1.2})}
+    if(bs===4)faNote(T.bass[bi]+7,t,sp*3.6,{type:"sine",v:.07,a:.1});
+    var hp=[0,1,2,3,2,1,3,2],hn=ch[hp[bs]%ch.length]+12;faNote(hn,t,1.4,{type:"sine",v:.055}),faNote(hn+12,t,.5,{type:"triangle",v:.008});
+    if(m>0)faNote(m,t,sp*faLen(T.mel,mi)*.98,{type:"sine",v:.1,a:.09,sus:1,r:.25,vib:4.8,vd:.01}),faNz(t,.12,.008,3000,9000);
+    if(Math.random()<.12)faNote(1500+Math.random()*800,t+sp*.5,.08,{type:"sine",v:.02,dest:FA.ag});
+    if(bs===0&&Math.random()<.5)faChirp(t+Math.random()*sp*6,FA.ag,.03)}}
+/* เสียงบรรยากาศต่อเนื่อง: น้ำตก (ทะเลสาบ) */
+function faAmb(th){var c=FA.ctx;if(!c)return;if(FA.amb&&FA.amb.th===th)return;if(FA.amb){var o=FA.amb;try{o.g.gain.setTargetAtTime(.0001,c.currentTime,.4);setTimeout(function(){try{o.s.stop()}catch(e){}},1500)}catch(e){}FA.amb=null}
+  if(th!=="lake")return;var n=c.sampleRate*3,b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0),last=0;for(var i=0;i<n;i++){var w=Math.random()*2-1;last=(last+.08*w)/1.08;a[i]=last*3.2}
+  var s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;s.loop=true;f.type="lowpass";f.frequency.value=1100;g.gain.setValueAtTime(.0001,c.currentTime);g.gain.setTargetAtTime(.09,c.currentTime,.8);s.connect(f);f.connect(g);g.connect(FA.ag);s.start();FA.amb={th:th,s:s,g:g}}
+function faMusic(on){if(!on){clearInterval(FA.timer);FA.timer=null;faAmb(null);try{if(FA.ael)FA.ael.pause()}catch(e){}return}if(FA.timer||!FA.mus||!faCtx())return;
+  if(!FA.ag){FA.ag=FA.ctx.createGain();FA.ag.gain.value=1;FA.ag.connect(FA.out)}FA.theme=faPick();FA.step=0;FA.next=FA.ctx.currentTime+.1;FA.mg.gain.setValueAtTime(.32,FA.ctx.currentTime);faAmb(FA.theme);
+  FA.timer=setInterval(function(){if(!FA.ctx||document.hidden)return;var now=FA.ctx.currentTime;
+    var want=faPick();if(want!==FA.theme&&!FA.fading){FA.fading=1;FA.mg.gain.cancelScheduledValues(now);FA.mg.gain.setValueAtTime(FA.mg.gain.value,now);FA.mg.gain.linearRampToValueAtTime(.0001,now+.7);faAmb(want);
+      setTimeout(function(){if(!FA.ctx)return;var n2=FA.ctx.currentTime;FA.theme=faPick();FA.step=0;FA.next=n2+.05;FA.mg.gain.cancelScheduledValues(n2);FA.mg.gain.setValueAtTime(.0001,n2);FA.mg.gain.linearRampToValueAtTime(.32,n2+1.2);FA.fading=0},750)}
+    if(FA.fading)return;while(FA.next<now+.6){faStep(FA.theme,FA.step,FA.next);FA.next+=FAT[FA.theme].spb;FA.step++}},120)}
 /* ---------- กล้อง: ลากเลื่อน / ถ่างนิ้วซูม / ล้อเมาส์ / ปุ่ม + − ; มือถือแนวตั้ง → หมุนเป็นแนวนอน ---------- */
 var FMQ={};function fmMQ(q){if(!window.matchMedia)return false;if(!FMQ[q]){var m=matchMedia(q);FMQ[q]=m}return FMQ[q].matches}
 function fmIsTouch(){return fmMQ("(pointer:coarse)")}
@@ -4961,7 +5028,7 @@ function fk3WalkStep(dt){var J=FK3.joy||{x:0,y:0},K=FK3.keys||{},jx=J.x+((K.d||K
   if(m>.08){var cy=FK3.cyaw,fx=Math.sin(cy),fz=Math.cos(cy),rx=-fz,rz=fx,vx=(fx*jy+rx*jx)/Math.max(1,Math.hypot(jx,jy)),vz=(fz*jy+rz*jx)/Math.max(1,Math.hypot(jx,jy)),sp=4.2*m*dt;
     var nx=P.x+vx*sp,nz=P.z+vz*sp;if(fk3Walkable(nx,nz)){P.x=nx;P.z=nz}else if(fk3Walkable(nx,P.z))P.x=nx;else if(fk3Walkable(P.x,nz))P.z=nz;
     FK3.hd=fmAng(FK3.hd,Math.atan2(vx,vz),dt*10);FK3.cyaw=fmAng(FK3.cyaw,FK3.hd,dt*1.6*m)}
-  FK3.moving=m>.08;if(V){V.g.position.set(P.x,fk3OnDock(P.x,P.z)?.5:0,P.z);V.g.rotation.y=FK3.hd-Math.PI/2}
+  FK3.moving=m>.08;if(FK3.moving){FK3.stT=(FK3.stT||0)+dt*m;if(FK3.stT>.36){FK3.stT=0;sfx(fk3OnDock(P.x,P.z)?"stepwood":"step")}}if(V){V.g.position.set(P.x,fk3OnDock(P.x,P.z)?.5:0,P.z);V.g.rotation.y=FK3.hd-Math.PI/2}
   var cx=P.x-Math.sin(FK3.cyaw)*10.5,cz=P.z-Math.cos(FK3.cyaw)*10.5;FK3.cam.position.lerp(new THREE.Vector3(cx,5.6,cz),Math.min(1,dt*5));FK3.cam.lookAt(P.x+Math.sin(FK3.cyaw)*7,.2,P.z+Math.cos(FK3.cyaw)*7);
   var now=performance.now();if(FK.rt&&S.me&&now-(FK3.lastTx||0)>(FK3.moving?220:1500)){FK3.lastTx=now;try{FK.rt.send({type:"broadcast",event:"pos",payload:{id:S.me.id,x:+P.x.toFixed(2),z:+P.z.toFixed(2),hd:+FK3.hd.toFixed(2),mv:!!FK3.moving}})}catch(e){}}}
 function fkRtOpen(){if(FK.rt||!db.channel)return;try{FK.rt=db.channel("aoi-lake",{config:{broadcast:{self:false}}}).on("broadcast",{event:"pos"},function(m){var d=m&&m.payload;if(!d||!d.id||!FK3.on)return;var C=FK3.chars[d.id];if(!C)return;C.live={x:+d.x,z:+d.z,hd:+d.hd||0,mv:!!d.mv,stop:!!d.stop,at:Date.now()}}).subscribe()}catch(e){FK.rt=null}}
@@ -5101,7 +5168,7 @@ function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||do
   if(!show&&FK3.cast){FK3.cast=null;B.visible=false;FK3.line.visible=false}
   if(FK3.cast){var c=FK3.cast,u=Math.max(0,Math.min(1,(t-c.t0)/.7)),tx=c.to[0],tz=c.to[1];B.visible=t>=c.t0;FK3.line.visible=t>=c.t0;
     if(u<1){var uu=1-Math.pow(1-u,1.6);B.position.set(tip.x+(tx-tip.x)*uu,tip.y+(0.06-tip.y)*u+Math.sin(u*Math.PI)*2.6,tip.z+(tz-tip.z)*uu)}
-    else{if(!FK3.splashed){FK3.splashed=1;fk3Ripple(tx,tz,.7,1.2)}var st=FK.st,y=.06+Math.sin(t*2.2)*.035,x=tx,z=tz;
+    else{if(!FK3.splashed){FK3.splashed=1;fk3Ripple(tx,tz,.7,1.2);sfx("splash")}var st=FK.st,y=.06+Math.sin(t*2.2)*.035,x=tx,z=tz;
       if(st==="bite"){y=-.06+Math.sin(t*28)*.07;if(t>FK3.nextRip-1.2){FK3.nextRip=t+1.45;fk3Ripple(x,z,.8,.7)}}
       else if(st==="reel"){var R=FK.R||{};x=tx+Math.sin(t*2.6)*.9*(R.f!=null?(R.f-.5)*2:1);var sp2=FK3.spot||{x:0,z:4.9},kx=sp2.x-tx,kz=sp2.z-tz,kl=Math.hypot(kx,kz)||1,pull=Math.min(4,(R.pg||0)*3.5);x+=kx/kl*pull;z=tz+Math.cos(t*1.9)*.4+kz/kl*pull;y=-.02+Math.sin(t*20)*.05;if(t>FK3.nextRip-1.15){FK3.nextRip=t+1.3;fk3Ripple(x,z,.6,.6)}}
       B.position.set(x,y,z)}
@@ -5144,7 +5211,7 @@ function fkDraw(){var el=$("fm-lake");if(!el)return;if(FK3.on||FK3.tok)fk3Stop()
 function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},rod=(c.rods||{})[I.rod||1]||{n:"เบ็ด",e:"🎣"},B=I.bait||{};
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+'</div>'+
-    '<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
+    '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button><div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
     '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'<button type="button" data-fk="d3">'+(FK3.on||fk3Want()?'🗺️<small>แบบ 2D</small>':'🧊<small>แบบ 3D</small>')+'</button></div>'+
     '<div class="fk-baits"><button type="button" data-fkbait=""'+(FK.bait===""?' class="on"':'')+'>🎣 '+(I.free_unlimited||(FK.info&&I.free_left==null)?'ไม่ใช้เหยื่อ <b>∞</b>':'ฟรี <b>'+(I.free_left!=null?I.free_left:"…")+'</b>')+'</button>'+
     Object.keys(c.baits||{}).map(function(k){var o=c.baits[k],n=B[k]||0;return '<button type="button" data-fkbait="'+k+'"'+(FK.bait===k?' class="on"':'')+(n?'':' disabled')+' title="'+esc(o.n)+'">'+o.e+' <b>'+n+'</b></button>'}).join("")+'</div>'}
@@ -5162,18 +5229,18 @@ function fkPlay(){var el=$("fk-play");if(!el)return;var st=FK.st;
   else if(st==="reel")el.innerHTML='<div class="fk-reel"><div class="fk-bar"><i id="fk-zone"></i><b id="fk-fish">🐟</b></div><div class="fk-prog"><i id="fk-pg"></i></div></div><button type="button" class="fk-cast hold" id="fk-hold">💪 กดค้างเพื่อดึง</button><p class="fk-tip">ประคองแถบเขียวให้ทับตัวปลา จนหลอดเต็ม</p>';
   else if(st==="busy")el.innerHTML='<p class="fk-say">…</p>'}
 function fkBob(x,y,show){var b=$("fk-bob"),p=$("fk-path");if(!b||!p)return;b.hidden=!show;if(!show){p.setAttribute("d","");return}b.style.left=x+"%";b.style.top=y+"%";p.setAttribute("d","M53 74 Q "+((53+x)/2)+" "+(Math.min(74,y)-12)+" "+x+" "+(y+1.5))}
-async function fkCast(){if(FK.st!=="idle")return;FK.st="busy";if(FK3.on){FK3.wind=performance.now()/1000;sfx("swish")}fkPlay();
-  try{var r=await q(db.rpc("fish_cast",{p_bait:FK.bait||null}));FK.cur=r;if(!FK3.on)sfx("swish");
+async function fkCast(){if(FK.st!=="idle")return;FK.st="busy";if(FK3.on){FK3.wind=performance.now()/1000;sfx("cast")}fkPlay();
+  try{var r=await q(db.rpc("fish_cast",{p_bait:FK.bait||null}));FK.cur=r;if(!FK3.on){sfx("cast");setTimeout(function(){if(FK.st==="wait")sfx("splash")},550)}
     if(FK.info){if(!FK.bait&&FK.info.free_left!=null)FK.info.free_left=Math.max(0,(FK.info.free_left||0)-1);else FK.info.bait[FK.bait]=Math.max(0,(FK.info.bait[FK.bait]||0)-1);if(FK.bait&&!FK.info.bait[FK.bait])FK.bait="";fkHud()}
     var tx=32+Math.random()*36,ty=34+Math.random()*18;FK.bx=tx;FK.by=ty;fkBob(tx,ty,true);var b=$("fk-bob");b.classList.remove("dip");b.classList.add("fly");setTimeout(function(){b&&b.classList.remove("fly")},600);
-    FK.st="wait";fkPlay();var wait=1600+Math.random()*3200;FK.t1=setTimeout(function(){if(FK.st!=="wait")return;FK.st="bite";sfx("pop");var bb=$("fk-bob");if(bb)bb.classList.add("dip");fkPlay();
+    FK.st="wait";fkPlay();var wait=1600+Math.random()*3200;FK.t1=setTimeout(function(){if(FK.st!=="wait")return;FK.st="bite";sfx("bite");var bb=$("fk-bob");if(bb)bb.classList.add("dip");fkPlay();
       FK.t2=setTimeout(function(){if(FK.st==="bite"){fkEnd(false,"ช้าไปนิด ปลากินเหยื่อแล้วหนีไป 🐟💨")}},Math.max(1100,1700-FK.cur.r*90))},wait)}
   catch(e){FK.st="idle";fkPlay();sfx("error");toast(thErr(e))}}
 function fkHook(){if(FK.st==="wait"){clearTimeout(FK.t1);fkEnd(false,"ดึงเร็วไป ปลายังไม่กินเบ็ด");return}if(FK.st!=="bite")return;clearTimeout(FK.t2);sfx("tap");FK.st="reel";fkPlay();fkReel()}
 function fkReel(){var r=FK.cur.r,zone=Math.max(.26,(FK.cur.zone||.3)+.06-(r-1)*.02),R={z:.5-zone/2,v:0,f:.5,ft:.5,fs:.2+r*.1,pg:.42,hold:false,t0:performance.now(),last:performance.now(),nt:0};FK.R=R;
   var hb=$("fk-hold"),on=function(e){e.preventDefault();R.hold=true},off=function(){R.hold=false};hb.addEventListener("pointerdown",on);window.addEventListener("pointerup",off);hb.addEventListener("pointerleave",off);
   var zEl=$("fk-zone"),fEl=$("fk-fish"),pEl=$("fk-pg");var f=FM.cat&&FM.cat.fish;fEl.textContent=r>=4?"🐋":r>=3?"🐡":"🐟";zEl.style.height=(zone*100)+"%";
-  var step=function(now){if(FK.st!=="reel")return;var dt=Math.min(.05,(now-R.last)/1000);R.last=now;
+  var step=function(now){if(FK.st!=="reel")return;var dt=Math.min(.05,(now-R.last)/1000);R.last=now;if((R.hold||FK.space)&&now-(R.lc||0)>80){R.lc=now;sfx("reel")}
     R.v+=(R.hold||FK.space?1.9:-1.6)*dt;R.v=Math.max(-1.1,Math.min(1.1,R.v));R.z+=R.v*dt;if(R.z<0){R.z=0;R.v=0}if(R.z>1-zone){R.z=1-zone;R.v=0}
     if(now>R.nt){R.ft=Math.random();R.nt=now+900+Math.random()*(1900-r*170)}R.f+=(R.ft-R.f)*Math.min(1,dt*R.fs*3);
     var inside=R.f>=R.z&&R.f<=R.z+zone;R.pg+=(inside?.4:-.06-r*.014)*dt;zEl.style.bottom=(R.z*100)+"%";fEl.style.bottom="calc("+(R.f*100)+"% - 14px)";zEl.classList.toggle("in",inside);pEl.style.height=Math.max(0,Math.min(100,R.pg*100))+"%";
@@ -5181,8 +5248,8 @@ function fkReel(){var r=FK.cur.r,zone=Math.max(.26,(FK.cur.zone||.3)+.06-(r-1)*.
     if(R.pg>=1){off();fkEnd(true);return}if(R.pg<=0||now-R.t0>30000){off();fkEnd(false,"ปลาดิ้นหลุดไปแล้ว!");return}FK.raf=requestAnimationFrame(step)};FK.raf=requestAnimationFrame(step)}
 async function fkEnd(ok,msg){cancelAnimationFrame(FK.raf);var c=FK.cur;FK.st="busy";fkPlay();
   try{var res=await q(db.rpc("fish_land",{p_id:c.id,p_ok:!!ok}));fkBob(0,0,false);
-    if(!res.ok){sfx("error");var f0=fkFish(res.fish);fkCard('<div class="fk-miss"><b>😢 '+esc(msg||"ปลาหลุด")+'</b><small>ตัวที่หลุดเป็นปลา'+FKR[res.r-1]+' ('+esc(f0.n)+')</small></div>')}
-    else{sfx("collect");var f=fkFish(res.fish);fk3Catch(f,FK.bx,FK.by);if(FK.info){FK.info.week_points=(FK.info.week_points||0)+res.points;var bk=FK.info.book||(FK.info.book={}),o=bk[res.fish]||{n:0,best:0};o.n++;o.best=Math.max(o.best,res.weight);bk[res.fish]=o;fkHud()}
+    if(!res.ok){sfx("lose");var f0=fkFish(res.fish);fkCard('<div class="fk-miss"><b>😢 '+esc(msg||"ปลาหลุด")+'</b><small>ตัวที่หลุดเป็นปลา'+FKR[res.r-1]+' ('+esc(f0.n)+')</small></div>')}
+    else{sfx(res.r>=4?"catchbig":"catch");var f=fkFish(res.fish);fk3Catch(f,FK.bx,FK.by);if(FK.info){FK.info.week_points=(FK.info.week_points||0)+res.points;var bk=FK.info.book||(FK.info.book={}),o=bk[res.fish]||{n:0,best:0};o.n++;o.best=Math.max(o.best,res.weight);bk[res.fish]=o;fkHud()}
       fkCard('<div class="fk-got" style="--rc:'+FKC[res.r-1]+'"><em>'+FKR[res.r-1]+' '+"★".repeat(res.r)+'</em>'+fkFE(f,72)+'<b>'+esc(f.n)+'</b><span class="fk-w">'+res.weight+' กก.</span><small>+'+res.points+' คะแนน · +'+res.xp+' XP · เข้ายุ้งฉาง</small>'+
         (res.record?'<i class="fk-flag gold">🏆 สถิติใหม่ของทั้งบริษัท!</i>':res.first?'<i class="fk-flag">📖 ปลาใหม่ในสมุด!</i>':res.new_best?'<i class="fk-flag">⬆️ ตัวใหญ่ที่สุดของคุณ!</i>':'')+'<button type="button" class="sm fk-sell1" data-fksell="'+esc(res.fish)+':1">💰 ขายตัวนี้ '+fmc()+' +'+num(fkPrice(res.fish))+'</button></div>')}}
   catch(e){fkBob(0,0,false);sfx("error");toast(thErr(e));FK.st="idle";fkPlay()}}
@@ -5223,6 +5290,7 @@ document.addEventListener("click",function(ev){if(!FK.on)return;var t=ev.target.
   if(D.fk==="d3"){if(FK.st!=="idle"&&FK.st!=="result"){toast("ตกปลาให้จบรอบนี้ก่อนนะ");return}var to=FK3.on||fk3Want()?"0":"1";if(to==="1"&&!fm3Ok()){toast("เครื่องนี้ไม่รองรับ 3D");return}try{localStorage.setItem("aoi-fish-3d",to)}catch(e){}sfx("tap");FK.st="idle";fkDraw();return}
   if(D.fk==="shop"||D.fk==="book"||D.fk==="ava"){sfx("open");fkSheet(D.fk);if(D.fk!=="ava")fkLoad().then(function(){if(!$("fk-sheet").hidden)fkSheet(D.fk)});return}
   if(D.fk==="board"){sfx("open");fkBoardLoad();return}
+  if(D.fk==="mus"){FA.mus=!FA.mus;faMusic(FA.mus);faSave();fkHud();toast(FA.mus?"🎵 เปิดเพลง":"🔇 ปิดเพลง");return}
   if(D.fk==="sell"){sfx("open");fkItemsLoad();return}
   if(D.fksell){if(D.fksell!=="*"&&!FK.items){FK.items={};FK.items[D.fksell.split(":")[0]]=+D.fksell.split(":")[1]||1}fkSell(D.fksell,t);return}
   if(D.fkscope){FK.scope=D.fkscope;fkBoardLoad();return}
