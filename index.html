@@ -303,6 +303,20 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
 .avpick.sm{width:60px;height:60px;font-size:24px;align-self:auto}
 .searchbox input{padding-left:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a8499' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4.5 4.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px center;background-size:18px}
 .filters .searchbox{flex:2 1 220px}
+#v-news{max-width:820px;margin:0 auto}.nwhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}.nwhead .inline{display:flex;gap:8px;align-items:center}
+#nw-qwrap input{width:100%}.nwchips{display:flex;gap:6px;flex-wrap:wrap}.nwchips .chipsel.on{background:var(--primary,#2563eb);color:#fff;border-color:transparent}
+.nwfeed{display:grid;gap:16px}.nwcard{background:var(--surface,#fff);border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(15,23,42,.1);cursor:pointer;border:1px solid rgba(148,163,184,.25);transition:transform .15s}.nwcard:active{transform:scale(.99)}.nwcard.draft{opacity:.65;border-style:dashed}
+.nwcar{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:#0f172a}.nwcar::-webkit-scrollbar{display:none}.nwsl{flex:0 0 100%;scroll-snap-align:center;position:relative;aspect-ratio:16/9;display:grid;place-items:center}.nwcar.big .nwsl{aspect-ratio:auto;min-height:200px;max-height:70vh}
+.nwsl img,.nwsl video{width:100%;height:100%;object-fit:cover;display:block}.nwcar.big .nwsl img,.nwcar.big .nwsl video{object-fit:contain;max-height:70vh}.nwsl iframe{width:100%;aspect-ratio:16/9;border:0}
+.nwplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;font-style:normal;font-size:22px}.nwplay.yt{background:#dc2626}
+.nwdots{display:flex;justify-content:center;gap:6px;padding:7px 0 0}.nwdots i{width:7px;height:7px;border-radius:50%;background:#cbd5e1}.nwdots i.on{background:#2563eb;width:18px;border-radius:4px}
+.nwb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:5px}.nwtags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.nwcat{font-size:12px;font-weight:800;padding:2px 9px;border-radius:10px;background:#e0e7ff;color:#3730a3}.nwcat.c-event{background:#fce7f3;color:#9d174d}.nwcat.c-learn{background:#dcfce7;color:#166534}
+.nwpin{font-size:12px;font-weight:700;color:#b45309}.nwnew{font-size:11px;font-weight:900;background:#ef4444;color:#fff;border-radius:8px;padding:1px 7px}.nwtt{font-size:17px;line-height:1.35}.nwex{margin:0;color:var(--muted,#475569);font-size:14px;line-height:1.5}
+.nwbox{max-width:760px!important}.nwh{margin:0;font-size:20px;line-height:1.35}.nwfull{font-size:15px;line-height:1.7;white-space:normal;word-break:break-word}.nwfiles{display:flex;flex-direction:column;gap:8px}
+.nwfile{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#f1f5f9;text-decoration:none;color:inherit;border:1px solid #e2e8f0}.nwfile>span{font-size:28px}.nwfile b{display:block;font-size:14px;word-break:break-all}.nwfile small{color:#64748b}
+.nwadm{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid #e2e8f0;padding-top:10px}.nwwho{max-height:240px;overflow:auto}.nwebody{display:flex;flex-direction:column;gap:10px}.nwebody textarea{width:100%;resize:vertical}
+.nwemed{display:flex;flex-direction:column;gap:6px}.nwemi{display:flex;gap:8px;align-items:center;background:#f8fafc;border-radius:10px;padding:6px 8px}.nwemi small{flex:1;word-break:break-all}.nwemi em{color:#16a34a;font-style:normal}.spadd{display:flex;gap:6px;flex-wrap:wrap}
+@media (prefers-color-scheme:dark){.nwfile{background:#1e293b;border-color:#334155}.nwemi{background:#1e293b}.nwadm{border-color:#334155}}
 .modal{position:fixed;inset:0;z-index:20;background:rgba(10,20,40,.55);display:grid;place-items:center;padding:16px;animation:fade .2s ease both}
 .modal .box{background:var(--surface);border-radius:18px;padding:20px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 60px rgba(0,0,0,.35);animation:popin .28s cubic-bezier(.2,1.2,.4,1) both;max-height:calc(100vh - 32px);overflow:auto}
 @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -1598,10 +1612,20 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <div class="scroll"><table class="tbl emtbl"><thead><tr><th>รหัส</th><th>พนักงาน</th><th>แผนก</th><th>กะ</th><th>ตำแหน่ง</th><th>อายุงาน</th><th>เบอร์โทร</th><th>บัญชี</th><th class="n">จัดการ</th></tr></thead><tbody id="em2-rows"></tbody></table></div></div>
   </section>
 
+  <!-- NEWS ประชาสัมพันธ์ -->
+  <section class="view" id="v-news" hidden>
+    <div class="nwhead"><div><h2>📢 ข่าวประชาสัมพันธ์</h2><p class="sub">ข่าวสาร กิจกรรม และสื่อการสอนของบริษัท</p></div>
+      <div class="inline"><button type="button" class="iconbtn" id="nw-search" aria-label="ค้นหา">🔍</button><button type="button" class="primary" id="nw-new" hidden>＋ สร้างโพสต์</button></div></div>
+    <div id="nw-qwrap" hidden><input type="search" id="nw-q" placeholder="ค้นหาข่าว / สื่อการสอน"></div>
+    <div class="chips nwchips"><button type="button" class="chipsel on" data-nwcat="all">ทั้งหมด</button><button type="button" class="chipsel" data-nwcat="news">📰 ข่าวสาร</button><button type="button" class="chipsel" data-nwcat="event">🎉 กิจกรรม</button><button type="button" class="chipsel" data-nwcat="learn">📚 สื่อการสอน</button></div>
+    <div class="nwfeed" id="nw-feed"></div>
+  </section>
+
   <!-- MENU (มือถือ) -->
   <section class="view" id="v-menu" hidden>
     <div><h2>เมนู</h2><p class="sub">เลือกหน้าที่ต้องการ</p></div>
     <div class="menugrid">
+      <button data-tab="news">📢 ประชาสัมพันธ์<i class="navdot num" id="nw-dot2" hidden></i></button>
       <button data-tab="staff" class="mgr">พนักงาน</button>
       <button data-tab="top" class="mgr">Top 5 ยอดผลิต</button>
       <button data-tab="tt">ติ่งต๊อง</button>
@@ -1961,6 +1985,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
         <button type="button" class="primary" id="im-go" hidden>เริ่มนำเข้า</button>
         <p class="sub" id="im-msg" role="status"></p>
       </div>
+      <div class="panel half" id="sp-panel"></div>
       <div class="panel half">
         <h3>การสมัครใช้งาน</h3>
         <label class="check"><input type="checkbox" id="sr-on"> ให้พนักงานสมัครเองได้ด้วยรหัสพนักงาน (ปิดแล้วจะสมัครได้เฉพาะรหัสที่ผู้ดูแลเพิ่มไว้)</label>
@@ -1987,6 +2012,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <button data-tab="allowance" class="navx">KPI / Allowance</button>
   <span class="navlabel" data-g="soc">🛍️ ร้านค้า · ติ่งต๊อง · แชต</span>
   <button data-tab="shop" class="navx">สินค้า</button>
+  <button data-tab="news" class="navx">📢 ประชาสัมพันธ์<i class="navdot num" id="nw-dot" hidden></i></button>
   <button data-tab="tt" class="navx">ติ่งต๊อง</button>
   <button data-tab="chat" class="navx">แชต<i class="navdot" id="chat-dot" hidden></i></button>
   <button data-tab="ideas" class="navx">ไอเดียปรับปรุงงาน</button>
@@ -2028,6 +2054,8 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 <div id="rc" class="rc" hidden><div class="rcbg" data-rcclose="1"></div><div class="rcwrap" id="rc-wrap"></div></div>
 <div id="stage" class="stage" hidden><div class="curtain l"></div><div class="curtain r"></div><div class="spot"></div><div class="stbody" id="st-body"></div>
   <div class="stbtns"><button type="button" class="primary" id="st-again">🎲 สุ่มคนต่อไป</button><button type="button" id="st-close">ปิด</button></div></div>
+<div class="modal" id="m-news" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="nw-view"></div></div>
+<div class="modal" id="m-newsed" hidden><div class="box nwbox" role="dialog" aria-modal="true"><div class="headrow"><h3 style="font-size:18px">📢 โพสต์ประชาสัมพันธ์</h3><button type="button" class="iconbtn" data-close="m-newsed" data-ico="x" aria-label="ปิด"></button></div><div id="nwe-body" class="nwebody"></div><button type="button" class="primary" id="nwe-save">💾 บันทึก / โพสต์</button></div></div>
 <div class="modal" id="m-perm" hidden>
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="pm-title">
     <div class="headrow"><h3 id="pm-title" style="font-size:18px">กำหนดสิทธิ์</h3><button type="button" class="iconbtn" data-close="m-perm" data-ico="x" aria-label="ปิด"></button></div>
@@ -2566,7 +2594,7 @@ async function renderStaff(){
 
 /* ---------- หน้า: ตั้งค่า ---------- */
 function renderSettings(){ntDraw();
-  if(!S.admin)return;
+  if(!S.admin)return;NW.sp=null;spDraw();
   $("a-depts").innerHTML=S.depts.length?S.depts.map(function(d){
     return '<div class="row"><div class="l"><b>'+esc(d.name)+'</b><small>'+activeEmps(d.id).length+' คน</small></div><button class="sm danger" data-rmdept="'+d.id+'">ลบ</button></div>'}).join(""):emptyRow("ยังไม่มีแผนก");
 }
@@ -7082,10 +7110,119 @@ async function exportLeaveCalendar(y,dept,shift){
   await xlSave(wb,"leave-calendar_"+y+".xlsx");
 }
 
-var RENDER={farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+/* ===================== อัปเดต 126: ประชาสัมพันธ์ (ข่าวสาร · กิจกรรม · สื่อการสอน) + หน้าแรกของแอปตามที่ Admin กำหนด ===================== */
+var NW={list:null,cat:"all",q:"",urls:{},ri:null,ed:null,busy:false};
+var NWCAT={news:"📰 ข่าวสาร",event:"🎉 กิจกรรม",learn:"📚 สื่อการสอน"};
+var SPL=[["tt","ติ่งต๊อง"],["home","ภาพรวม"],["news","ประชาสัมพันธ์"],["log","บันทึกผลงาน"],["farm","ฟาร์มของฉัน"],["chat","แชต"],["leave","ขอลางาน"],["myleave","วันลาของฉัน"],["leavecal","ปฏิทินลา"],["myatt","เช็คชื่อของฉัน / QR"],["game","เกมพนักงาน"],["rewards","แลกรางวัล"],["shop","สินค้า"],["ideas","ไอเดียปรับปรุงงาน"],["allowance","KPI / Allowance"],["top","Top ยอดผลิต"]];
+function nwDay(){return new Date(Date.now()+7*3600000).toISOString().slice(0,10)}
+/* หน้าแรกเมื่อเปิดแอป: ดูวันที่ที่กำหนดไว้ก่อน → หน้าแรกปกติ */
+function spStart(){var sp=S.settings&&S.settings.start_page;if(!sp)return "tt";var d=nwDay(),t=(sp.days||{})[d]||sp.tab||"tt";
+  if(sp.first){var last=null,lt=null;try{last=localStorage.getItem("aoi-start-day");lt=localStorage.getItem("aoi-tab")}catch(e){}if(last===d&&lt&&TABS.indexOf(lt)>=0)t=lt;try{localStorage.setItem("aoi-start-day",d)}catch(e){}}
+  return TABS.indexOf(t)>=0?t:"tt"}
+function spName(t){var x=SPL.filter(function(p){return p[0]===t})[0];return x?x[1]:t}
+function spOpts(sel){return SPL.map(function(p){return '<option value="'+p[0]+'"'+(p[0]===sel?' selected':'')+'>'+esc(p[1])+'</option>'}).join("")}
+function spDraw(){var box=$("sp-panel");if(!box||!S.admin)return;var sp=NW.sp||(NW.sp=JSON.parse(JSON.stringify(S.settings.start_page||{tab:"tt",first:false,days:{}})));sp.days=sp.days||{};var d0=nwDay();
+  var ks=Object.keys(sp.days).filter(function(k){return k>=d0}).sort();
+  box.innerHTML='<h3>📌 หน้าแรกเมื่อเปิดแอป</h3><p class="sub">เลือกหน้าที่พนักงานจะเห็นเป็นหน้าแรกทุกครั้งที่เปิดแอป และกำหนดเฉพาะบางวันได้ (เช่น วันที่มีข่าวสำคัญ ให้เปิดที่หน้าประชาสัมพันธ์)</p>'+
+    '<label>หน้าแรกปกติ<select id="sp-tab">'+spOpts(sp.tab||"tt")+'</select></label>'+
+    '<label class="check"><input type="checkbox" id="sp-first"'+(sp.first?' checked':'')+'> ใช้หน้าที่กำหนดเฉพาะการเปิดครั้งแรกของวัน (เปิดครั้งต่อไปในวันเดียวกัน จะกลับไปหน้าล่าสุดที่ใช้)</label>'+
+    '<b style="margin-top:4px">กำหนดเฉพาะวัน</b><div class="inline spadd"><input type="date" id="sp-date" min="'+d0+'" value="'+d0+'"><select id="sp-dtab">'+spOpts("news")+'</select><button type="button" class="sm" id="sp-add">+ เพิ่ม</button></div>'+
+    '<div class="rows">'+(ks.length?ks.map(function(k){return '<div class="row"><div class="l"><b>'+new Date(k+"T00:00:00").toLocaleDateString("th-TH",{weekday:"short",day:"numeric",month:"short",year:"numeric"})+'</b><small>'+(k===d0?'วันนี้ · ':'')+'เปิดที่ '+esc(spName(sp.days[k]))+'</small></div><button type="button" class="sm danger" data-sprm="'+k+'">ลบ</button></div>'}).join(""):emptyRow("ยังไม่ได้กำหนดเฉพาะวัน"))+'</div>'+
+    '<button type="button" class="primary" id="sp-save">บันทึก</button><p class="sub">วันนี้ ('+new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short"})+') เปิดแอปแล้วจะเริ่มที่: <b>'+esc(spName(sp.days[d0]||sp.tab||"tt"))+'</b></p>'}
+document.addEventListener("click",function(ev){var t=ev.target.closest("#sp-add,#sp-save,[data-sprm]");if(!t||!S.admin)return;var sp=NW.sp;if(!sp)return;
+  sp.tab=$("sp-tab").value;sp.first=$("sp-first").checked;
+  if(t.id==="sp-add"){var d=$("sp-date").value;if(!d){toast("เลือกวันที่ก่อน");return}sp.days[d]=$("sp-dtab").value;spDraw();return}
+  if(t.dataset.sprm){delete sp.days[t.dataset.sprm];spDraw();return}
+  if(t.id==="sp-save"){var d0=nwDay(),v={tab:sp.tab,first:!!sp.first,days:{}};Object.keys(sp.days).forEach(function(k){if(k>=d0)v.days[k]=sp.days[k]});t.disabled=true;
+    q(db.from("app_settings").upsert({key:"start_page",value:v})).then(function(){S.settings.start_page=v;NW.sp=null;spDraw();toast("บันทึกหน้าแรกของแอปแล้ว")},function(e){t.disabled=false;toast(thErr(e))})}});
+
+/* ---------- ไฟล์: ลิงก์ชั่วคราวจาก Storage ---------- */
+async function nwSign(paths){var need=paths.filter(function(p){var u=NW.urls[p];return p&&(!u||u.exp<Date.now())});if(!need.length)return;
+  for(var i=0;i<need.length;i+=50){var r=await db.storage.from("news-media").createSignedUrls(need.slice(i,i+50),3600);if(r.error)throw r.error;(r.data||[]).forEach(function(x){if(x.signedUrl)NW.urls[x.path]={u:x.signedUrl,exp:Date.now()+3300000}})}}
+function nwU(p){return (NW.urls[p]||{}).u||""}
+function nwYT(u){var m=String(u||"").match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);return m?m[1]:""}
+function nwFileIco(n){n=String(n||"").toLowerCase();return /\.pdf$/.test(n)?"📕":/\.(ppt|pptx)$/.test(n)?"📙":/\.(xls|xlsx)$/.test(n)?"📗":/\.(doc|docx)$/.test(n)?"📘":"📄"}
+function nwSize(b){return b>1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" KB"}
+function nwText(s){return esc(s||"").replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g,"<br>")}
+function nwWhen(ts){var d=new Date(ts),df=(Date.now()-d.getTime())/60000;return df<60?Math.max(1,Math.round(df))+" นาทีที่แล้ว":df<1440?Math.round(df/60)+" ชั่วโมงที่แล้ว":d.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"})}
+function nwIsRead(id){return !!(NW.ri&&NW.ri.mine&&NW.ri.mine.indexOf(id)>=0)}
+function nwBadge(){var L=(NW.list||[]).filter(function(p){return p.published&&!nwIsRead(p.id)&&Date.now()-new Date(p.created_at).getTime()<30*864e5}).length;["nw-dot","nw-dot2"].forEach(function(id){var e=$(id);if(e){e.hidden=!L;e.textContent=L>9?"9+":L}})}
+async function nwLoad(){var r=await Promise.all([q(db.from("news_posts").select("*").order("pinned",{ascending:false}).order("created_at",{ascending:false}).limit(150)),q(db.rpc("news_read_info")).catch(function(){return null})]);NW.list=r[0]||[];NW.ri=r[1]||{mine:[],counts:{}};nwBadge();
+  var ps=[];NW.list.slice(0,40).forEach(function(p){(p.media||[]).forEach(function(m){if(m.p&&(m.t==="img"||m.t==="vid"))ps.push(m.p)})});try{await nwSign(ps)}catch(e){}}
+async function renderNews(){var f=$("nw-feed");if(!NW.list)f.innerHTML='<p class="sub">กำลังโหลด…</p>';$("nw-new").hidden=!S.admin;try{await nwLoad()}catch(e){f.innerHTML=emptyRow("โหลดข่าวไม่สำเร็จ: "+esc(thErr(e)));return}nwDraw()}
+function nwSlides(p,big){var M=(p.media||[]).filter(function(m){return m.t!=="file"&&m.t!=="link"});if(!M.length)return '';
+  return '<div class="nwcar'+(big?' big':'')+'">'+M.map(function(m){var u=nwU(m.p);
+    if(m.t==="img")return '<div class="nwsl"><img alt="" loading="lazy" src="'+esc(u)+'"></div>';
+    if(m.t==="vid")return '<div class="nwsl"><video src="'+esc(u)+'#t=0.5" preload="metadata" playsinline'+(big?' controls':' muted')+'></video>'+(big?'':'<i class="nwplay">▶</i>')+'</div>';
+    if(m.t==="yt"){var id=nwYT(m.u);return '<div class="nwsl">'+(big?'<iframe src="https://www.youtube-nocookie.com/embed/'+id+'" allow="accelerometer;encrypted-media;gyroscope;picture-in-picture;fullscreen" allowfullscreen loading="lazy"></iframe>':'<img alt="" loading="lazy" src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg"><i class="nwplay yt">▶</i>')+'</div>'}
+    return ''}).join("")+'</div>'+(M.length>1?'<div class="nwdots">'+M.map(function(m,i){return '<i'+(i?'':' class="on"')+'></i>'}).join("")+'</div>':'')}
+function nwDraw(){var f=$("nw-feed"),qq=NW.q.trim().toLowerCase(),L=(NW.list||[]).filter(function(p){return (NW.cat==="all"||p.cat===NW.cat)&&(!qq||(p.title+" "+p.body).toLowerCase().indexOf(qq)>=0)});
+  document.querySelectorAll("[data-nwcat]").forEach(function(b){b.classList.toggle("on",b.dataset.nwcat===NW.cat)});
+  if(!L.length){f.innerHTML=emptyRow(NW.list&&NW.list.length?"ไม่พบข่าวที่ค้นหา":"ยังไม่มีข่าวประชาสัมพันธ์"+(S.admin?" — กด ＋ สร้างโพสต์":""));return}
+  var C=(NW.ri&&NW.ri.counts)||{};
+  f.innerHTML=L.map(function(p){var files=(p.media||[]).filter(function(m){return m.t==="file"||m.t==="link"}).length,rd=nwIsRead(p.id),nw=!rd&&Date.now()-new Date(p.created_at).getTime()<14*864e5;
+    return '<article class="nwcard'+(p.published?'':' draft')+'" data-nwopen="'+p.id+'">'+nwSlides(p,false)+'<div class="nwb"><div class="nwtags"><span class="nwcat c-'+p.cat+'">'+NWCAT[p.cat]+'</span>'+(p.pinned?'<span class="nwpin">📌 ปักหมุด</span>':'')+(p.published?'':'<span class="nwpin">🙈 ซ่อนอยู่</span>')+(nw?'<span class="nwnew">ใหม่</span>':'')+'</div>'+
+      '<b class="nwtt">'+esc(p.title)+'</b>'+(p.body?'<p class="nwex">'+esc(p.body.slice(0,140))+(p.body.length>140?'…':'')+'</p>':'')+
+      '<small class="sub">'+nwWhen(p.created_at)+(files?' · 📎 '+files+' ไฟล์':'')+' · 👁 '+(C[p.id]||0)+' คนอ่าน'+(rd?' · ✓ อ่านแล้ว':'')+'</small></div></article>'}).join("")}
+document.addEventListener("scroll",function(ev){var c=ev.target;if(!c.classList||!c.classList.contains("nwcar"))return;var i=Math.round(c.scrollLeft/Math.max(1,c.clientWidth)),d=c.nextElementSibling;if(d&&d.classList.contains("nwdots"))[].forEach.call(d.children,function(x,j){x.classList.toggle("on",j===i)})},true);
+/* ---------- อ่านโพสต์ ---------- */
+async function nwOpen(id){var p=(NW.list||[]).filter(function(x){return x.id===id})[0];if(!p)return;var ps=(p.media||[]).filter(function(m){return m.p}).map(function(m){return m.p});try{await nwSign(ps)}catch(e){}
+  var files=(p.media||[]).filter(function(m){return m.t==="file"||m.t==="link"}),C=(NW.ri&&NW.ri.counts)||{};
+  $("nw-view").innerHTML='<div class="headrow"><div class="nwtags"><span class="nwcat c-'+p.cat+'">'+NWCAT[p.cat]+'</span>'+(p.pinned?'<span class="nwpin">📌</span>':'')+'</div><button type="button" class="iconbtn" data-close="m-news" data-ico="x" aria-label="ปิด">✕</button></div>'+
+    '<h3 class="nwh">'+esc(p.title)+'</h3><small class="sub">'+new Date(p.created_at).toLocaleString("th-TH",{dateStyle:"long",timeStyle:"short"})+' · 👁 '+(C[p.id]||0)+' คนอ่าน</small>'+nwSlides(p,true)+
+    (p.body?'<div class="nwfull">'+nwText(p.body)+'</div>':'')+
+    (files.length?'<div class="nwfiles"><b>📎 เอกสาร / ลิงก์</b>'+files.map(function(m){return m.t==="link"?'<a class="nwfile" href="'+esc(m.u)+'" target="_blank" rel="noopener"><span>🔗</span><div><b>'+esc(m.n||m.u)+'</b><small>เปิดลิงก์</small></div></a>':'<a class="nwfile" href="'+esc(nwU(m.p))+'" target="_blank" rel="noopener" download="'+esc(m.n||"")+'"><span>'+nwFileIco(m.n)+'</span><div><b>'+esc(m.n||"ไฟล์")+'</b><small>'+(m.s?nwSize(m.s)+' · ':'')+'แตะเพื่อเปิด / ดาวน์โหลด</small></div></a>'}).join("")+'</div>':'')+
+    (S.admin?'<div class="inline nwadm"><button type="button" class="sm" data-nwedit="'+p.id+'">✏️ แก้ไข</button><button type="button" class="sm" data-nwpin="'+p.id+'">'+(p.pinned?'เลิกปักหมุด':'📌 ปักหมุด')+'</button><button type="button" class="sm" data-nwpub="'+p.id+'">'+(p.published?'🙈 ซ่อน':'👁 แสดง')+'</button><button type="button" class="sm" data-nwwho="'+p.id+'">👥 ใครอ่านแล้ว</button><button type="button" class="sm danger" data-nwdel="'+p.id+'">ลบ</button></div><div id="nw-who"></div>':'');
+  openModal("m-news");
+  if(!nwIsRead(p.id)){q(db.rpc("news_mark_read",{p_id:p.id})).then(function(){if(NW.ri){NW.ri.mine=(NW.ri.mine||[]).concat([p.id]);NW.ri.counts[p.id]=(NW.ri.counts[p.id]||0)+1}nwBadge();if(S.tab==="news")nwDraw()},function(){})}}
+/* ---------- Admin: สร้าง / แก้ไขโพสต์ ---------- */
+function nwEdit(id){var p=id?(NW.list||[]).filter(function(x){return x.id===id})[0]:null;NW.ed={id:p?p.id:null,title:p?p.title:"",body:p?p.body:"",cat:p?p.cat:"news",pinned:p?p.pinned:false,published:p?p.published:true,media:p?JSON.parse(JSON.stringify(p.media||[])):[],add:[],rm:[]};nwEdDraw();closeModal("m-news");openModal("m-newsed")}
+function nwEdDraw(){var E=NW.ed;if(!E)return;var all=E.media.map(function(m,i){return {m:m,i:i,old:1}}).concat(E.add.map(function(a,i){return {m:a,i:i,old:0}}));
+  $("nwe-body").innerHTML='<label>หัวข้อ<input type="text" id="nwe-title" maxlength="200" value="'+esc(E.title)+'" placeholder="เช่น ประกาศวันหยุดโรงงาน / คู่มืองาน AOI"></label>'+
+    '<label>หมวด<select id="nwe-cat">'+Object.keys(NWCAT).map(function(k){return '<option value="'+k+'"'+(E.cat===k?' selected':'')+'>'+NWCAT[k]+'</option>'}).join("")+'</select></label>'+
+    '<label>รายละเอียด<textarea id="nwe-text" rows="5" maxlength="20000" placeholder="เนื้อหาข่าว / คำอธิบายสื่อการสอน">'+esc(E.body)+'</textarea></label>'+
+    '<b>รูป · วิดีโอ · เอกสาร</b><div class="nwemed">'+(all.length?all.map(function(x){var m=x.m,ic=m.t==="img"?"🖼️":m.t==="vid"?"🎬":m.t==="yt"?"▶️":m.t==="link"?"🔗":nwFileIco(m.n);
+      return '<div class="nwemi"><span>'+ic+'</span><small>'+esc(m.n||m.u||"")+(x.old?'':' <em>(ใหม่)</em>')+'</small><button type="button" class="sm danger" data-nwerm="'+(x.old?'o':'n')+x.i+'">✕</button></div>'}).join(""):'<p class="sub">ยังไม่มีไฟล์</p>')+'</div>'+
+    '<label class="filebtn" data-ico="upload">＋ เพิ่มรูป / วิดีโอ / ไฟล์ (PDF, Word, Excel, PowerPoint)<input type="file" id="nwe-files" multiple hidden accept="image/*,video/mp4,video/webm,video/quicktime,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"></label>'+
+    '<div class="inline"><input type="url" id="nwe-url" placeholder="ลิงก์ YouTube หรือเว็บไซต์ (https://…)"><button type="button" class="sm" id="nwe-addurl">＋ เพิ่มลิงก์</button></div>'+
+    '<label class="check"><input type="checkbox" id="nwe-pin"'+(E.pinned?' checked':'')+'> 📌 ปักหมุดไว้บนสุด</label><label class="check"><input type="checkbox" id="nwe-pub"'+(E.published?' checked':'')+'> แสดงให้พนักงานเห็น (ไม่ติ๊ก = เก็บเป็นฉบับร่าง)</label>'+
+    '<p class="sub">วิดีโอ/ไฟล์ไม่เกิน 50 MB ต่อไฟล์ · รูปใหญ่จะถูกย่อให้อัตโนมัติ</p><p class="sub" id="nwe-msg" role="status"></p>'}
+function nwEdSync(){var E=NW.ed;if(!E||!$("nwe-title"))return;E.title=$("nwe-title").value;E.cat=$("nwe-cat").value;E.body=$("nwe-text").value;E.pinned=$("nwe-pin").checked;E.published=$("nwe-pub").checked}
+function nwShrink(f){return new Promise(function(ok){if(!/^image\/(jpeg|png|webp)$/.test(f.type)||f.size<900000)return ok(f);var img=new Image(),u=URL.createObjectURL(f);img.onload=function(){var s=Math.min(1,1920/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);
+  c.toBlob(function(b){ok(b&&b.size<f.size?new File([b],f.name.replace(/\.\w+$/,"")+".jpg",{type:"image/jpeg"}):f)},"image/jpeg",.85)};img.onerror=function(){ok(f)};img.src=u})}
+async function nwSave(btn){nwEdSync();var E=NW.ed;if(!E.title.trim()){toast("ใส่หัวข้อก่อน");return}if(NW.busy)return;NW.busy=true;btn.disabled=true;var msg=$("nwe-msg");
+  try{var pid=E.id||(crypto.randomUUID?crypto.randomUUID():String(Date.now())),media=E.media.slice();
+    for(var i=0;i<E.add.length;i++){var a=E.add[i];if(a.t==="yt"||a.t==="link"){media.push({t:a.t,u:a.u,n:a.n});continue}
+      msg.textContent="กำลังอัปโหลด "+(i+1)+"/"+E.add.length+" · "+a.n+"…";var f=a.t==="img"?await nwShrink(a.f):a.f;if(f.size>52428800)throw new Error("ไฟล์ "+a.n+" ใหญ่เกิน 50 MB");
+      var path="posts/"+pid+"/"+Date.now()+"_"+i+"."+((f.name.match(/\.(\w+)$/)||[0,"bin"])[1]).toLowerCase(),up=await db.storage.from("news-media").upload(path,f,{contentType:f.type||"application/octet-stream",upsert:false});if(up.error)throw up.error;
+      media.push({t:a.t,p:path,n:a.n,s:f.size})}
+    msg.textContent="กำลังบันทึก…";var row={title:E.title.trim(),body:E.body,cat:E.cat,pinned:E.pinned,published:E.published,media:media};
+    if(E.id)await q(db.from("news_posts").update(row).eq("id",E.id));else{row.id=pid;await q(db.from("news_posts").insert(row))}
+    if(E.rm.length)db.storage.from("news-media").remove(E.rm).catch(function(){});
+    toast(E.id?"บันทึกการแก้ไขแล้ว":"โพสต์ข่าวแล้ว 📢");NW.ed=null;closeModal("m-newsed");await renderNews()}
+  catch(e){toast(thErr(e));msg.textContent="❌ "+thErr(e)}finally{NW.busy=false;btn.disabled=false}}
+document.addEventListener("change",function(ev){if(ev.target.id!=="nwe-files"||!NW.ed)return;nwEdSync();[].forEach.call(ev.target.files,function(f){var t=/^image\//.test(f.type)?"img":/^video\//.test(f.type)?"vid":"file";if(t!=="img"&&f.size>52428800){toast("❌ "+f.name+" ใหญ่เกิน 50 MB");return}NW.ed.add.push({t:t,f:f,n:f.name})});ev.target.value="";nwEdDraw()});
+document.addEventListener("input",function(ev){if(ev.target.id==="nw-q"){NW.q=ev.target.value;nwDraw()}});
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-nwcat],[data-nwopen],#nw-new,#nw-search,[data-nwedit],[data-nwpin],[data-nwpub],[data-nwdel],[data-nwwho],[data-nwerm],#nwe-addurl,#nwe-save");if(!t)return;var D=t.dataset;
+  if(ev.target.closest("video,iframe,a")&&!D.nwopen)return;
+  if(D.nwcat){NW.cat=D.nwcat;nwDraw();return}
+  if(t.id==="nw-search"){var w=$("nw-qwrap");w.hidden=!w.hidden;if(!w.hidden)$("nw-q").focus();else{NW.q="";$("nw-q").value="";nwDraw()}return}
+  if(D.nwopen){nwOpen(D.nwopen);return}
+  if(!S.admin)return;
+  if(t.id==="nw-new"){nwEdit(null);return}
+  if(D.nwedit){nwEdit(D.nwedit);return}
+  if(D.nwpin||D.nwpub){var id=D.nwpin||D.nwpub,p=NW.list.filter(function(x){return x.id===id})[0],ch=D.nwpin?{pinned:!p.pinned}:{published:!p.published};q(db.from("news_posts").update(ch).eq("id",id)).then(function(){Object.assign(p,ch);closeModal("m-news");nwDraw();toast("บันทึกแล้ว")},function(e){toast(thErr(e))});return}
+  if(D.nwdel){if(!armed(t,"แตะอีกครั้งเพื่อลบโพสต์"))return;var p2=NW.list.filter(function(x){return x.id===D.nwdel})[0],paths=(p2.media||[]).filter(function(m){return m.p}).map(function(m){return m.p});
+    q(db.from("news_posts").delete().eq("id",D.nwdel)).then(function(){if(paths.length)db.storage.from("news-media").remove(paths).catch(function(){});closeModal("m-news");toast("ลบโพสต์แล้ว");renderNews()},function(e){toast(thErr(e))});return}
+  if(D.nwwho){var w2=$("nw-who");w2.innerHTML='<p class="sub">กำลังโหลด…</p>';q(db.rpc("news_readers",{p_id:D.nwwho})).then(function(L){var tot=(NW.ri&&NW.ri.total)||0;w2.innerHTML='<b>อ่านแล้ว '+L.length+(tot?' / '+tot:'')+' คน</b><div class="rows nwwho">'+(L.length?L.map(function(x){return '<div class="row"><div class="l"><b>'+esc(x.name)+'</b><small>'+esc(x.no||"")+'</small></div><small>'+nwWhen(x.at)+'</small></div>'}).join(""):emptyRow("ยังไม่มีใครเปิดอ่าน"))+'</div>'},function(e){w2.innerHTML=emptyRow(thErr(e))});return}
+  if(D.nwerm){nwEdSync();var k=D.nwerm[0],i=+D.nwerm.slice(1);if(k==="o"){var m=NW.ed.media.splice(i,1)[0];if(m&&m.p)NW.ed.rm.push(m.p)}else NW.ed.add.splice(i,1);nwEdDraw();return}
+  if(t.id==="nwe-addurl"){nwEdSync();var u=($("nwe-url").value||"").trim();if(!/^https?:\/\//.test(u)){toast("ใส่ลิงก์ที่ขึ้นต้นด้วย https://");return}NW.ed.add.push(nwYT(u)?{t:"yt",u:u,n:"YouTube"}:{t:"link",u:u,n:u.replace(/^https?:\/\//,"").slice(0,60)});nwEdDraw();return}
+  if(t.id==="nwe-save"){nwSave(t);return}});
+
+var RENDER={news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
+var TABS=["news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
@@ -7120,7 +7257,7 @@ $("f-kpi").addEventListener("change",showTarget);
 
 /* ---------- ป๊อปอัป ---------- */
 var MZ=40;function openModal(id){$(id).style.zIndex=++MZ;$(id).hidden=false;var f=$(id).querySelector("input:not([type=file]),select");if(f)setTimeout(function(){f.focus()},50)}
-function closeModal(id){$(id).hidden=true}
+function closeModal(id){$(id).hidden=true;if(id==="m-news"&&$("nw-view"))$("nw-view").innerHTML=""}
 document.addEventListener("keydown",function(ev){if(ev.key!=="Escape")return;if(!$("m-img").hidden){$("m-img").hidden=true;return}document.querySelectorAll(".modal:not([hidden])").forEach(function(m){m.hidden=true})});
 document.querySelectorAll(".modal").forEach(function(m){m.addEventListener("mousedown",function(ev){if(ev.target===m)m.hidden=true})});
 var EM=null;                                   /* null = เพิ่มใหม่, id = แก้ไขคนนี้ */
@@ -7528,7 +7665,8 @@ async function start(){
   $("f-date").value=today();$("f-date").max=today();$("h-date").value=today();$("d-date").value=today();$("m-month").value=today().slice(0,7);$("s-month").value=today().slice(0,7);$("s-month").max=today().slice(0,7);
   ["t-date","tl-date"].forEach(function(id){$(id).value=today()});["t-month","am-month","tg-month","ad-month","ed-month"].forEach(function(id){$(id).value=today().slice(0,7)});
   $("auth").hidden=true;$("app").hidden=false;
-  show("tt");                                   /* เปิดแอปทุกครั้งเริ่มที่หน้าติ่งต๊อง */
+  show(spStart());                              /* หน้าแรกตามที่ Admin กำหนด (ค่าเริ่มต้น: ติ่งต๊อง) */
+  nwLoad().catch(function(){});
   loadMarquee().catch(function(){});chatLive();ntReg().then(ntLoad).then(function(){setTimeout(ntAsk,1500)});
   if(/^#(chat|shop)$/.test(location.hash)){show(location.hash.slice(1));history.replaceState(null,"",location.pathname)}
 }
