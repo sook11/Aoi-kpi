@@ -5227,7 +5227,7 @@ function fk3Build(){var cv=$("fk3-cv");if(!cv)return;var R;try{R=new THREE.WebGL
   /* บัว · ใบบัว · ต้นกก · หิน */
   for(i=0;i<14;i++){var a=frand(i*11+3)*6.28,rr=.35+frand(i*5+1)*.52,lx=Math.cos(a)*FK3RX*rr,lz=Math.sin(a)*FK3RZ*rr;if(Math.abs(lx)<2.5&&lz>2)continue;
     var pad=fk3M(new THREE.CircleGeometry(.45+frand(i)*.3,18,.3,5.9),i%3?0x3f9b3a:0x52b046,lx,.07,lz,g,false);pad.rotation.x=-Math.PI/2;pad.rotation.z=frand(i*2)*6;pad.userData.pad=frand(i*3)*6;(FK3.pads=FK3.pads||[]).push(pad);
-    if(i%3===0){var fl=new THREE.Group();fl.position.set(lx+.15,.1,lz);g.add(fl);for(var k=0;k<6;k++){var pe=fk3M(new THREE.SphereGeometry(.13,8,6),k%2?0xf9a8d4:0xfbcfe8,Math.cos(k)*.1,.08,Math.sin(k)*.1,fl,false);pe.scale.set(.7,1.4,.7)}fk3M(new THREE.SphereGeometry(.07,8,6),0xfde047,0,.18,0,fl,false)}}
+    if(i%3===0){var fl=new THREE.Group();fl.position.set(lx+.15,.1,lz);g.add(fl);(FK3.oldLotus=FK3.oldLotus||[]).push(fl);for(var k=0;k<6;k++){var pe=fk3M(new THREE.SphereGeometry(.13,8,6),k%2?0xf9a8d4:0xfbcfe8,Math.cos(k)*.1,.08,Math.sin(k)*.1,fl,false);pe.scale.set(.7,1.4,.7)}fk3M(new THREE.SphereGeometry(.07,8,6),0xfde047,0,.18,0,fl,false)}}
   [[-150,.97],[-35,.98],[160,.96],[20,.97],[-95,1.0],[-120,.98]].forEach(function(r,j){var a=r[0]*Math.PI/180;for(var k=0;k<9;k++){var ox=(frand(j*31+k)-.5)*1.6,oz=(frand(j*17+k*3)-.5)*1.1,h=.9+frand(j+k*7)*.9,x=Math.cos(a)*FK3RX*r[1]+ox,z=Math.sin(a)*FK3RZ*r[1]+oz;
       var st=fk3M(new THREE.CylinderGeometry(.025,.035,h,5),0x4d7c32,x,h/2,z,g,false);st.rotation.z=(frand(k*3+j)-.5)*.2;if(k%3===0)fk3M(new THREE.CylinderGeometry(.06,.06,.28,8),0x6b3f1d,x,h+.1,z,g,false)}});
   [[-120,1.06,.6],[-60,1.07,.45],[10,1.06,.55],[170,1.07,.5],[-15,1.05,.35],[140,1.06,.4]].forEach(function(r,j){var a=r[0]*Math.PI/180,m=fk3M(new THREE.DodecahedronGeometry(r[2],0),0x9ca3af,Math.cos(a)*FK3RX*r[1],r[2]*.4,Math.sin(a)*FK3RZ*r[1],g);m.rotation.set(j,j*2,0)});
@@ -5331,7 +5331,7 @@ function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||do
     var x=J.a[0]+(J.b[0]-J.a[0])*e,z=J.a[1]+(J.b[1]-J.a[1])*e,h=J.big?Math.sin(e*Math.PI)*3.2+e*1.6:Math.sin(e*Math.PI)*1.6;J.s.position.set(x,.1+h,z);J.s.material.rotation=J.big?e*6:(e-.5)*-1.6;if(J.big){var sc=1.3+Math.sin(e*Math.PI)*.6;J.s.scale.set(sc,sc,1)}return true});
   FK3.R.render(FK3.sc,FK3.cam)}
 /* ===================== อัปเดต 132: ปลา 3D · ต้นมะพร้าว · ต้นสน · นางเงือก ในทะเลสาบ ===================== */
-function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[]};var ok=function(){return FK3.on&&FK3.sc===sc&&FK3.tok===tok};
+function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[],lotus:[]};var ok=function(){return FK3.on&&FK3.sc===sc&&FK3.tok===tok};
   var Y=new THREE.Vector3(0,1,0),M=new THREE.Matrix4(),Q=new THREE.Quaternion();
   function geoOf(G){var m=null;G.scene.traverse(function(o){if(o.isMesh&&!m)m=o});return m}
   function inst(G,L,sh){var m=geoOf(G);if(!m||!L.length)return;var im=new THREE.InstancedMesh(m.geometry,m.material,L.length);im.userData.shared=1;
@@ -5347,6 +5347,11 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[]};var 
   fm3File("fk_pine").then(function(G){if(!ok())return;var L=[];for(var i=0;i<140&&L.length<34;i++){var a=(170+frand(i*13+.5)*200)*Math.PI/180,n=1.9+Math.pow(frand(i*3+.9),.7)*1.8,x=Math.cos(a)*FK3RX*n,z=Math.sin(a)*FK3RZ*n;
       if(!free(x,z,1.1))continue;var h=6+frand(i*5+.4)*4.5;L.push([x,z,h,frand(i*17)]);if(n<1.8)FK3.TP.push([x,z,.4,0])}
     for(i=0;i<10;i++){var x2=FK3CL.x-14+i*3.1+(frand(i*4)-.5),z2=FK3CL.z-9-frand(i*6)*4;L.push([x2,z2,7+frand(i)*3,frand(i*8),0,0,1.5])}inst(G,L,0)},function(){});
+  /* กอบัว 3 มิติ (โมเดลจากผู้ใช้) วางเป็นกอ ๆ รอบทะเลสาบ */
+  fm3File("fk_lotus").then(function(G){if(!ok())return;var src=G.scene.getObjectByName("K_lotus")||G.scene;
+    [[-5,-5.4,1.05,.4],[7,-4.6,.95,2.1],[-10.4,2.3,.8,4],[10.1,2.1,.8,5.2],[3,-6.6,.7,1.2]].forEach(function(p){var o=src.clone();o.traverse(function(m){m.userData.shared=1;if(m.isMesh){m.castShadow=false;m.receiveShadow=true;if(!m.material.__fl){m.material.flatShading=true;m.material.side=THREE.DoubleSide;m.material.__fl=1;m.material.needsUpdate=true}}});
+      o.scale.setScalar(p[2]);o.rotation.y=p[3];o.position.set(p[0],.02,p[1]);o.userData.lotus=Math.random()*6;g.add(o);FK3.X.lotus.push(o)});
+    (FK3.oldLotus||[]).forEach(function(f){f.visible=false})},function(){});
   /* ฝูงปลาว่ายใต้น้ำ + ปลากระโดด 3 มิติ */
   fm3File("fk_fish").then(function(G){if(!ok())return;FK3.X.fishG=G;for(var i=0;i<14;i++){var o=G.scene.clone();o.traverse(function(m){m.userData.shared=1;if(m.isMesh)m.castShadow=false});var s=.6+frand(i*3)*.45;o.scale.setScalar(s);
       o.userData={a:frand(i*7)*6.28,r:.25+frand(i*5)*.55,sp:(.12+frand(i*9)*.12)*(i%2?1:-1),y:-.07-frand(i*4)*.08,k:frand(i)*9};g.add(o);FK3.X.fish.push(o)}},function(){});
@@ -5356,7 +5361,7 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[]};var 
     /* นางเงือกตัวเดียว นั่งพักครึ่งตัวในน้ำข้างเกาะกลางน้ำ ทำท่าทางเดิม */
     var p2=new THREE.Group(),b2=mk();b2.scale.setScalar(1.2);p2.add(b2);p2.position.set(-8.1,-1.05,-3.6);p2.rotation.y=.9;g.add(p2);var m2=new THREE.AnimationMixer(b2),a2=m2.clipAction(A[2]||A[0]);a2.play();
     FK3.X.mer.push({g:p2,b:b2,mx:m2,swim:0,ph:2})},function(){})}
-function fk3ExtraStep(t,dt){var X=FK3.X;if(!X)return;
+function fk3ExtraStep(t,dt){var X=FK3.X;if(!X)return;(X.lotus||[]).forEach(function(o){o.position.y=.02+Math.sin(t*1.1+o.userData.lotus)*.015;o.rotation.z=Math.sin(t*.8+o.userData.lotus)*.012});
   X.fish.forEach(function(o){var U=o.userData;U.a+=U.sp*dt;var x=Math.cos(U.a)*FK3RX*U.r+Math.sin(t*.4+U.k)*.6,z=Math.sin(U.a)*FK3RZ*U.r;o.position.set(x,U.y+Math.sin(t*1.7+U.k)*.03,z);
     o.rotation.y=Math.atan2(-Math.sin(U.a)*FK3RX*U.sp,Math.cos(U.a)*FK3RZ*U.sp)+Math.sin(t*9+U.k)*.12;o.rotation.z=Math.sin(t*3+U.k)*.08});
   X.fj=X.fj.filter(function(J){var e=(t-J.t0)/J.life;if(e>=1){FK3.g.remove(J.o);fk3Ripple(J.b[0],J.b[1],.6,1);return false}var x=J.a[0]+(J.b[0]-J.a[0])*e,z=J.a[1]+(J.b[1]-J.a[1])*e,h=Math.sin(e*Math.PI)*1.7;
@@ -5721,7 +5726,7 @@ var FM3M={},FM3MK={pet_bee:"bee",cow:"cow",husky:"husky",dog:"shiba",horse:"hors
 function fm3LoadExtra(){if(THREE.GLTFLoader&&THREE.SkeletonUtils&&window.fflate)return Promise.resolve();if(FM3.ex)return FM3.ex;
   var add=function(src){return new Promise(function(ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})},B="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/";
   FM3.ex=Promise.all([add(B+"loaders/GLTFLoader.js"),add(B+"utils/SkeletonUtils.js"),add(B+"libs/fflate.min.js")]);FM3.ex.catch(function(){FM3.ex=null});return FM3.ex}
-var FM3F={},FMV={fk_palm:3,fk_pine:3,u_peacock:4,fk_mermaid:2,fk_fish:2};
+var FM3F={},FMV={fk_lotus:1,fk_palm:3,fk_pine:3,u_peacock:4,fk_mermaid:2,fk_fish:2};
 function fm3File(n){if(!window.fetch)return Promise.reject(new Error("fetch"));if(FM3F[n])return FM3F[n];var base=window.FM3_MODEL_BASE||"models/";
   FM3F[n]=fm3LoadExtra().then(function(){return fetch(base+"fm-"+n+".bin"+(FMV[n]?"?v="+FMV[n]:""))}).then(function(r){if(!r.ok)throw new Error("model");return r.arrayBuffer()}).then(function(ab){var u=new Uint8Array(ab);if(u[0]===0x1f&&u[1]===0x8b)u=fflate.gunzipSync(u);
     return new Promise(function(ok,bad){new THREE.GLTFLoader().parse(u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength),"",ok,bad)})}).then(function(g){g.scene.traverse(function(o){o.userData.shared=1;if(o.isMesh){o.castShadow=true;[].concat(o.material).forEach(function(m){if(m.__c)return;m.__c=1;if("metalness" in m){m.metalness=0;m.roughness=.9}if(m.color)m.color.convertLinearToSRGB();if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}if(/Leaves/.test(m.name||"")){m.alphaTest=.5;m.transparent=false;m.side=THREE.DoubleSide}})}});return g});
