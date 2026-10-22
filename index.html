@@ -981,6 +981,28 @@ body.farm-rot .ffly{rotate:90deg}
 .fcem{position:relative;font-size:40px;line-height:1.1;width:72px;text-align:center}.fcem .fcq{left:-6px;top:0}
 .fcseller{display:flex;align-items:center;gap:4px;max-width:100%}.fcseller .avatar{width:20px;height:20px;font-size:10px;min-width:20px}.fcseller small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#57534e}
 .fsledwrap{position:sticky;top:0;z-index:3;scroll-margin-top:0}.fsledwrap .fsl.edit{box-shadow:0 6px 18px rgba(0,0,0,.25);border:2px solid #fde047}
+.fk2{position:absolute;inset:0;width:100%;height:100%;display:block}
+#fm-lake .fk-bob i{display:block;width:18px;height:18px;border-radius:50%;background:linear-gradient(#ef4444 52%,#fff 52%);border:2px solid #7f1d1d;box-shadow:0 2px 4px rgba(0,0,0,.35)}#fm-lake .fk-bob{font-size:0}
+.fk2cl{animation:fk2cl 90s linear infinite alternate}@keyframes fk2cl{from{transform:translateX(-260px)}to{transform:translateX(260px)}}
+.fk2bird{animation:fk2bird 26s linear infinite}@keyframes fk2bird{from{transform:translate(-120px,20px)}to{transform:translate(1720px,-10px)}}
+.fk2sh{animation:fk2sh 4s ease-in-out infinite;opacity:0}@keyframes fk2sh{0%,100%{opacity:0}50%{opacity:.75}}
+.fk2rip{transform-box:fill-box;transform-origin:center;animation:fk2rip 4s ease-out infinite}@keyframes fk2rip{0%{transform:scale(.3);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+.fk2pad{animation:fk2pad 5s ease-in-out infinite}@keyframes fk2pad{50%{transform:translateY(3px)}}
+.fk2foam{transform-box:fill-box;transform-origin:center;animation:fk2foam 1.2s ease-in-out infinite}@keyframes fk2foam{50%{transform:scaleX(1.12);opacity:.7}}
+.fk2mist{animation:fk2mist 3s ease-out infinite}@keyframes fk2mist{0%{transform:translateY(0);opacity:.6}100%{transform:translateY(-40px);opacity:0}}
+.fk2smk{animation:fk2smk 4.5s ease-out infinite}@keyframes fk2smk{0%{transform:translate(0,0) scale(.6);opacity:.8}100%{transform:translate(18px,-70px) scale(2.2);opacity:0}}
+.fk2boat{animation:fk2boat 4s ease-in-out infinite}@keyframes fk2boat{50%{transform:translate(1040px,704px) rotate(1.5deg)}}
+.fk2jump{animation:fk2jump 9s ease-in-out infinite;opacity:0}@keyframes fk2jump{0%{transform:translate(var(--x),var(--y)) rotate(30deg);opacity:0}2%{opacity:1}6%{transform:translate(calc(var(--x) + 50px),calc(var(--y) - 80px)) rotate(-20deg)}11%{transform:translate(calc(var(--x) + 100px),var(--y)) rotate(-60deg);opacity:1}12%,100%{opacity:0;transform:translate(calc(var(--x) + 100px),var(--y))}}
+.f2amb{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+.f2sh{position:absolute;left:0;width:70vmax;height:40vmax;border-radius:50%;background:radial-gradient(closest-side,rgba(15,45,25,.2),rgba(15,45,25,0));animation:f2sh 80s linear infinite}
+.f2sh.s1{top:-12%}.f2sh.s2{top:30%;animation-duration:110s;animation-delay:-50s}.f2sh.s3{top:62%;animation-duration:95s;animation-delay:-25s}
+@keyframes f2sh{from{transform:translateX(-75vmax)}to{transform:translateX(115vw)}}
+.f2sun{position:absolute;inset:0;background:radial-gradient(ellipse at 12% 0%,rgba(255,240,180,.38),rgba(255,240,180,0) 55%)}
+.f2vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 58%,rgba(18,32,12,.32) 100%)}
+.f2amb.night .f2sh{display:none}.f2amb.night .f2vig{background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 45%,rgba(4,8,30,.5) 100%)}
+.f2bird{position:absolute;left:0;width:42px;height:14px;animation:f2bird 30s linear infinite}@keyframes f2bird{from{transform:translateX(-60px)}to{transform:translateX(110vw) translateY(-20px)}}
+.f2pt{position:absolute;top:-4%;width:8px;height:6px;border-radius:50% 0 50% 0;opacity:.85;animation:f2pt 14s linear infinite}@keyframes f2pt{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(30px,26vh) rotate(120deg)}50%{transform:translate(-10px,52vh) rotate(220deg)}75%{transform:translate(35px,78vh) rotate(320deg)}100%{transform:translate(0,108vh) rotate(420deg)}}
+.f2ff{position:absolute;width:6px;height:6px;border-radius:50%;background:#fef08a;box-shadow:0 0 10px 4px rgba(254,240,138,.7);animation:f2ff 6s ease-in-out infinite}@keyframes f2ff{0%,100%{transform:translate(0,0);opacity:.2}30%{opacity:1}50%{transform:translate(24px,-18px);opacity:.4}75%{opacity:1;transform:translate(-14px,10px)}}
 #fm-lake{position:absolute;inset:0;z-index:40;overflow:hidden;background:#5fb63a;font-family:inherit;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 #fk3-cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 #fm-lake.fk3on{background:#9fd7f0}#fm-lake.fk3walk .fk-baits{display:none}.fk-side button.on{background:linear-gradient(#bbf7d0,#4ade80)}
@@ -1015,7 +1037,7 @@ body.farm-rot .ffly{rotate:90deg}
 .fk-tick{position:absolute;top:50px;left:50%;transform:translateX(-50%);width:min(62%,640px);overflow:hidden;background:linear-gradient(90deg,rgba(120,53,15,.85),rgba(202,138,4,.9),rgba(120,53,15,.85));border:2px solid #fde047;border-radius:14px;color:#fff;font-weight:800;font-size:13px;padding:4px 0;white-space:nowrap;box-shadow:0 0 14px rgba(253,224,71,.6);z-index:7;pointer-events:none}
 .fk-tick span{display:inline-block;padding-left:40%;animation:fktick 22s linear infinite}.fk-tick.done{background:linear-gradient(90deg,rgba(30,41,59,.85),rgba(71,85,105,.9),rgba(30,41,59,.85));border-color:#94a3b8;box-shadow:none}
 @keyframes fktick{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-.fk-odds{display:flex;height:7px;border-radius:4px;overflow:hidden;margin:3px 0;gap:1px}.fk-odds i{display:block}.fupgold{background:linear-gradient(#fde68a,#f59e0b)!important;color:#713f12!important;font-weight:800;margin-top:4px}.fk-mus{left:150px;transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}
+.fk-odds{display:flex;height:7px;border-radius:4px;overflow:hidden;margin:3px 0;gap:1px}.fk-odds i{display:block}.fupgold{background:linear-gradient(#fde68a,#f59e0b)!important;color:#713f12!important;font-weight:800;margin-top:4px}.fk-mus{left:calc(12px + env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}
 .fk-side{position:absolute;right:calc(10px + env(safe-area-inset-right,0px));top:56px;display:flex;flex-direction:column;gap:6px}
 .fk-side button{width:58px;height:54px;border-radius:16px;border:3px solid #fff;background:linear-gradient(#fef3c7,#fcd34d);box-shadow:0 3px 0 #b45309;font-size:22px;display:grid;place-items:center;line-height:1;cursor:pointer}.fk-side small{font-size:10px;font-weight:800;color:#78350f}
 .fk-baits{position:absolute;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:5px}
@@ -4259,11 +4281,17 @@ function fmTreeHtml(id){var x=(FM.d.decor||[]).filter(function(y){return y.id===
 function fmSheet(){var on=FM.t!=="farm"&&(!FM.v||FM.t==="gift"||FM.t==="stall"||FM.t==="market"||/^pf:/.test(FM.t));$("fm-sheet").hidden=!on;if(!on)return;var d=FM.d,lv=fmLv(d.xp);
   var mk=/^mach:/.test(FM.t)?FM.t.slice(5):"";var vsl=/^vis:/.test(FM.t)?+FM.t.slice(4):0,pfs=/^pf:/.test(FM.t)?+FM.t.slice(3):0;var tsh=/^tree:/.test(FM.t)?FM.t.slice(5):"";$("fm-sh-title").textContent=tsh?"🌳 ต้นไม้":pfs?"🌱 ปลูกผักให้เพื่อนบ้าน":FM.t==="quests"?"📋 ภารกิจวันนี้":vsl?"🧑‍🌾 ชาวบ้านมาขอซื้อของ":FM.t==="stall"?"🧺 ร้านริมทาง":FM.t==="market"?"🗞️ ตลาด":mk?(((FM.cat.machines||{})[mk]||{}).e||"🏭")+" "+(((FM.cat.machines||{})[mk]||{}).n||""):FM.t==="gift"?"🎁 Admin มอบของให้ผู้เล่น":FM.t==="orders"?"🚚 คำสั่งซื้อ":FM.t==="seed"?"🌱 เลือกเมล็ดพันธุ์":FM.t==="barn"?"🏚️ ยุ้งฉาง":FM.t==="ad"?"📺 ป้ายโฆษณา":FM.t==="storage"?"📦 คลังส่วนตัว":FM.t==="shop"?"🛒 ร้านค้า":"👫 ฟาร์มเพื่อน";
   $("fm-body").innerHTML=tsh?fmTreeHtml(tsh):pfs?fmPfHtml(pfs):FM.t==="quests"?fmQuestHtml():vsl?fmVisHtml(vsl):FM.t==="stall"?fmStallHtml():FM.t==="market"?fmMarketHtml():mk?fmMachHtml(mk):FM.t==="gift"?fmGiftHtml():FM.t==="orders"?fmOrders():FM.t==="seed"?fmSeedHtml():FM.t==="barn"?fmBarn(d):FM.t==="ad"?fmAdHtml():FM.t==="storage"?fmStorHtml():FM.t==="shop"?fmShop(d,fmL()):fmBoard()}
+/* อัปเดต 129: บรรยากาศฟาร์ม 2D — เงาเมฆลอยผ่าน แสงแดด ขอบภาพนุ่ม นกบิน กลีบดอกไม้ปลิว (กลางคืน: หิ่งห้อย) */
+function fm2Amb(){var w=$("fm-win");if(!w||w.querySelector(".f2amb"))return;var n=fmIsNight(),h='<div class="f2amb'+(n?' night':'')+'"><i class="f2sh s1"></i><i class="f2sh s2"></i><i class="f2sh s3"></i>'+(n?'':'<div class="f2sun"></div>')+'<div class="f2vig"></div>';
+  if(n){for(var i=0;i<16;i++)h+='<i class="f2ff" style="left:'+(frand(i*3.3)*96)+'%;top:'+(10+frand(i*5.1)*80)+'%;animation-delay:-'+(frand(i)*6).toFixed(1)+'s;animation-duration:'+(4+frand(i*2)*4).toFixed(1)+'s"></i>'}
+  else{for(var j=0;j<3;j++)h+='<svg class="f2bird" style="top:'+(6+j*7)+'%;animation-delay:-'+(j*9)+'s" viewBox="0 0 60 20"><path d="M2 12q9 -10 18 0q9 -10 18 0" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+    for(var k=0;k<9;k++)h+='<i class="f2pt" style="left:'+(frand(k*7.7)*100)+'%;animation-delay:-'+(frand(k*1.3)*14).toFixed(1)+'s;animation-duration:'+(10+frand(k*4)*8).toFixed(1)+'s;background:'+["#fbcfe8","#fde68a","#ffffff"][k%3]+'"></i>'}
+  w.insertAdjacentHTML("beforeend",h+'</div>')}
 function drawFarm(sheetOnly){
   $("fm-hud").innerHTML=fmHud();fmSheet();if(sheetOnly)return;
   if(FM3.on&&window.THREE&&THREE.OrbitControls){fmLayout();fm3Render(FM.v||FM.d,!FM.v);FM.keep=false;fmTick(true);return}
   if(FM3.on&&!FM3.loadTry){FM3.loadTry=1;fm3Load().then(function(){if(FM3.on){FM3.ready=false;drawFarm()}},function(){FM3.on=false})}
-  $("fm-world").innerHTML=fmScene(FM.v||FM.d,!FM.v);FM3.ready=false;
+  $("fm-world").innerHTML=fmScene(FM.v||FM.d,!FM.v);FM3.ready=false;fm2Amb();
   FM.snapOn=0;var im0=$("fm-snap");if(im0&&FM.snapUrl){im0.onload=function(){im0.dataset.ok="1"};im0.src=FM.snapUrl}
   fmLayout();fmCam(!(FM.keep&&FM.cam));FM.keep=false;fmApplyDN();fmTick(true);fmSnap()}
 /* ===================== ฟาร์ม 3 มิติ (Three.js) — หมุน/ซูมได้ ใช้ข้อมูลและระบบเกมเดิม ===================== */
@@ -5268,10 +5296,84 @@ function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||do
   FK3.jumps=FK3.jumps.filter(function(J){var e=(t-J.t0)/J.life;if(e>=1){FK3.g.remove(J.s);J.s.material.map.dispose();J.s.material.dispose();if(!J.big)fk3Ripple(J.b[0],J.b[1],.6,1);return false}
     var x=J.a[0]+(J.b[0]-J.a[0])*e,z=J.a[1]+(J.b[1]-J.a[1])*e,h=J.big?Math.sin(e*Math.PI)*3.2+e*1.6:Math.sin(e*Math.PI)*1.6;J.s.position.set(x,.1+h,z);J.s.material.rotation=J.big?e*6:(e-.5)*-1.6;if(J.big){var sc=1.3+Math.sin(e*Math.PI)*.6;J.s.scale.set(sc,sc,1)}return true});
   FK3.R.render(FK3.sc,FK3.cam)}
+/* ===================== อัปเดต 129: ทะเลสาบ 2D แบบภาพวาด (SVG) ===================== */
+/* ฉากวาดในกรอบ 1600×900 แล้วขยายแบบเต็มจอ (slice) · ตำแหน่งตัวละคร/ทุ่นแปลงจากพิกัดฉาก → % ของจอ */
+function fk2P(xp,yp){var el=$("fm-lake");if(!el||!FK.svg2)return [xp,yp];var W=el.clientWidth||1,H=el.clientHeight||1,s=Math.max(W/1600,H/900),ox=(W-1600*s)/2,oy=(H-900*s)/2;return [(ox+xp*16*s)/W*100,(oy+(yp*9+50)*s)/H*100]}
+function fk2Me(){var m=$("fk-me");if(!m||!FK.svg2)return;var p=fk2P(52,79);m.style.left=p[0]+"%";m.style.top=p[1]+"%"}
+window.addEventListener("resize",function(){if(FK.on&&FK.svg2){fk2Me();fkOthers()}});
+function fk2Tree(x,y,s,k,i){var tr='<rect x="'+(x-4*s)+'" y="'+(y-26*s)+'" width="'+(8*s)+'" height="'+(26*s)+'" rx="'+(2*s)+'" fill="#7a4a24"/>',c;
+  if(k==="pine"){c='<path d="M'+x+' '+(y-118*s)+'L'+(x-30*s)+' '+(y-58*s)+'L'+(x-18*s)+' '+(y-58*s)+'L'+(x-40*s)+' '+(y-20*s)+'L'+(x+40*s)+' '+(y-20*s)+'L'+(x+18*s)+' '+(y-58*s)+'L'+(x+30*s)+' '+(y-58*s)+'Z" fill="url(#k2pine)"/><path d="M'+x+' '+(y-118*s)+'L'+(x+30*s)+' '+(y-58*s)+'L'+(x+18*s)+' '+(y-58*s)+'L'+(x+40*s)+' '+(y-20*s)+'L'+x+' '+(y-20*s)+'Z" fill="#0f3d24" opacity=".25"/>'}
+  else{var col=k==="autumn"?["#f59e0b","#ea580c","#fcd34d"]:k==="pink"?["#f9a8d4","#ec4899","#fce7f3"]:["#4ade80","#16a34a","#bbf7d0"],r=34*s;
+    c='<circle cx="'+x+'" cy="'+(y-54*s)+'" r="'+r+'" fill="'+col[1]+'"/><circle cx="'+(x-22*s)+'" cy="'+(y-40*s)+'" r="'+(r*.72)+'" fill="'+col[1]+'"/><circle cx="'+(x+22*s)+'" cy="'+(y-42*s)+'" r="'+(r*.7)+'" fill="'+col[1]+'"/>'+
+      '<circle cx="'+(x-6*s)+'" cy="'+(y-62*s)+'" r="'+(r*.78)+'" fill="'+col[0]+'"/><circle cx="'+(x-14*s)+'" cy="'+(y-70*s)+'" r="'+(r*.32)+'" fill="'+col[2]+'" opacity=".55"/>'}
+  return '<g><ellipse cx="'+x+'" cy="'+(y+2)+'" rx="'+(30*s)+'" ry="'+(7*s)+'" fill="#1f5f2a" opacity=".28"/>'+tr+c+'</g>'}
+function fk2Scene(){var h='',i,R=function(n){return frand(n)};
+  h+='<defs><linearGradient id="k2sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5bb8ef"/><stop offset=".55" stop-color="#a8dcf7"/><stop offset="1" stop-color="#fdf2d6"/></linearGradient>'+
+    '<radialGradient id="k2sun"><stop offset="0" stop-color="#fffbe8"/><stop offset=".35" stop-color="#fff3b0" stop-opacity=".9"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient>'+
+    '<linearGradient id="k2mf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fb6dc"/><stop offset="1" stop-color="#c9d8ee"/></linearGradient>'+
+    '<linearGradient id="k2mm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5f9c74"/><stop offset="1" stop-color="#8cc08f"/></linearGradient>'+
+    '<linearGradient id="k2gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ccc4c"/><stop offset="1" stop-color="#4f9d33"/></linearGradient>'+
+    '<radialGradient id="k2wa" cx=".5" cy=".42" r=".62"><stop offset="0" stop-color="#1572b6"/><stop offset=".55" stop-color="#1f93cf"/><stop offset=".86" stop-color="#3fc0e4"/><stop offset="1" stop-color="#7fe0ee"/></radialGradient>'+
+    '<linearGradient id="k2sand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d9a2"/><stop offset="1" stop-color="#d9b36f"/></linearGradient>'+
+    '<linearGradient id="k2pine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f9e57"/><stop offset="1" stop-color="#17663a"/></linearGradient>'+
+    '<linearGradient id="k2rock" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a8a29e"/><stop offset="1" stop-color="#6b625a"/></linearGradient>'+
+    '<linearGradient id="k2fall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfeefe"/><stop offset="1" stop-color="#ffffff"/></linearGradient>'+
+    '<linearGradient id="k2wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a86b38"/><stop offset="1" stop-color="#7a4a24"/></linearGradient>'+
+    '<filter id="k2blur"><feGaussianBlur stdDeviation="6"/></filter><filter id="k2soft"><feGaussianBlur stdDeviation="2"/></filter>'+
+    '<pattern id="k2fallp" width="40" height="60" patternUnits="userSpaceOnUse"><rect width="40" height="60" fill="url(#k2fall)"/><path d="M6 0V60M16 0V60M27 0V60M35 0V60" stroke="#7dd3fc" stroke-width="2.5" stroke-dasharray="14 10" opacity=".7"><animate attributeName="stroke-dashoffset" from="0" to="-48" dur=".6s" repeatCount="indefinite"/></path></pattern></defs>';
+  /* ท้องฟ้า ดวงอาทิตย์ เมฆ */
+  h+='<rect width="1600" height="360" fill="url(#k2sky)"/><circle cx="1290" cy="96" r="150" fill="url(#k2sun)"/><circle cx="1290" cy="96" r="44" fill="#fffbe6"/>';
+  [[160,80,1],[520,52,1.3],[930,92,.9],[1460,170,1.1],[1130,40,.8]].forEach(function(c,j){h+='<g class="fk2cl" style="animation-duration:'+(70+j*17)+'s;animation-delay:-'+(j*13)+'s"><g transform="translate('+c[0]+','+c[1]+') scale('+c[2]+')" opacity=".95"><ellipse cx="0" cy="8" rx="78" ry="20" fill="#e6f2fb"/><circle cx="-34" cy="0" r="26" fill="#fff"/><circle cx="4" cy="-14" r="34" fill="#fff"/><circle cx="40" cy="0" r="24" fill="#fff"/></g></g>'});
+  for(i=0;i<3;i++)h+='<g class="fk2bird" style="animation-delay:-'+(i*7)+'s"><path d="M'+(i*26)+' '+(60+i*14)+'q9 -9 18 0q9 -9 18 0" stroke="#334155" stroke-width="3" fill="none" stroke-linecap="round"/></g>';
+  /* ภูเขาไกล + ยอดหิมะ, ภูเขาเขียว, เนิน */
+  h+='<g transform="translate(0,50)">';h+='<path d="M0 250L120 150L230 205L360 95L470 180L560 130L690 210L820 120L950 200L1070 110L1190 190L1300 140L1420 210L1520 150L1600 190V300H0Z" fill="url(#k2mf)"/>'+
+    '<path d="M360 95L392 128L374 126L360 142L346 124L331 126ZM820 120L850 150L832 149L818 162L805 147L792 150ZM1070 110L1100 140L1083 138L1069 152L1057 137L1043 140Z" fill="#fff" opacity=".92"/>'+
+    '<path d="M0 270Q140 190 290 240T600 230T900 226T1200 236T1600 228V330H0Z" fill="url(#k2mm)"/>'+
+    '<path d="M0 300Q220 250 430 286T820 270T1220 284T1600 268V360H0Z" fill="#78bb5a"/>';
+  /* พื้นหญ้า */
+  h+='<rect y="250" width="1600" height="650" fill="url(#k2gr)"/>';
+  for(i=0;i<260;i++){var gx=R(i*3.1)*1600,gy=300+R(i*7.7)*600;if(Math.pow((gx-800)/720,2)+Math.pow((gy-470)/280,2)<1)continue;h+='<path d="M'+gx.toFixed(0)+' '+gy.toFixed(0)+'l-3 -9M'+gx.toFixed(0)+' '+gy.toFixed(0)+'l1 -11M'+gx.toFixed(0)+' '+gy.toFixed(0)+'l5 -8" stroke="'+(i%3?"#3f8f2c":"#9be070")+'" stroke-width="2" stroke-linecap="round"/>'}
+  /* หน้าผา + น้ำตก (ฝั่งตรงข้าม) */
+  h+='<g><path d="M640 236L652 168L690 130L742 112L800 104L858 112L910 130L948 168L960 236Z" fill="url(#k2rock)"/><path d="M652 168L690 130L742 112L800 104L858 112L910 130L948 168L920 160L880 136L800 122L720 136L680 160Z" fill="#6aa84f"/>'+
+    '<path d="M700 236L708 190L730 160M900 236L892 186L872 158" stroke="#57534e" stroke-width="3" fill="none" opacity=".5"/><rect x="772" y="118" width="56" height="116" fill="url(#k2fallp)"/><path d="M772 118Q800 112 828 118" stroke="#fff" stroke-width="5" fill="none"/>'+
+    '<ellipse cx="800" cy="236" rx="64" ry="14" fill="#fff" opacity=".9" class="fk2foam"/><circle cx="770" cy="222" r="16" fill="#fff" opacity=".55" class="fk2mist"/><circle cx="830" cy="218" r="20" fill="#fff" opacity=".45" class="fk2mist" style="animation-delay:-1.2s"/></g>';
+  /* แนวต้นไม้หลังทะเลสาบ */
+  var T=[];for(i=0;i<34;i++){var tx=(i/33)*1600+(R(i*5.3)-.5)*30;if(tx>620&&tx<980)continue;T.push([tx,240+R(i*2.2)*22,.7+R(i*4.4)*.45,R(i*6.6)<.38?"pine":R(i*8.1)<.25?"autumn":R(i*9.9)<.12?"pink":"round"])}
+  for(i=0;i<14;i++){var sx2=i<7?20+R(i)*90:1490+R(i+3)*95,sy2=330+(i%7)*70+R(i*2)*20;T.push([sx2,sy2,.85+R(i*3)*.35,R(i*7)<.4?"pine":R(i*11)<.3?"autumn":"round"])}
+  T.sort(function(a,b){return a[1]-b[1]}).forEach(function(t,j){h+=fk2Tree(t[0],t[1],t[2],t[3],j)});
+  /* กระท่อมมีควันไฟ (ซ้ายบน) */
+  h+='<g transform="translate(250,300)"><ellipse cx="0" cy="4" rx="64" ry="10" fill="#1f5f2a" opacity=".25"/><rect x="-46" y="-46" width="92" height="50" fill="#c08a52"/><path d="M-46 -34H46M-46 -22H46M-46 -10H46" stroke="#8b5a2b" stroke-width="2"/><path d="M-56 -44L0 -84L56 -44Z" fill="#c2410c"/><path d="M0 -84L56 -44H36Z" fill="#9a3412"/>'+
+    '<rect x="12" y="-30" width="20" height="34" fill="#6b3f1d"/><rect x="-34" y="-34" width="22" height="16" fill="#bae6fd" stroke="#6b3f1d" stroke-width="3"/><rect x="18" y="-96" width="12" height="24" fill="#78716c"/>'+
+    '<circle class="fk2smk" cx="24" cy="-104" r="9" fill="#e5e7eb"/><circle class="fk2smk" cx="24" cy="-104" r="9" fill="#e5e7eb" style="animation-delay:-1.5s"/><circle class="fk2smk" cx="24" cy="-104" r="9" fill="#e5e7eb" style="animation-delay:-3s"/></g>';
+  /* ทะเลสาบ: หาด ทราย ขอบเปียก น้ำไล่สี เงาสะท้อน */
+  h+='<ellipse cx="800" cy="474" rx="712" ry="272" fill="url(#k2sand)"/><ellipse cx="800" cy="474" rx="700" ry="262" fill="#c49b5c" opacity=".55"/>'+
+    '<ellipse cx="800" cy="474" rx="690" ry="254" fill="url(#k2wa)"/><ellipse cx="800" cy="474" rx="678" ry="244" fill="none" stroke="#a5f3fc" stroke-width="8" opacity=".45"/>'+
+    '<ellipse cx="800" cy="262" rx="620" ry="38" fill="#14532d" opacity=".32" filter="url(#k2blur)"/><rect x="772" y="244" width="56" height="70" fill="#e0f7ff" opacity=".35" filter="url(#k2blur)"/>';
+  for(i=0;i<46;i++){var a=R(i*1.9)*6.283,rr=Math.sqrt(R(i*3.7))*.9,wx=800+Math.cos(a)*630*rr,wy=480+Math.sin(a)*220*rr;h+='<path class="fk2sh" style="animation-delay:-'+(R(i)*4).toFixed(2)+'s" d="M'+(wx-14).toFixed(0)+' '+wy.toFixed(0)+'q14 -5 28 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>'}
+  [[600,420],[1010,520],[760,560]].forEach(function(p,j){h+='<ellipse class="fk2rip" style="animation-delay:-'+(j*1.3)+'s" cx="'+p[0]+'" cy="'+p[1]+'" rx="40" ry="12" fill="none" stroke="#e0f7ff" stroke-width="3"/>'});
+  /* เกาะเล็ก */
+  h+='<g transform="translate(1210,400)"><ellipse cx="0" cy="12" rx="92" ry="26" fill="#d9b36f"/><ellipse cx="0" cy="6" rx="74" ry="18" fill="#6cc24a"/>'+fk2Tree(-12,10,.62,"round",99)+'<ellipse cx="34" cy="10" rx="18" ry="10" fill="#9ca3af"/><ellipse cx="30" cy="6" rx="10" ry="5" fill="#d6d3d1"/></g>';
+  /* ใบบัว ดอกบัว */
+  [[420,420,26],[480,452,18],[1060,380,22],[1340,470,28],[300,560,24],[1120,610,20],[560,630,22],[1300,600,18],[650,350,16]].forEach(function(p,j){h+='<g class="fk2pad" style="animation-delay:-'+j+'s"><path d="M'+p[0]+' '+p[1]+'m'+p[2]+' 0a'+p[2]+' '+(p[2]*.55)+' 0 1 1 -'+(p[2]*.3)+' -'+(p[2]*.5)+'L'+p[0]+' '+p[1]+'Z" fill="'+(j%2?"#4caf50":"#3d9b40")+'" stroke="#2e7d32" stroke-width="2"/>'+
+    (j%3===0?'<g transform="translate('+(p[0]-4)+','+(p[1]-6)+')"><ellipse cx="-7" cy="0" rx="6" ry="11" fill="#f9a8d4" transform="rotate(-30)"/><ellipse cx="7" cy="0" rx="6" ry="11" fill="#f9a8d4" transform="rotate(30)"/><ellipse cx="0" cy="-3" rx="6" ry="12" fill="#fbcfe8"/><circle cx="0" cy="2" r="3.5" fill="#fde047"/></g>':'')+'</g>'});
+  /* ต้นกก + หิน ริมฝั่ง */
+  [[150,430],[190,560],[1460,420],[1420,580],[420,700],[1180,712]].forEach(function(p,j){for(var k=0;k<7;k++){var x0=p[0]+(k-3)*7+R(j*9+k)*4,hh=40+R(j*3+k)*34,bend=(R(k+j)-.5)*14;h+='<path d="M'+x0+' '+p[1]+'q'+(bend/2)+' -'+(hh/2)+' '+bend+' -'+hh+'" stroke="#4d7c32" stroke-width="3" fill="none"/>'+(k%2===0?'<rect x="'+(x0+bend-3)+'" y="'+(p[1]-hh-4)+'" width="7" height="18" rx="3.5" fill="#7c4a1d"/>':'')}});
+  [[260,300,1],[1340,290,.8],[120,480,1.1],[1500,500,.9],[480,735,.8]].forEach(function(p){h+='<g transform="translate('+p[0]+','+p[1]+') scale('+p[2]+')"><ellipse cx="0" cy="8" rx="28" ry="8" fill="#000" opacity=".15"/><path d="M-26 6Q-24 -16 -4 -20Q20 -22 26 0Q20 10 -6 10Z" fill="url(#k2rock)"/><path d="M-14 -12Q0 -18 12 -12" stroke="#e7e5e4" stroke-width="3" fill="none" opacity=".7"/></g>'});
+  /* ปลากระโดด */
+  h+='<g class="fk2jump" style="--x:540px;--y:440px"><path d="M-16 0Q-4 -10 10 0Q-4 10 -16 0ZM10 0L20 -8V8Z" fill="#60a5fa" stroke="#1e3a8a" stroke-width="1.5"/></g><g class="fk2jump" style="--x:1080px;--y:500px;animation-delay:-4.5s"><path d="M-16 0Q-4 -10 10 0Q-4 10 -16 0ZM10 0L20 -8V8Z" fill="#f59e0b" stroke="#78350f" stroke-width="1.5"/></g>';
+  /* ท่าเรือไม้ (มุมมองเปอร์สเปกทีฟ) + เรือพาย */
+  h+='<g><path d="M680 900L748 640H918L986 900Z" fill="#5b3416" transform="translate(6,10)" opacity=".35"/><path d="M680 900L748 640H918L986 900Z" fill="url(#k2wood)"/>';
+  for(i=0;i<11;i++){var yy=640+Math.pow(i/10,1.15)*260,w0=170+130*(yy-640)/260;h+='<path d="M'+(833-w0/2)+' '+yy.toFixed(1)+'H'+(833+w0/2)+'" stroke="#5b3416" stroke-width="2.5"/>'}
+  [[752,648],[914,648],[722,760],[944,760],[692,880],[974,880]].forEach(function(p){h+='<rect x="'+(p[0]-7)+'" y="'+(p[1]-14)+'" width="14" height="30" rx="4" fill="#4a2a10"/><ellipse cx="'+p[0]+'" cy="'+(p[1]-14)+'" rx="7" ry="3" fill="#8b5a2b"/>'});
+  h+='<rect x="880" y="656" width="30" height="24" fill="#a16207" stroke="#713f12" stroke-width="2"/><path d="M770 662h34l-4 26h-26z" fill="#93c5fd" stroke="#1e40af" stroke-width="2"/><ellipse cx="787" cy="662" rx="17" ry="5" fill="#2563eb"/></g>';
+  h+='<g class="fk2boat" transform="translate(1040,700)"><path d="M-80 -6Q0 40 80 -6Q76 -18 0 -18Q-76 -18 -80 -6Z" fill="#9a5b2c" stroke="#5b3416" stroke-width="3"/><path d="M-70 -10Q0 -16 70 -10" stroke="#c2853f" stroke-width="6" fill="none"/><path d="M-30 -16v18M30 -16v18" stroke="#c2853f" stroke-width="6"/><path d="M-88 -4L-118 -30" stroke="#d6b98c" stroke-width="2"/></g>';
+  /* พุ่มไม้ ดอกไม้ด้านหน้า */
+  [[60,880,1.3],[230,905,1],[1380,900,1.1],[1550,872,1.35],[520,915,.8]].forEach(function(p,j){var s=p[2];h+='<g transform="translate('+p[0]+','+p[1]+') scale('+s+')"><circle cx="-30" cy="-20" r="34" fill="#2f8a3a"/><circle cx="20" cy="-30" r="40" fill="#3aa346"/><circle cx="60" cy="-12" r="28" fill="#2f8a3a"/><circle cx="8" cy="-44" r="16" fill="#86efac" opacity=".5"/>'+[[-20,-30,"#f472b6"],[30,-46,"#fde047"],[52,-22,"#ffffff"],[-40,-8,"#fde047"]].map(function(f){return '<circle cx="'+f[0]+'" cy="'+f[1]+'" r="5" fill="'+f[2]+'"/>'}).join("")+'</g>'});
+  h+='</g>';return h}
 /* ===================== อัปเดต 117: ทะเลสาบตกปลา 🎣 ===================== */
 var FK={on:false,st:"idle",bait:"",info:null,pres:[],raf:0,hb:0};
 var FKR=["ธรรมดา","ไม่ธรรมดา","หายาก","หายากมาก","ตำนาน"],FKC=["#94a3b8","#22c55e","#3b82f6","#a855f7","#f59e0b"];
-var FKSPOT=[[13,25],[26,23],[39,22],[61,22],[74,23],[87,25],[20,96],[32,97],[70,97],[82,96],[50,21],[93,96]];
+var FKSPOT=[[13,27],[24,25],[36,24],[62,24],[73,25],[85,27],[22,82],[33,82.5],[69,82.5],[80,82],[94,52],[6,52]];
 function fkSpr(key,seed){var a=key||"auto";if(a==="auto")a=FKF[fmHash(seed||"x")%FKF.length];return a==="nathan"?FADSPR:a==="baker"?FBKSPR:FVSPR[(+String(a).slice(2)||0)%FVSPR.length]}
 function fkFish(k){var c=FM.cat||{},f=(c.fish||{})[k]||{n:k,e:"🐟",r:1};return f}
 function fkFE(f,sz){return '<span class="fkfe" style="font-size:'+(sz||40)+'px'+(f.hue?';filter:hue-rotate('+f.hue+'deg) saturate(1.3)':'')+'">'+f.e+'</span>'}
@@ -5281,19 +5383,15 @@ function fkClose(){if(!FK.on)return;FK.on=false;fk3Stop();fkRtClose();cancelAnim
   fmLoad().then(function(d){FM.d=d;FM.keep=true;drawFarm()},function(){})}
 async function fkLoad(){try{FK.info=await q(db.rpc("fish_info"));if(FK.info&&FK.info.gold)FK.gold=FK.info.gold;fkAutoBait();fkHud();fkPlay()}catch(e){toast(thErr(e))}}
 function fkPres(){if(FK.info)fkGoldLoad();var A={p_avatar:fmAva()};if(FK3.on&&FK3.spot){A.p_x=Math.round(FK3.spot.x*100)/100;A.p_z=Math.round(FK3.spot.z*100)/100}q(db.rpc("fish_presence",A)).then(function(L){FK.pres=Array.isArray(L)?L:[];fkOthers()},function(){})}
-function fkDraw(){var el=$("fm-lake");if(!el)return;if(FK3.on||FK3.tok)fk3Stop();
+function fkDraw(){var el=$("fm-lake");if(!el)return;if(FK3.on||FK3.tok)fk3Stop();FK.svg2=false;
   if(fk3Want()){el.innerHTML='<canvas id="fk3-cv"></canvas><div class="fk3-load">🎣 กำลังโหลดทะเลสาบ 3D…</div><div class="fk3hide"><div id="fk-others"></div><svg class="fk-line"><path id="fk-path" d=""/></svg><div id="fk-bob" class="fk-bob" hidden></div><div id="fk-me"><img alt=""></div></div>'+
     '<div id="fk-hud"></div><div id="fk-play"></div><div id="fk-sheet" hidden></div>';el.classList.add("fk3on");fkHud();fkOthers();fkPlay();fk3Start();return}
-  el.classList.remove("fk3on","fk3walk");
-  el.innerHTML='<div class="fk-sky"></div><div class="fk-forest">'+Array.from("🌲🌳🌲🌲🌳🌲🌲🌳🌲🌳🌲🌲").map(function(t,i){return '<i style="left:'+(i*8.6-2)+'%;font-size:'+(34+(i*7)%16)+'px">'+t+'</i>'}).join("")+'</div>'+
-    '<div class="fk-lake"><i class="fk-rip r1"></i><i class="fk-rip r2"></i><i class="fk-rip r3"></i>'+
-    [[18,30],[70,22],[82,55],[26,62],[58,70]].map(function(p,i){return '<b class="fk-lily" style="left:'+p[0]+'%;top:'+p[1]+'%">'+(i%2?"🌸":"🍃")+'</b>'}).join("")+
-    '<div class="fk-isle"><span>🌴</span></div><b class="fk-reed" style="left:4%;top:38%">🌾</b><b class="fk-reed" style="left:92%;top:30%">🌾</b></div>'+
-    '<div class="fk-dock"></div><div id="fk-others"></div>'+
-    '<svg class="fk-line" viewBox="0 0 100 100" preserveAspectRatio="none"><path id="fk-path" d="" fill="none" stroke="rgba(255,255,255,.85)" stroke-width=".25"/></svg>'+
-    '<div id="fk-bob" class="fk-bob" hidden>🔴</div><div id="fk-me" class="fk-me"><img alt="" src="'+fkSpr(fmAva(),S.me&&S.me.id)+'"><span class="fk-rod">🎣</span><small>'+(S.admin?"👑 ":"")+"คุณ"+'</small></div>'+
+  el.classList.remove("fk3on","fk3walk");FK.svg2=true;
+  el.innerHTML='<svg class="fk2" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+fk2Scene()+'</svg><div id="fk-others"></div>'+
+    '<svg class="fk-line" viewBox="0 0 100 100" preserveAspectRatio="none"><path id="fk-path" d="" fill="none" stroke="rgba(255,255,255,.9)" stroke-width=".22"/></svg>'+
+    '<div id="fk-bob" class="fk-bob" hidden><i></i></div><div id="fk-me" class="fk-me"><img alt="" src="'+fkSpr(fmAva(),S.me&&S.me.id)+'"><span class="fk-rod">🎣</span><small>'+(S.admin?"👑 ":"")+"คุณ"+'</small></div>'+
     '<div id="fk-hud"></div><div id="fk-play"></div><div id="fk-sheet" hidden></div>';
-  fkHud();fkOthers();fkPlay()}
+  fk2Me();  fkHud();fkOthers();fkPlay()}
 function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},rod=(c.rods||{})[I.rod||1]||{n:"เบ็ด",e:"🎣"},B=I.bait||{};
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+'</div>'+
@@ -5308,7 +5406,7 @@ function fkTick(){var G=FK.gold;if(!G)return '';var t=G.caught?(S.me&&G.by_id===
 function fkTickUpd(){var L=$("fm-lake");if(!L)return;var el=$("fk-tickw");if(!el){el=document.createElement("div");el.id="fk-tickw";L.appendChild(el)}var h=fkTick();if(el.dataset.k!==h){el.dataset.k=h;el.innerHTML=h}}
 function fkGoldLoad(){q(db.rpc("fish_gold_status")).then(function(g){var was=FK.gold&&FK.gold.caught;FK.gold=g;if(g&&g.caught&&!was&&FK.goldSeen===false&&!(S.me&&g.by_id===S.me.id))toast("🏆 "+(nick(g.by)||g.by)+" ตกปลาทองประจำวันได้แล้ว!");FK.goldSeen=false;fkHud()},function(){})}
 function fkOthers(){var el=$("fk-others");if(!el)return;var now=Date.now();
-  el.innerHTML=(FK.pres||[]).slice(0,FKSPOT.length).map(function(p,i){var s=FKSPOT[(fmHash(p.id)+i)%FKSPOT.length],L=p.last,lb=L&&now-new Date(L.at).getTime()<90000?'<em class="fk-brag">🎉 '+esc(fkFish(L.fish).n)+' '+L.weight+' กก.</em>':'';
+  el.innerHTML=(FK.pres||[]).slice(0,FKSPOT.length).map(function(p,i){var s0=FKSPOT[(fmHash(p.id)+i)%FKSPOT.length],s=fk2P(s0[0],s0[1]),L=p.last,lb=L&&now-new Date(L.at).getTime()<90000?'<em class="fk-brag">🎉 '+esc(fkFish(L.fish).n)+' '+L.weight+' กก.</em>':'';
     return '<div class="fk-oth" style="left:'+s[0]+'%;top:'+s[1]+'%">'+lb+'<img alt="" src="'+fkSpr(fkBody(p.body,p.id,p.admin),p.id)+'"><span class="fk-rod">🎣</span><small>'+(p.admin?"👑 ":"")+esc(nick(p.name)||p.name)+'</small></div>'}).join("");if(FK3.on)fk3Others()}
 /* ---------- มินิเกม: เหวี่ยง → รอ → ปลากินเบ็ด (กดทัน) → ดึง (ประคองให้ปลาอยู่ในแถบเขียว) ---------- */
 function fkPlay(){var el=$("fk-play");if(!el)return;var st=FK.st;
@@ -5320,7 +5418,7 @@ function fkPlay(){var el=$("fk-play");if(!el)return;var st=FK.st;
   else if(st==="bite")el.innerHTML='<p class="fk-say hot">'+(FK.cur&&FK.cur.gold?'✨🐠 ปลาทองประจำวันกินเบ็ด! กดเลย!':'❗ ปลากินเบ็ดแล้ว กดเลย!')+'</p><button type="button" class="fk-cast hot" data-fk="hook">⚡ ตวัดเบ็ด!</button>';
   else if(st==="reel")el.innerHTML='<div class="fk-reel"><div class="fk-bar"><i id="fk-zone"></i><b id="fk-fish">🐟</b></div><div class="fk-prog"><i id="fk-pg"></i></div></div><button type="button" class="fk-cast hold" id="fk-hold">💪 กดค้างเพื่อดึง</button><p class="fk-tip">ประคองแถบเขียวให้ทับตัวปลา จนหลอดเต็ม</p>';
   else if(st==="busy")el.innerHTML='<p class="fk-say">…</p>'}
-function fkBob(x,y,show){var b=$("fk-bob"),p=$("fk-path");if(!b||!p)return;b.hidden=!show;if(!show){p.setAttribute("d","");return}b.style.left=x+"%";b.style.top=y+"%";p.setAttribute("d","M53 74 Q "+((53+x)/2)+" "+(Math.min(74,y)-12)+" "+x+" "+(y+1.5))}
+function fkBob(x,y,show){var b=$("fk-bob"),p=$("fk-path");if(!b||!p)return;b.hidden=!show;if(!show){p.setAttribute("d","");return}var P=fk2P(x,y),T=fk2P(55.5,70.5);b.style.left=P[0]+"%";b.style.top=P[1]+"%";p.setAttribute("d","M"+T[0]+" "+T[1]+" Q "+((T[0]+P[0])/2)+" "+(Math.min(T[1],P[1])-10)+" "+P[0]+" "+(P[1]+1))}
 async function fkCast(){if(FK.st!=="idle")return;fkAutoBait();if(!FK.bait){sfx("error");toast("🪱 เหยื่อหมดแล้ว — ซื้อเหยื่อที่ร้านอุปกรณ์ก่อนนะ");fkSheet("shop");return}FK.st="busy";if(FK3.on){FK3.wind=performance.now()/1000;sfx("cast")}fkPlay();
   try{var r=await q(db.rpc("fish_cast",{p_bait:FK.bait||null}));FK.cur=r;if(!FK3.on){sfx("cast");setTimeout(function(){if(FK.st==="wait")sfx("splash")},550)}
     if(FK.info){FK.info.bait[FK.bait]=Math.max(0,(FK.info.bait[FK.bait]||0)-1);fkAutoBait();fkHud()}
@@ -5336,7 +5434,7 @@ function fkReel(){var r=FK.cur.r,zone=Math.max(.26,(FK.cur.zone||.3)+.06-(r-1)*.
     R.v+=(R.hold||FK.space?1.9:-1.6)*dt;R.v=Math.max(-1.1,Math.min(1.1,R.v));R.z+=R.v*dt;if(R.z<0){R.z=0;R.v=0}if(R.z>1-zone){R.z=1-zone;R.v=0}
     if(now>R.nt){R.ft=Math.random();R.nt=now+900+Math.random()*(1900-r*170)}R.f+=(R.ft-R.f)*Math.min(1,dt*R.fs*3);
     var inside=R.f>=R.z&&R.f<=R.z+zone;R.pg+=(inside?.4:-.06-r*.014)*dt;zEl.style.bottom=(R.z*100)+"%";fEl.style.bottom="calc("+(R.f*100)+"% - 14px)";zEl.classList.toggle("in",inside);pEl.style.height=Math.max(0,Math.min(100,R.pg*100))+"%";
-    var bb=$("fk-bob");if(bb){bb.style.left=(FK.bx+Math.sin(now/180)*1.5)+"%"}
+    var bb=$("fk-bob");if(bb){bb.style.left=fk2P(FK.bx+Math.sin(now/180)*1.5,FK.by)[0]+"%"}
     if(R.pg>=1){off();fkEnd(true);return}if(R.pg<=0||now-R.t0>30000){off();fkEnd(false,"ปลาดิ้นหลุดไปแล้ว!");return}FK.raf=requestAnimationFrame(step)};FK.raf=requestAnimationFrame(step)}
 async function fkEnd(ok,msg){cancelAnimationFrame(FK.raf);var c=FK.cur;FK.st="busy";fkPlay();
   try{var res=await q(db.rpc("fish_land",{p_id:c.id,p_ok:!!ok}));fkBob(0,0,false);
