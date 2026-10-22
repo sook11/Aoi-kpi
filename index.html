@@ -4955,16 +4955,19 @@ function fk3Walk(on){if(!FK3.on)return;if(on&&FK.st!=="idle"&&FK.st!=="result")r
   if(on){FK.st="idle";var d=fk3Dir(FK3.pos.x,FK3.pos.z);FK3.hd=Math.atan2(d[0],d[1]);FK3.cyaw=FK3.hd;FK3.ctl.enabled=false;if(FK3.me)FK3.me.rod.visible=false}
   else{FK3.spot={x:FK3.pos.x,z:FK3.pos.z};var d2=fk3Dir(FK3.pos.x,FK3.pos.z);if(FK3.me){fk3Face(FK3.me,FK3.pos.x+d2[0],FK3.pos.z+d2[1]);FK3.me.rod.visible=true}
     FK3.ctl.enabled=true;FK3.ctl.target.set(FK3.pos.x+d2[0]*6,2.2,FK3.pos.z+d2[1]*6);FK3.cam.position.set(FK3.pos.x-d2[0]*10,6.8,FK3.pos.z-d2[1]*10);FK3.ctl.update();
-    try{localStorage.setItem("aoi-fish-spot",JSON.stringify(FK3.spot))}catch(e){}fkPres()}
+    try{localStorage.setItem("aoi-fish-spot",JSON.stringify(FK3.spot))}catch(e){}if(FK.rt&&S.me)try{FK.rt.send({type:"broadcast",event:"pos",payload:{id:S.me.id,x:FK3.spot.x,z:FK3.spot.z,hd:FK3.hd||0,mv:false,stop:true}})}catch(e){}fkPres()}
   fkHud();fkPlay()}
 function fk3WalkStep(dt){var J=FK3.joy||{x:0,y:0},K=FK3.keys||{},jx=J.x+((K.d||K.ArrowRight)?1:0)-((K.a||K.ArrowLeft)?1:0),jy=J.y+((K.w||K.ArrowUp)?1:0)-((K.s||K.ArrowDown)?1:0),m=Math.min(1,Math.hypot(jx,jy)),V=FK3.me,P=FK3.pos;
   if(m>.08){var cy=FK3.cyaw,fx=Math.sin(cy),fz=Math.cos(cy),rx=-fz,rz=fx,vx=(fx*jy+rx*jx)/Math.max(1,Math.hypot(jx,jy)),vz=(fz*jy+rz*jx)/Math.max(1,Math.hypot(jx,jy)),sp=4.2*m*dt;
     var nx=P.x+vx*sp,nz=P.z+vz*sp;if(fk3Walkable(nx,nz)){P.x=nx;P.z=nz}else if(fk3Walkable(nx,P.z))P.x=nx;else if(fk3Walkable(P.x,nz))P.z=nz;
     FK3.hd=fmAng(FK3.hd,Math.atan2(vx,vz),dt*10);FK3.cyaw=fmAng(FK3.cyaw,FK3.hd,dt*1.6*m)}
   FK3.moving=m>.08;if(V){V.g.position.set(P.x,fk3OnDock(P.x,P.z)?.5:0,P.z);V.g.rotation.y=FK3.hd-Math.PI/2}
-  var cx=P.x-Math.sin(FK3.cyaw)*8.5,cz=P.z-Math.cos(FK3.cyaw)*8.5;FK3.cam.position.lerp(new THREE.Vector3(cx,6.2,cz),Math.min(1,dt*5));FK3.cam.lookAt(P.x+Math.sin(FK3.cyaw)*3,.9,P.z+Math.cos(FK3.cyaw)*3)}
+  var cx=P.x-Math.sin(FK3.cyaw)*10.5,cz=P.z-Math.cos(FK3.cyaw)*10.5;FK3.cam.position.lerp(new THREE.Vector3(cx,5.6,cz),Math.min(1,dt*5));FK3.cam.lookAt(P.x+Math.sin(FK3.cyaw)*7,.2,P.z+Math.cos(FK3.cyaw)*7);
+  var now=performance.now();if(FK.rt&&S.me&&now-(FK3.lastTx||0)>(FK3.moving?220:1500)){FK3.lastTx=now;try{FK.rt.send({type:"broadcast",event:"pos",payload:{id:S.me.id,x:+P.x.toFixed(2),z:+P.z.toFixed(2),hd:+FK3.hd.toFixed(2),mv:!!FK3.moving}})}catch(e){}}}
+function fkRtOpen(){if(FK.rt||!db.channel)return;try{FK.rt=db.channel("aoi-lake",{config:{broadcast:{self:false}}}).on("broadcast",{event:"pos"},function(m){var d=m&&m.payload;if(!d||!d.id||!FK3.on)return;var C=FK3.chars[d.id];if(!C)return;C.live={x:+d.x,z:+d.z,hd:+d.hd||0,mv:!!d.mv,stop:!!d.stop,at:Date.now()}}).subscribe()}catch(e){FK.rt=null}}
+function fkRtClose(){if(FK.rt){try{db.removeChannel(FK.rt)}catch(e){}FK.rt=null}}
 function fk3Joy(){var j=$("fk-joy");if(!j||j.dataset.on)return;j.dataset.on=1;var kn=j.querySelector("i"),id=null,c=null;
-  var mv=function(e){if(e.pointerId!==id)return;var dx=e.clientX-c[0],dy=e.clientY-c[1],r=Math.hypot(dx,dy),R=48;if(r>R){dx*=R/r;dy*=R/r}kn.style.transform="translate("+dx+"px,"+dy+"px)";FK3.joy={x:dx/R,y:-dy/R}};
+  var mv=function(e){if(e.pointerId!==id)return;var dx=e.clientX-c[0],dy=e.clientY-c[1];if(FM.rot){var tt=dx;dx=dy;dy=-tt}var r=Math.hypot(dx,dy),R=48;if(r>R){dx*=R/r;dy*=R/r}kn.style.transform="translate("+dx+"px,"+dy+"px)";FK3.joy={x:dx/R,y:-dy/R}};
   j.addEventListener("pointerdown",function(e){e.preventDefault();id=e.pointerId;var b=j.getBoundingClientRect();c=[b.left+b.width/2,b.top+b.height/2];try{j.setPointerCapture(id)}catch(x){}mv(e)});
   j.addEventListener("pointermove",mv);var up=function(e){if(e.pointerId!==id)return;id=null;kn.style.transform="";FK3.joy={x:0,y:0}};j.addEventListener("pointerup",up);j.addEventListener("pointercancel",up)}
 document.addEventListener("keydown",function(e){if(!FK3.walk)return;var k=e.key.length===1?e.key.toLowerCase():e.key;if(/^(w|a|s|d|ArrowUp|ArrowDown|ArrowLeft|ArrowRight)$/.test(k)){FK3.keys=FK3.keys||{};FK3.keys[k]=true;e.preventDefault()}});
@@ -5054,7 +5057,7 @@ function fk3Char(key,seed,name,admin){var V={g:new THREE.Group()};FK3.g.add(V.g)
   var rod=new THREE.Group();rod.position.set(.32,.95,.32);rod.rotation.z=-.95;V.g.add(rod);var L1=1.55,L2=1.15;fk3M(new THREE.CylinderGeometry(.03,.048,L1,8),0x3f2a14,0,L1/2,0,rod);fk3M(new THREE.CylinderGeometry(.07,.07,.12,10),0x111827,0,.35,.06,rod,false).rotation.x=Math.PI/2;
   var jt=new THREE.Group();jt.position.y=L1;rod.add(jt);fk3M(new THREE.CylinderGeometry(.012,.03,L2,6),0x1f2937,0,L2/2,0,jt,false);
   var tip=new THREE.Object3D();tip.position.set(0,L2,0);jt.add(tip);V.rod=rod;V.bend=jt;V.tip=tip;
-  var tg=fk3Tag((admin?"👑 ":"")+name,admin?"#92400e":"#14532d");tg.position.set(0,a==="nathan"?3.75:a==="baker"?3.4:3.1,0);tg.scale.multiplyScalar(.85);V.g.add(tg);V.tag=tg;return V}
+  var tg=fk3Tag((admin?"👑 ":"")+name,admin?"#92400e":"#14532d");tg.position.set(0,a==="nathan"?3.3:a==="baker"?3.2:3.1,0);tg.scale.multiplyScalar(.85);V.g.add(tg);V.tag=tg;return V}
 function fk3Face(V,tx,tz){var p=V.g.position;V.g.rotation.y=Math.atan2(-(tz-p.z),tx-p.x)}
 function fk3Kill(V){if(!V)return;if(V.g.parent)V.g.parent.remove(V.g);V.g.traverse(function(o){if(o.userData.shared)return;if(o.geometry&&o.geometry.dispose)o.geometry.dispose();if(o.isSprite&&o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}});if(V.bob&&V.bob.parent)V.bob.parent.remove(V.bob);if(V.line&&V.line.parent)V.line.parent.remove(V.line)}
 function fk3Me(){if(!FK3.on)return;fk3Kill(FK3.me);var V=FK3.me=fk3Char(fmAva(),S.me&&S.me.id,"คุณ",!!S.admin);if(!FK3.pos){var sp=null;try{sp=JSON.parse(localStorage.getItem("aoi-fish-spot")||"null")}catch(e){}if(!sp||!fk3Walkable(sp.x,sp.z))sp={x:0,z:4.9};FK3.pos={x:sp.x,z:sp.z};FK3.spot={x:sp.x,z:sp.z};FK3.hd=0}
@@ -5078,7 +5081,9 @@ function fk3RodPose(V,t){var r=V.rod,b=V.bend,z=-.95,bd=0,w=FK3.wind,e=w?t-w:9,s
   else if(st==="wait"){z=-1.0+Math.sin(t*1.3)*.02;bd=-.12}
   r.rotation.z+=(z-r.rotation.z)*(e<1.05?1:Math.min(1,FK3.dt*10));b.rotation.z+=(bd-b.rotation.z)*Math.min(1,FK3.dt*(e<1.05?30:10))}
 function fk3OthBob(C){var x=C.to[0],z=C.to[1],d=fk3Dir(x,z),dist=fk3OnDock(x,z)?4:3.2,bx=x+d[0]*dist,bz=z+d[1]*dist;C.bob.position.set(bx,.06,bz);C.bob.visible=true;fk3Face(C,bx,bz)}
-function fk3OthStep(C,dt){var p=C.g.position,dx=C.to[0]-p.x,dz=C.to[1]-p.z,l=Math.hypot(dx,dz);if(l<.05){if(C.walking){C.walking=false;C.rod.visible=true;fk3OthBob(C)}return}
+function fk3OthStep(C,dt){var p0=C.g.position,L=C.live;if(L){if(L.stop){C.to=[L.x,L.z];C.live=null}else if(Date.now()-L.at<2600){var k=Math.min(1,dt*7);p0.x+=(L.x-p0.x)*k;p0.z+=(L.z-p0.z)*k;p0.y=fk3OnDock(p0.x,p0.z)?.5:0;C.g.rotation.y=fmAng(C.g.rotation.y,L.hd-Math.PI/2,dt*10);
+      C.walking=L.mv&&Math.hypot(L.x-p0.x,L.z-p0.z)>.03||L.mv;C.rod.visible=false;C.line.visible=false;C.bob.visible=false;return}else{C.to=[p0.x,p0.z];C.live=null}}
+  var p=C.g.position,dx=C.to[0]-p.x,dz=C.to[1]-p.z,l=Math.hypot(dx,dz);if(l<.05){if(C.walking){C.walking=false;C.rod.visible=true;fk3OthBob(C)}return}
   C.walking=true;C.rod.visible=false;C.line.visible=false;var st=Math.min(l,3.6*dt);p.x+=dx/l*st;p.z+=dz/l*st;p.y=fk3OnDock(p.x,p.z)?.5:0;C.g.rotation.y=Math.atan2(-dz,dx)}
 function fk3Line(line,a,b,sag){var P=line.geometry.attributes.position,n=P.count;for(var i=0;i<n;i++){var u=i/(n-1),y=a.y+(b.y-a.y)*u-Math.sin(u*Math.PI)*sag;P.setXYZ(i,a.x+(b.x-a.x)*u,y,a.z+(b.z-a.z)*u)}P.needsUpdate=true}
 function fk3Ripple(x,z,s,life){var r=FK3.rip.reduce(function(m,o){return o.t0<m.t0?o:m},FK3.rip[0]);r.t0=FK3.t;r.s=s||1;r.life=life||1.6;r.m.position.x=x;r.m.position.z=z;r.m.visible=true}
@@ -5117,9 +5122,9 @@ var FKSPOT=[[13,25],[26,23],[39,22],[61,22],[74,23],[87,25],[20,96],[32,97],[70,
 function fkSpr(key,seed){var a=key||"auto";if(a==="auto")a=FKF[fmHash(seed||"x")%FKF.length];return a==="nathan"?FADSPR:a==="baker"?FBKSPR:FVSPR[(+String(a).slice(2)||0)%FVSPR.length]}
 function fkFish(k){var c=FM.cat||{},f=(c.fish||{})[k]||{n:k,e:"🐟",r:1};return f}
 function fkFE(f,sz){return '<span class="fkfe" style="font-size:'+(sz||40)+'px'+(f.hue?';filter:hue-rotate('+f.hue+'deg) saturate(1.3)':'')+'">'+f.e+'</span>'}
-function fkOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||FK.on)return;FK.on=true;FK.st="idle";
+function fkOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||FK.on)return;FK.on=true;FK.st="idle";fkRtOpen();
   var el=document.createElement("div");el.id="fm-lake";box.appendChild(el);fkDraw();fkLoad();fkPres();FK.hb=setInterval(function(){if(!document.hidden)fkPres()},20000);sfx("open")}
-function fkClose(){if(!FK.on)return;FK.on=false;fk3Stop();cancelAnimationFrame(FK.raf);clearInterval(FK.hb);var el=$("fm-lake");if(el)el.remove();q(db.rpc("fish_leave")).catch(function(){});
+function fkClose(){if(!FK.on)return;FK.on=false;fk3Stop();fkRtClose();cancelAnimationFrame(FK.raf);clearInterval(FK.hb);var el=$("fm-lake");if(el)el.remove();q(db.rpc("fish_leave")).catch(function(){});
   fmLoad().then(function(d){FM.d=d;FM.keep=true;drawFarm()},function(){})}
 async function fkLoad(){try{FK.info=await q(db.rpc("fish_info"));if(!FK.bait||!(FK.bait===""||(FK.info.bait||{})[FK.bait]>0))FK.bait="";fkHud()}catch(e){toast(thErr(e))}}
 function fkPres(){var A={p_avatar:fmAva()};if(FK3.on&&FK3.spot){A.p_x=Math.round(FK3.spot.x*100)/100;A.p_z=Math.round(FK3.spot.z*100)/100}q(db.rpc("fish_presence",A)).then(function(L){FK.pres=Array.isArray(L)?L:[];fkOthers()},function(){})}
