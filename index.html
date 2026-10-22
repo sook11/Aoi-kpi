@@ -1044,7 +1044,8 @@ body.farm-rot .ffly{rotate:90deg}
 .fk-tick{position:absolute;top:50px;left:50%;transform:translateX(-50%);width:min(62%,640px);overflow:hidden;background:linear-gradient(90deg,rgba(120,53,15,.85),rgba(202,138,4,.9),rgba(120,53,15,.85));border:2px solid #fde047;border-radius:14px;color:#fff;font-weight:800;font-size:13px;padding:4px 0;white-space:nowrap;box-shadow:0 0 14px rgba(253,224,71,.6);z-index:7;pointer-events:none}
 .fk-tick span{display:inline-block;padding-left:40%;animation:fktick 22s linear infinite}.fk-tick.done{background:linear-gradient(90deg,rgba(30,41,59,.85),rgba(71,85,105,.9),rgba(30,41,59,.85));border-color:#94a3b8;box-shadow:none}
 @keyframes fktick{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-.fk-odds{display:flex;height:7px;border-radius:4px;overflow:hidden;margin:3px 0;gap:1px}.fk-odds i{display:block}.fupgold{background:linear-gradient(#fde68a,#f59e0b)!important;color:#713f12!important;font-weight:800;margin-top:4px}.fk-mus{left:calc(12px + env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}
+.fk-odds{display:flex;height:7px;border-radius:4px;overflow:hidden;margin:3px 0;gap:1px}.fk-odds i{display:block}.fupgold{background:linear-gradient(#fde68a,#f59e0b)!important;color:#713f12!important;font-weight:800;margin-top:4px}.fk-zm{position:absolute;z-index:6;left:calc(12px + env(safe-area-inset-left,0px));top:calc(100px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:8px}.fk-zm button{width:42px;height:42px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(15,23,42,.62);color:#fff;font-size:22px;font-weight:800;cursor:pointer;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.25)}.fk-zm button:active{transform:scale(.92)}
+.fk-mus{left:calc(12px + env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}
 .fk-side{position:absolute;right:calc(10px + env(safe-area-inset-right,0px));top:56px;display:flex;flex-direction:column;gap:6px}
 .fk-side button{width:58px;height:54px;border-radius:16px;border:3px solid #fff;background:linear-gradient(#fef3c7,#fcd34d);box-shadow:0 3px 0 #b45309;font-size:22px;display:grid;place-items:center;line-height:1;cursor:pointer}.fk-side small{font-size:10px;font-weight:800;color:#78350f}
 .fk-baits{position:absolute;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:5px}
@@ -5171,7 +5172,7 @@ function fk3WalkStep(dt){var J=FK3.joy||{x:0,y:0},K=FK3.keys||{},jx=J.x+((K.d||K
     var nx=P.x+vx*sp,nz=P.z+vz*sp;if(fk3Walkable(nx,nz)){P.x=nx;P.z=nz}else if(fk3Walkable(nx,P.z))P.x=nx;else if(fk3Walkable(P.x,nz))P.z=nz;
     FK3.hd=fmAng(FK3.hd,Math.atan2(vx,vz),dt*10);FK3.cyaw=fmAng(FK3.cyaw,FK3.hd,dt*1.6*m)}
   FK3.moving=m>.08;if(FK3.moving){FK3.stT=(FK3.stT||0)+dt*m;if(FK3.stT>.36){FK3.stT=0;sfx(fk3OnDock(P.x,P.z)?"stepwood":"step")}}if(V){V.g.position.set(P.x,fk3OnDock(P.x,P.z)?.5:0,P.z);V.g.rotation.y=FK3.hd-Math.PI/2}
-  var cx=P.x-Math.sin(FK3.cyaw)*10.5,cz=P.z-Math.cos(FK3.cyaw)*10.5;FK3.cam.position.lerp(new THREE.Vector3(cx,5.6,cz),Math.min(1,dt*5));FK3.cam.lookAt(P.x+Math.sin(FK3.cyaw)*7,.2,P.z+Math.cos(FK3.cyaw)*7);
+  var zd=FK3.zd||1,cx=P.x-Math.sin(FK3.cyaw)*10.5*zd,cz=P.z-Math.cos(FK3.cyaw)*10.5*zd;FK3.cam.position.lerp(new THREE.Vector3(cx,Math.max(1.6,5.6*zd),cz),Math.min(1,dt*5));FK3.cam.lookAt(P.x+Math.sin(FK3.cyaw)*7,.2,P.z+Math.cos(FK3.cyaw)*7);
   var now=performance.now();if(FK.rt&&S.me&&now-(FK3.lastTx||0)>(FK3.moving?220:1500)){FK3.lastTx=now;try{FK.rt.send({type:"broadcast",event:"pos",payload:{id:S.me.id,x:+P.x.toFixed(2),z:+P.z.toFixed(2),hd:+FK3.hd.toFixed(2),mv:!!FK3.moving}})}catch(e){}}}
 function fkRtOpen(){if(FK.rt||!db.channel)return;try{FK.rt=db.channel("aoi-lake",{config:{broadcast:{self:false}}}).on("broadcast",{event:"gold"},function(m){var d=m&&m.payload;if(!d)return;FK.gold={caught:true,by:d.by,by_id:d.by_id,weight:d.weight};toast("🏆 "+(nick(d.by)||d.by)+" ตกปลาทองประจำวันได้แล้ว!");sfx("level");fkHud()}).on("broadcast",{event:"pos"},function(m){var d=m&&m.payload;if(!d||!d.id||!FK3.on)return;var C=FK3.chars[d.id];if(!C)return;C.live={x:+d.x,z:+d.z,hd:+d.hd||0,mv:!!d.mv,stop:!!d.stop,at:Date.now()}}).subscribe()}catch(e){FK.rt=null}}
 function fkRtClose(){if(FK.rt){try{db.removeChannel(FK.rt)}catch(e){}FK.rt=null}}
@@ -5253,10 +5254,15 @@ function fk3Build(){var cv=$("fk3-cv");if(!cv)return;var R;try{R=new THREE.WebGL
   FK3.g=g;fk3Me();fk3Others();try{fk3Extra(g)}catch(e){}if(window.FK3DBG)window.FK3DBG(FK3);
   /* กล้อง: มองจากหลังท่าเรือ หมุน/ซูมได้นิดหน่อย */
   var cam=FK3.cam=new THREE.PerspectiveCamera(46,1,.1,320);var d0=fk3Dir(FK3.spot.x,FK3.spot.z),s0=FK3.spot,dk=fk3OnDock(s0.x,s0.z);cam.position.set(s0.x-d0[0]*(dk?12.6:10),6.8,s0.z-d0[1]*(dk?12.6:10));var ctl=FK3.ctl=new THREE.OrbitControls(cam,cv);ctl.target.set(s0.x+d0[0]*(dk?6.4:6),2.2,s0.z+d0[1]*(dk?6.4:6));ctl.enablePan=false;ctl.enableDamping=true;ctl.dampingFactor=.1;
-  ctl.minDistance=8;ctl.maxDistance=22;ctl.minPolarAngle=.7;ctl.maxPolarAngle=1.42;ctl.rotateSpeed=.6;ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_ROTATE};ctl.update();
+  ctl.minDistance=9.5;ctl.maxDistance=46;ctl.minPolarAngle=.25;ctl.maxPolarAngle=1.48;ctl.zoomSpeed=1.2;FK3.zd=FK3.zd||1;ctl.rotateSpeed=.6;ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_ROTATE};ctl.update();
   var pd=null;cv.addEventListener("pointerdown",function(e){pd=[e.clientX,e.clientY,performance.now()]});cv.addEventListener("pointerup",function(e){if(!pd)return;var mv=Math.hypot(e.clientX-pd[0],e.clientY-pd[1]),dt=performance.now()-pd[2];pd=null;if(mv>8||dt>450)return;
     if($("fk-sheet")&&!$("fk-sheet").hidden||FK3.walk)return;if(FK.st==="idle")fkCast();else if(FK.st==="wait"||FK.st==="bite")fkHook()});
+  cv.addEventListener("wheel",function(e){if(FK3.walk){e.preventDefault();fk3Zoom(e.deltaY>0?1.1:.9)}},{passive:false});
+  var pz=null;cv.addEventListener("touchstart",function(e){if(e.touches.length===2)pz=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)},{passive:true});
+  cv.addEventListener("touchmove",function(e){if(!FK3.walk||e.touches.length!==2||!pz)return;var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(d>0){fk3Zoom(pz/d);pz=d}},{passive:true});
+  cv.addEventListener("touchend",function(){pz=null},{passive:true});
   window.addEventListener("resize",fk3Resize);fk3Resize();fk3Loop()}
+function fk3Zoom(f){if(!FK3.on||!FK3.cam)return;if(FK3.walk){FK3.zd=Math.max(.3,Math.min(2.6,(FK3.zd||1)*f));return}var c=FK3.ctl,o=FK3.cam.position.clone().sub(c.target),l=Math.max(c.minDistance,Math.min(c.maxDistance,o.length()*f));FK3.cam.position.copy(c.target).add(o.setLength(l));c.update()}
 function fk3BobMesh(){var b=new THREE.Group(),t=fk3M(new THREE.SphereGeometry(.17,16,10,0,6.29,0,1.6),0xef4444,0,0,0,b),u=fk3M(new THREE.SphereGeometry(.17,16,10,0,6.29,1.55,1.6),0xffffff,0,0,0,b);fk3M(new THREE.CylinderGeometry(.025,.025,.3,6),0xef4444,0,.25,0,b,false);return b}
 function fk3Resize(){if(!FK3.on||!FK3.R)return;var cv=$("fk3-cv");if(!cv)return;var W=cv.clientWidth,H=cv.clientHeight;if(!W||!H)return;FK3.R.setSize(W,H,false);FK3.cam.aspect=W/H;FK3.cam.fov=Math.min(60,46*Math.pow(Math.max(1,H/W*1.5),.6));FK3.cam.updateProjectionMatrix()}
 /* ตัวละคร (ร่างที่เลือก) + คันเบ็ด — โมเดลหันหน้าไป +x ในพิกัดของกลุ่ม */
@@ -5347,12 +5353,9 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[]};var 
   /* นางเงือก 2 ตัว: ตัวหนึ่งว่ายวนรอบทะเลสาบ · อีกตัวพักที่เกาะกลางน้ำ */
   fm3File("fk_mermaid").then(function(G){if(!ok()||!THREE.SkeletonUtils)return;var A={};G.animations.forEach(function(c,i){A[i]=c});
     function mk(){var o=THREE.SkeletonUtils.clone(G.scene);o.traverse(function(m){m.userData.shared=1;if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});return o}
-    /* ว่ายน้ำ: นอนคว่ำบนผิวน้ำ ใช้ท่า Walking เป็นจังหวะสะบัดหาง */
-    var p1=new THREE.Group(),b1=mk();b1.rotation.x=.95;b1.position.set(0,-.5,-1);b1.scale.setScalar(1.5);p1.add(b1);g.add(p1);var m1=new THREE.AnimationMixer(b1),a1=m1.clipAction(A[1]||A[0]);a1.timeScale=.55;a1.play();
-    FK3.X.mer.push({g:p1,b:b1,mx:m1,swim:1,a:0,ph:0,nextDive:performance.now()/1000+15});
-    /* พักที่เกาะ: ครึ่งตัวอยู่ในน้ำ โบกมือ */
-    var p2=new THREE.Group(),b2=mk();b2.rotation.x=.95;b2.position.set(0,-.5,-1);b2.scale.setScalar(1.35);p2.add(b2);g.add(p2);var m2=new THREE.AnimationMixer(b2),a2=m2.clipAction(A[1]||A[0]);a2.timeScale=.5;a2.time=.4;a2.play();
-    FK3.X.mer.push({g:p2,b:b2,mx:m2,swim:1,a:2,ph:2,sp:-.11,cx:-10,cz:-5,rx:4.2,rz:3.6,nextDive:performance.now()/1000+28})},function(){})}
+    /* นางเงือกตัวเดียว นั่งพักครึ่งตัวในน้ำข้างเกาะกลางน้ำ ทำท่าทางเดิม */
+    var p2=new THREE.Group(),b2=mk();b2.scale.setScalar(1.2);p2.add(b2);p2.position.set(-8.1,-1.05,-3.6);p2.rotation.y=.9;g.add(p2);var m2=new THREE.AnimationMixer(b2),a2=m2.clipAction(A[2]||A[0]);a2.play();
+    FK3.X.mer.push({g:p2,b:b2,mx:m2,swim:0,ph:2})},function(){})}
 function fk3ExtraStep(t,dt){var X=FK3.X;if(!X)return;
   X.fish.forEach(function(o){var U=o.userData;U.a+=U.sp*dt;var x=Math.cos(U.a)*FK3RX*U.r+Math.sin(t*.4+U.k)*.6,z=Math.sin(U.a)*FK3RZ*U.r;o.position.set(x,U.y+Math.sin(t*1.7+U.k)*.03,z);
     o.rotation.y=Math.atan2(-Math.sin(U.a)*FK3RX*U.sp,Math.cos(U.a)*FK3RZ*U.sp)+Math.sin(t*9+U.k)*.12;o.rotation.z=Math.sin(t*3+U.k)*.08});
@@ -5466,7 +5469,7 @@ function fkDraw(){var el=$("fm-lake");if(!el)return;if(FK3.on||FK3.tok)fk3Stop()
 function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},rod=(c.rods||{})[I.rod||1]||{n:"เบ็ด",e:"🎣"},B=I.bait||{};
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+'</div>'+
-    '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button><div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
+    '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button>'+(FK3.on?'<div class="fk-zm"><button type="button" data-fk="zin" aria-label="ซูมเข้า">＋</button><button type="button" data-fk="zout" aria-label="ซูมออก">－</button></div>':'')+'<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
     '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'</div>'+
     '<div class="fk-baits"><small class="fk-bt">เหยื่อ</small>'+
     Object.keys(c.baits||{}).map(function(k){var o=c.baits[k],n=B[k]||0;return '<button type="button" data-fkbait="'+k+'"'+(FK.bait===k?' class="on"':'')+(n?'':' disabled')+' title="'+esc(o.n)+'">'+o.e+' <b>'+n+'</b></button>'}).join("")+'</div>';fkTickUpd()}
@@ -5547,7 +5550,7 @@ document.addEventListener("click",function(ev){if(!FK.on)return;var t=ev.target.
   if(D.fk==="cast"){if(FK3.walk)fk3Walk(false);fkCast();return}if(D.fk==="hook"){fkHook();return}if(D.fk==="again"){FK.st="idle";fkPlay();return}
   if(D.fk==="x"){sfx("close");fkSheet(null);return}
   if(D.fk==="walk"){if(FK.st!=="idle"&&FK.st!=="result"){toast("ตกปลาให้จบรอบนี้ก่อนนะ");return}sfx("tap");fkSheet(null);fk3Walk(!FK3.walk);return}
-  if(D.fk==="here"){sfx("tap");fk3Walk(false);return}
+  if(D.fk==="here"){sfx("tap");fk3Walk(false);return}if(D.fk==="zin"||D.fk==="zout"){fk3Zoom(D.fk==="zin"?.75:1.33);return}
   if(D.fk==="d3"){if(FK.st!=="idle"&&FK.st!=="result"){toast("ตกปลาให้จบรอบนี้ก่อนนะ");return}var to=FK3.on||fk3Want()?"0":"1";if(to==="1"&&!fm3Ok()){toast("เครื่องนี้ไม่รองรับ 3D");return}try{localStorage.setItem("aoi-fish-3d",to)}catch(e){}sfx("tap");FK.st="idle";fkDraw();return}
   if(D.fk==="shop"||D.fk==="book"||D.fk==="ava"){sfx("open");fkSheet(D.fk);if(D.fk!=="ava")fkLoad().then(function(){if(!$("fk-sheet").hidden)fkSheet(D.fk)});return}
   if(D.fk==="board"){sfx("open");fkBoardLoad();return}
