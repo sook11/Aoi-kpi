@@ -4545,14 +4545,14 @@ function fm3Truck(par,vk){var g=new THREE.Group();par.add(g);var R=0xd6362b,RD=0
     var cg=new THREE.Group();cg.position.set(0,.02,0);g.add(cg);fm3RB(cg,.42,.36,.42,.05,0xd6a35a,-.2,1.02,.62);fm3RB(cg,.42,.36,.42,.05,0xc89448,.22,1.02,1.02);fm3RB(cg,.38,.32,.38,.05,0x16a34a,-.18,1.36,.66);
     [[.2,1.3,.98,0xef4444],[.32,1.3,1.08,0xf97316],[.12,1.32,1.12,0xfacc15]].forEach(function(f){fm3Mesh(new THREE.SphereGeometry(.1,10,8),f[3],f[0],f[1],f[2],cg)})},function(){});
   return g}
-function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;
+function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;FM3.nearP=[];FM3.pineOn=0;
   var gr=fm3Mesh(new THREE.CircleGeometry(60,48),fm3TexMat("field",[22,22]),0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
   var farm=fm3Mesh(new THREE.BoxGeometry(24.6,.3,24.6),fm3TexMat("grass",[7,7]),0,-.15,0,st,false);farm.receiveShadow=true;
   (function(){var a=fm3P(12.2,5.85),b=fm3P(15.1,11.6),yd=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0xd6b98c,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,st,false);yd.receiveShadow=true})();
   [[.75,5.15],[8.25,12.65]].forEach(function(r){var a=fm3P(r[0],12.05),b=fm3P(r[1],14.75),lz=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0x86d457,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,st,false);lz.receiveShadow=true});
   FMAP&&Object.keys(FMAP.o).forEach(function(k){var t=FMAP.o[k],xy=k.split(",").map(Number),p=fm3P(xy[0]+.5,xy[1]+.5);
     if(t==="path"){var m=fm3Mesh(new THREE.BoxGeometry(2,.06,2),FM3.pathMat||(FM3.pathMat=fm3TexMat("path",[.6,.6])),p[0],.03,p[1],st,false);m.receiveShadow=true}
-    else if(t==="tree"&&frand(xy[0]*53+xy[1]*29+7)>.4){var tkind=((xy[0]+xy[1])%3===0)?"fruit":((xy[0]*3+xy[1])%4===0?"pine":"round"),tsc=.68+((xy[0]*7+xy[1]*3)%5)/16,tw=new THREE.Group();st.add(tw);fm3Tree(tw,p[0],p[1],tsc,tkind);if(tkind!=="pine"){FM3.nearT=FM3.nearT||[];FM3.nearT.push({g:tw,x:p[0],z:p[1],s:tsc,v:FLTV[Math.floor(frand(xy[0]*31+xy[1]*17+3)*10)],r:frand(xy[0]+xy[1]*9)*6.28})}}});
+    else if(t==="tree"&&frand(xy[0]*53+xy[1]*29+7)>.4){var tkind=((xy[0]+xy[1])%3===0)?"fruit":((xy[0]*3+xy[1])%4===0?"pine":"round"),tsc=.68+((xy[0]*7+xy[1]*3)%5)/16,tw=new THREE.Group();st.add(tw);fm3Tree(tw,p[0],p[1],tsc,tkind);if(tkind==="pine"){FM3.nearP=FM3.nearP||[];FM3.nearP.push({g:tw,x:p[0],z:p[1],s:tsc,r:frand(xy[0]*7+xy[1])*6.28})}else{FM3.nearT=FM3.nearT||[];FM3.nearT.push({g:tw,x:p[0],z:p[1],s:tsc,v:FLTV[Math.floor(frand(xy[0]*31+xy[1]*17+3)*10)],r:frand(xy[0]+xy[1]*9)*6.28})}}});
   var rd=fm3Mesh(new THREE.BoxGeometry(2,.06,26),fm3TexMat("path",[.6,7.8]),fm3P(6.5,0)[0],.03,fm3P(0,12)[1]+13,st,false);rd.receiveShadow=true;
   var pc=fm3P(3.5,2);var pondR=fm3Mesh(new THREE.CylinderGeometry(3,3,.12,40),0xc8a36b,pc[0],.04,pc[1],st,false);pondR.scale.z=.6;var pond=fm3Mesh(new THREE.CylinderGeometry(2.8,2.8,.14,40),new THREE.MeshPhongMaterial({color:0x38bdf8,shininess:80}),pc[0],.06,pc[1],st,false);pond.scale.z=.58;
   FM3.ducks=[0,1].map(function(i){var d=new THREE.Group();st.add(d);fm3Mesh(new THREE.SphereGeometry(.22,14,10),0xffffff,0,.15,0,d);fm3Mesh(new THREE.SphereGeometry(.13,12,10),0x15803d,.18,.38,0,d);fm3Mesh(new THREE.ConeGeometry(.05,.14,8),0xf59e0b,.33,.36,0,d).rotation.z=-Math.PI/2;return {g:d,o:i*Math.PI,c:pc}});
@@ -4753,6 +4753,10 @@ function fm3Scenery(st){var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:
       pin=new THREE.InstancedMesh(fk3Facet(new THREE.ConeGeometry(1.3,3.4,7),function(c,cx,cy,cz,j){var v=frand(j*.9)*.06;c.setRGB(.15+v,.4+v,.22)}),new THREE.MeshLambertMaterial({vertexColors:true}),tP.length),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Z=new THREE.Matrix4().makeScale(0,0,0);
   tP.forEach(function(p,j){var s=p[3];M.compose(new THREE.Vector3(p[0],p[1]+.8*s,p[2]),Q,new THREE.Vector3(s,s,s));trk.setMatrixAt(j,M);if(p[4]<.45){M.compose(new THREE.Vector3(p[0],p[1]+2.8*s,p[2]),Q,new THREE.Vector3(s,s,s));pin.setMatrixAt(j,M);cro.setMatrixAt(j,Z)}else{M.compose(new THREE.Vector3(p[0],p[1]+2.3*s,p[2]),Q,new THREE.Vector3(s,s*.9,s));cro.setMatrixAt(j,M);pin.setMatrixAt(j,Z)}});
   [trk,cro,pin].forEach(function(m3){m3.frustumCulled=false;g.add(m3)});
+  /* ต้นสนบนเนิน → โมเดลต้นสนใหม่ */
+  fm3File("fk_pine").then(function(G3){var mm=null;G3.scene.traverse(function(o){if(o.isMesh&&!mm)mm=o});if(!mm)return;var L=tP.filter(function(p){return p[4]<.45});if(!L.length)return;var im=new THREE.InstancedMesh(mm.geometry,mm.material,L.length),M3=new THREE.Matrix4(),Q3=new THREE.Quaternion(),Y3=new THREE.Vector3(0,1,0);im.userData.shared=1;
+    L.forEach(function(p,i){var sc=p[3]*4.8;Q3.setFromAxisAngle(Y3,p[4]*40);M3.compose(new THREE.Vector3(p[0],p[1]-.1,p[2]),Q3,new THREE.Vector3(sc,sc,sc));im.setMatrixAt(i,M3)});im.frustumCulled=false;g.add(im);
+    tP.forEach(function(p,j){if(p[4]<.45)trk.setMatrixAt(j,Z)});trk.instanceMatrix.needsUpdate=true;pin.visible=false},function(){});
   /* ถนนลูกรังออกจากฟาร์ม + เสาไฟ */
   for(var zz=30;zz<200;zz+=4){var y0=fm3TerrH(1,zz),y1=fm3TerrH(1,zz+4),seg=new THREE.Mesh(new THREE.PlaneGeometry(4,4.3),fm3Mat(0xd9be8a));seg.rotation.x=-Math.PI/2+Math.atan2(y1-y0,4)*-1;seg.position.set(1,(y0+y1)/2+.06,zz+2);seg.receiveShadow=true;g.add(seg);
     if(zz%16===2){var py=fm3TerrH(4.2,zz);fm3Mesh(new THREE.CylinderGeometry(.09,.12,4.2,6),0x6b4a2b,4.2,py+2.1,zz,g,false);fm3Mesh(new THREE.BoxGeometry(1.2,.1,.1),0x6b4a2b,4.2,py+3.9,zz,g,false)}}
@@ -5680,7 +5684,9 @@ function fm3Meadow(st){var fl=[],hay=[],bar=[],crt=[],i,sd,fx,fy,ok=function(x,y
   put(new THREE.BoxGeometry(.55,.45,.55),fm3Mat(0xc08a4a),crt,function(p,q){V.set(q[0],.23,q[1]);Q.setFromAxisAngle(Y,p[2]*3);S.set(1,1,1);M.compose(V,Q,S)})}
 /* ต้นไม้ใบดกรอบฟาร์ม (แทนต้นไม้ทรงก้อน) — วาดแบบ instanced ต่อชนิด */
 var FLTV=["lt_oak","lt_oak","lt_oak","lt_oak2","lt_oak2","lt_oak2","lt_apple","lt_apple","lt_autumn","lt_cherry"];
-function fm3LeafyNear(){var L=FM3.nearT;if(!L||!L.length||FM3.leafyOn)return;FM3.leafyOn=1;var by={};L.forEach(function(t){(by[t.v]=by[t.v]||[]).push(t)});
+function fm3PineNear(){var L=FM3.nearP;if(!L||!L.length||FM3.pineOn)return;FM3.pineOn=1;fm3File("fk_pine").then(function(G){var mm=null;G.scene.traverse(function(o){if(o.isMesh&&!mm)mm=o});if(!mm)return;var st=L[0].g.parent,im=new THREE.InstancedMesh(mm.geometry,mm.material,L.length),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0);im.userData.shared=1;
+  L.forEach(function(t,i){var sc=t.s*3.9;Q.setFromAxisAngle(Y,t.r);M.compose(new THREE.Vector3(t.x,0,t.z),Q,new THREE.Vector3(sc,sc,sc));im.setMatrixAt(i,M)});im.castShadow=true;st.add(im);L.forEach(function(t){t.g.visible=false})},function(){FM3.pineOn=0})}
+function fm3LeafyNear(){fm3PineNear();var L=FM3.nearT;if(!L||!L.length||FM3.leafyOn)return;FM3.leafyOn=1;var by={};L.forEach(function(t){(by[t.v]=by[t.v]||[]).push(t)});
   Object.keys(by).forEach(function(v){fm3File(v).then(function(G){var n=G.scene.getObjectByName("K_"+v);if(!n)return;n.updateMatrixWorld(true);var A=by[v],M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),st=A[0].g.parent;
     n.traverse(function(o){if(!o.isMesh)return;var im=new THREE.InstancedMesh(o.geometry,o.material,A.length),base=o.matrixWorld.clone();im.userData.shared=1;
       A.forEach(function(t,i){var sc=t.s*1.05;Q.setFromAxisAngle(Y,t.r);M.compose(new THREE.Vector3(t.x,0,t.z),Q,new THREE.Vector3(sc,sc,sc)).multiply(base);im.setMatrixAt(i,M)});im.castShadow=true;st.add(im)});
@@ -5689,7 +5695,7 @@ function fm3ForestModels(){fm3LeafyNear();if(!FM3.forestPts||FM3.forestNew)retur
   pts.forEach(function(p){var v=p[3]<.35?"pine2":p[3]<.55?"slim":p[3]<.82?"oak":"round";(groups[v]=groups[v]||[]).push(p)});
   pts.forEach(function(p,i){if(frand(i*7+3)<.22)(groups.bush=groups.bush||[]).push([p[0]+1.4,p[1]-.9,.9+frand(i)*.6,frand(i+5)]);if(frand(i*5+1)<.08)(groups.rock=groups.rock||[]).push([p[0]-1.2,p[1]+1,1+frand(i+2),frand(i+9)])});
   var M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),LF={};
-  var PAL=[],PIN=[];groups.pine2=(groups.pine2||[]).filter(function(p,i){if(frand(i*3+.7)<.6){PIN.push(p);return false}return true});
+  var PAL=[],PIN=[];groups.pine2=(groups.pine2||[]).filter(function(p,i){PIN.push(p);return false});
   (groups.oak||[]).concat(groups.round||[],groups.slim||[]).forEach(function(p,i){if(frand(p[0]*5.3+p[1]*3.1)<.2){PAL.push(p);return}var r=frand(p[0]*13+p[1]*7),v=r<.4?"oak":r<.8?"oak2":"autumn";(LF[v]=LF[v]||[]).push(p)});
   [["fk_pine",PIN,4.4],["fk_palm",PAL,3.9]].forEach(function(T){if(!T[1].length)return;fm3File(T[0]).then(function(G3){var mm=null;G3.scene.traverse(function(o){if(o.isMesh&&!mm)mm=o});if(!mm)return;var im=new THREE.InstancedMesh(mm.geometry,mm.material,T[1].length),M3=new THREE.Matrix4();im.userData.shared=1;
     T[1].forEach(function(p,i){var s=p[2]*T[2]*(.85+frand(i*7)*.3);Q.setFromAxisAngle(Y,p[3]*6.28);M3.compose(new THREE.Vector3(p[0],0,p[1]),Q,new THREE.Vector3(s,s,s));im.setMatrixAt(i,M3)});im.castShadow=false;im.receiveShadow=false;st.add(im)},function(){})});delete groups.oak;delete groups.round;delete groups.slim;
