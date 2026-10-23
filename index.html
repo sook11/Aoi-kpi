@@ -4625,7 +4625,7 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=
   /* เล้าไก่วาดจากของที่ผู้เล่นสร้าง (h_coop) — ไม่วาดเล้าตายตัวซ้อน */
   /* ป่ารอบฟาร์ม (หลายต้น แต่วาดเป็นชุดเดียว — เบาสำหรับมือถือ) */
   var pts=[];for(var ty=-9;ty<=23;ty++)for(var tx=-9;tx<=23;tx++){if(tx>=-1&&tx<=12.6&&ty>=-1&&ty<=12.6)continue;var sd=tx*131+ty*71+999,ox=Math.max(-.5-tx,tx-12.5,0),oy=Math.max(-.5-ty,ty-12.5,0),dd=Math.hypot(ox,oy);if(dd<2.6)continue;if(frand(sd)<(dd<5?.72:.5))continue;var fx=tx+frand(sd+1)*.8,fy=ty+frand(sd+2)*.8;
-    if(fx>4.9&&fx<8.3&&fy>12)continue;if(fmInLand(fx,fy)||fmInLand(fx+.6,fy+.6)||fmInYard(fx,fy)||fmInYard(fx+.6,fy+.6))continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;if(fx>-9.4&&fx<-2.6&&fy>-.6&&fy<12.9)continue;if(fx>15.4&&fx<28.5&&fy>-.2&&fy<13.4)continue;var p=fm3P(fx,fy);if(Math.hypot(p[0],p[1])>56)continue;pts.push([p[0],p[1],(dd<5?.62:.78)+frand(sd+4)*.45,frand(sd+3)])}
+    if(fx>4.9&&fx<8.3&&fy>12)continue;if(fmInLand(fx,fy)||fmInLand(fx+.6,fy+.6)||fmInYard(fx,fy)||fmInYard(fx+.6,fy+.6))continue;if(fx>12.2&&fx<15.6&&fy>-.6&&fy<3.4)continue;if(fx>-3.2&&fx<.3&&fy>4.6&&fy<8)continue;if(fx>-9.4&&fx<-2.6&&fy>-.6&&fy<12.9)continue;if(fx>15.4&&fx<28.5&&fy>-.2&&fy<13.4)continue;if(fy>14.4&&fy<33&&fx>-1.6&&fx<15)continue;var p=fm3P(fx,fy);if(Math.hypot(p[0],p[1])>56)continue;pts.push([p[0],p[1],(dd<5?.62:.78)+frand(sd+4)*.45,frand(sd+3)])}
   fm3Meadow(st);
   var n=pts.length,tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(.16,.24,1.2,8),fm3Mat(0x8b5a2b),n),cr=new THREE.InstancedMesh(new THREE.SphereGeometry(1.1,14,10),fm3Mat(0x3f9a35),n),pn=new THREE.InstancedMesh(new THREE.ConeGeometry(1.1,2.8,14),fm3Mat(0x2f8f40),n),M=new THREE.Matrix4(),Z=new THREE.Matrix4().makeScale(0,0,0);
   pts.forEach(function(p,i){var s=p[2];M.compose(new THREE.Vector3(p[0],.6*s,p[1]),new THREE.Quaternion(),new THREE.Vector3(s,s,s));tr.setMatrixAt(i,M);
@@ -4662,11 +4662,11 @@ function fm3Dynamic(d,own){var sc=FM3.scene;if(FM3.dyn){sc.remove(FM3.dyn);FM3.d
     var bxe=fm3Bubble("🎁",true);bxe.position.y=1.45;bxg.add(bxe);FM3.bubs.push(bxe);bxg.userData.pick={fmbox:"1"};FM3.pickD.push(bxg)}
   fm3Mach(g,d,own);
   /* ที่ดินที่ยังไม่ได้ซื้อ */
-  var LL=c.land||[];FLAND.forEach(function(b,k){if(k<(d.land||0)||!LL[k])return;var lg=new THREE.Group(),cp=fm3P(b[0]+1,b[1]+1);lg.position.set(cp[0],0,cp[1]);g.add(lg);
+  for(var lk0=0;lk0<fmLandN(d);lk0++)(function(b,k){if(k<(d.land||0)||!fmLandInfo(k))return;var lg=new THREE.Group(),cp=fm3P(b[0]+1,b[1]+1);lg.position.set(cp[0],0,cp[1]);g.add(lg);
     [[-1.3,-1.2,.9],[1.4,-1.3,.8],[-1.1,1.3,.75],[1.2,1.1,.85]].forEach(function(t,j){var bu=fm3Mesh(new THREE.SphereGeometry(t[2],14,10),0x3f9a35,t[0],t[2]*.7,t[1],lg);bu.scale.y=.8;var lv=["lt_oak","lt_oak2","lt_autumn","lt_oak2"][(j+k)%4];
       fm3File(lv).then(function(G){var n=G.scene.getObjectByName("K_"+lv);if(!n)return;var w=n.clone();w.position.set(t[0],0,t[1]);w.rotation.y=j*1.7;w.scale.setScalar(t[2]*.8);bu.visible=false;lg.add(w)},function(){})});
     var nx=k===(d.land||0);fm3Box(lg,.15,1.4,.15,0x78350f,0,.7,0);fm3Box(lg,1.9,nx?.9:.6,.12,0xfef3c7,0,1.5,0).rotation.y=-.6;
-    var sp=fm3Emoji(nx?"🪧":"🔒",.9);sp.position.set(0,2.4,0);lg.add(sp);if(own&&nx){lg.userData.pick={fmland:"1"};FM3.pickD.push(lg)}});
+    var sp=fm3Emoji(nx?"🪧":"🔒",.9);sp.position.set(0,2.4,0);lg.add(sp);if(own&&nx){lg.userData.pick={fmland:"1"};FM3.pickD.push(lg)}})(fmLandXY(lk0),lk0);
   /* สัตว์เลี้ยง */
   Object.keys(FP).forEach(function(k){FP[k].live=0});FM3.pets=[];fmPets(d).forEach(function(x,i){var w=fpInit(x,i);w.live=1;var pm=fm3Chibi(x.item)||fm3Pet(FM3MK[x.item]&&!FP3C[x.item]?"dog":x.item);fm3UAttach(pm,x.item);var hold=new THREE.Group(),p=fm3P(w.x,w.y);hold.position.set(p[0],0,p[1]);hold.add(pm);g.add(hold);
     hold.userData.pick={fmpet:x.id};FM3.pickD.push(hold);FM3.pets.push({g:hold,m:pm,w:w});fm3Attach(pm,pm.userData.body,x.item)});
@@ -4721,14 +4721,14 @@ function fmSolid(fx,fy){var d=FM.v||FM.d;if(fx<-.6||fy<-.6)return true;var tx=Ma
   if(fx>12.5&&fx<14.8&&fy>.15&&fy<2.35)return true;/* บ้าน */if(fx>10.9&&fx<12.4&&fy>-.2&&fy<2.4)return true;/* ไซโล */
   if(fmInYard(fx,fy))return true;if(Math.hypot(fx+1.4,fy-6.4)<1.1)return true;/* กังหันลม */
   if(Math.abs(fx-FBB[0])<.35&&Math.abs(fy-FBB[1])<.35)return true;/* ป้าย */if(Math.abs(fx-FNB[0])<.35&&Math.abs(fy-FNB[1])<.3)return true;
-  for(var i=0;i<FLAND.length;i++){var b=FLAND[i];if(fx>b[0]-.1&&fx<b[0]+2.1&&fy>b[1]-.1&&fy<14.9)return true}
+  for(var i=0;i<fmLandN(FM.d);i++){var b=fmLandXY(i);if(fx>b[0]-.1&&fx<b[0]+2.1&&fy>b[1]-.1&&fy<b[1]+2.55)return true}
   if(d&&d.decor){var C=FM3.dpc;if(!C||C.d!==d)C=FM3.dpc={d:d,P:fmDecorPos(d)};var P=C.P;for(var j=0;j<P.length;j++){if(fx>P[j].x+.12&&fx<P[j].x+.88&&fy>P[j].y+.12&&fy<P[j].y+.88)return true}}
   return false}
 function fm3DynHit(X,Z){var T=FM3.truckG;if(T&&T.visible!==false&&Math.abs(X-T.position.x)<1&&Math.abs(Z-T.position.z)<1.9)return true;
   var L=[].concat(FM3.vill||[],FM3.walk||[],FM3.pets||[]);for(var i=0;i<L.length;i++){var g=L[i].g;if(!g||g.visible===false||!g.parent)continue;if(Math.hypot(X-g.position.x,Z-g.position.z)<.6)return true}return false}
 function fmSolidR(X,Z){var fx=X/2+6,fy=Z/2+6,r=.16;return fm3DynHit(X,Z)||fmSolid(fx,fy)||fmSolid(fx+r,fy)||fmSolid(fx-r,fy)||fmSolid(fx,fy+r)||fmSolid(fx,fy-r)}
 function fm3TPStep(dt){var T=FM3.tp,k=T.keys,g=T.g,ix=T.jx+((k.ArrowRight||k.d)?1:0)-((k.ArrowLeft||k.a)?1:0),iy=T.jy+((k.ArrowDown||k.s)?1:0)-((k.ArrowUp||k.w)?1:0),mag=Math.min(1,Math.hypot(ix,iy));T.mv=0;
-  if(mag>.12){var fx=-Math.sin(T.cy),fz=-Math.cos(T.cy),rx=Math.cos(T.cy),rz=-Math.sin(T.cy),mx=rx*ix-fx*iy,mz=rz*ix-fz*iy,l=Math.hypot(mx,mz)||1;mx/=l;mz/=l;var sp=3.6*mag,a=fm3P(-9,-3),b=fm3P(28,16);
+  if(mag>.12){var fx=-Math.sin(T.cy),fz=-Math.cos(T.cy),rx=Math.cos(T.cy),rz=-Math.sin(T.cy),mx=rx*ix-fx*iy,mz=rz*ix-fz*iy,l=Math.hypot(mx,mz)||1;mx/=l;mz/=l;var sp=3.6*mag,a=fm3P(-9,-3),b=fm3P(28,34);
     var nx=Math.max(Math.min(a[0],b[0]),Math.min(Math.max(a[0],b[0]),g.position.x+mx*sp*dt)),nz=Math.max(Math.min(a[1],b[1]),Math.min(Math.max(a[1],b[1]),g.position.z+mz*sp*dt));
     if(fmSolidR(g.position.x,g.position.z)||!fmSolidR(nx,nz)){g.position.x=nx;g.position.z=nz}else if(!fmSolidR(nx,g.position.z))g.position.x=nx;else if(!fmSolidR(g.position.x,nz))g.position.z=nz;
     g.rotation.y=fmAng(g.rotation.y,Math.atan2(-mz,mx),dt*10);if(iy<-.3)T.cy=fmAng(T.cy,Math.atan2(-mx,-mz),dt*1.2);T.mv=1}
@@ -5820,9 +5820,14 @@ function fm3Drive(holder,dt,kk,ph,eat,jump){var m=holder.userData.mdl;if(!m)retu
   m.mx.update(dt);if(m.legs.length&&kk>.02)m.legs.forEach(function(b){b.rotateX(Math.sin(ph+b.userData.o)*.55*kk)});if(m.legs.length)m.w.position.y=m.w.position.y;return true}
 /* ---------- อัปเดต 74: ที่ดินขยายฟาร์ม (ทางใต้ 4 แปลง) ---------- */
 var FLAND=[[1,12.35],[3,12.35],[8.4,12.35],[10.4,12.35]];
+/* อัปเดต 144: ที่ดินขยายได้ไม่จำกัด — แปลงที่ 5+ เรียงลงไปทางใต้ แถวละ 6 แปลง */
+var FLXS=[1,3,8.4,10.4,-1.2,12.6];
+function fmLandXY(k){if(k<FLAND.length)return FLAND[k];var r=Math.floor((k-FLAND.length)/FLXS.length)+1,cI=(k-FLAND.length)%FLXS.length;return [FLXS[cI],12.35+2.6*r]}
+function fmLandInfo(k){var c=FM.cat||{},L=c.land||[];if(k<L.length)return L[k];var m=c.land_more;if(!m)return null;var i=k-L.length+1;return {n:"ที่ดินขยาย แปลงที่ "+(k+1),cost:Math.round(m.base*Math.pow(m.mul,i)/10)*10,lv:m.lv0+m.lvstep*i}}
+function fmLandN(d){return Math.max(FLAND.length,((d&&d.land)||0)+1)}
 function fmCap(d){var c=FM.cat||{};return (c.max_plots||12)+(c.plots_per_land||4)*((d&&d.land)||0)}
-function fmPlotXY(i){if(i<=12)return [1+((i-1)%4),5+Math.floor((i-1)/4)];var z=Math.floor((i-13)/4),j=(i-13)%4,b=FLAND[z]||FLAND[0];return [b[0]+(j%2),b[1]+Math.floor(j/2)]}
-function fmInLand(fx,fy){return fy>11.95&&fy<14.9&&fx>.5&&fx<12.7}
+function fmPlotXY(i){if(i<=12)return [1+((i-1)%4),5+Math.floor((i-1)/4)];var z=Math.floor((i-13)/4),j=(i-13)%4,b=fmLandXY(z);return [b[0]+(j%2),b[1]+Math.floor(j/2)]}
+function fmInLand(fx,fy){if(fy>11.95&&fy<14.9&&fx>.5&&fx<12.7)return true;return fy>14.5&&fy<12.35+2.6*7+2.3&&fx>-1.5&&fx<14.9}
 function fmLandSvg(d,own,add){var L=(FM.cat&&FM.cat.land)||[],n=d.land||0;FLAND.forEach(function(b,k){if(k<n||!L[k])return;var x0=b[0]-.05,y0=b[1]-.1,cx=b[0]+1,cy=b[1]+1;
     var sv='';[[.2,.3,"round",.55],[1.6,.25,"pine",.6],[.4,1.6,"dark",.5],[1.7,1.5,"round",.5]].forEach(function(t){sv+=t[2]==="pine"?ftree(iso(x0+t[0],y0+t[1]),t[2],t[3],true):fleafy(iso(x0+t[0],y0+t[1]),t[3]*1.25,k*5+t[0]*3)});
     [[1,.9],[.6,1.2]].forEach(function(t){var m=iso(x0+t[0],y0+t[1]);sv+='<ellipse cx="'+fN(m[0])+'" cy="'+fN(m[1])+'" rx="9" ry="5" fill="#92400e"/><ellipse cx="'+fN(m[0])+'" cy="'+fN(m[1]-3)+'" rx="9" ry="5" fill="#d6a35a"/>'});
@@ -6389,10 +6394,10 @@ function fmShop(d,l){var c=FM.cat,cnt={};d.animals.forEach(function(a){cnt[a.ani
   h+='<div class="panel"><h3>🌳 ของแต่งฟาร์ม</h3><p class="sub">ได้ XP ทันที · โชว์ในฟาร์มให้เพื่อนมาเยี่ยม</p><div class="fshop">'+Object.keys(c.decor).filter(function(k){return !c.decor[k].pet&&!c.decor[k].fruit&&!c.decor[k].house}).map(function(k){var o=c.decor[k],lk=l<o.lv;if(FDSPR[k]&&FDSW[k])o=Object.assign({},o,{e:'<img src="'+FDSPR[k]+'" alt="" style="width:46px;height:46px;object-fit:contain">'});
     return item(o,'<small>+'+o.xp+' XP</small>'+(lk?'<small>🔒 เลเวล '+o.lv+'</small>':'<button type="button" class="sm primary" data-fmbd="'+k+'">ซื้อ '+fmc()+' '+o.cost+'</button>'),lk)}).join("")+'</div></div>';
   h+=fmMachShop(d,l);
-  var LDS=c.land||[],nl=d.land||0;if(LDS.length)h+='<div class="panel"><h3>🏞️ ซื้อที่ดินขยายฟาร์ม</h3><p class="sub">ที่ดินทางใต้ของฟาร์ม ซื้อเรียงทีละแปลง · ได้พื้นที่ปลูกผักเพิ่มแปลงละ '+(c.plots_per_land||4)+' แปลง · มีแล้ว '+nl+'/'+LDS.length+'</p><div class="fshop">'+
-    LDS.map(function(z,k){var own2=k<nl,nx=k===nl,lk=!S.admin&&l<z.lv;return '<div class="fitem'+(own2?'':lk||!nx?' lock':'')+'"><span class="em">'+(own2?'✅':'🏞️')+'</span><b>'+esc(z.n)+'</b><small>+'+(c.plots_per_land||4)+' แปลงผัก</small>'+
-      (own2?'<small>ซื้อแล้ว</small>':!nx?'<small>🔒 ซื้อที่ดินก่อนหน้าก่อน</small>':lk?'<small>🔒 เลเวล '+z.lv+'</small>':'<button type="button" class="sm primary" data-fmland="1">ซื้อ '+fmc()+' '+num(z.cost)+'</button>')+'</div>'}).join("")+'</div></div>';
-  h+='<div class="panel"><h3>🔓 ขยายแปลงผัก</h3><p class="sub">ตอนนี้ '+d.plots+'/'+fmCap(d)+' แปลง'+(d.plots>=fmCap(d)&&nl<LDS.length?' · ซื้อที่ดินเพิ่มเพื่อขยายต่อ':'')+'</p>'+(d.plots<fmCap(d)?'<button type="button" class="primary slim" data-fmx="1">ขยายแปลงที่ '+(d.plots+1)+' · '+fmc()+' '+(30*(d.plots-3))+'</button>':'<p>ขยายครบแล้ว 🎉</p>')+'</div>';
+  var nl=d.land||0,LDS=[];for(var lq=0;lq<=nl;lq++)LDS.push(fmLandInfo(lq));LDS=LDS.filter(Boolean);if(LDS.length)h+='<div class="panel"><h3>🏞️ ซื้อที่ดินขยายฟาร์ม</h3><p class="sub">ขยายได้ไม่จำกัด · ซื้อเรียงทีละแปลง ราคาแพงขึ้นเรื่อย ๆ · ได้แปลงผักเพิ่มแปลงละ '+(c.plots_per_land||4)+' แปลง · มีแล้ว '+nl+' แปลง</p><div class="fshop">'+
+    LDS.slice(Math.max(0,LDS.length-4)).map(function(z){var k=LDS.indexOf(z),own2=k<nl,nx=k===nl,lk=!S.admin&&l<z.lv;return '<div class="fitem'+(own2?'':lk?' lock':'')+'"><span class="em">'+(own2?'✅':'🏞️')+'</span><b>'+esc(z.n)+'</b><small>+'+(c.plots_per_land||4)+' แปลงผัก</small>'+
+      (own2?'<small>ซื้อแล้ว</small>':lk?'<small>🔒 เลเวล '+z.lv+'</small>':'<button type="button" class="sm primary" data-fmland="1">ซื้อ '+fmc()+' '+num(z.cost)+'</button>')+'</div>'}).join("")+'</div></div>';
+  h+='<div class="panel"><h3>🔓 ขยายแปลงผัก</h3><p class="sub">ตอนนี้ '+d.plots+'/'+fmCap(d)+' แปลง'+(d.plots>=fmCap(d)?' · ซื้อที่ดินเพิ่มเพื่อขยายต่อ':'')+'</p>'+(d.plots<fmCap(d)?'<button type="button" class="primary slim" data-fmx="1">ขยายแปลงที่ '+(d.plots+1)+' · '+fmc()+' '+(30*(d.plots-3))+'</button>':'<p>ขยายครบแล้ว 🎉</p>')+'</div>';
   return h}
 /* แตะผัก/สัตว์ที่ยังไม่พร้อม → ป้ายบอกเวลาที่เหลือ (นับถอยหลังสด ๆ 4 วินาที) */
 function fmTimeBub(ev,until,mins,label,slot){try{var o=document.getElementById("fm-tbub");if(o)o.remove();var b=document.createElement("div");b.id="fm-tbub";b.className="ftbub";document.body.appendChild(b);
