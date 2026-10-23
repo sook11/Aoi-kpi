@@ -7544,6 +7544,11 @@ function nwDraw(){var f=$("nw-feed"),qq=NW.q.trim().toLowerCase(),L=(NW.list||[]
       '<b class="nwtt">'+esc(p.title)+'</b>'+(p.body?'<p class="nwex">'+esc(p.body.slice(0,140))+(p.body.length>140?'…':'')+'</p>':'')+
       '<small class="sub">'+nwWhen(p.created_at)+(files?' · 📎 '+files+' ไฟล์':'')+' · 👁 '+(C[p.id]||0)+' คนอ่าน'+(rd?' · ✓ อ่านแล้ว':'')+'</small></div></article>'}).join("")}
 document.addEventListener("scroll",function(ev){var c=ev.target;if(!c.classList||!c.classList.contains("nwcar"))return;var i=Math.round(c.scrollLeft/Math.max(1,c.clientWidth)),d=c.nextElementSibling;if(d&&d.classList.contains("nwdots"))[].forEach.call(d.children,function(x,j){x.classList.toggle("on",j===i)})},true);
+/* สไลด์รูปอัตโนมัติ วนไปเรื่อยๆ (หยุดชั่วคราวเมื่อผู้ใช้แตะ/เลื่อนเอง หรือวิดีโอกำลังเล่น) */
+var NWAUTO={t:0};["pointerdown","touchstart","wheel"].forEach(function(evn){document.addEventListener(evn,function(ev){var c=ev.target&&ev.target.closest&&ev.target.closest(".nwcar");if(c)c._nwHold=Date.now()},{passive:true,capture:true})});
+setInterval(function(){if(document.hidden)return;var now=Date.now();document.querySelectorAll(".nwcar").forEach(function(c){var n=c.children.length;if(n<2||!c.offsetParent)return;if(c._nwHold&&now-c._nwHold<8000)return;
+  var r=c.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;if([].some.call(c.querySelectorAll("video"),function(v){return !v.paused&&!v.ended}))return;if(c.querySelector("iframe"))return;
+  var w=Math.max(1,c.clientWidth),i=Math.round(c.scrollLeft/w),nx=(i+1)%n;c.scrollTo({left:nx*w,behavior:"smooth"})})},4000);
 /* ---------- อ่านโพสต์ ---------- */
 async function nwOpen(id){var p=(NW.list||[]).filter(function(x){return x.id===id})[0];if(!p)return;var ps=(p.media||[]).filter(function(m){return m.p}).map(function(m){return m.p});try{await nwSign(ps)}catch(e){}
   var files=(p.media||[]).filter(function(m){return m.t==="file"||m.t==="link"}),C=(NW.ri&&NW.ri.counts)||{};
