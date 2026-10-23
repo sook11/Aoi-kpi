@@ -4616,7 +4616,7 @@ function fmLayApply(){if(!FLB.FPENS){FLB.FPENS=JSON.parse(JSON.stringify(FPENS))
 function fm3LayStatic(){var M=FM3.mv||{};Object.keys(M).forEach(function(k){var e=M[k],o=fmOff(k),hd=fmHid(k);e.g.position.set(o[0]*2,0,o[1]*2);e.g.visible=!hd||!!FM.lay;
   if(e.x){e.g.remove(e.x);e.x=null}if(hd&&FM.lay){var x=fm3Emoji("❌",.8);var b=new THREE.Box3().setFromObject(e.g),c=b.getCenter(new THREE.Vector3());x.position.set(c.x-e.g.position.x,1.2,c.z-e.g.position.z);e.g.add(x);e.x=x}})}
 function fmLayRefresh(){fmLayApply();fm3LayStatic();FM3.wand={};if(FM3.on&&FM3.ready&&FM.d)fm3Dynamic(FM.v||FM.d,!FM.v);fm3LaySel()}
-if(window.FM3DBG)window.__LAY={r:function(k){return fm3LayRect(k)},a:function(r){return fmLayAllowed(r)},o:function(k){return fm3LayObj(k)},fm:function(){return FM}};
+if(window.FM3DBG)window.__LAY={d:function(X,Z){return [fm3DynHit(X,Z),fmSolidR(X,Z)]},s:function(x,y){return [fmSolid(x,y),FMAP.o[Math.floor(x)+","+Math.floor(y)]]},r:function(k){return fm3LayRect(k)},a:function(r){return fmLayAllowed(r)},o:function(k){return fm3LayObj(k)},fm:function(){return FM}};
 /* กล่องไฮไลต์ของที่เลือก */
 function fm3LaySel(){if(FM3.selBox){FM3.scene.remove(FM3.selBox);FM3.selBox=null}var L=FM.lay;if(!L||!L.sel)return;var o=fm3LayObj(L.sel);if(!o)return;var b=new THREE.Box3().setFromObject(o);if(b.isEmpty())return;
   var sz=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3()),m=new THREE.Mesh(new THREE.BoxGeometry(sz.x+.3,Math.max(.4,sz.y)+.2,sz.z+.3),new THREE.MeshBasicMaterial({color:0xfacc15,transparent:true,opacity:.28,depthWrite:false}));m.position.copy(c);FM3.scene.add(m);FM3.selBox=m}
@@ -4786,12 +4786,12 @@ function fm3TPToggle(on){if(on==null)on=!FM3.tp;if(!FM3.on||!FM3.ready)on=false;
   if(cv){cv.addEventListener("pointerdown",T.pd);window.addEventListener("pointermove",T.pm);window.addEventListener("pointerup",T.pu)}
   document.addEventListener("keydown",fmTPKey);document.addEventListener("keyup",fmTPKey);var hd2=$("fm-hud");if(hd2)hd2.innerHTML=fmHud();toast("🚶 โหมดเดินเที่ยว: ลากปุ่มกลมซ้ายล่างเพื่อเดิน")}
 /* ชนสิ่งของ: ตำแหน่ง (หน่วยช่องฟาร์ม) ที่เดินผ่านไม่ได้ */
-function fmSolid(fx,fy){var d=FM.v||FM.d;if(fx<-.6||fy<-.6)return true;var tx=Math.floor(fx),ty=Math.floor(fy),t=FMAP.o[tx+","+ty];
+function fmSolid(fx,fy){var d=FM.v||FM.d;if(fx<-8.9||fy<-8.9||fx>23.9||fy>26.9)return true;var tx=Math.floor(fx),ty=Math.floor(fy),t=FMAP.o[tx+","+ty];
   if(t&&t!=="path")return true;
   var oh=fmOff("house"),ob=fmOff("barn");if(fx-oh[0]>12.5&&fx-oh[0]<14.8&&fy-oh[1]>.15&&fy-oh[1]<2.35)return true;/* บ้าน */if(fx-ob[0]>10.9&&fx-ob[0]<12.4&&fy-ob[1]>-.2&&fy-ob[1]<2.4)return true;/* ไซโล */
-  if(fmInYard(fx,fy))return true;if(Math.hypot(fx+1.4,fy-6.4)<1.1)return true;/* กังหันลม */
+  var oy=fmOff("yard");if(fmInYard(fx-oy[0],fy-oy[1]))return true;if(Math.hypot(fx+1.4,fy-6.4)<1.1)return true;/* กังหันลม */
   if(Math.abs(fx-FBB[0])<.35&&Math.abs(fy-FBB[1])<.35)return true;/* ป้าย */if(Math.abs(fx-FNB[0])<.35&&Math.abs(fy-FNB[1])<.3)return true;
-  for(var i=0;i<fmLandN(FM.d);i++){var b=fmLandXY(i);if(fx>b[0]-.1&&fx<b[0]+2.1&&fy>b[1]-.1&&fy<b[1]+2.55)return true}
+  var lo=(d&&d.land)||0;for(var i=0;i<fmLandN(FM.d);i++){var b=fmLandXY(i);if(i<lo){if(fx>b[0]-.1&&fx<b[0]+2.1&&fy>b[1]-.1&&fy<b[1]+2.55)return true}else if(Math.abs(fx-b[0]-1)<.3&&Math.abs(fy-b[1]-1.25)<.3)return true}
   if(d&&d.decor){var C=FM3.dpc;if(!C||C.d!==d)C=FM3.dpc={d:d,P:fmDecorPos(d)};var P=C.P;for(var j=0;j<P.length;j++){if(fx>P[j].x+.12&&fx<P[j].x+.88&&fy>P[j].y+.12&&fy<P[j].y+.88)return true}}
   return false}
 function fm3DynHit(X,Z){var T=FM3.truckG;if(T&&T.visible!==false&&Math.abs(X-T.position.x)<1&&Math.abs(Z-T.position.z)<1.9)return true;
