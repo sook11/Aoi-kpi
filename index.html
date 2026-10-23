@@ -4624,40 +4624,55 @@ function fm3LayObj(k){if(FM3.mv&&FM3.mv[k])return FM3.mv[k].g;var r=null;(FM3.dy
 function fmLayKind(k){return /^p:/.test(k)?"plot":/^d:/.test(k)?"decor":/^[fht]:/.test(k)?"line":"bld"}
 function fmLayName(k){var e=FM3.mv&&FM3.mv[k];if(e)return e.lab;if(/^p:/.test(k))return "แปลงผัก";if(/^d:/.test(k)){var x=(FM.d.decor||[]).filter(function(z){return "d:"+z.id===k})[0];return x?((FM.cat.decor[x.item]||{}).n||"ของแต่ง"):"ของแต่ง"}var DK={bill:"ป้ายโฆษณา",news:"ป้ายตลาด"};return DK[k]||k}
 /* พื้นที่ที่วางได้: ฟาร์มหลัก + ลานสัตว์เลี้ยง + ลานโรงงาน + ที่ดินขยายที่ซื้อแล้ว */
-function fmLayAllowed(r){var A=[[-1,-1,13.3,13.3],[-8.4,.3,-3.2,12],[12,-1,15.8,12.2]],o=fmPOwn(FM.d);fmParcels().forEach(function(P){if(o[P.id])A.push([P.x-.2,P.y-.2,P.x+P.w+.2,P.y+P.h+.2])});
+function fmLayAllowed(r){var A=[[-1,-1,13.3,13.3],[-8.4,.3,-3.2,12],[-4,-1,-.8,13.3],[12,-1,15.8,12.2]],o=fmPOwn(FM.d);fmParcels().forEach(function(P){if(o[P.id])A.push([P.x-.2,P.y-.2,P.x+P.w+.2,P.y+P.h+.2])});
   for(var i=0;i<(FM.d.land||0);i++){var b=fmLandXY(i);A.push([b[0]-.2,b[1]-.2,b[0]+2.2,b[1]+2.7])}
   return A.some(function(a){return r[0]>=a[0]-.01&&r[1]>=a[1]-.01&&r[2]<=a[2]+.01&&r[3]<=a[3]+.01})}
 function fm3LayRect(k){var o=fm3LayObj(k);if(!o)return null;o.updateMatrixWorld(true);var b=new THREE.Box3(),t=new THREE.Box3();o.traverse(function(m){if(!m.isMesh||m.isSprite||m.isInstancedMesh)return;var g=m.geometry;if(!g)return;if(!g.boundingBox)g.computeBoundingBox();t.copy(g.boundingBox).applyMatrix4(m.matrixWorld);b.union(t)});if(b.isEmpty())return null;return [b.min.x/2+6,b.min.z/2+6,b.max.x/2+6,b.max.z/2+6]}
 /* อัปเดต 152: วางของแต่งได้ทุกช่องในเขตฟาร์ม (รวมที่ว่างหลังย้ายยุ้งฉาง/หน้ากังหันลม) ยกเว้นที่ทับสิ่งของ หรือที่ดินที่ยังไม่ซื้อ */
 function fmDecorCellOK(tx,ty,self){var inPar=fmParcelDecorCells(FM.d).some(function(t){return t[0]===tx&&t[1]===ty});
-  if(!inPar&&!(tx>=-1&&tx<=15&&ty>=-1&&ty<=12))return "วางนอกเขตฟาร์มไม่ได้ — ซื้อที่ดินขยายแล้วตั้งเป็นลานของแต่ง";
+  if(!inPar&&!(tx>=-8&&tx<=15&&ty>=-1&&ty<=12))return "วางนอกเขตฟาร์มไม่ได้ — ซื้อที่ดินขยายแล้วตั้งเป็นลานของแต่ง";
   var r=[tx+.15,ty+.15,tx+.85,ty+.85];if(!inPar&&!fmLayAllowed(r))return "วางนอกเขตฟาร์มไม่ได้";
   var bad=null;Object.keys(FM3.mv||{}).concat((FM3.dyn?FM3.dyn.children:[]).filter(function(o){return o.userData.mvk&&fmLayKind(o.userData.mvk)!=="decor"}).map(function(o){return o.userData.mvk})).forEach(function(k2){if(bad||k2===self)return;var kd=fmLayKind(k2);if(kd==="decor")return;if(kd==="line"&&!/^t:/.test(k2))return;var ob=fm3LayObj(k2);if(!ob||!ob.visible||fmHid(k2))return;
     var q=fm3LayRect(k2);if(!q)return;var ox=Math.min(r[2],q[2])-Math.max(r[0],q[0]),oy=Math.min(r[3],q[3])-Math.max(r[1],q[1]);if(ox>.05&&oy>.05)bad=k2});
   if(bad)return "ทับกับ "+fmLayName(bad)+" — เลือกช่องอื่น";
-  if(Math.hypot(tx+.5+1.4,ty+.5-6.4)<1)return "ทับกับกังหันลม — เลือกช่องอื่น";
+  if(Math.hypot(tx+.5+1.4,ty+.5-6.4)<1)return "ทับกับกังหันลม — เลือกช่องอื่น";if(Math.hypot(tx+.5-PYD.pond[0],ty+.5-PYD.pond[1])<PYD.pond[2]+.3)return "ทับกับบ่อน้ำลานสัตว์ — เลือกช่องอื่น";
   return true}
-function fm3LayTap(e){var L=FM.lay,cv=FM3.renderer.domElement,rc=cv.getBoundingClientRect(),v=new THREE.Vector2((e.clientX-rc.left)/rc.width*2-1,-(e.clientY-rc.top)/rc.height*2+1);
+function fm3LayRay(cx,cy){var cv=FM3.renderer.domElement,rc=cv.getBoundingClientRect(),v=new THREE.Vector2((cx-rc.left)/rc.width*2-1,-(cy-rc.top)/rc.height*2+1);
   FM3.ray=FM3.ray||new THREE.Raycaster();FM3.ray.setFromCamera(v,FM3.cam);var objs=[];Object.keys(FM3.mv||{}).forEach(function(k){if(FM3.mv[k].g.visible)objs.push(FM3.mv[k].g)});(FM3.dyn?FM3.dyn.children:[]).forEach(function(o){if(o.userData.mvk)objs.push(o)});
-  var hits=FM3.ray.intersectObjects(objs,true),hk=null;for(var i=0;i<hits.length&&!hk;i++){var o=hits[i].object;while(o&&!o.userData.mvk)o=o.parent;if(o)hk=o.userData.mvk}
-  var gp=new THREE.Vector3();FM3.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),gp);var gx=gp.x/2+6,gy=gp.z/2+6;
-  if(!L.sel||(hk&&hk!==L.sel&&!(fmLayKind(L.sel)!=="line"&&fmLayKind(hk)==="line"))){if(!hk){sfx("tap");toast("แตะสิ่งที่ต้องการย้ายก่อน");return}L.sel=hk;sfx("tap");fmLayBar();fm3LaySel();return}
-  if(hk===L.sel&&!gp){return}
-  /* ย้ายของที่เลือกไปที่จุดที่แตะ */
-  var k=L.sel,kind=fmLayKind(k),r0=fm3LayRect(k);if(!r0)return;var cx=(r0[0]+r0[2])/2,cy=(r0[1]+r0[3])/2,snap=kind==="plot"||kind==="decor"?1:.5;
-  if(kind==="decor"){var id=k.slice(2),tx=Math.floor(gx),ty=Math.floor(gy),free=fmDecorCellOK(tx,ty,k);if(free!==true){sfx("error");toast(free||"วางตรงนี้ไม่ได้");return}
-    var cur=fmDecorPos(FM.d).filter(function(z){return z.d.id===id})[0];L.sel=null;fmMoveDecor(id,tx,ty,cur&&cur.x,cur&&cur.y);return}
-  var dx,dy;if(kind==="plot"){dx=Math.floor(gx)-Math.floor(r0[0]+.01);dy=Math.floor(gy)-Math.floor(r0[1]+.01)}else{dx=Math.round((gx-cx)/snap)*snap;dy=Math.round((gy-cy)/snap)*snap}
-  var nr=[r0[0]+dx,r0[1]+dy,r0[2]+dx,r0[3]+dy];if(!fmLayAllowed(nr)){sfx("error");toast("วางนอกพื้นที่ฟาร์มไม่ได้ — ซื้อที่ดินขยายเพิ่มได้");return}
-  if(kind!=="line"){var bad=null;Object.keys(FM3.mv||{}).concat((FM3.dyn?FM3.dyn.children:[]).filter(function(o){return o.userData.mvk&&fmLayKind(o.userData.mvk)!=="decor"}).map(function(o){return o.userData.mvk})).forEach(function(k2){if(bad||k2===k||fmLayKind(k2)==="line"||!fm3LayObj(k2).visible)return;var r=fm3LayRect(k2);if(!r)return;var ox=Math.min(nr[2],r[2])-Math.max(nr[0],r[0]),oy=Math.min(nr[3],r[3])-Math.max(nr[1],r[1]);if(ox>.25&&oy>.25)bad=k2});
-    if(bad){sfx("error");toast("ทับกับ "+fmLayName(bad)+" — เลือกจุดอื่น");return}}
-  var m=L.draft.m=L.draft.m||{},o0=fmOff(k);m[k]=[o0[0]+dx,o0[1]+dy];if(!m[k][0]&&!m[k][1])delete m[k];L.dirty=1;sfx("plant");fmLayRefresh();fmLayBar()}
-function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
+  var hits=FM3.ray.intersectObjects(objs,true),hk=null;for(var i=0;i<hits.length&&!hk;i++){var o=hits[i].object;if(FM3.selBox&&o===FM3.selBox)continue;while(o&&!o.userData.mvk)o=o.parent;if(o)hk=o.userData.mvk}
+  var gp=new THREE.Vector3();FM3.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),gp);return {hk:hk,gx:gp.x/2+6,gy:gp.z/2+6}}
+/* ประเมินการย้ายของ k ให้จุดกึ่งกลางไปอยู่ที่ (gx,gy) — คืน {ok,msg,dx,dy} โดยยังไม่บันทึก */
+function fmLayEval(k,gx,gy){var kind=fmLayKind(k),r0=fm3LayRect(k);if(!r0)return {ok:false,msg:"",dx:0,dy:0};var cx=(r0[0]+r0[2])/2,cy=(r0[1]+r0[3])/2;
+  if(kind==="decor"){var id=k.slice(2),cur=fmDecorPos(FM.d).filter(function(z){return z.d.id===id})[0];if(!cur)return {ok:false,msg:"",dx:0,dy:0};var tx=Math.floor(gx),ty=Math.floor(gy),f=fmDecorCellOK(tx,ty,k);
+    return {ok:f===true,msg:f===true?"":f,dx:tx-cur.x,dy:ty-cur.y,tx:tx,ty:ty,cx0:cur.x,cy0:cur.y,id:id}}
+  var dx,dy;if(kind==="plot"){dx=Math.round(gx-cx);dy=Math.round(gy-cy)}else{dx=Math.round((gx-cx)*2)/2;dy=Math.round((gy-cy)*2)/2}
+  var nr=[r0[0]+dx,r0[1]+dy,r0[2]+dx,r0[3]+dy];if(!fmLayAllowed(nr))return {ok:false,msg:"วางนอกพื้นที่ฟาร์มไม่ได้ — ซื้อที่ดินขยายเพิ่มได้",dx:dx,dy:dy};
+  if(kind!=="line"){var bad=null;Object.keys(FM3.mv||{}).concat((FM3.dyn?FM3.dyn.children:[]).filter(function(o){return o.userData.mvk&&fmLayKind(o.userData.mvk)!=="decor"}).map(function(o){return o.userData.mvk})).forEach(function(k2){if(bad||k2===k||fmLayKind(k2)==="line")return;var ob=fm3LayObj(k2);if(!ob||!ob.visible)return;var r=fm3LayRect(k2);if(!r)return;var ox=Math.min(nr[2],r[2])-Math.max(nr[0],r[0]),oy=Math.min(nr[3],r[3])-Math.max(nr[1],r[1]);if(ox>.25&&oy>.25)bad=k2});
+    if(bad)return {ok:false,msg:"ทับกับ "+fmLayName(bad)+" — เลือกจุดอื่น",dx:dx,dy:dy}}
+  return {ok:true,msg:"",dx:dx,dy:dy}}
+function fmLayCommit(k,ev){var L=FM.lay;if(!ev.dx&&!ev.dy)return;if(fmLayKind(k)==="decor"){L.sel=null;fmMoveDecor(ev.id,ev.tx,ev.ty,ev.cx0,ev.cy0);return}
+  var m=L.draft.m=L.draft.m||{},o0=fmOff(k);m[k]=[o0[0]+ev.dx,o0[1]+ev.dy];if(!m[k][0]&&!m[k][1])delete m[k];L.dirty=1;sfx("plant");fmLayRefresh();fmLayBar()}
+function fm3LayTap(e){var L=FM.lay;if(FM3.layDragEnd&&Date.now()-FM3.layDragEnd<350)return;var R=fm3LayRay(e.clientX,e.clientY),hk=R.hk;
+  if(!L.sel||(hk&&hk!==L.sel&&!(fmLayKind(L.sel)!=="line"&&fmLayKind(hk)==="line"))){if(!hk){sfx("tap");toast("แตะหรือกดลากสิ่งที่ต้องการย้าย");return}L.sel=hk;sfx("tap");fmLayBar();fm3LaySel();return}
+  if(hk===L.sel)return;
+  var ev=fmLayEval(L.sel,R.gx,R.gy);if(!ev.ok){sfx("error");if(ev.msg)toast(ev.msg);return}fmLayCommit(L.sel,ev)}
+/* กดค้างแล้วลาก: ของเลื่อนตามนิ้ว กรอบเขียว = วางได้ · แดง = วางไม่ได้ (ปล่อยแล้วเด้งกลับที่เดิม) */
+function fm3LayDragInit(){if(FM3.layDragOn)return;FM3.layDragOn=1;var box=document.querySelector("#v-farm .fgame")||document;
+  box.addEventListener("pointerdown",function(e){if(!FM.lay||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0)return;var R=fm3LayRay(e.clientX,e.clientY);if(!R.hk)return;var k=R.hk;if(fmLayKind(k)==="line"&&FM.lay.sel&&fmLayKind(FM.lay.sel)!=="line"&&FM.lay.sel!==k)k=FM.lay.sel;
+    var o=fm3LayObj(k),r0=fm3LayRect(k);if(!o||!r0)return;if(k!==FM.lay.sel){FM.lay.sel=k;fmLayBar();fm3LaySel()}
+    FM3.ctl.enabled=false;FM3.layDrag={k:k,o:o,p0:o.position.clone(),s0:FM3.selBox?FM3.selBox.position.clone():null,x:e.clientX,y:e.clientY,ox:(r0[0]+r0[2])/2-R.gx,oy:(r0[1]+r0[3])/2-R.gy,mv:0,ev:null,pid:e.pointerId}},true);
+  window.addEventListener("pointermove",function(e){var D=FM3.layDrag;if(!D||e.pointerId!==D.pid)return;if(!D.mv&&Math.hypot(e.clientX-D.x,e.clientY-D.y)<7)return;D.mv=1;var R=fm3LayRay(e.clientX,e.clientY),ev=fmLayEval(D.k,R.gx+D.ox,R.gy+D.oy);D.ev=ev;
+    D.o.position.set(D.p0.x+ev.dx*2,D.p0.y,D.p0.z+ev.dy*2);if(FM3.selBox&&D.s0){FM3.selBox.position.set(D.s0.x+ev.dx*2,D.s0.y,D.s0.z+ev.dy*2);FM3.selBox.material.color.setHex(ev.ok?0x22c55e:0xef4444);FM3.selBox.material.opacity=.38}});
+  var up=function(e){var D=FM3.layDrag;if(!D||(e.pointerId!=null&&e.pointerId!==D.pid))return;FM3.layDrag=null;FM3.ctl.enabled=true;if(!D.mv)return;FM3.layDragEnd=Date.now();
+    D.o.position.copy(D.p0);if(FM3.selBox&&D.s0){FM3.selBox.position.copy(D.s0);FM3.selBox.material.color.setHex(0xfacc15);FM3.selBox.material.opacity=.28}
+    var ev=D.ev;if(!ev||(!ev.dx&&!ev.dy))return;if(!ev.ok){sfx("error");if(ev.msg)toast(ev.msg+" · ของกลับที่เดิม");return}fmLayCommit(D.k,ev)};
+  window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up)}
+function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
 function fmLayEnd(save){var L=FM.lay;if(!L)return;var bar=$("fm-laybar");if(bar)bar.remove();
   var done=function(){FM.lay=null;var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.remove("flay");fmLayRefresh();var h=$("fm-hud");if(h)h.innerHTML=fmHud();if(typeof fmDockFit==="function")fmDockFit()};
   if(!save||!L.dirty){done();return}q(db.rpc("farm_layout_save",{p_layout:L.draft})).then(function(){FM.d.layout=L.draft;toast("บันทึกผังฟาร์มแล้ว ✨");sfx("buy");done()},function(e){toast(thErr(e));done()})}
 function fmLayBar(){var L=FM.lay;if(!L)return;var box=document.querySelector("#v-farm .fgame");if(!box)return;var b=$("fm-laybar");if(!b){b=document.createElement("div");b.id="fm-laybar";b.className="flaybar";box.appendChild(b)}
-  var k=L.sel,kind=k&&fmLayKind(k);b.innerHTML='<div class="flt"><b>🏗️ จัดผังฟาร์ม</b><span>'+(k?'กำลังย้าย: <b>'+esc(fmLayName(k))+'</b> → แตะจุดที่ต้องการวาง':'แตะสิ่งที่ต้องการย้าย (ยุ้งฉาง บ้าน คอก แปลงผัก รั้ว ทางเดิน ของแต่ง …)')+'</span></div><div class="flb">'+
+  var k=L.sel,kind=k&&fmLayKind(k);b.innerHTML='<div class="flt"><b>🏗️ จัดผังฟาร์ม</b><span>'+(k?'กำลังย้าย: <b>'+esc(fmLayName(k))+'</b> → แตะจุดที่ต้องการวาง':'กดลาก หรือแตะสิ่งที่ต้องการย้าย (ยุ้งฉาง บ้าน คอก แปลงผัก รั้ว ทางเดิน ของแต่ง …)')+'</span></div><div class="flb">'+
     (k?'<button type="button" data-fmlay="unsel">✋ เลิกเลือก</button>':'')+(k&&kind==="line"?'<button type="button" data-fmlay="hide">'+(fmHid(k)?'↩️ คืนกลับ':'🗑️ เอาออก')+'</button>':'')+(k&&kind!=="decor"&&(L.draft.m||{})[k]?'<button type="button" data-fmlay="back">📍 ที่เดิม</button>':'')+
     '<button type="button" data-fmlay="reset">🔄 ผังเริ่มต้น</button><button type="button" data-fmlay="decor2d">🧩 ของแต่ง (2D)</button><button type="button" data-fmlay="cancel">ยกเลิก</button><button type="button" class="primary" data-fmlay="save">✓ บันทึก</button></div>'}
 document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmlay]");if(!t||!FM.lay)return;var a=t.dataset.fmlay,L=FM.lay;ev.stopPropagation();
