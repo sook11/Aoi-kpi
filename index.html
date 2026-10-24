@@ -1175,6 +1175,11 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 .cds{font-size:9.5px;color:var(--muted);line-height:1.2}.hol{font-size:9.5px;color:#c2410c;line-height:1.2}.hol.co{color:var(--bad);font-weight:600}
 .cev{display:block;font-size:10.5px;line-height:1.3;border-radius:4px;padding:1px 4px;background:color-mix(in srgb,var(--tc) 18%,transparent);border-left:3px solid var(--tc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cev.pend{border-left-style:dashed;opacity:.75}
+.cev2{display:flex;flex-direction:column;gap:1px;margin-top:3px;padding:3px 5px 4px;border-radius:5px;background:var(--tc,#3b82f6);color:#fff;font-size:10.5px;line-height:1.25;border-left:4px solid color-mix(in srgb,var(--tc,#3b82f6) 60%,#000);min-width:0}
+.cev2 .cvb{align-self:flex-start;font-size:9px;font-weight:800;padding:0 5px;border-radius:999px;background:#fff;color:#15803d;white-space:nowrap}
+.cev2 b{font-size:11.5px;font-weight:800}.cev2 .cvn,.cev2 .cvs{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cev2 .cvs{font-size:9.5px;opacity:.9}
+.cev2.pend{background:#fffbeb;color:#92400e;border:1px dashed #f59e0b;border-left:4px solid var(--tc,#f59e0b)}.cev2.pend .cvb{background:#fbbf24;color:#78350f}.cev2.pend b{color:#1e40af}
+@media (min-width:900px){.cev2{font-size:11.5px}.cev2 b{font-size:12.5px}}
 @media (min-width:900px){.calgrid .cd{min-height:110px;padding:6px}.cdh b{font-size:15px}.cev{font-size:12px}.cds,.hol{font-size:11px}}
 .callegend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted)}.callegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .lg-co{background:var(--miss-bg);border:1px solid var(--bad)}.lg-pu{background:#ffedd5}.lg-rot{background:#facc15}.lg-pend{border:2px dashed var(--muted)}
@@ -7295,7 +7300,8 @@ async function renderLeaveCal(){
     h+='<div class="cd k-'+k+(d===today()?" today":"")+'"><div class="cdh"><b>'+(+d.slice(8))+'</b>'+(k==="rot"?'<span class="rotb">ควงกะ</span>':k==="co"?'<span class="rotb cob">หยุด</span>':'')+'</div>'+
       (k==="work"||k==="rot"||k==="co"?'<small class="cds">เช้า '+ri.day+' · ดึก '+ri.night+'</small>':'')+
       (hol?'<small class="hol'+(hol.co?" co":"")+'">'+(hol.co?"🏭 วันหยุดโรงงาน: ":"🇹🇭 ")+esc((hol.co&&hol.cn?hol.cn:hol.names).join(", "))+'</small>':(k==="sun"?'<small class="hol co">วันหยุด</small>':''))+
-      list.map(function(r){var t=lvType(r.leave_type_id);return '<span class="cev'+(r.status==="pending"?" pend":"")+'" style="--tc:'+esc(t.color)+'" title="'+esc(r.name+" · "+t.name+" · "+(r.status==="pending"?"รออนุมัติ":"อนุมัติแล้ว"))+'">'+esc(String(r.name).replace(/^(นางสาว|นาง|นาย)\s*/,"").split(/\s+/)[0])+'</span>'}).join("")+'</div>'});
+      list.map(function(r){var t=lvType(r.leave_type_id),pd=r.status==="pending",nm=String(r.name).replace(/^(นางสาว|นาง|นาย)\s*/,""),sb=(Array.isArray(r.substitutes)?r.substitutes:[]).filter(function(x){return x.date===d&&(x.name||x.rotation)})[0];
+        return '<div class="cev2'+(pd?" pend":"")+'" style="--tc:'+esc(t.color)+'" title="'+esc(r.name+" · "+t.name+" · "+(pd?"รออนุมัติ":"อนุมัติแล้ว"))+'"><span class="cvb">'+(pd?"⏳ รออนุมัติ":"✓ อนุมัติแล้ว")+'</span><b>'+esc(t.name)+(r.half_day?" (ครึ่ง"+(r.half_day==="am"?"เช้า":"บ่าย")+")":"")+'</b><span class="cvn">'+esc(nm)+(r.shift?' ('+esc(shiftLbl(r.shift))+')':'')+'</span>'+(sb?'<span class="cvs">'+(sb.rotation?"🔁 ควงกะ":"แทน: "+esc(String(sb.name).replace(/^(นางสาว|นาง|นาย)\s*/,"")))+'</span>':'')+'</div>'}).join("")+'</div>'});
   $("lc-grid").innerHTML=h;
   $("lc-list").innerHTML=rows.length?rows.map(function(r){return '<div class="row"><div class="l"><b>'+esc(r.name)+'</b><div class="lvl1">'+typeChip(r.leave_type_id)+'<span>'+esc(rangeTxt(r.start_date,r.end_date))+' · '+num(r.total_days)+' วัน</span></div><small>'+esc([deptName(r.department_id),"กะ "+shiftLbl(r.shift)].join(" · "))+'</small>'+subsHtml(r.substitutes)+'</div>'+lvStatus(r.status)+'</div>'}).join(""):emptyRow("ไม่มีคนลาในเดือนนี้");
 }
