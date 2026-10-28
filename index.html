@@ -1183,6 +1183,7 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 @media (min-width:900px){.calgrid .cd{min-height:110px;padding:6px}.cdh b{font-size:15px}.cev{font-size:12px}.cds,.hol{font-size:11px}}
 .metile.meclk{background:linear-gradient(135deg,#16a34a,#15803d)!important;border-color:#86efac!important}.metile.meclk.on{background:linear-gradient(135deg,#f97316,#dc2626)!important;border-color:#fdba74!important;animation:meclkp 1.6s ease-in-out infinite}.metile.meclk.done{background:linear-gradient(135deg,#0ea5e9,#2563eb)!important}@keyframes meclkp{50%{box-shadow:0 0 0 4px rgba(251,146,60,.35)}}
 .otsgeo{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 10px;font-size:13px}.otsrow{flex-wrap:wrap;gap:6px}.otsrow .l small{display:block}.otsrow .inline input[type=time]{width:auto}
+.lmwrap{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:12px;align-items:start}.lmmap{height:min(70vh,620px);border-radius:16px;overflow:hidden;border:1px solid var(--line,#e2e8f0);background:#e5e7eb;z-index:0}.lmlist{max-height:min(70vh,620px);overflow:auto}.lmrow .l small{display:block}.lmrow{width:100%;text-align:left;border:0;background:none;cursor:pointer;display:flex;gap:8px;align-items:center}.lmd{margin-left:auto;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}.lmd.in{background:#dcfce7;color:#166534}.lmd.out{background:#fee2e2;color:#991b1b}@media (max-width:800px){.lmwrap{grid-template-columns:1fr}.lmmap{height:55vh}}
 .callegend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted)}.callegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .lg-co{background:var(--miss-bg);border:1px solid var(--bad)}.lg-pu{background:#ffedd5}.lg-rot{background:#facc15}.lg-pend{border:2px dashed var(--muted)}
 .lvcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
@@ -1713,6 +1714,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button data-tab="telegram" class="adm">แจ้งเตือน Telegram</button>
       <button data-tab="announce" class="adm">ประกาศตัวหนังสือวิ่ง</button>
       <button data-tab="rewardadm" class="adm">จัดการรางวัล</button>
+      <button data-tab="locmap" class="adm">📍 แผนที่พนักงาน</button>
       <button data-tab="usage" class="adm">สถิติการใช้งาน</button>
       <button data-tab="settings">ตั้งค่า</button>
     </div>
@@ -1938,6 +1940,12 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   </section>
 
   <!-- ADMIN: จัดการรางวัล -->
+  <section class="view" id="v-locmap" hidden>
+    <div class="nwhead"><div><h2>📍 แผนที่พนักงาน</h2><p class="sub">ตำแหน่งล่าสุดตอนเปิดแอป (พนักงานได้รับแจ้งแล้ว) · ดูได้เฉพาะ Admin · เก็บย้อนหลัง 30 วัน</p></div>
+      <div class="inline"><button type="button" class="sm" id="lm-reload">🔄 รีเฟรช</button></div></div>
+    <div class="filters"><label>แผนก<select id="lm-dept"></select></label><label>ช่วงเวลา<select id="lm-age"><option value="1">1 ชั่วโมง</option><option value="12">12 ชั่วโมง</option><option value="24" selected>วันนี้ (24 ชม.)</option><option value="168">7 วัน</option><option value="720">30 วัน</option></select></label><label>ค้นหา<input type="search" id="lm-q" placeholder="ชื่อ / รหัส"></label></div>
+    <div class="lmwrap"><div id="lm-map" class="lmmap"></div><div class="panel lmlist"><div id="lm-sum"></div><div id="lm-rows"></div></div></div>
+  </section>
   <section class="view" id="v-rewardadm" hidden>
     <div><h2>จัดการรางวัล</h2><p class="sub">อนุมัติคำขอแลก · ตั้งของรางวัล · ให้แต้มพิเศษ (เช่น พนักงานดีเด่นประจำสัปดาห์)</p></div>
     <div class="panel"><div class="depthead"><h3>คำขอแลกรางวัล</h3><select id="ra-st" class="slimsel"><option value="pending">รออนุมัติ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ไม่อนุมัติ</option><option value="">ทั้งหมด</option></select></div><div class="rows" id="ra-reqs"></div></div>
@@ -2100,6 +2108,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <button data-tab="telegram" class="adm navx">แจ้งเตือน Telegram</button>
   <button data-tab="announce" class="adm navx">ประกาศตัวหนังสือวิ่ง</button>
   <button data-tab="rewardadm" class="adm navx">จัดการรางวัล</button>
+  <button data-tab="locmap" class="adm navx">📍 แผนที่พนักงาน</button>
   <button data-tab="usage" class="adm navx">สถิติการใช้งาน</button>
   <button data-tab="settings" class="navx">ตั้งค่า</button>
   <button data-tab="menu" class="navmore">เมนู</button>
@@ -2131,6 +2140,14 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="sd-title" style="max-width:440px">
     <div class="headrow"><h3 id="sd-title" style="font-size:18px">🌱 เลือกเมล็ดพันธุ์</h3><button type="button" class="iconbtn" data-close="m-seed" data-ico="x" aria-label="ปิด"></button></div>
     <div class="seedgrid" id="sd-list"></div>
+  </div>
+</div>
+<div class="modal" id="m-loc" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="lo-title" style="max-width:400px;text-align:center">
+    <div style="font-size:44px;line-height:1">📍</div>
+    <h3 id="lo-title" style="font-size:19px;margin:6px 0 2px">แอปนี้ใช้ตำแหน่ง (GPS) ของคุณ</h3>
+    <p class="sub" style="text-align:left">ขณะเปิดแอป ระบบจะบันทึกตำแหน่งของคุณเป็นระยะ เพื่อใช้ตรวจสอบการมาทำงาน<br>• ดูได้เฉพาะผู้ดูแลระบบ (Admin)<br>• บันทึกเฉพาะตอนเปิดแอปอยู่ ไม่ติดตามตอนปิดแอป<br>• เก็บย้อนหลัง 30 วัน แล้วลบอัตโนมัติ</p>
+    <div class="inline" style="justify-content:center;margin-top:10px"><button type="button" class="primary slim" id="lo-ok">รับทราบ</button></div>
   </div>
 </div>
 <div class="modal" id="m-clk" hidden>
@@ -2389,6 +2406,7 @@ var ICON={
   ideas:'<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.700c.600.500 1 1.300 1 2.300h6c0-1 .400-1.800 1-2.300A7 7 0 0 0 12 2z"/>',
   usage:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
   rewards:'<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1.500S9 8 12 8zM12 8c2-4 6-4 6-1.500S15 8 12 8z"/>',
+  locmap:'<path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
   rewardadm:'<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1.500S9 8 12 8zM12 8c2-4 6-4 6-1.500S15 8 12 8z"/>',
   game:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
   deduct:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',minus:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
@@ -4246,6 +4264,41 @@ async function renderMeCard(){
   }catch(e){}}
 
 
+
+/* ---------- ตำแหน่งพนักงานขณะเปิดแอป (แจ้งพนักงานก่อน) · ส่งทุก ~10 นาที ---------- */
+var LOC={last:0,t:null,deny:0};
+function locKey(){return "aoi-loc-ok-"+(S.me&&S.me.id||"")}
+function locStart(){if(!S.me||!navigator.geolocation)return;var ok=null;try{ok=localStorage.getItem(locKey())}catch(e){ok="1"}
+  if(!ok){if($("m-loc")){openModal("m-loc")}return}
+  locPing();if(!LOC.t)LOC.t=setInterval(locPing,60000);document.addEventListener("visibilitychange",function(){if(!document.hidden)locPing()})}
+function locPing(force){if(!S.me||document.hidden||!navigator.geolocation)return;if(LOC.deny&&Date.now()-LOC.deny<6*3600e3)return;if(!force&&Date.now()-LOC.last<10*60e3)return;LOC.last=Date.now();
+  navigator.geolocation.getCurrentPosition(function(p){db.rpc("loc_ping",{p_lat:p.coords.latitude,p_lng:p.coords.longitude,p_acc:Math.round(p.coords.accuracy||0)}).then(function(){},function(){})},function(e){if(e&&e.code===1)LOC.deny=Date.now()},{enableHighAccuracy:false,timeout:20000,maximumAge:300000})}
+document.addEventListener("click",function(ev){if(ev.target&&ev.target.id==="lo-ok"){try{localStorage.setItem(locKey(),"1")}catch(e){}closeModal("m-loc");locStart();setTimeout(function(){locPing(true)},200)}});
+/* หน้าแผนที่ (Admin) — Leaflet + OpenStreetMap */
+var LM={map:null,lay:null,rows:[]};
+function lmLib(){if(window.L&&window.L.map)return Promise.resolve();return new Promise(function(ok,bad){var c=document.createElement("link");c.rel="stylesheet";c.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";document.head.appendChild(c);var j=document.createElement("script");j.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";j.onload=ok;j.onerror=bad;document.head.appendChild(j)})}
+async function renderLocMap(){if(!S.admin){$("lm-rows").innerHTML=emptyRow("เฉพาะ Admin");return}
+  var ds=S.depts||[],dv=$("lm-dept").value;$("lm-dept").innerHTML='<option value="">ทุกแผนก</option>'+ds.map(function(d){return '<option value="'+d.id+'"'+(dv===d.id?' selected':'')+'>'+esc(d.name)+'</option>'}).join("");
+  $("lm-rows").innerHTML='<p class="sub">กำลังโหลด…</p>';
+  try{await lmLib()}catch(e){$("lm-map").innerHTML='<p class="sub" style="padding:12px">โหลดแผนที่ไม่สำเร็จ (ต้องต่ออินเทอร์เน็ต)</p>'}
+  var fg=null;try{fg=await q(db.rpc("factory_geo"));LM.rows=await q(db.rpc("loc_latest"))||[]}catch(e){$("lm-rows").innerHTML=emptyRow(esc(thErr(e)));return}
+  LM.fg=fg;lmDraw()}
+function lmAgo(t){var m=Math.round((Date.now()-new Date(t).getTime())/60000);return m<1?"เมื่อกี้":m<60?m+" นาทีที่แล้ว":m<1440?Math.round(m/60)+" ชม.ที่แล้ว":Math.round(m/1440)+" วันที่แล้ว"}
+function lmDraw(){var dept=$("lm-dept").value,age=+$("lm-age").value||24,qq=$("lm-q").value,fg=LM.fg;
+  var R=LM.rows.filter(function(x){var e=empOf(x.id)||{display_name:x.name,employee_no:x.no};return (!dept||x.dept_id===dept)&&(Date.now()-new Date(x.at).getTime())<=age*3600e3&&matchQ(e,qq)});
+  var inF=fg?R.filter(function(x){return x.dist!=null&&x.dist<=fg.radius}).length:0;
+  $("lm-sum").innerHTML='<div class="otsgeo"><b>'+R.length+' คน</b>'+(fg?' · 🏭 อยู่ในโรงงาน <b>'+inF+'</b> · นอกโรงงาน <b>'+(R.length-inF)+'</b>':' · <span class="sub">ยังไม่ได้ตั้งตำแหน่งโรงงาน (ตั้งที่หน้า OT)</span>')+'</div>';
+  $("lm-rows").innerHTML=R.length?R.map(function(x){var e=empOf(x.id),inside=fg&&x.dist!=null&&x.dist<=fg.radius;return '<button type="button" class="row lmrow" data-lmgo="'+x.id+'">'+(e?avatarHtml(e):'')+'<div class="l"><b>'+esc(x.name)+'</b><small>'+esc([x.no,x.dept||""].join(" · "))+'</small><small>'+lmAgo(x.at)+(x.acc?' · ±'+num(x.acc)+' ม.':'')+'</small></div>'+(fg&&x.dist!=null?'<span class="lmd '+(inside?'in':'out')+'">'+(inside?'🏭 ในโรงงาน':'📍 '+(x.dist>=1000?(x.dist/1000).toFixed(1)+' กม.':num(x.dist)+' ม.'))+'</span>':'')+'</button>'}).join(""):emptyRow("ไม่มีตำแหน่งในช่วงเวลานี้");
+  if(!window.L||!window.L.map)return;
+  if(!LM.map){LM.map=L.map("lm-map");L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(LM.map)}
+  if(LM.lay)LM.lay.remove();LM.lay=L.layerGroup().addTo(LM.map);LM.mk={};var pts=[];
+  if(fg){L.circle([fg.lat,fg.lng],{radius:fg.radius,color:"#2563eb",weight:2,fillOpacity:.08}).addTo(LM.lay).bindTooltip("🏭 โรงงาน (รัศมี "+fg.radius+" ม.)");pts.push([fg.lat,fg.lng])}
+  R.forEach(function(x){var inside=fg&&x.dist!=null&&x.dist<=fg.radius,m=L.circleMarker([x.lat,x.lng],{radius:8,color:"#fff",weight:2,fillColor:inside?"#16a34a":"#ef4444",fillOpacity:.95}).addTo(LM.lay);
+    m.bindPopup("<b>"+esc(x.name)+"</b><br>"+esc(x.dept||"")+"<br>"+lmAgo(x.at)+" · "+new Date(x.at).toLocaleString("th-TH")+(x.acc?"<br>ความแม่น ±"+x.acc+" ม.":"")+'<br><a href="https://maps.google.com/?q='+x.lat+","+x.lng+'" target="_blank" rel="noopener">เปิดใน Google Maps</a>');LM.mk[x.id]=m;pts.push([x.lat,x.lng])});
+  setTimeout(function(){LM.map.invalidateSize();if(pts.length)LM.map.fitBounds(pts,{padding:[30,30],maxZoom:16});else LM.map.setView([13.75,100.5],6)},60)}
+["lm-dept","lm-age"].forEach(function(id){var el=$(id);if(el)el.addEventListener("change",lmDraw)});
+document.addEventListener("input",function(ev){if(ev.target&&ev.target.id==="lm-q")lmDraw()});
+document.addEventListener("click",function(ev){if(ev.target&&ev.target.closest&&ev.target.closest("#lm-reload")){renderLocMap();return}var b=ev.target.closest&&ev.target.closest("[data-lmgo]");if(!b||!LM.map)return;var m=LM.mk&&LM.mk[b.dataset.lmgo];if(m){LM.map.setView(m.getLatLng(),17);m.openPopup();$("lm-map").scrollIntoView({behavior:"smooth",block:"center"})}});
 
 /* หัวหน้างานลงเวลาเข้า-เลิกงานเอง (เวลาจากเซิร์ฟเวอร์) → ระบบคิด OT · ตรวจ GPS ที่ตั้งโรงงาน */
 function clkGeo(){return new Promise(function(ok,bad){if(!navigator.geolocation)return bad({code:0});navigator.geolocation.getCurrentPosition(function(p){ok({lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy||0)})},bad,{enableHighAccuracy:true,timeout:15000,maximumAge:0})})}
@@ -7781,10 +7834,10 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-ot
   if(t.id==="ot-rsave"){var R={work:{},hol_monthly:{},hol_daily:{},sunday:$("ot-sun").checked};document.querySelectorAll("[data-otr]").forEach(function(i){var p=i.dataset.otr.split(":"),v=parseFloat(i.value);if(v>0)R[p[0]][p[1]]=v});t.disabled=true;
     q(db.from("app_settings").upsert({key:"ot_rules",value:R})).then(function(){S.settings.ot_rules=R;t.disabled=false;toast("บันทึกกฎ OT แล้ว — ใช้กับการสแกนครั้งต่อไป")},function(e){t.disabled=false;toast(thErr(e))});return}});
 
-var RENDER={ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+var RENDER={locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
+var TABS=["locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
@@ -7793,7 +7846,7 @@ function show(tab){
   var TP={att:"att_check",attqr:"att_check",attdash:"att_view",atthist:"att_view",tv:"att_view",deduct:"deduct",dedrep:"deduct",empmgr:"emp",leaveappr:"leave_view",leaveadmin:"leave_admin"};
   if(TP[tab]&&!can(TP[tab]))tab=tab.indexOf("leave")===0?"myleave":"home";
   if(tab!=="tv")document.body.classList.remove("tvmode");
-  if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms"||tab==="rewardadm"||tab==="usage")&&!S.admin)tab="home";
+  if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms"||tab==="rewardadm"||tab==="usage"||tab==="locmap")&&!S.admin)tab="home";
   if(tab==="chat"){$("chat-dot").hidden=true;$("chat-dot2").hidden=true}
   var wasFarm=S.tab==="farm";S.tab=tab;logUse(tab);document.body.classList.toggle("farm-full",tab==="farm");if(tab==="farm"&&!wasFarm)fmEnter(true);if(wasFarm&&tab!=="farm")fmEnter(false);
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
@@ -8216,7 +8269,7 @@ async function start(){
   document.querySelectorAll(".mgr").forEach(function(el){el.hidden=!S.mgr});
   document.querySelectorAll(".adm").forEach(function(el){el.hidden=!S.admin});
   applyPerms();
-  fillSelects();paintWho();lvPendingDot();
+  fillSelects();paintWho();lvPendingDot();setTimeout(locStart,2500);
   $("p-name").value=me.display_name;if(me.shift){$("p-shift").value=me.shift;$("f-shift").value=me.shift}
   $("p-phone").value=me.phone||"";$("p-birth").value=me.birth_date||"";$("p-kpi").value=me.workstation_id||"";showAvatar("p",me.avatar);
   if(me.workstation_id){$("f-kpi").value=me.workstation_id;showTarget()}
