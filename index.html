@@ -1181,6 +1181,7 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 .cev2.pend{background:#fffbeb;color:#92400e;border:1px dashed #f59e0b;border-left:4px solid var(--tc,#f59e0b)}.cev2.pend .cvb{background:#fbbf24;color:#78350f}.cev2.pend b{color:#1e40af}
 @media (min-width:900px){.cev2{font-size:11.5px}.cev2 b{font-size:12.5px}}
 @media (min-width:900px){.calgrid .cd{min-height:110px;padding:6px}.cdh b{font-size:15px}.cev{font-size:12px}.cds,.hol{font-size:11px}}
+.metile.meclk{background:linear-gradient(135deg,#16a34a,#15803d)!important;border-color:#86efac!important}.metile.meclk.on{background:linear-gradient(135deg,#f97316,#dc2626)!important;border-color:#fdba74!important;animation:meclkp 1.6s ease-in-out infinite}.metile.meclk.done{background:linear-gradient(135deg,#0ea5e9,#2563eb)!important}@keyframes meclkp{50%{box-shadow:0 0 0 4px rgba(251,146,60,.35)}}
 .callegend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted)}.callegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .lg-co{background:var(--miss-bg);border:1px solid var(--bad)}.lg-pu{background:#ffedd5}.lg-rot{background:#facc15}.lg-pend{border:2px dashed var(--muted)}
 .lvcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
@@ -4208,7 +4209,12 @@ function meTile(tab,label,big,em,cls){return '<button type="button" class="metil
 async function renderMeCard(){
   try{var d=await meLoad(),me=S.me,h=new Date().getHours(),hi=h<12?"สวัสดีตอนเช้า":h<17?"สวัสดีตอนบ่าย":"สวัสดีตอนเย็น",t=[];
     var a=d.att,att=a?(isPresent(a.status)?"✓ "+(a.check_in_time||"มาแล้ว"):esc(stShort(a.status))):"ยังไม่เช็ค";
-    t.push(meTile("myatt","เข้างานวันนี้",att,a&&a.status!=="มาทำงาน"&&a.status?esc(a.status):"",a?(a.status==="ขาดงาน"?"bad":ST_LATE.indexOf(a.status)>=0?"warn":""):""));
+    var sc=null;if(me.role&&me.role!=="employee"){try{sc=await q(db.rpc("att_self_status"))}catch(e){sc=null}}
+    if(sc&&sc.can){var otx=sc.ot&&Object.keys(sc.ot).length?Object.keys(sc.ot).map(function(k){return "OT "+k+" = "+otH(+sc.ot[k])}).join(" · "):"";
+      t.push(sc.open?'<button type="button" class="metile meclk on" data-meclock="out"><small>⏱️ เข้างาน '+esc(sc.in)+' ('+esc(shortD(sc.work_date))+')</small><b>⏹ ลงเวลาเลิกงาน</b><em>กดตอนเลิกงาน · ระบบคิด OT ให้</em></button>'
+        :sc.out&&sc.work_date===today()?'<button type="button" class="metile meclk done" data-tab="ot"><small>⏱️ วันนี้ลงเวลาแล้ว</small><b>'+esc(sc.in)+'–'+esc(sc.out)+'</b><em>'+(otx||"ไม่มี OT")+'</em></button>'
+        :'<button type="button" class="metile meclk" data-meclock="in"><small>⏱️ หัวหน้างาน ลงเวลาเอง'+(sc.out?' · ล่าสุด '+esc(sc.in)+'–'+esc(sc.out):'')+'</small><b>▶ ลงเวลาเข้างาน</b><em>กดตอนเริ่มงาน</em></button>')}
+    else t.push(meTile("myatt","เข้างานวันนี้",att,a&&a.status!=="มาทำงาน"&&a.status?esc(a.status):"",a?(a.status==="ขาดงาน"?"bad":ST_LATE.indexOf(a.status)>=0?"warn":""):""));
     var vac=d.bal.filter(function(x){var t2=lvType(x.leave_type_id);return /พักร้อน/.test(t2.name)})[0]||d.bal[0];
     if(vac)t.push(meTile("myleave",(lvType(vac.leave_type_id).name||"วันลา")+" คงเหลือ",num(vac.remaining)+' <small style="font-size:13px">วัน</small>',d.myPending?"รออนุมัติ "+d.myPending+" ใบ":"",d.myPending?"warn":""));
     else t.push(meTile("leave","ขอลางาน","📝","ลาได้ในแอป",""));
@@ -4229,6 +4235,12 @@ async function renderMeCard(){
   }catch(e){}}
 
 
+
+/* หัวหน้างานลงเวลาเข้า-เลิกงานเอง (เวลาจากเซิร์ฟเวอร์) → ระบบคิด OT */
+document.addEventListener("click",async function(ev){var b=ev.target.closest&&ev.target.closest("[data-meclock]");if(!b)return;ev.preventDefault();ev.stopPropagation();var k=b.dataset.meclock;
+  if(!armed(b,k==="in"?"แตะอีกครั้ง ยืนยันลงเวลาเข้างาน":"แตะอีกครั้ง ยืนยันลงเวลาเลิกงาน"))return;if(b.disabled)return;b.disabled=true;
+  try{var r=await q(db.rpc("att_self_clock",{p_kind:k}));var otx=r&&r.ot&&Object.keys(r.ot).length?" · "+Object.keys(r.ot).map(function(x){return "OT "+x+" = "+otH(+r.ot[x])+" ชม."}).join(" · "):"";
+    toast(k==="in"?"✅ ลงเวลาเข้างาน "+r.in+" แล้ว":"✅ ลงเวลาเลิกงาน "+r.out+" แล้ว"+(otx||" · ไม่มี OT"));ME.t=0;await meLoad(true);await renderMeCard()}catch(e){toast(thErr(e));b.disabled=false}},true);
 
 /* ---------- การเข้างานของฉัน (หน้าแรก) ---------- */
 var MS={k:"",att:[]};
