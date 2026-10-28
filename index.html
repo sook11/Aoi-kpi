@@ -1182,6 +1182,7 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 @media (min-width:900px){.cev2{font-size:11.5px}.cev2 b{font-size:12.5px}}
 @media (min-width:900px){.calgrid .cd{min-height:110px;padding:6px}.cdh b{font-size:15px}.cev{font-size:12px}.cds,.hol{font-size:11px}}
 .metile.meclk{background:linear-gradient(135deg,#16a34a,#15803d)!important;border-color:#86efac!important}.metile.meclk.on{background:linear-gradient(135deg,#f97316,#dc2626)!important;border-color:#fdba74!important;animation:meclkp 1.6s ease-in-out infinite}.metile.meclk.done{background:linear-gradient(135deg,#0ea5e9,#2563eb)!important}@keyframes meclkp{50%{box-shadow:0 0 0 4px rgba(251,146,60,.35)}}
+.otsgeo{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 10px;font-size:13px}.otsrow{flex-wrap:wrap;gap:6px}.otsrow .l small{display:block}.otsrow .inline input[type=time]{width:auto}
 .callegend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted)}.callegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .lg-co{background:var(--miss-bg);border:1px solid var(--bad)}.lg-pu{background:#ffedd5}.lg-rot{background:#facc15}.lg-pend{border:2px dashed var(--muted)}
 .lvcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
@@ -1661,6 +1662,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
     <div class="panel"><div id="ot-sum"></div><div id="ot-list"></div></div>
     <div class="panel g2" id="ot-adm" hidden><div><b>📥 นำเข้าไฟล์ OT จาก HR (Excel)</b><p class="sub">ไฟล์ "รายงานเปรียบเทียบ Budget" — ใช้คอลัมน์ รหัสพนักงาน, ประเภทพนักงาน, BG_1…BG_4 (งบ) และ OT_1_…OT_4 (ทำจริง) · นำเข้าซ้ำได้ (ทับเดือนเดิม)</p>
       <label class="filebtn" data-ico="upload">เลือกไฟล์ Excel<input type="file" id="ot-file" accept=".xlsx,.xls,.csv" hidden></label><div id="ot-imp"></div></div><div id="ot-rules"></div></div>
+    <div class="panel" id="ot-self" hidden></div>
   </section>
 
   <!-- NEWS ประชาสัมพันธ์ -->
@@ -2129,6 +2131,14 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="sd-title" style="max-width:440px">
     <div class="headrow"><h3 id="sd-title" style="font-size:18px">🌱 เลือกเมล็ดพันธุ์</h3><button type="button" class="iconbtn" data-close="m-seed" data-ico="x" aria-label="ปิด"></button></div>
     <div class="seedgrid" id="sd-list"></div>
+  </div>
+</div>
+<div class="modal" id="m-clk" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="ck-title" style="max-width:380px;text-align:center">
+    <div style="font-size:46px;line-height:1">⏱️</div>
+    <h3 id="ck-title" style="font-size:19px;margin:6px 0 2px">อย่าลืมลงเวลาเข้างานนะ</h3>
+    <p class="sub">หัวหน้างานกดลงเวลาเข้างานทุกวัน เพื่อให้ระบบนับ OT ให้ถูกต้อง<br>ต้องอยู่ที่โรงงาน (ใช้ตำแหน่ง GPS)</p>
+    <div class="inline" style="justify-content:center;margin-top:10px"><button type="button" data-close="m-clk">ไว้ทีหลัง</button><button type="button" class="primary slim" id="ck-go">▶ ลงเวลาเข้างานตอนนี้</button></div>
   </div>
 </div>
 <div class="modal" id="m-bday" hidden>
@@ -4214,7 +4224,8 @@ async function renderMeCard(){
       t.push(sc.open?'<button type="button" class="metile meclk on" data-meclock="out"><small>⏱️ เข้างาน '+esc(sc.in)+' ('+esc(shortD(sc.work_date))+')</small><b>⏹ ลงเวลาเลิกงาน</b><em>กดตอนเลิกงาน · ระบบคิด OT ให้</em></button>'
         :sc.out&&sc.work_date===today()?'<button type="button" class="metile meclk done" data-tab="ot"><small>⏱️ วันนี้ลงเวลาแล้ว</small><b>'+esc(sc.in)+'–'+esc(sc.out)+'</b><em>'+(otx||"ไม่มี OT")+'</em></button>'
         :'<button type="button" class="metile meclk" data-meclock="in"><small>⏱️ หัวหน้างาน ลงเวลาเอง'+(sc.out?' · ล่าสุด '+esc(sc.in)+'–'+esc(sc.out):'')+'</small><b>▶ ลงเวลาเข้างาน</b><em>กดตอนเริ่มงาน</em></button>')}
-    else t.push(meTile("myatt","เข้างานวันนี้",att,a&&a.status!=="มาทำงาน"&&a.status?esc(a.status):"",a?(a.status==="ขาดงาน"?"bad":ST_LATE.indexOf(a.status)>=0?"warn":""):""));
+    if(sc&&sc.can&&!sc.open&&!(sc.out&&sc.work_date===today())&&new Date().getDay()!==0){var rk="aoi-clk-remind-"+(me.id||"");try{if(localStorage.getItem(rk)!==today()){localStorage.setItem(rk,today());setTimeout(function(){if($("m-bday")&&!$("m-bday").hidden)return;openModal("m-clk")},900)}}catch(e){}}
+    else if(!(sc&&sc.can))t.push(meTile("myatt","เข้างานวันนี้",att,a&&a.status!=="มาทำงาน"&&a.status?esc(a.status):"",a?(a.status==="ขาดงาน"?"bad":ST_LATE.indexOf(a.status)>=0?"warn":""):""));
     var vac=d.bal.filter(function(x){var t2=lvType(x.leave_type_id);return /พักร้อน/.test(t2.name)})[0]||d.bal[0];
     if(vac)t.push(meTile("myleave",(lvType(vac.leave_type_id).name||"วันลา")+" คงเหลือ",num(vac.remaining)+' <small style="font-size:13px">วัน</small>',d.myPending?"รออนุมัติ "+d.myPending+" ใบ":"",d.myPending?"warn":""));
     else t.push(meTile("leave","ขอลางาน","📝","ลาได้ในแอป",""));
@@ -4236,10 +4247,13 @@ async function renderMeCard(){
 
 
 
-/* หัวหน้างานลงเวลาเข้า-เลิกงานเอง (เวลาจากเซิร์ฟเวอร์) → ระบบคิด OT */
+/* หัวหน้างานลงเวลาเข้า-เลิกงานเอง (เวลาจากเซิร์ฟเวอร์) → ระบบคิด OT · ตรวจ GPS ที่ตั้งโรงงาน */
+function clkGeo(){return new Promise(function(ok,bad){if(!navigator.geolocation)return bad({code:0});navigator.geolocation.getCurrentPosition(function(p){ok({lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy||0)})},bad,{enableHighAccuracy:true,timeout:15000,maximumAge:0})})}
+document.addEventListener("click",function(ev){if(ev.target&&ev.target.id==="ck-go"){var t=document.querySelector('[data-meclock="in"]');if(t){t.dataset.armed="1";t.click()}else closeModal("m-clk")}});
 document.addEventListener("click",async function(ev){var b=ev.target.closest&&ev.target.closest("[data-meclock]");if(!b)return;ev.preventDefault();ev.stopPropagation();var k=b.dataset.meclock;
   if(!armed(b,k==="in"?"แตะอีกครั้ง ยืนยันลงเวลาเข้างาน":"แตะอีกครั้ง ยืนยันลงเวลาเลิกงาน"))return;if(b.disabled)return;b.disabled=true;
-  try{var r=await q(db.rpc("att_self_clock",{p_kind:k}));var otx=r&&r.ot&&Object.keys(r.ot).length?" · "+Object.keys(r.ot).map(function(x){return "OT "+x+" = "+otH(+r.ot[x])+" ชม."}).join(" · "):"";
+  var gp=null;try{toast("📍 กำลังหาตำแหน่ง GPS…");gp=await clkGeo()}catch(ge){gp=null;if(ge&&ge.code===1){toast("⚠️ ต้องอนุญาตให้เข้าถึงตำแหน่ง (GPS) ก่อนลงเวลา — ตั้งค่าเบราว์เซอร์ > อนุญาตตำแหน่ง");b.disabled=false;return}}
+  try{var r=await q(db.rpc("att_self_clock",{p_kind:k,p_lat:gp&&gp.lat,p_lng:gp&&gp.lng,p_acc:gp&&gp.acc}));closeModal("m-clk");var otx=r&&r.ot&&Object.keys(r.ot).length?" · "+Object.keys(r.ot).map(function(x){return "OT "+x+" = "+otH(+r.ot[x])+" ชม."}).join(" · "):"";
     toast(k==="in"?"✅ ลงเวลาเข้างาน "+r.in+" แล้ว":"✅ ลงเวลาเลิกงาน "+r.out+" แล้ว"+(otx||" · ไม่มี OT"));ME.t=0;await meLoad(true);await renderMeCard()}catch(e){toast(thErr(e));b.disabled=false}},true);
 
 /* ---------- การเข้างานของฉัน (หน้าแรก) ---------- */
@@ -7677,7 +7691,28 @@ async function renderOT(){var cur=today().slice(0,7);if(!OT.ym)OT.ym=cur;
   if(otMgr()){var ds=S.depts||[];$("ot-dept").innerHTML='<option value="">ทุกแผนก</option>'+ds.map(function(d){return '<option value="'+d.id+'"'+(OT.dept===d.id?' selected':'')+'>'+esc(d.name)+'</option>'}).join("")}
   $("ot-list").innerHTML='<p class="sub">กำลังโหลด…</p>';
   try{OT.rows=await q(db.rpc("ot_report",{p_ym:OT.ym}))||[]}catch(e){$("ot-list").innerHTML=emptyRow(esc(thErr(e)));return}
-  otDraw();if(S.admin)otRulesDraw()}
+  otDraw();if(S.admin){otRulesDraw();otSelfDraw()}}
+/* Admin: เวลาเข้า-เลิกงานของหัวหน้างาน (แก้ได้ เช่น ลืมกด) + ตั้งตำแหน่งโรงงาน (GPS) */
+var OTS={d:""};
+async function otSelfDraw(){var P=$("ot-self");if(!P||!S.admin)return;P.hidden=false;OTS.d=OTS.d||today();var fg=null,L=[];
+  try{fg=await q(db.rpc("factory_geo"))}catch(e){}
+  try{L=await q(db.rpc("att_self_list",{p_date:OTS.d}))||[]}catch(e){P.innerHTML=emptyRow(esc(thErr(e)));return}
+  var otT=function(o){return o&&Object.keys(o).length?Object.keys(o).map(function(k){return "OT "+k+" = "+otH(+o[k])}).join(" · "):"–"},gz=function(g){return g?(g.dist!=null?"📍 "+num(g.dist)+" ม.":"📍 มีพิกัด")+(g.acc?" (±"+num(g.acc)+")":""):""};
+  P.innerHTML='<div class="headrow"><b>🧑‍💼 เวลาเข้า-เลิกงานหัวหน้างาน</b><label class="inline">วันที่<input type="date" id="ots-d" value="'+OTS.d+'"></label></div>'+
+    '<p class="sub">หัวหน้างานกดลงเวลาเองที่หน้าแรก (ต้องอยู่ในรัศมีโรงงาน) · ลืมกด/กดผิด Admin แก้เวลาได้ที่นี่ ระบบคิด OT ใหม่ให้ · เวลาเลิกงานน้อยกว่าเวลาเข้า = ข้ามวัน</p>'+
+    '<div class="otsgeo"><b>📍 ตำแหน่งโรงงาน:</b> '+(fg?esc(fg.lat+", "+fg.lng)+' · รัศมี <input type="number" id="ots-r" min="50" max="5000" step="50" value="'+fg.radius+'" style="width:80px"> ม. <a href="https://maps.google.com/?q='+fg.lat+','+fg.lng+'" target="_blank" rel="noopener">ดูแผนที่</a>':'<span class="sub">ยังไม่ได้ตั้ง (ตอนนี้ลงเวลาได้ทุกที่)</span> · รัศมี <input type="number" id="ots-r" min="50" max="5000" step="50" value="300" style="width:80px"> ม.')+
+    ' <button type="button" class="sm" id="ots-here">📍 ตั้งเป็นตำแหน่งฉันตอนนี้ (ยืนอยู่ที่โรงงาน)</button>'+(fg?' <button type="button" class="sm" id="ots-rsave">บันทึกรัศมี</button> <button type="button" class="sm" id="ots-off">ปิดการตรวจ GPS</button>':'')+'</div>'+
+    '<div class="otslist">'+(L.length?L.map(function(x){return '<div class="row otsrow"><div class="l"><b>'+esc(x.name)+'</b><small>'+esc([x.no,x.dept||""].join(" · "))+(x.note?' · '+esc(x.note):'')+'</small><small>'+(x.in?'เข้า '+esc(x.in)+' '+gz(x.in_geo):'ยังไม่ลงเวลา')+(x.out?' · ออก '+esc(x.out)+' '+gz(x.out_geo):x.in?' · ยังไม่กดเลิกงาน':'')+' · <b>'+otT(x.ot)+'</b></small></div>'+
+      '<div class="inline"><input type="time" data-otsin="'+x.id+'" value="'+esc(x.in||"")+'"><span>–</span><input type="time" data-otsout="'+x.id+'" value="'+esc(x.out||"")+'"><button type="button" class="sm primary" data-otssave="'+x.id+'">บันทึก</button>'+(x.in?'<button type="button" class="sm" data-otsdel="'+x.id+'" title="ลบการลงเวลาวันนี้">🗑️</button>':'')+'</div></div>'}).join(""):emptyRow("ไม่มีหัวหน้างานในระบบ"))+'</div>'}
+document.addEventListener("change",function(ev){if(ev.target&&ev.target.id==="ots-d"){OTS.d=ev.target.value||today();otSelfDraw()}});
+document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("#ots-here,#ots-rsave,#ots-off,[data-otssave],[data-otsdel]");if(!t||!S.admin)return;var rad=+(($("ots-r")||{}).value||300);
+  try{if(t.id==="ots-here"){if(!armed(t,"แตะอีกครั้ง ยืนยันว่ายืนอยู่ที่โรงงาน"))return;toast("📍 กำลังหาตำแหน่ง…");var g=await clkGeo();await q(db.rpc("factory_geo_set",{p_lat:g.lat,p_lng:g.lng,p_radius:rad}));toast("✅ ตั้งตำแหน่งโรงงานแล้ว (±"+g.acc+" ม.) · รัศมี "+rad+" ม.")}
+    else if(t.id==="ots-rsave"){var f=await q(db.rpc("factory_geo"));await q(db.rpc("factory_geo_set",{p_lat:f.lat,p_lng:f.lng,p_radius:rad}));toast("✅ บันทึกรัศมี "+rad+" ม.")}
+    else if(t.id==="ots-off"){if(!armed(t,"แตะอีกครั้ง ปิดการตรวจ GPS"))return;await q(db.rpc("factory_geo_set",{p_lat:null,p_lng:null,p_radius:null}));toast("ปิดการตรวจ GPS แล้ว")}
+    else if(t.dataset.otsdel){if(!armed(t,"แตะอีกครั้ง"))return;await q(db.rpc("att_self_edit",{p_emp:t.dataset.otsdel,p_date:OTS.d,p_in:null,p_out:null}));toast("ลบการลงเวลาแล้ว")}
+    else{var id=t.dataset.otssave,vi=(document.querySelector('[data-otsin="'+id+'"]')||{}).value,vo=(document.querySelector('[data-otsout="'+id+'"]')||{}).value;if(!vi){toast("ใส่เวลาเข้างานก่อน");return}
+      var o=await q(db.rpc("att_self_edit",{p_emp:id,p_date:OTS.d,p_in:vi,p_out:vo||null}));toast("✅ บันทึกเวลาแล้ว · "+(o&&Object.keys(o).length?Object.keys(o).map(function(k){return "OT "+k+" = "+otH(+o[k])}).join(" · "):"ไม่มี OT"))}
+    otSelfDraw()}catch(e){toast(e&&e.code===1?"ต้องอนุญาตให้เข้าถึงตำแหน่ง (GPS)":thErr(e))}});
 function otChips(s){return '<div class="otchips">'+OTR.map(function(k){return '<span style="--c:'+OTC[k]+'"><small>'+OTN[k]+'</small><b>'+otH(s.r[k])+'</b></span>'}).join("")+'</div>'}
 function otDraw(){var me=S.me&&S.me.id,mine=(OT.rows||[]).filter(function(r){return r.id===me})[0],qq=OT.q.trim().toLowerCase();
   var my=$("ot-mine");if(mine){var s=otSum(mine);my.hidden=false;my.innerHTML='<div class="headrow"><b>⏱️ OT ของฉัน · '+otYmName(OT.ym)+'</b><button type="button" class="sm" data-otdet="'+mine.id+'">ดูรายวัน</button></div>'+otChips(s)+
