@@ -4476,7 +4476,7 @@ function qz3Chibi(k,c,av){var nm=FCH[c%FCH.length];Promise.all([fm3File("c_"+nm)
   if(R[1]){var hit=new THREE.Raycaster(new THREE.Vector3(0,FY,5),new THREE.Vector3(0,0,-1)).intersectObject(o,true)[0];if(hit){var W=.26,Hh=.29,geo=new THREE.CircleGeometry(.5,40),pa=geo.attributes.position;for(var v=0;v<pa.count;v++){var x=pa.getX(v),y=pa.getY(v);pa.setXYZ(v,x*W,y*Hh,-(x*x*W*W+y*y*Hh*Hh)*1.6)}geo.computeVertexNormals();
     var fm=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map:R[1],emissiveMap:R[1],emissive:0xffffff,emissiveIntensity:.55,transparent:true,roughness:.85}));fm.position.set(hit.point.x,FY-.01,hit.point.z+.012);b.add(fm)}}
   w.scale.setScalar(SC);w.position.set(0,.27,.05);QZ3.sc.add(w);QZ3.ppl=w;QZ3.B=null;QZ3.rest=null;QZ3.mx=null;QZ3.A=null;QZ3.cur=null;QZ3.st0={b:b,t:0};QZ3.hy=.27+FY*SC},function(){if(QZ3.ch===k){QZ3.ch=-1;qz3Who(Math.floor(Math.random()*FKK.length))}})}
-function qz3Who(i){if(!QZ3.sc)return;var av=okAvatar(S.me&&S.me.avatar),NK=FKK.length,NC=FCH.length,k=i!=null?i:av?NK+Math.floor(Math.random()*NC):Math.floor(Math.random()*(NK+NC));if(QZ3.ch===k&&QZ3.ppl)return;QZ3.ch=k;
+function qz3Who(i){if(!QZ3.sc)return;var av=null,NK=FKK.length,NC=FCH.length,k=i!=null?i:Math.floor(Math.random()*NK);/* อัปเดต 169: กลับไปใช้ตัวละครชุดเดิม ไม่ใส่รูปผู้เล่น */if(QZ3.ch===k&&QZ3.ppl)return;QZ3.ch=k;
   if(k>=NK){qz3Chibi(k,k-NK,av);return}
   Promise.all([fm3File("kk"+FKK[k]),fm3File("kkanim")]).then(function(R){if(QZ3.ch!==k)return;if(QZ3.ppl){QZ3.sc.remove(QZ3.ppl);QZ3.ppl=null}
     var o=THREE.SkeletonUtils.clone(R[0].scene);o.traverse(function(m){if(m.isMesh)m.frustumCulled=false});var bb=new THREE.Box3().setFromObject(o),h=bb.max.y-bb.min.y||1,w=new THREE.Group();w.add(o);w.scale.setScalar(1.75/h);
