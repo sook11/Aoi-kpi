@@ -7030,9 +7030,16 @@ function fm3Admin(V){fm3File("admin").then(function(G){if(!V.g.parent||V.kk)retu
 /* อัปเดต 104: ร่าง "สาวเบเกอร์" (โมเดลนิ่ง ไม่มีโครงกระดูก → ขยับด้วยโค้ด: เด้ง/โยกเวลาเดิน) */
 function fm3Baker(V){fm3StatChar(V,"admin2","K_admin2",2.35)}
 function fm3ChPpl(V,i){var k=FCH[(i||0)%FCH.length];fm3StatChar(V,"c_"+k,"K_c_"+k,2.2)}
-function fm3StatChar(V,file,node,scl){fm3File(file).then(function(G){if(!V.g.parent||V.kk)return;var n=G.scene.getObjectByName(node);if(!n)return;var o=n.clone();o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});
+/* อัปเดต 170: ตัวละครชิบิ (โมเดลชิ้นเดียว) — ก้าวขา/แกว่งแขนด้วย vertex shader + ยกแสงที่หน้า/ตัวไม่ให้มืดด่าง */
+function fm3WalkMat(m,u){var g=m.geometry;if(!g.boundingBox)g.computeBoundingBox();var B=g.boundingBox,H=B.max.y-B.min.y,cx=(B.min.x+B.max.x)/2,cz=(B.min.z+B.max.z)/2;
+  var mt=m.material.clone();mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=.38;mt.roughness=1;mt.metalness=0;
+  u.uHip={value:B.min.y+H*.22};u.uArm0={value:B.min.y+H*.27};u.uArm1={value:B.min.y+H*.5};u.uArmX={value:H*.15};u.uCx={value:cx};u.uCz={value:cz};
+  mt.onBeforeCompile=function(sh){for(var k in u)sh.uniforms[k]=u[k];sh.vertexShader="uniform float uPh,uAmp,uHip,uArm0,uArm1,uArmX,uCx,uCz;\n"+sh.vertexShader.replace("#include <begin_vertex>",
+    "#include <begin_vertex>\nfloat sd=transformed.x<uCx?-1.:1.;float wz=transformed.z<uCz-uArmX*.45?.3:1.;if(transformed.y<uHip){float a=sin(uPh)*uAmp*sd*wz;float d=uHip-transformed.y;transformed.z+=d*sin(a);transformed.y=uHip-d*cos(a)+max(0.,sin(uPh*sd))*uAmp*d*.25;}else if(transformed.y<uArm1&&abs(transformed.x-uCx)>uArmX){float a=-sin(uPh)*uAmp*.8*sd;float d=clamp((uArm1-transformed.y)/(uArm1-uArm0),0.,1.)*(uArm1-uArm0);transformed.z+=d*sin(a);}")};
+  mt.customProgramCacheKey=function(){return "fmwalk"};m.material=mt}
+function fm3StatChar(V,file,node,scl){fm3File(file).then(function(G){if(!V.g.parent||V.kk)return;var n=G.scene.getObjectByName(node);if(!n)return;var o=n.clone(),WU=/^c_/.test(file)?{uPh:{value:0},uAmp:{value:0}}:null;o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.frustumCulled=false;if(WU){m.receiveShadow=false;fm3WalkMat(m,WU)}}});
   var w=new THREE.Group(),b=new THREE.Group();b.add(o);o.rotation.y=Math.PI/2;w.add(b);w.scale.setScalar(scl);V.g.add(w);if(V.m)V.m.visible=false;
-  var K={o:o,adm:2,walk:0,t:0,lt:performance.now()/1000,A:{}};K.mx={update:function(dt){K.t+=dt;var k=Math.min(1,dt*10);if(K.walk){var ph=K.t*9;b.position.y=Math.abs(Math.sin(ph))*.045;b.rotation.x=Math.sin(ph)*.09;b.rotation.z=0}else{b.position.y+=(Math.sin(K.t*2)*.006-b.position.y)*k;b.rotation.x*=1-k;b.rotation.z=Math.sin(K.t*1.3)*.025}}};V.kk=K},function(){})}
+  var K={o:o,adm:2,walk:0,t:0,lt:performance.now()/1000,A:{}};K.mx={update:function(dt){K.t+=dt;var k=Math.min(1,dt*10);if(WU){WU.uAmp.value+=((K.walk?.46:0)-WU.uAmp.value)*Math.min(1,dt*8);if(K.walk)WU.uPh.value=K.t*9}if(K.walk){var ph=K.t*9;b.position.y=Math.abs(Math.sin(ph))*(WU?.03:.045);b.rotation.x=WU?0:Math.sin(ph)*.09;b.rotation.z=WU?Math.sin(ph)*.04:0}else{b.position.y+=(Math.sin(K.t*2)*.006-b.position.y)*k;b.rotation.x*=1-k;b.rotation.z=Math.sin(K.t*1.3)*.025}}};V.kk=K},function(){})}
 /* ร่างที่ใช้เดิน: เลือกได้ เก็บไว้ในเครื่อง */
 function fmAvaList(){return [["auto","อัตโนมัติ"],["nathan","👨 Nathan"],["baker","👩‍🍳 สาวเบเกอร์"]].concat(FKK.map(function(k,i){return ["kk"+i,"🧝 "+FKKN[i]]}),FCH.map(function(k,i){return ["ch"+i,"👑 "+FCHN[i]]}))}
 var FKF=["baker","kk2","kk4","kk5","ch0","ch1","ch3","ch4"];/* ร่างผู้หญิง สำหรับผู้เล่นทั่วไป (สุ่มตามรหัสพนักงาน) */
