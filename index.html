@@ -4385,12 +4385,31 @@ function qzSnd(k){var c=qzA();if(!c)return;var t=c.currentTime+.02,i;
     case "tick":faTone(1800,t,.04,"square",.05);break;
     case "ll":faTone(660,t,.14,"sine",.08,990);faNoise(t,.16,.04,3000);break;
     case "sel":faTone(440,t,.08,"triangle",.1);faTone(660,t+.05,.1,"triangle",.07);break}}
-function qzMusOn(lv){var c=qzA();if(!c||!FA.out)return;if(QZ.mus&&QZ.mus.lv===lv)return;qzMusOff(1);var g=c.createGain(),t0=c.currentTime;g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(.5,t0+1.2);g.connect(FA.out);
-  var lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.value=240+lv*45;lp.connect(g);
-  var os=[55,55.7,82.4].map(function(f,j){var o=c.createOscillator(),og=c.createGain();o.type=j<2?"sawtooth":"triangle";o.frequency.value=f;og.gain.value=j<2?.05:.035;o.connect(og);og.connect(lp);o.start();return o});
-  var beat=60/(64+lv*9),N=[220,261.6,329.6,349.2,329.6,261.6,246.9,207.7],n=0,M={lv:lv,g:g,os:os};
-  M.iv=setInterval(function(){if(!FA.ctx||document.hidden)return;var t=FA.ctx.currentTime+.05,o=lv>=3?2:1;faTone(62,t,.18,"sine",.32,38,g);faTone(58,t+beat*.28,.16,"sine",.22,36,g);faTone(N[n%8]*o,t,beat*.9,"triangle",.045,null,g);if(n%2)faTone(N[(n+2)%8]*2,t+beat*.5,beat*.4,"sine",.025,null,g);n++},beat*1000);QZ.mus=M}
-function qzMusOff(fast){var M=QZ.mus;if(!M)return;QZ.mus=null;clearInterval(M.iv);try{var t=FA.ctx.currentTime,d=fast?.15:.5;M.g.gain.cancelScheduledValues(t);M.g.gain.setValueAtTime(Math.max(.0001,M.g.gain.value),t);M.g.gain.exponentialRampToValueAtTime(.0001,t+d);M.os.forEach(function(o){o.stop(t+d+.05)});setTimeout(function(){try{M.g.disconnect()}catch(e){}},900)}catch(e){}}
+/* อัปเดต 171: ดนตรีเกมเศรษฐีแบบใหม่ — แต่งเอง สังเคราะห์สด: กลอง/เบส/คอร์ดสาย/อาร์เปจโจ เร่งจังหวะตามข้อ + คอมเพรสเซอร์ให้ดังขึ้น */
+function qzNz(t,d,v,ft,fq,dest,fq2){var c=FA.ctx;if(!QZ.nbuf){var n=c.sampleRate,b=c.createBuffer(1,n,n),a=b.getChannelData(0);for(var i=0;i<n;i++)a[i]=Math.random()*2-1;QZ.nbuf=b}
+  var s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=QZ.nbuf;s.loop=d>.9;f.type=ft;f.frequency.setValueAtTime(fq,t);if(fq2)f.frequency.exponentialRampToValueAtTime(fq2,t+d);
+  if(fq2){g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+d*.95);g.gain.exponentialRampToValueAtTime(.0001,t+d+.04)}else{g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d)}
+  s.connect(f);f.connect(g);g.connect(dest);s.start(t,Math.random()*.4);s.stop(t+d+.08)}
+function qzOsc(f,t,d,type,v,dest,f2,att){var c=FA.ctx,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+Math.min(d,.12));
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+(att||.004));g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest);o.start(t);o.stop(t+d+.05)}
+function qzMusOn(lv){var c=qzA();if(!c||!FA.out)return;lv=Math.max(0,Math.min(4,lv|0));if(QZ.mus&&QZ.mus.lv===lv)return;qzMusOff(1);
+  var t0=c.currentTime,comp=c.createDynamicsCompressor();comp.threshold.value=-20;comp.knee.value=6;comp.ratio.value=5;comp.attack.value=.003;comp.release.value=.12;
+  var g=c.createGain();g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(1.25,t0+.5);g.connect(comp);comp.connect(FA.out);
+  var lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.value=700+lv*150;lp.Q.value=6;lp.connect(g);
+  var bpm=[112,118,124,132,140][lv],s16=60/bpm/4,step=0,nt=t0+.06,M={lv:lv,g:g,comp:comp,lp:lp};
+  var CH=[[220,261.6,329.6],[174.6,220,261.6],[146.8,174.6,220],[164.8,207.7,246.9]],BS=[55,43.65,36.71,41.2];/* Am F Dm E — คอร์ดลุ้นระทึก */
+  M.iv=setInterval(function(){if(!FA.ctx||document.hidden)return;var now=FA.ctx.currentTime;if(nt<now)nt=now+.03;
+    while(nt<now+.14){var st=step%16,bar=Math.floor(step/16)%4,t=nt,ch=CH[bar];
+      if(st%4===0||(lv>=2&&st===10)||(lv>=4&&st===14))qzOsc(130,t,.24,"sine",1,g,42);/* กลองเตะ */
+      if(st===4||st===12){qzNz(t,.2,.55,"bandpass",1700,g);qzOsc(200,t,.09,"triangle",.3,g,130)}/* สแนร์ */
+      if(st%2===1||lv>=3)qzNz(t,.035,st%2?.22:.12,"highpass",8000,g);/* ไฮแฮท */
+      if(st%2===0)qzOsc(BS[bar]*(st%4===2?2:1),t,s16*1.7,"sawtooth",.55,lp);/* เบสเดิน */
+      if(st===0||st===6||st===10&&lv>=1){var dd=s16*(st===0?3.6:1.5);ch.forEach(function(f){qzOsc(f*2,t,dd,"sawtooth",.085,g,0,.008);qzOsc(f*2.012,t,dd,"sawtooth",.06,g,0,.008)})}/* คอร์ดสายกระชาก */
+      if(lv>=1&&st%2===0||lv>=3)qzOsc(ch[(st>>1)%3]*(lv>=3?8:4),t,s16*1.1,"square",.05+lv*.012,g);/* อาร์เปจโจ */
+      if(bar===3&&st===0)qzNz(t,s16*16,.3+lv*.04,"bandpass",300,g,5000);/* เสียงไต่ขึ้นก่อนวนรอบ */
+      if(bar===0&&st===0&&step>0){qzNz(t,.6,.35,"highpass",3000,g);qzOsc(55,t,.5,"sine",.8,g,30)}/* ฉาบ+บูม ต้นรอบ */
+      step++;nt+=s16}},25);QZ.mus=M}
+function qzMusOff(fast){var M=QZ.mus;if(!M)return;QZ.mus=null;clearInterval(M.iv);try{var t=FA.ctx.currentTime,d=fast?.15:.5;M.g.gain.cancelScheduledValues(t);M.g.gain.setValueAtTime(Math.max(.0001,M.g.gain.value),t);M.g.gain.exponentialRampToValueAtTime(.0001,t+d);setTimeout(function(){try{M.g.disconnect();M.comp.disconnect();M.lp.disconnect()}catch(e){}},(d+.6)*1000)}catch(e){}}
 document.addEventListener("visibilitychange",function(){if(document.hidden)qzMusOff(1)});
 async function qzSend(ch){if(QZ.busy)return;QZ.busy=1;clearInterval(QZ.tm);QZ.lock=1;QZ.sel=ch;var t0=Date.now();qzMusOff(1);if(ch!=null){qzSnd("lock");qz3Event("lock");qzDraw()}
   try{var r=await q(db.rpc("quiz_answer",{p_choice:ch}));var w=ch!=null?Math.max(0,1900-(Date.now()-t0)):0;await new Promise(function(z){setTimeout(z,w)});
