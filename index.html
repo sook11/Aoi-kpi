@@ -4420,7 +4420,7 @@ async function renderMaze(){var P=$("qz-stage");if(!P)return;P.classList.add("mz
   try{HMZ.st=await q(db.rpc("maze_state"))}catch(e){P.innerHTML=emptyRow(esc(thErr(e)));return}
   mzSetLevel(HMZ.st.level,true);mzDraw();if(!document.body.classList.contains("mzfull-on")&&window.matchMedia&&matchMedia("(pointer:coarse)").matches)mzFullOn()}
 function mzSpawn(){var M=HMZ.map;HMZ.p={x:M.S.x+.5,y:M.S.y+.5,fx:1,mv:0,t:0,vx:0,vy:0,ph:0,spd:0};HMZ.path=null;HMZ.inv=performance.now()/1000+2.5;
-  HMZ.zs=[];for(var i=0;i<mzZN(HMZ.lv)&&i<M.zsp.length;i++){var z=M.zsp[i];HMZ.zs.push({x:z.x+.5,y:z.y+.5,cx:z.x,cy:z.y,fx:-1,ph:i,rise:0})}HMZ.wake=performance.now()/1000+2}
+  HMZ.zs=[];for(var i=0;i<mzZN(HMZ.lv)&&i<M.zsp.length;i++){var z=M.zsp[i];HMZ.zs.push({x:z.x+.5,y:z.y+.5,cx:z.x,cy:z.y,fx:-1,ph:i,rise:0,gh:(i+HMZ.lv)%2===1})}HMZ.wake=performance.now()/1000+2}
 function mzSetLevel(l,force){if(HMZ.lv===l&&HMZ.map&&!force){if(!HMZ.rt)mzRtOpen(l);return}var newLv=HMZ.lv!==l;HMZ.lv=l;HMZ.map=mzGen(l);HMZ.cool=-1;HMZ.static=null;HMZ.newAt={};HMZ.dead=null;HMZ.bite=null;HMZ.live=mzLive();mzSpawn();if(newLv||!HMZ.rt){HMZ.others={};mzRtOpen(l)}}
 function mzDraw(){var wasFull=document.body.classList.contains("mzfull-on");if(wasFull){var ob=$("mz-box");if(ob&&ob.parentNode===document.body)ob.remove();if(HMZ.ph){HMZ.ph.remove();HMZ.ph=null}}var P=$("qz-stage"),s=HMZ.st||{},nr=mzRight(),open=nr>=s.need,th=mzTh(s.level||1);
   P.innerHTML=qzFx()+'<div class="mzwrap"><div class="mzhud"><span class="mzlv">🏁 ด่าน <b>'+s.level+'</b></span><span>🗺️ '+th.n+' · 🧟 '+mzZN(s.level)+'</span><span>🪨 ถูก <b>'+nr+'</b>/'+s.need+(open?' <i class="mzok">ประตูเปิด!</i>':'')+'</span><span>'+fmc()+' วันนี้ <b>'+num(s.coins_day)+'</b>/'+num(s.cap)+'</span><span>🎁 <b>'+s.boxes_day+'</b>/'+s.box_cap+'</span><span id="mz-on">👥 1</span></div>'+
@@ -4514,8 +4514,13 @@ function mzStatic(){var M=HMZ.map,T=HMZ.T,th=M.th,c=document.createElement("canv
   M.trees.forEach(function(tr){mzDeco(g,th.d,o+tr.x*T,o+tr.y*T,T*tr.s,tr.k)});
   HMZ.static={c:c,pad:pad}}
 function mzSprite(key,seed){try{return fkSpr(key,seed)}catch(e){return null}}
+/* อัปเดต 178: แถบภาพเดิน 8 เฟรม (ก้าวขาจริง) ของทุกตัวละคร — models/walk-<ตัวละคร>.webp */
+function mzWKey(key,seed){var a=key||"auto";try{if(a==="auto")a=FKF[fmHash(seed||"x")%FKF.length]}catch(e){a="kk0"}return a}
+function mzWalkImg(key,seed){return mzImg("models/walk-"+mzWKey(key,seed)+".webp?v=1")}
+function mzWalker(g,x,y,im,fx,mv,ph,t,sc,alpha){var T=HMZ.T*(sc||1),fr=mv?Math.floor((((ph||0)/(Math.PI*2))%1+1)%1*8):8,w=T*1.32,h=T*1.54,by=mv?0:Math.sin(t*2)*T*.012;
+  g.save();if(alpha!=null)g.globalAlpha=alpha;g.fillStyle="rgba(0,0,0,.2)";g.beginPath();g.ellipse(x,y+HMZ.T*.28,HMZ.T*.3,HMZ.T*.09,0,0,7);g.fill();g.translate(x,y+HMZ.T*.34-by);if(fx<0)g.scale(-1,1);g.drawImage(im,fr*96,0,96,112,-w/2,-h,w,h);g.restore();return h}
 /* ตัวละคร: ก้าวเดินเป็นจังหวะ ตัวยวบขึ้นลง เอนไปข้างหน้า */
-function mzActor(g,x,y,src,name,fx,mv,t,me,ph,spd,alpha){var T=HMZ.T,im=mzImg(src),k=mv?Math.min(1,spd==null?1:spd):0,s1=Math.sin(ph||0),bob=Math.abs(s1)*T*.11*k+(k?0:Math.sin(t*2)*T*.015),lean=fx*.09*k,sq=1-.05*Math.cos(2*(ph||0))*k,w=T*1.35,h=T*1.35;
+function mzActor(g,x,y,src,name,fx,mv,t,me,ph,spd,alpha,wk){var T=HMZ.T,wim=wk&&mzWalkImg(wk[0],wk[1]);if(wim){var hh=mzWalker(g,x,y,wim,fx,mv,ph,t,1,alpha);g.save();g.font="bold "+Math.round(T*.32)+"px sans-serif";g.textAlign="center";var tw0=g.measureText(name).width+10,ty0=y+T*.34-hh-T*.05;g.fillStyle=me?"rgba(234,88,12,.9)":"rgba(15,23,42,.72)";g.beginPath();if(g.roundRect)g.roundRect(x-tw0/2,ty0-T*.36,tw0,T*.44,6);else g.rect(x-tw0/2,ty0-T*.36,tw0,T*.44);g.fill();g.fillStyle="#fff";g.fillText(name,x,ty0-T*.04);g.restore();return}var im=mzImg(src),k=mv?Math.min(1,spd==null?1:spd):0,s1=Math.sin(ph||0),bob=Math.abs(s1)*T*.11*k+(k?0:Math.sin(t*2)*T*.015),lean=fx*.09*k,sq=1-.05*Math.cos(2*(ph||0))*k,w=T*1.35,h=T*1.35;
   g.save();if(alpha!=null)g.globalAlpha=alpha;g.fillStyle="rgba(0,0,0,.2)";g.beginPath();g.ellipse(x,y+T*.28,T*.32*(1-.25*Math.abs(s1)*k),T*.1,0,0,7);g.fill();
   if(im){g.save();g.translate(x,y+T*.3-bob);g.rotate(lean+s1*.04*k);g.scale(fx<0?-1:1,sq);g.drawImage(im,-w/2,-h+T*.05,w,h);g.restore()}else{g.fillStyle=me?"#f59e0b":"#60a5fa";g.beginPath();g.arc(x,y-T*.25-bob,T*.3,0,7);g.fill()}
   g.font="bold "+Math.round(T*.32)+"px sans-serif";g.textAlign="center";var tw=g.measureText(name).width+10,ty=y-h+T*.28-bob;g.fillStyle=me?"rgba(234,88,12,.9)":"rgba(15,23,42,.72)";g.beginPath();if(g.roundRect)g.roundRect(x-tw/2,ty-T*.36,tw,T*.44,6);else g.rect(x-tw/2,ty-T*.36,tw,T*.44);g.fill();g.fillStyle="#fff";g.fillText(name,x,ty-T*.04);g.restore()}
@@ -4550,11 +4555,11 @@ function mzRender(t){var g=HMZ.ctx,M=HMZ.map,T=HMZ.T,p=HMZ.p;if(!g||!M||!p)retur
       if(isNew){g.font="bold "+Math.round(T*.3)+"px sans-serif";g.fillStyle="#facc15";g.strokeStyle="rgba(0,0,0,.6)";g.lineWidth=3;g.strokeText("ใหม่!",X+T/2,by-T*.08);g.fillText("ใหม่!",X+T/2,by-T*.08)}}})});
   if(HMZ.path&&HMZ.path.length){g.fillStyle="rgba(255,255,255,.5)";HMZ.path.forEach(function(w,j){if(j%2===0){g.beginPath();g.arc(w.x*T,w.y*T,3,0,7);g.fill()}})}
   HMZ.dust.forEach(function(d){var a=(t-d.t0)/.5;g.fillStyle="rgba(255,255,255,"+(.5*(1-a))+")";g.beginPath();g.arc(d.x*T,d.y*T-a*T*.15,T*(.06+a*.12),0,7);g.fill()});
-  for(var id in HMZ.others){var o=HMZ.others[id];L.push({y:o.y,f:function(o){return function(){mzActor(g,o.x*T,o.y*T,mzSprite(o.s,o.id),o.n||"",o.fx||1,o.mv,t,false,o.ph||0,1)}}(o)})}
-  HMZ.zs.forEach(function(z){L.push({y:z.y,f:function(){mzZombie(g,z.x*T,z.y*T,z.fx,z.ph,z.rise,t)}})});
+  for(var id in HMZ.others){var o=HMZ.others[id];L.push({y:o.y,f:function(o){return function(){mzActor(g,o.x*T,o.y*T,mzSprite(o.s,o.id),o.n||"",o.fx||1,o.mv,t,false,o.ph||0,1,null,[o.s,o.id])}}(o)})}
+  HMZ.zs.forEach(function(z){L.push({y:z.y,f:function(){var gi=z.gh&&mzImg("models/walk-ghost.webp?v=1");if(gi)mzWalker(g,z.x*T,(z.y-.12-Math.sin(t*3+z.ph)*.05)*T,gi,z.fx,true,z.ph*1.2,t,1.3,.9*Math.min(1,z.rise*1.5));else mzZombie(g,z.x*T,z.y*T,z.fx,z.ph,z.rise,t)}})});
   if(HMZ.bite){var b=HMZ.bite,ba=Math.min(1,(t-b.t0)/.6);L.push({y:b.y+.01,f:function(){mzZombie(g,b.x*T,b.y*T,b.fx,t*6,ba,t)}})}
   var dead=HMZ.dead,blink=t<HMZ.inv&&!dead?(Math.floor(t*10)%2?.35:1):1;
-  L.push({y:p.y,f:function(){if(dead){var a=Math.min(1,(t-dead.t0)/.6);mzActor(g,dead.x*T,dead.y*T,mzSprite(mzMyKey(),S.me&&S.me.id),"💀",p.fx,false,t,true,0,0,1-a*.7);return}mzActor(g,p.x*T,p.y*T,mzSprite(mzMyKey(),S.me&&S.me.id),(S.me&&(S.me.display_name||S.me.employee_no))||"ฉัน",p.fx,p.mv,t,true,p.ph,p.spd,blink)}});
+  L.push({y:p.y,f:function(){if(dead){var a=Math.min(1,(t-dead.t0)/.6);mzActor(g,dead.x*T,dead.y*T,mzSprite(mzMyKey(),S.me&&S.me.id),"💀",p.fx,false,t,true,0,0,1-a*.7,[mzMyKey(),S.me&&S.me.id]);return}mzActor(g,p.x*T,p.y*T,mzSprite(mzMyKey(),S.me&&S.me.id),(S.me&&(S.me.display_name||S.me.employee_no))||"ฉัน",p.fx,p.mv,t,true,p.ph,p.spd,blink,[mzMyKey(),S.me&&S.me.id])}});
   L.sort(function(a,b){return a.y-b.y}).forEach(function(a){a.f()});
   HMZ.fx=HMZ.fx.filter(function(f){var a=(t-f.t0);if(a>1.6)return false;g.globalAlpha=Math.max(0,1-a/1.6);g.fillStyle=f.c;g.font="bold "+Math.round(T*.45)+"px sans-serif";g.textAlign="center";g.strokeStyle="rgba(0,0,0,.5)";g.lineWidth=3;g.strokeText(f.s,f.x*T,(f.y-a*1.1)*T);g.fillText(f.s,f.x*T,(f.y-a*1.1)*T);g.globalAlpha=1;return true});
   g.restore();
@@ -7295,8 +7300,8 @@ var FVSPR=["data:image/webp;base64,UklGRtoKAABXRUJQVlA4WAoAAAAwAAAAbwAAbwAASUNDU
 var FKK=["barbarian","knight","mage","ranger","rogue","rogue_hooded"],FKKN=["ลุงหมีป่า","อัศวินเหล็ก","แม่มดน้อย","นายพรานโรบิน","สาวนักผจญภัย","นินจาฮู้ดเขียว"],
   FKKSAY=["ล่าสัตว์มาทั้งวัน หิวแล้ว! ขอซื้อหน่อย","อัศวินต้องกินผักให้แข็งแรงนะ","ต้องใช้ทำยาวิเศษ ขอซื้อหน่อยจ้ะ","เดินป่ามาไกล ขอเสบียงหน่อยครับ","ของฟาร์มนี้สดดีจัง ขอแบ่งซื้อหน่อย","ชู่ว์… ขอซื้อเงียบ ๆ นะ"];
 /* อัปเดต 167: ตัวละครชิบิใหม่ 5 ตัว (โมเดลนิ่ง ขยับด้วยโค้ดแบบสาวเบเกอร์) — ต่อท้ายลำดับ FKK: npc/ดัชนี 6–10 */
-var FCH=["jewel","regal","prince","starweaver","aviator"],FCHN=["เจ้าหญิงอัญมณี","เจ้าหญิงดวงดาว","เจ้าชายมงกุฎ","แม่มดฟ้าคราม","นักบินน้อย"],FCHY={jewel:.555,regal:.57,prince:.565,starweaver:.73,aviator:.62};
-FKKN=FKKN.concat(FCHN);FKKSAY=FKKSAY.concat(["เจ้าหญิงขอผลไม้สด ๆ ไปทำขนมหน่อยจ้า","ดาวบอกว่าฟาร์มนี้ของดีที่สุด!","เจ้าชายขอซื้อเสบียงไปวังครับ","ขอวัตถุดิบไปปรุงยาวิเศษหน่อยนะ","บินมาไกล หิวมาก ขอซื้อหน่อยค่ะ"]);
+var FCH=["jewel","regal","prince","starweaver","aviator","mystery","lilac","solarwing","astral","sunrise","shadowpop","warrior"],FCHN=["เจ้าหญิงอัญมณี","เจ้าหญิงดวงดาว","เจ้าชายมงกุฎ","แม่มดฟ้าคราม","นักบินน้อย","นางฟ้าผมแดง","เจ้าหญิงไลแลค","ผู้พิทักษ์ปีกสุริยะ","ดาวน้อยกาแล็กซี่","เทพธิดาแสงอรุณ","หนุ่มเงาสายป๊อป","นักรบสาว"],FCHY={jewel:.555,regal:.57,prince:.565,starweaver:.73,aviator:.62,mystery:.6,lilac:.6,solarwing:.6,astral:.6,sunrise:.6,shadowpop:.6,warrior:.62};
+FKKN=FKKN.concat(FCHN);FKKSAY=FKKSAY.concat(["เจ้าหญิงขอผลไม้สด ๆ ไปทำขนมหน่อยจ้า","ดาวบอกว่าฟาร์มนี้ของดีที่สุด!","เจ้าชายขอซื้อเสบียงไปวังครับ","ขอวัตถุดิบไปปรุงยาวิเศษหน่อยนะ","บินมาไกล หิวมาก ขอซื้อหน่อยค่ะ","ขอดอกไม้สวย ๆ ไปประดับผมหน่อยจ้า","เจ้าหญิงไลแลคขอผลไม้หวาน ๆ ค่ะ","บินลาดตระเวนมาเหนื่อย ขอเสบียงหน่อย","ดาวน้อยอยากชิมขนมจากฟาร์มนี้!","แสงอรุณมาอวยพรให้ผลผลิตงอกงาม","ขอซื้อของไปทำขนมปาร์ตี้หน่อยครับ","นักรบขอเสบียงก่อนออกเดินทาง!"]);
 FVSPR=FVSPR.concat(FCH.map(function(k){return "models/spr-c_"+k+".webp?v=1"}));
 function fm3KK(V,i){var nT=FKK.length+FCH.length,j=((+i||0)%nT+nT)%nT;if(j>=FKK.length)return fm3ChPpl(V,j-FKK.length);Promise.all([fm3File("kk"+FKK[j]),fm3File("kkanim")]).then(function(R){if(!V.g.parent||V.kk)return;
   var o=THREE.SkeletonUtils.clone(R[0].scene);o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});var w=new THREE.Group();w.add(o);o.rotation.y=Math.PI/2;w.scale.setScalar(.8);V.g.add(w);V.m.visible=false;
