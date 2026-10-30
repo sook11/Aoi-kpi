@@ -1204,6 +1204,12 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 .qzg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.qzg .panel{max-height:520px;overflow:auto}.qzrow{display:flex;gap:8px;align-items:center}.qzrow .l{flex:1 1 auto;min-width:0}.qzrow .l{display:block!important}.qzrow .l b,.qzrow .l small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qzn small{font-size:11px}.qzrow .grank{flex:0 0 auto}.qzn{margin-left:auto;text-align:right;flex:0 0 auto;white-space:nowrap}.qzn small{display:block;color:var(--muted)}.qzn.bad b{color:#dc2626}
 .qzstage.mzstage{background:linear-gradient(180deg,#14532d,#166534);padding:10px}
 .mzwrap{display:grid;gap:10px}.mzhud{display:flex;flex-wrap:wrap;gap:6px}.mzhud>span{background:rgba(0,0,0,.28);border-radius:999px;padding:5px 11px;font-size:13px}.mzhud .mzlv{background:#f59e0b;color:#1c1917}.mzok{font-style:normal;color:#fde047;font-weight:700}
+.mzwrap,.mzbox,.mzbox *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.mzbox.mzfull{position:fixed;inset:0;z-index:9000;border:0;border-radius:0;box-shadow:none;background:#7cc455}body.mzfull-on{overflow:hidden}body.mzfull-on #toast{z-index:9100;top:max(56px,env(safe-area-inset-top));bottom:auto}
+.mzmini{display:none;position:absolute;left:8px;top:8px;background:rgba(15,23,42,.6);color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;pointer-events:none}.mzmini i{color:#fde047;font-style:normal}.mzfull .mzmini{display:block;top:max(8px,env(safe-area-inset-top))}
+.mzfs{position:absolute;right:8px;top:8px;width:40px;height:40px;padding:0;border-radius:10px;background:rgba(15,23,42,.6);color:#fff;border:1px solid rgba(255,255,255,.35);font-size:20px;line-height:1}
+.mzfull .mzfs{top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right))}
+.mzfull .mzpad{grid-template-columns:repeat(3,60px);grid-template-rows:repeat(2,60px);gap:6px;right:auto;left:max(16px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom))}.mzfull .mzpad button{font-size:24px}
 .mzbox{position:relative;border-radius:14px;overflow:hidden;border:3px solid #3f2a14;box-shadow:inset 0 0 0 2px #a16207;touch-action:none}.mzbox canvas{display:block}
 .mzpad{position:absolute;right:10px;bottom:10px;display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px}.mzpad button{background:rgba(15,23,42,.55);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:10px;font-size:18px;padding:0;touch-action:none}
 .mzpad [data-mzk=u]{grid-column:2}.mzpad [data-mzk=l]{grid-column:1;grid-row:2}.mzpad [data-mzk=d]{grid-column:2;grid-row:2}.mzpad [data-mzk=r]{grid-column:3;grid-row:2}
@@ -4389,12 +4395,19 @@ async function renderMaze(){var P=$("qz-stage");if(!P)return;P.classList.add("mz
 function mzSetLevel(l,force){if(HMZ.lv===l&&HMZ.map&&!force){if(!HMZ.rt)mzRtOpen(l);return}var newLv=HMZ.lv!==l;HMZ.lv=l;HMZ.map=mzGen(l);HMZ.p={x:HMZ.map.S.x+.5,y:HMZ.map.S.y+.5,fx:1,mv:0,t:0};HMZ.path=null;HMZ.cool=-1;HMZ.static=null;if(newLv||!HMZ.rt){HMZ.others={};mzRtOpen(l)}}
 function mzDraw(){var P=$("qz-stage"),s=HMZ.st||{},R=s.stones||{},nr=0;for(var k in R)if(R[k]==="right")nr++;var open=nr>=s.need,daily=QZ.st&&QZ.st.daily_done;
   P.innerHTML=qzFx()+'<div class="mzwrap"><div class="mzhud"><span class="mzlv">🏁 ด่าน <b>'+s.level+'</b></span><span>🪨 ถูก <b>'+nr+'</b>/'+s.need+(open?' <i class="mzok">ประตูเปิด!</i>':'')+'</span><span>'+fmc()+' วันนี้ <b>'+num(s.coins_day)+'</b>/'+num(s.cap)+'</span><span>🎁 <b>'+s.boxes_day+'</b>/'+s.box_cap+'</span><span id="mz-on">👥 1</span></div>'+
-    '<div class="mzbox" id="mz-box"><canvas id="mz-cv"></canvas><div class="mzpad"><button type="button" data-mzk="u">▲</button><button type="button" data-mzk="l">◀</button><button type="button" data-mzk="d">▼</button><button type="button" data-mzk="r">▶</button></div><div id="mz-pop"></div></div>'+
+    '<div class="mzbox" id="mz-box"><canvas id="mz-cv"></canvas><div class="mzpad"><button type="button" data-mzk="u">▲</button><button type="button" data-mzk="l">◀</button><button type="button" data-mzk="d">▼</button><button type="button" data-mzk="r">▶</button></div><div class="mzmini" id="mz-mini"></div><button type="button" class="mzfs" data-mz="full" title="เต็มจอ">⛶</button><div id="mz-pop"></div></div>'+
     '<div class="mztools"><span class="sub">แตะบนแผนที่เพื่อเดินไปจุดนั้น · เดินชนหิน ❓ เพื่อตอบคำถาม · ตอบถูก '+s.need+' ข้อ ประตู FINISH จะเปิด</span><button type="button" data-mz="restart">🔄 เริ่มด่านนี้ใหม่</button>'+(QZ.st&&!QZ.st.daily_done&&QZ.st.bank>=5?'<button type="button" class="primary" data-mz="daily">📝 คำถามประจำวัน 5 ข้อ</button>':'')+'</div>'+
     '<div class="mzrank"><b>🏆 ใครไปถึงด่านไหนแล้ว</b> <small>อันดับของฉัน #'+s.rank+' / '+s.players+' คน</small><div class="mzlist">'+(s.top||[]).map(function(x,i){var me=S.me&&x.id===S.me.id,e=empOf(x.id)||{display_name:x.name};return '<div class="mzrow'+(me?' me':'')+'"><span class="grank r'+Math.min(i+1,4)+'">'+(i+1)+'</span>'+avatarHtml(e)+'<b>'+esc(x.name)+'</b><em>ด่าน '+x.level+'</em></div>'}).join("")+'</div></div></div>';
-  mzCanvas();qzMusOn(Math.min(4,Math.floor((s.level-1)/3)))}
-function mzCanvas(){var cv=$("mz-cv");if(!cv)return;var box=$("mz-box"),w=box.clientWidth||360,h=Math.round(Math.min(Math.max(window.innerHeight*.58,300),620)),dpr=Math.min(window.devicePixelRatio||1,2);
-  cv.width=w*dpr;cv.height=h*dpr;cv.style.width=w+"px";cv.style.height=h+"px";HMZ.cv=cv;HMZ.ctx=cv.getContext("2d");HMZ.dpr=dpr;HMZ.vw=w;HMZ.vh=h;HMZ.T=Math.max(30,Math.min(46,Math.round(w/11)));HMZ.static=null;
+  mzCanvas();mzMini();qzMusOn(Math.min(4,Math.floor((s.level-1)/3)))}
+/* อัปเดต 174: โหมดเต็มจอแนวนอน + กันเมนูคัดลอก/เลือกข้อความเวลากดปุ่มเดินค้าง */
+function mzMini(){var m=$("mz-mini"),s=HMZ.st;if(!m||!s)return;var R=s.stones||{},nr=0;for(var k in R)if(R[k]==="right")nr++;m.innerHTML="🏁 ด่าน <b>"+s.level+"</b> · 🪨 <b>"+nr+"</b>/"+s.need+(nr>=s.need?" <i>เปิดแล้ว!</i>":"")+" · "+fmc()+" <b>"+num(s.coins_day)+"</b>"}
+function mzFullOn(){var b=$("mz-box");if(!b)return;b.classList.add("mzfull");document.body.classList.add("mzfull-on");var fb=b.querySelector(".mzfs");if(fb)fb.textContent="✕";var d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;HMZ.fs=0;if(rq){try{var pr=rq.call(d,{navigationUI:"hide"});HMZ.fs=1;if(pr&&pr.then)pr.then(function(){try{screen.orientation.lock("landscape").catch(function(){})}catch(e){}}).catch(function(){HMZ.fs=0})}catch(e){HMZ.fs=0}}setTimeout(mzCanvas,60);setTimeout(mzCanvas,450)}
+function mzFullOff(){var b=$("mz-box");document.body.classList.remove("mzfull-on");if(b){b.classList.remove("mzfull");var fb=b.querySelector(".mzfs");if(fb)fb.textContent="⛶"}try{screen.orientation.unlock()}catch(e){}if(document.fullscreenElement||document.webkitFullscreenElement){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}}HMZ.fs=0;if(b)setTimeout(mzCanvas,60)}
+document.addEventListener("fullscreenchange",function(){if(!document.fullscreenElement&&HMZ.fs){HMZ.fs=0;mzFullOff()}});
+document.addEventListener("contextmenu",function(e){if(e.target.closest&&e.target.closest(".mzbox"))e.preventDefault()});
+document.addEventListener("touchstart",function(e){if(e.target.closest&&e.target.closest("[data-mzk]"))e.preventDefault()},{passive:false});
+function mzCanvas(){var cv=$("mz-cv");if(!cv)return;var box=$("mz-box"),full=box.classList.contains("mzfull"),w=box.clientWidth||360,h=full?(box.clientHeight||window.innerHeight):Math.round(Math.min(Math.max(window.innerHeight*.58,300),620)),dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=w*dpr;cv.height=h*dpr;cv.style.width=w+"px";cv.style.height=h+"px";HMZ.cv=cv;HMZ.ctx=cv.getContext("2d");HMZ.dpr=dpr;HMZ.vw=w;HMZ.vh=h;HMZ.T=full?Math.max(32,Math.min(54,Math.round(Math.min(w/14,h/8)))):Math.max(30,Math.min(46,Math.round(w/11)));HMZ.static=null;
   cv.onpointerdown=function(ev){var r=cv.getBoundingClientRect(),cx=HMZ.camx+(ev.clientX-r.left)/HMZ.T,cy=HMZ.camy+(ev.clientY-r.top)/HMZ.T;mzGo(Math.floor(cx),Math.floor(cy))};
   if(!HMZ.raf){HMZ.lt=performance.now();HMZ.raf=requestAnimationFrame(mzLoop)}}
 function mzGo(tx,ty){var M=HMZ.map,p=HMZ.p;if(!M)return;var sx=Math.floor(p.x),sy=Math.floor(p.y),GW=M.GW,prev=new Int32Array(M.GW*M.GH).fill(-1),qq=[sy*GW+sx],goal=-1,tgt=ty*GW+tx;prev[qq[0]]=qq[0];
@@ -4459,7 +4472,7 @@ async function mzLock(){var A=HMZ.ask;if(!A||A.sel==null||A.lock)return;A.lock=1
     if(r.correct){qzSnd("right");HMZ.fx.push({x:s.x+.5,y:s.y,s:r.win?"+"+r.win+" 🪙":"✓",c:"#facc15",t0:performance.now()/1000});if(r.win)qzBurst(r.win);if(r.right>=r.need&&r.right-1<r.need){setTimeout(function(){qzSnd("win");toast("🎉 ประตู FINISH เปิดแล้ว! เดินไปที่ทางออกได้เลย")},900)}}
     else{qzSnd("wrong");HMZ.fx.push({x:s.x+.5,y:s.y,s:"✕ กลายเป็นกำแพง",c:"#ef4444",t0:performance.now()/1000})}
     setTimeout(function(){HMZ.ask=null;mzPop();mzHud();qzMusOn(Math.min(4,Math.floor((HMZ.st.level-1)/3)));mzStuck()},r.correct?1500:2400)}catch(e){A.lock=0;toast(thErr(e));HMZ.ask=null;mzPop()}}
-function mzHud(){var s=HMZ.st,R=s.stones||{},nr=0;for(var k in R)if(R[k]==="right")nr++;var H=document.querySelector(".mzhud");if(!H)return;H.children[1].innerHTML='🪨 ถูก <b>'+nr+'</b>/'+s.need+(nr>=s.need?' <i class="mzok">ประตูเปิด!</i>':'');H.children[2].innerHTML=fmc()+' วันนี้ <b>'+num(s.coins_day)+'</b>/'+num(s.cap)}
+function mzHud(){var s=HMZ.st,R=s.stones||{},nr=0;for(var k in R)if(R[k]==="right")nr++;var H=document.querySelector(".mzhud");if(!H)return;H.children[1].innerHTML='🪨 ถูก <b>'+nr+'</b>/'+s.need+(nr>=s.need?' <i class="mzok">ประตูเปิด!</i>':'');H.children[2].innerHTML=fmc()+' วันนี้ <b>'+num(s.coins_day)+'</b>/'+num(s.cap);mzMini()}
 /* ติดทาง: ไปทางออกไม่ได้ และไม่มีหินที่ไปถึงได้แล้ว → เสนอเริ่มด่านใหม่ */
 function mzStuck(){var M=HMZ.map,p=HMZ.p,GW=M.GW,seen=new Uint8Array(GW*M.GH),qq=[Math.floor(p.y)*GW+Math.floor(p.x)],okExit=false,okStone=false,ss=HMZ.st.stones||{};seen[qq[0]]=1;
   while(qq.length){var c=qq.shift(),x=c%GW,y=(c/GW)|0;if(x===M.E.x&&y===M.E.y)okExit=true;[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var X=x+d[0],Y=y+d[1],k=Y*GW+X;M.stones.forEach(function(s,i){if(s.x===X&&s.y===Y&&(!ss[i]||ss[i]==="open"))okStone=true});if(!seen[k]&&!mzSolid(X,Y)){seen[k]=1;qq.push(k)}})}
@@ -4473,6 +4486,7 @@ document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev
   if(D.mz==="later"){if(HMZ.ask){HMZ.cool=HMZ.ask.i;HMZ.ask=null;mzPop()}return}
   if(D.mz==="next"){HMZ.fin=0;HMZ.st=HMZ.next||HMZ.st;mzSetLevel(HMZ.st.level);mzDraw();return}
   if(D.mz==="restart"){if(!armed(t,"แตะอีกครั้ง เพื่อเริ่มด่านใหม่"))return;try{HMZ.st=await q(db.rpc("maze_restart"));mzSetLevel(HMZ.st.level,true);HMZ.lv=HMZ.st.level;mzDraw();toast("🔄 เริ่มด่าน "+HMZ.st.level+" ใหม่")}catch(e){toast(thErr(e))}return}
+  if(D.mz==="full"){if($("mz-box")&&$("mz-box").classList.contains("mzfull"))mzFullOff();else mzFullOn();return}
   if(D.mz==="daily"){qzGateOpen();return}});
 (function(){var KM={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r",w:"u",s:"d",a:"l",d:"r",W:"u",S:"d",A:"l",D:"r"};
   document.addEventListener("keydown",function(e){if(!HMZ.cv||!HMZ.cv.isConnected||QZ.gate)return;var k=KM[e.key];if(!k||/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||""))return;HMZ.keys[k]=1;e.preventDefault()});
@@ -8290,7 +8304,7 @@ function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};ret
 var TABS=["quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
-  if(tab!=="quiz"&&!QZ.gate)qzMusOff(1);if(tab!=="quiz")mzRtClose();if(tab==="quiz")QZ.stopped=0;
+  if(tab!=="quiz"&&!QZ.gate)qzMusOff(1);if(tab!=="quiz"){mzRtClose();if(document.body.classList.contains("mzfull-on"))mzFullOff()}if(tab==="quiz")QZ.stopped=0;
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
   if(["staff","targets","allowmgr","admin","daily","monthly","top"].indexOf(tab)>=0&&!S.mgr)tab="home";
   if(tab==="emp"&&!S.mgr&&!can("emp"))tab="home";
