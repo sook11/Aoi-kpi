@@ -1211,6 +1211,8 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 .mzfs{position:absolute;right:8px;top:8px;width:40px;height:40px;padding:0;border-radius:10px;background:rgba(15,23,42,.6);color:#fff;border:1px solid rgba(255,255,255,.35);font-size:20px;line-height:1}
 .mzfull .mzfs{top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right))}
 .mzfull .mzpad{grid-template-columns:repeat(3,60px);grid-template-rows:repeat(2,60px);gap:6px;right:auto;left:max(16px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom))}.mzfull .mzpad button{font-size:24px}
+.mzinv{position:absolute;right:56px;top:8px;display:flex;gap:5px;z-index:3;max-width:62%;flex-wrap:wrap;justify-content:flex-end}.mzfull .mzinv{top:max(8px,env(safe-area-inset-top))}.mzinv button{position:relative;width:42px;height:42px;padding:0;border-radius:12px;background:rgba(15,23,42,.62);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:21px;line-height:1}.mzinv button.pass{border-color:#67e8f9}.mzinv button b{position:absolute;right:-4px;bottom:-4px;background:#f97316;border-radius:999px;font-size:11px;min-width:17px;height:17px;line-height:17px;padding:0 3px}
+@media (orientation:portrait){.mzfull .mzinv{top:96px}}
 .mzbox,.mzq{color:#fff}.mzq .qzq p{color:#fff}.mzq .qzq small:not(.qzqn){color:#e0e7ff;opacity:.9}
 .mzbox{position:relative;border-radius:14px;overflow:hidden;border:3px solid #3f2a14;box-shadow:inset 0 0 0 2px #a16207;touch-action:none}.mzbox canvas{display:block}
 .mzpad{position:absolute;right:10px;bottom:10px;display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px}.mzpad button{background:rgba(15,23,42,.55);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:10px;font-size:18px;padding:0;touch-action:none}
@@ -4421,13 +4423,13 @@ async function renderMaze(){var P=$("qz-stage");if(!P)return;P.classList.add("mz
   mzSetLevel(HMZ.st.level,true);mzDraw();if(!document.body.classList.contains("mzfull-on")&&window.matchMedia&&matchMedia("(pointer:coarse)").matches)mzFullOn()}
 function mzSpawn(){var M=HMZ.map;HMZ.p={x:M.S.x+.5,y:M.S.y+.5,fx:1,mv:0,t:0,vx:0,vy:0,ph:0,spd:0};HMZ.path=null;HMZ.inv=performance.now()/1000+2.5;
   HMZ.zs=[];for(var i=0;i<mzZN(HMZ.lv)&&i<M.zsp.length;i++){var z=M.zsp[i];HMZ.zs.push({x:z.x+.5,y:z.y+.5,cx:z.x,cy:z.y,fx:-1,ph:i,rise:0,gh:(i+HMZ.lv)%2===1})}HMZ.wake=performance.now()/1000+2}
-function mzSetLevel(l,force){if(HMZ.lv===l&&HMZ.map&&!force){if(!HMZ.rt)mzRtOpen(l);return}var newLv=HMZ.lv!==l;HMZ.lv=l;HMZ.map=mzGen(l);HMZ.cool=-1;HMZ.static=null;HMZ.newAt={};HMZ.dead=null;HMZ.bite=null;HMZ.live=mzLive();mzSpawn();if(newLv||!HMZ.rt){HMZ.others={};mzRtOpen(l)}}
+function mzSetLevel(l,force){if(HMZ.lv===l&&HMZ.map&&!force){if(!HMZ.rt)mzRtOpen(l);return}var newLv=HMZ.lv!==l;HMZ.lv=l;HMZ.map=mzGen(l);HMZ.cool=-1;HMZ.static=null;HMZ.newAt={};HMZ.dead=null;HMZ.bite=null;HMZ.live=mzLive();mzSpawn();mzItemsInit();if(newLv||!HMZ.rt){HMZ.others={};mzRtOpen(l)}}
 function mzDraw(){var wasFull=document.body.classList.contains("mzfull-on");if(wasFull){var ob=$("mz-box");if(ob&&ob.parentNode===document.body)ob.remove();if(HMZ.ph){HMZ.ph.remove();HMZ.ph=null}}var P=$("qz-stage"),s=HMZ.st||{},nr=mzRight(),open=nr>=s.need,th=mzTh(s.level||1);
   P.innerHTML=qzFx()+'<div class="mzwrap"><div class="mzhud"><span class="mzlv">🏁 ด่าน <b>'+s.level+'</b></span><span>🗺️ '+th.n+' · 🧟 '+mzZN(s.level)+'</span><span>🪨 ถูก <b>'+nr+'</b>/'+s.need+(open?' <i class="mzok">ประตูเปิด!</i>':'')+'</span><span>'+fmc()+' วันนี้ <b>'+num(s.coins_day)+'</b>/'+num(s.cap)+'</span><span>🎁 <b>'+s.boxes_day+'</b>/'+s.box_cap+'</span><span id="mz-on">👥 1</span></div>'+
-    '<div class="mzbox" id="mz-box"><canvas id="mz-cv"></canvas><div class="mzpad"><button type="button" data-mzk="u">▲</button><button type="button" data-mzk="l">◀</button><button type="button" data-mzk="d">▼</button><button type="button" data-mzk="r">▶</button></div><div class="mzmini" id="mz-mini"></div><div class="mzrot">📱↻ หมุนมือถือเป็นแนวนอน</div><button type="button" class="mzfs" data-mz="full" title="เต็มจอ">⛶</button><div id="mz-pop"></div></div>'+
-    '<div class="mztools"><span class="sub">แตะหิน ❓ บนแผนที่ ตัวละครจะเดินไปเอง · ต้องตอบถูกครบ '+s.need+' ข้อ ประตู FINISH จึงเปิด · ตอบผิด = หินหาย เกิดหินใหม่ที่อื่น + โดนซอมบี้กัด ไปเกิดใหม่ · ซอมบี้ไล่ตามรอกัดคนตอบผิด ยิ่งด่านสูงยิ่งตัวใหญ่ยิ่งโหด!</span><button type="button" data-mz="restart">🔄 เริ่มด่านนี้ใหม่</button>'+(QZ.st&&!QZ.st.daily_done&&QZ.st.bank>=5?'<button type="button" class="primary" data-mz="daily">📝 คำถามประจำวัน 5 ข้อ</button>':'')+'</div>'+
+    '<div class="mzbox" id="mz-box"><canvas id="mz-cv"></canvas><div class="mzpad"><button type="button" data-mzk="u">▲</button><button type="button" data-mzk="l">◀</button><button type="button" data-mzk="d">▼</button><button type="button" data-mzk="r">▶</button></div><div class="mzmini" id="mz-mini"></div><div class="mzinv" id="mz-inv"></div><div class="mzrot">📱↻ หมุนมือถือเป็นแนวนอน</div><button type="button" class="mzfs" data-mz="full" title="เต็มจอ">⛶</button><div id="mz-pop"></div></div>'+
+    '<div class="mztools"><span class="sub">แตะหิน ❓ บนแผนที่ ตัวละครจะเดินไปเอง · ต้องตอบถูกครบ '+s.need+' ข้อ ประตู FINISH จึงเปิด · ตอบผิด = หินหาย เกิดหินใหม่ที่อื่น + โดนซอมบี้กัด ไปเกิดใหม่ · ซอมบี้ไล่ตามรอกัดคนตอบผิด ยิ่งด่านสูงยิ่งตัวใหญ่ยิ่งโหด! · เก็บ 💣 ระเบิดกำแพง / 🧭 เข็มทิศ ระหว่างทาง · ตอบถูกได้ไอเทมสุ่ม 🏏🔥💧⚡🧿 ไว้ปราบซอมบี้ · 🗺️ แผนที่ย่อมุมจอ</span><button type="button" data-mz="restart">🔄 เริ่มด่านนี้ใหม่</button>'+(QZ.st&&!QZ.st.daily_done&&QZ.st.bank>=5?'<button type="button" class="primary" data-mz="daily">📝 คำถามประจำวัน 5 ข้อ</button>':'')+'</div>'+
     '<div class="mzrank"><b>🏆 ใครไปถึงด่านไหนแล้ว</b> <small>อันดับของฉัน #'+s.rank+' / '+s.players+' คน</small><div class="mzlist">'+(s.top||[]).map(function(x,i){var me=S.me&&x.id===S.me.id,e=empOf(x.id)||{display_name:x.name};return '<div class="mzrow'+(me?' me':'')+'"><span class="grank r'+Math.min(i+1,4)+'">'+(i+1)+'</span>'+avatarHtml(e)+'<b>'+esc(x.name)+'</b><em>ด่าน '+x.level+'</em></div>'}).join("")+'</div></div></div>';
-  if(wasFull)mzFullOn();mzCanvas();mzMini();qzMusOn(Math.min(4,Math.floor((s.level-1)/3)))}
+  if(wasFull)mzFullOn();mzCanvas();mzMini();mzInvDraw();qzMusOn(Math.min(4,Math.floor((s.level-1)/3)))}
 /* อัปเดต 174: โหมดเต็มจอแนวนอน + กันเมนูคัดลอก/เลือกข้อความเวลากดปุ่มเดินค้าง */
 function mzMini(){var m=$("mz-mini"),s=HMZ.st;if(!m||!s)return;var nr=mzRight();m.innerHTML="🏁 ด่าน <b>"+s.level+"</b> "+mzTh(s.level).n+" · 🪨 <b>"+nr+"</b>/"+s.need+(nr>=s.need?" <i>เปิดแล้ว!</i>":"")+" · 🧟 "+mzZN(s.level)+" · "+fmc()+" <b>"+num(s.coins_day)+"</b>"}
 function mzFullOn(){var b=$("mz-box");if(!b)return;if(b.parentNode!==document.body){HMZ.ph=document.createComment("mz");b.parentNode.insertBefore(HMZ.ph,b);document.body.appendChild(b)}b.classList.add("mzfull");document.body.classList.add("mzfull-on");var fb=b.querySelector(".mzfs");if(fb)fb.textContent="✕";var d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen,lk=function(){try{screen.orientation.lock("landscape").catch(function(){})}catch(e){}};if(document.fullscreenElement||document.webkitFullscreenElement){lk()}else if(rq){HMZ.fs=0;try{var pr=rq.call(d,{navigationUI:"hide"});HMZ.fs=1;if(pr&&pr.then)pr.then(function(){try{screen.orientation.lock("landscape").catch(function(){})}catch(e){}}).catch(function(){HMZ.fs=0})}catch(e){HMZ.fs=0}}setTimeout(mzCanvas,60);setTimeout(mzCanvas,450)}
@@ -4453,6 +4455,78 @@ function mzLoop(now){HMZ.raf=0;if(!HMZ.cv||!HMZ.cv.isConnected)return;HMZ.raf=re
 /* สนามระยะทางจากผู้เล่น (ใช้ให้ซอมบี้เดินตามทาง — ไม่สนหิน) */
 function mzField(){var M=HMZ.map,p=HMZ.p,GW=M.GW,f=new Int16Array(GW*M.GH).fill(-1),s=Math.floor(p.y)*GW+Math.floor(p.x),qq=[s];f[s]=0;
   for(var h=0;h<qq.length;h++){var c=qq[h],x=c%GW,y=(c/GW)|0;[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var X=x+d[0],Y=y+d[1],k=Y*GW+X;if(X>=0&&Y>=0&&X<GW&&Y<M.GH&&f[k]<0&&!M.g[k]){f[k]=f[c]+1;qq.push(k)}})}HMZ.fld=f}
+/* ---------- อัปเดต 180: ไอเทมในเขาวงกต ----------
+   เก็บระหว่างทาง: ระเบิด (เบา→แรง) ทำลายกำแพงได้หลายก้อน · เข็มทิศ ชี้ทางไปหินคำถาม/ทางออก
+   ตอบถูกได้ไอเทมสุ่ม: ไม้ตี / คบเพลิง / น้ำมนต์ / สายฟ้า (ฆ่าซอมบี้) · เครื่องราง (กันโดนกัด 1 ครั้ง) · แผนที่ย่อมุมจอ */
+var MZIT={
+  b1:{e:"💣",n:"ระเบิดเล็ก",d:"ทำลายกำแพงรอบตัว 4 ทิศ",k:"bomb",sh:"plus",r:1},
+  b2:{e:"🧨",n:"ไดนาไมต์",d:"ทำลายกำแพงรอบตัว 3×3",k:"bomb",sh:"sq",r:1},
+  b3:{e:"💥",n:"ระเบิดใหญ่",d:"ทำลายกำแพงรัศมี 2 ช่อง",k:"bomb",sh:"dia",r:2},
+  b4:{e:"☢️",n:"ระเบิดมหาประลัย",d:"ทำลายกำแพง 5×5 + ฆ่าซอมบี้ในรัศมี",k:"bomb",sh:"sq",r:2},
+  w1:{e:"🏏",n:"ไม้ตี",d:"ฟาดซอมบี้ตัวที่ใกล้ที่สุด (2.5 ช่อง)",k:"weap",r:2.5,one:1},
+  w2:{e:"🔥",n:"คบเพลิง",d:"เผาซอมบี้รอบตัว 4 ช่อง",k:"weap",r:4},
+  w3:{e:"💧",n:"น้ำมนต์",d:"สาดล้างซอมบี้/ผี รอบตัว 6 ช่อง",k:"weap",r:6},
+  w4:{e:"⚡",n:"สายฟ้า",d:"ฟาดซอมบี้ทุกตัวในด่าน",k:"weap",r:999},
+  a1:{e:"🧿",n:"เครื่องราง",d:"กันโดนซอมบี้กัด 1 ครั้ง (ใช้อัตโนมัติ)",k:"pass"},
+  c1:{e:"🧭",n:"เข็มทิศ",d:"ชี้ทางไปหินคำถาม/ทางออก 12 วินาที",k:"comp"}};
+var MZIO=["b1","b2","b3","b4","w1","w2","w3","w4","a1","c1"];
+function mzInvKey(){return "hpe-mz-inv-"+(S.me&&S.me.id||"x")}
+function mzInvLoad(){if(HMZ.inv2)return HMZ.inv2;var v={};try{v=JSON.parse(localStorage.getItem(mzInvKey())||"{}")||{}}catch(e){v={}}HMZ.inv2=v;return v}
+function mzInvSave(){try{localStorage.setItem(mzInvKey(),JSON.stringify(HMZ.inv2||{}))}catch(e){}}
+function mzInvAdd(k,n){var v=mzInvLoad();v[k]=Math.max(0,Math.min(99,(v[k]||0)+(n||1)));mzInvSave();mzInvDraw()}
+function mzPick(R,tbl){var s=0,i;for(i=0;i<tbl.length;i++)s+=tbl[i][1];var x=R()*s;for(i=0;i<tbl.length;i++){x-=tbl[i][1];if(x<=0)return tbl[i][0]}return tbl[0][0]}
+/* ของวางบนพื้น: กำหนดจากเลขด่าน (ทุกคนเห็นตำแหน่งเดียวกัน) แต่เก็บแยกของใครของมัน */
+function mzItemsInit(){var M=HMZ.map,l=HMZ.lv,R=mzRng(l*131+5),used={},cnt=Math.min(10,3+Math.floor(l/2)),tb=[["b1",50-Math.min(l,20)],["b2",14+l],["b3",Math.max(0,l*2-4)],["b4",Math.max(0,l-6)],["c1",14]];
+  M.slots.slice(0,mzK(l)+12).forEach(function(s){used[s.x+","+s.y]=1});used[M.S.x+","+M.S.y]=1;used[M.E.x+","+M.E.y]=1;
+  var fr=[];for(var y=1;y<M.GH-1;y++)for(var x=1;x<M.GW-1;x++)if(!M.g[y*M.GW+x]&&!used[x+","+y]&&Math.abs(x-M.S.x)+Math.abs(y-M.S.y)>=3)fr.push({x:x,y:y,r:R()});fr.sort(function(a,b){return a.r-b.r});
+  HMZ.items=[];for(var i=0;i<fr.length&&HMZ.items.length<cnt;i++){var f=fr[i];if(HMZ.items.every(function(o){return Math.abs(o.x-f.x)+Math.abs(o.y-f.y)>=4}))HMZ.items.push({x:f.x,y:f.y,k:mzPick(R,tb)})}
+  var gk="hpe-mz-got-"+(S.me&&S.me.id||"x");HMZ.gotKey=gk;var got={};try{got=JSON.parse(localStorage.getItem(gk)||"{}")||{}}catch(e){}if(got.lv!==l)got={lv:l,i:[]};HMZ.got=got;
+  HMZ.items.forEach(function(o,i){o.gone=got.i.indexOf(i)>=0});HMZ.bombs=[];HMZ.blasts=[];HMZ.comp=0;HMZ.broken=0}
+function mzGotSave(){try{localStorage.setItem(HMZ.gotKey,JSON.stringify(HMZ.got))}catch(e){}}
+/* ตอบถูก → ไอเทมสุ่ม (ยิ่งด่านสูงยิ่งมีโอกาสได้ของแรง) */
+function mzReward(){var l=HMZ.lv,R=Math.random,k=mzPick(R,[["w1",40],["w2",22+l],["w3",12+l],["w4",3+l*.6],["a1",14],["b2",10],["b3",4+l*.5],["c1",8]]);mzInvAdd(k,1);var I=MZIT[k],p=HMZ.p;
+  HMZ.fx.push({x:p.x,y:p.y-1.1,s:"ได้ "+I.e+" "+I.n+"!",c:"#a5f3fc",t0:performance.now()/1000+.3});setTimeout(function(){toast("🎁 ตอบถูก ได้ไอเทม "+I.e+" "+I.n+" — "+I.d)},700)}
+function mzBoomSnd(big){try{var c=qzA();if(!c)return;var t=c.currentTime+.01;faNoise(t,.5+big*.3,.22+big*.06,180+big*40);faTone(70,t,.6+big*.2,"sine",.3,28)}catch(e){}}
+function mzZap(z,t,why){z.dead=t;z.rt=t+22;HMZ.fx.push({x:z.x,y:z.y-.8,s:why||"💀",c:"#fef08a",t0:t});HMZ.blasts.push({x:z.x,y:z.y,t0:t,c:"#fde047",r:.8})}
+function mzUse(k){var v=mzInvLoad(),I=MZIT[k],p=HMZ.p,t=performance.now()/1000;if(!I||!v[k]||HMZ.dead||HMZ.ask||HMZ.fin)return;
+  if(I.k==="bomb"){if(HMZ.bombs.length>=2){toast("รอระเบิดลูกก่อนหน้าก่อน");return}HMZ.bombs.push({x:Math.floor(p.x),y:Math.floor(p.y),k:k,t0:t});toast(I.e+" วางระเบิดแล้ว! ถอยออกมา…");}
+  else if(I.k==="weap"){var L=HMZ.zs.filter(function(z){return !z.dead&&Math.hypot(z.x-p.x,z.y-p.y)<=I.r});if(!L.length){toast(I.e+" ไม่มีซอมบี้ในระยะ "+(I.r>99?"":"("+I.r+" ช่อง)"));return}
+    if(I.one)L=[L.sort(function(a,b){return Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)})[0]];L.forEach(function(z){mzZap(z,t,I.e)});
+    HMZ.blasts.push({x:p.x,y:p.y,t0:t,c:k==="w2"?"#f97316":k==="w3"?"#38bdf8":k==="w4"?"#fde047":"#e5e7eb",r:Math.min(I.r,7)});HMZ.shake=t;mzBoomSnd(k==="w4"?2:0);toast(I.e+" "+I.n+" กำจัดซอมบี้ "+L.length+" ตัว! (ฟื้นใน 22 วินาที)")}
+  else if(I.k==="comp"){HMZ.comp=t+12;toast("🧭 เข็มทิศชี้ทาง 12 วินาที — ตามเส้นสีทอง")}
+  else{toast(I.e+" "+I.d);return}
+  v[k]--;mzInvSave();mzInvDraw()}
+function mzExplode(b,t){var M=HMZ.map,I=MZIT[b.k],r=I.r,n=0;for(var dy=-r;dy<=r;dy++)for(var dx=-r;dx<=r;dx++){if(I.sh==="plus"&&Math.abs(dx)+Math.abs(dy)>1)continue;if(I.sh==="dia"&&Math.abs(dx)+Math.abs(dy)>r)continue;
+    var x=b.x+dx,y=b.y+dy;if(x<=0||y<=0||x>=M.GW-1||y>=M.GH-1)continue;var k=y*M.GW+x;if(M.g[k]){M.g[k]=0;n++;HMZ.blasts.push({x:x+.5,y:y+.5,t0:t+Math.random()*.15,c:"#78716c",r:.6,deb:1})}}
+  HMZ.blasts.push({x:b.x+.5,y:b.y+.5,t0:t,c:"#f97316",r:r+1.2});HMZ.shake=t;HMZ.static=null;HMZ.fldT=0;HMZ.broken+=n;mzBoomSnd(b.k==="b4"?2:b.k==="b3"?1:0);try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}
+  if(b.k==="b4"||b.k==="b3")HMZ.zs.forEach(function(z){if(!z.dead&&Math.hypot(z.x-b.x-.5,z.y-b.y-.5)<=r+1.5)mzZap(z,t,"💥")});
+  HMZ.fx.push({x:b.x+.5,y:b.y-.3,s:n?"💥 กำแพงพัง "+n+" ก้อน!":"💥 บึ้ม!",c:"#fb923c",t0:t})}
+function mzItemsStep(t){var p=HMZ.p;if(!HMZ.items)return;
+  if(!HMZ.dead)HMZ.items.forEach(function(o,i){if(o.gone)return;if(Math.hypot(o.x+.5-p.x,o.y+.5-p.y)<.6){o.gone=1;HMZ.got.i.push(i);mzGotSave();mzInvAdd(o.k,1);var I=MZIT[o.k];qzSnd("sel");HMZ.fx.push({x:o.x+.5,y:o.y-.2,s:"+"+I.e+" "+I.n,c:"#a5f3fc",t0:t});toast("เก็บได้ "+I.e+" "+I.n+" — "+I.d+" (แตะปุ่มไอเทมเพื่อใช้)")}});
+  HMZ.bombs=HMZ.bombs.filter(function(b){if(t-b.t0>=1.6){mzExplode(b,t);return false}return true});
+  HMZ.blasts=HMZ.blasts.filter(function(b){return t-b.t0<.9});
+  HMZ.zs.forEach(function(z){if(z.dead&&t>=z.rt){var sp=HMZ.map.zsp[HMZ.zs.indexOf(z)%HMZ.map.zsp.length];z.dead=0;z.x=sp.x+.5;z.y=sp.y+.5;z.cx=sp.x;z.cy=sp.y;z.rise=0}})}
+/* เส้นทางสั้นที่สุดไปหินที่ใกล้สุด (หรือประตูถ้าเปิดแล้ว) — ใช้กับเข็มทิศ */
+function mzCompPath(){var M=HMZ.map,p=HMZ.p,GW=M.GW,prev=new Int32Array(GW*M.GH).fill(-1),s=Math.floor(p.y)*GW+Math.floor(p.x),qq=[s],goal=-1,tg={};prev[s]=s;
+  if(mzOpenMaze())tg[M.E.y*GW+M.E.x]=1;else (HMZ.live||[]).forEach(function(o){[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){tg[(o.y+d[1])*GW+o.x+d[0]]=1})});
+  for(var h=0;h<qq.length&&goal<0;h++){var c=qq[h];if(tg[c]){goal=c;break}var x=c%GW,y=(c/GW)|0;[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var X=x+d[0],Y=y+d[1],k=Y*GW+X;if(X>=0&&Y>=0&&X<GW&&Y<M.GH&&prev[k]<0&&!mzSolid(X,Y)){prev[k]=c;qq.push(k)}})}
+  if(goal<0)return null;var P=[];for(var k2=goal;k2!==prev[k2];k2=prev[k2])P.unshift({x:k2%GW+.5,y:((k2/GW)|0)+.5});return P}
+function mzItemsDraw(g,T,t,L){var p=HMZ.p;
+  if(HMZ.comp>t){if(!HMZ.cpT||t-HMZ.cpT>.4){HMZ.cpT=t;HMZ.cp=mzCompPath()}if(HMZ.cp){g.fillStyle="rgba(250,204,21,"+(.6+.3*Math.sin(t*6))+")";HMZ.cp.forEach(function(w,j){if(j%2===0){g.beginPath();g.arc(w.x*T,w.y*T,T*.09,0,7);g.fill()}})}}
+  (HMZ.items||[]).forEach(function(o){if(o.gone)return;L.push({y:o.y+.4,f:function(){var X=(o.x+.5)*T,Y=(o.y+.5)*T-Math.abs(Math.sin(t*3+o.x))*T*.12;g.fillStyle="rgba(0,0,0,.18)";g.beginPath();g.ellipse(X,(o.y+.82)*T,T*.22,T*.07,0,0,7);g.fill();
+    g.fillStyle="rgba(255,255,255,"+(.35+.2*Math.sin(t*5+o.y))+")";g.beginPath();g.arc(X,Y,T*.34,0,7);g.fill();g.font=Math.round(T*.5)+"px sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(MZIT[o.k].e,X,Y);g.textBaseline="alphabetic"}})});
+  (HMZ.bombs||[]).forEach(function(b){var a=(t-b.t0)/1.6;L.push({y:b.y+.5,f:function(){var X=(b.x+.5)*T,Y=(b.y+.55)*T,s=1+.15*Math.sin(t*(10+a*25));g.save();g.translate(X,Y);g.scale(s,s);g.font=Math.round(T*.6)+"px sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(MZIT[b.k].e,0,0);g.restore();g.textBaseline="alphabetic";
+    g.strokeStyle="rgba(239,68,68,"+(.4+.4*Math.sin(t*20))+")";g.lineWidth=2;g.beginPath();g.arc(X,Y,T*(.5+MZIT[b.k].r*.5),0,7);g.stroke()}})});
+  (HMZ.blasts||[]).forEach(function(b){var a=(t-b.t0)/.9;if(a<0)return;L.push({y:b.y+5,f:function(){g.globalAlpha=Math.max(0,1-a);if(b.deb){g.fillStyle=b.c;for(var j=0;j<5;j++){var an=j*1.26+b.x;g.fillRect((b.x+Math.cos(an)*a*.9)*T,(b.y+Math.sin(an)*a*.9-a*(1-a)*1.5)*T,T*.12,T*.12)}}
+    else{var gr=g.createRadialGradient(b.x*T,b.y*T,0,b.x*T,b.y*T,T*b.r*(.4+a));gr.addColorStop(0,"rgba(255,255,255,.9)");gr.addColorStop(.4,b.c);gr.addColorStop(1,"rgba(0,0,0,0)");g.fillStyle=gr;g.beginPath();g.arc(b.x*T,b.y*T,T*b.r*(.4+a),0,7);g.fill()}g.globalAlpha=1}})})}
+/* แผนที่ย่อมุมขวาล่าง */
+function mzMinimap(g,t){if(HMZ.nomap)return;var M=HMZ.map,vw=HMZ.vw,vh=HMZ.vh,mx=Math.min(150,vw*.24)/M.GW,W=M.GW*mx,H=M.GH*mx,full=document.body.classList.contains("mzfull-on"),X=vw-W-10,Y=full?vh-H-12:54;
+  g.save();g.globalAlpha=.88;g.fillStyle="rgba(15,23,42,.75)";g.fillRect(X-4,Y-4,W+8,H+8);for(var y=0;y<M.GH;y++)for(var x=0;x<M.GW;x++){g.fillStyle=M.g[y*M.GW+x]?M.th.ws:M.th.f[0];g.fillRect(X+x*mx,Y+y*mx,mx+.5,mx+.5)}
+  var dot=function(x,y,c,r){g.fillStyle=c;g.beginPath();g.arc(X+x*mx,Y+y*mx,r,0,7);g.fill()};dot(M.E.x+.5,M.E.y+.5,mzOpenMaze()?"#facc15":"#a16207",3);
+  (HMZ.live||[]).forEach(function(o){dot(o.x+.5,o.y+.5,"#8b5cf6",2.6)});(HMZ.items||[]).forEach(function(o){if(!o.gone)dot(o.x+.5,o.y+.5,"#22d3ee",1.8)});HMZ.zs.forEach(function(z){if(!z.dead)dot(z.x,z.y,"#ef4444",2.4)});
+  dot(HMZ.p.x,HMZ.p.y,Math.floor(t*4)%2?"#fb923c":"#fff",3.2);g.strokeStyle="rgba(255,255,255,.6)";g.lineWidth=1;g.strokeRect(X+HMZ.camx*mx,Y+HMZ.camy*mx,vw/HMZ.T*mx,vh/HMZ.T*mx);g.restore()}
+function mzInvDraw(){var el=$("mz-inv");if(!el)return;var v=mzInvLoad();el.innerHTML=MZIO.filter(function(k){return v[k]>0}).map(function(k){var I=MZIT[k];return '<button type="button" data-mzi="'+k+'" title="'+esc(I.n+" — "+I.d)+'"'+(I.k==="pass"?' class="pass"':'')+'><span>'+I.e+'</span><b>'+v[k]+'</b></button>'}).join("")+'<button type="button" data-mzi="map" title="แผนที่ย่อ"><span>🗺️</span></button>'}
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-mzi]");if(!b)return;var k=b.dataset.mzi;if(k==="map"){HMZ.nomap=!HMZ.nomap;return}mzUse(k)});
 function mzDie(why){var t=performance.now()/1000,p=HMZ.p;if(HMZ.dead)return;HMZ.dead={t0:t,x:p.x,y:p.y,why:why};HMZ.bite=null;HMZ.path=null;HMZ.keys={};HMZ.shake=t;qzSnd("wrong");
   HMZ.fx.push({x:p.x,y:p.y-.6,s:"🧟 โดนซอมบี้กัด!",c:"#dc2626",t0:t});toast(why==="wrong"?"🧟 ตอบผิด โดนซอมบี้กัด! ไปเกิดใหม่ที่จุดเริ่ม":"🧟 โดนซอมบี้จับได้! ไปเกิดใหม่ที่จุดเริ่ม");try{navigator.vibrate&&navigator.vibrate([80,40,140])}catch(e){}}
 function mzStep(dt,t){var p=HMZ.p,M=HMZ.map;if(!p||!M)return;HMZ.live=mzLive();
@@ -4472,7 +4546,8 @@ function mzStep(dt,t){var p=HMZ.p,M=HMZ.map;if(!p||!M)return;HMZ.live=mzLive();
   /* ซอมบี้ */
   if(!HMZ.fld||t-(HMZ.fldT||0)>.3){HMZ.fldT=t;mzField()}
   var zsp=Math.min(2.1,1.25+Math.min(HMZ.lv,20)*.04),zmove=!frozen&&t>HMZ.wake;
-  HMZ.zs.forEach(function(z){z.rise=Math.min(1,z.rise+dt*1.5);if(!zmove)return;var f=HMZ.fld,GW=M.GW,tx=z.cx+.5,ty=z.cy+.5,dd=Math.hypot(tx-z.x,ty-z.y);
+  mzItemsStep(t);
+  HMZ.zs.forEach(function(z){if(z.dead)return;z.rise=Math.min(1,z.rise+dt*1.5);if(!zmove)return;var f=HMZ.fld,GW=M.GW,tx=z.cx+.5,ty=z.cy+.5,dd=Math.hypot(tx-z.x,ty-z.y);
     if(dd<.06){var bk=z.cy*GW+z.cx,bv=f[bk]<0?1e9:f[bk],nx=z.cx,ny=z.cy;[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var X=z.cx+d[0],Y=z.cy+d[1],k=Y*GW+X;if(f[k]>=0&&f[k]<bv){bv=f[k];nx=X;ny=Y}});z.cx=nx;z.cy=ny;tx=nx+.5;ty=ny+.5;dd=Math.hypot(tx-z.x,ty-z.y)}
     var pd=Math.hypot(z.x-p.x,z.y-p.y);z.near=pd<1.6;if(pd<.85)return;
     if(dd>.001){var st=Math.min(dd,zsp*dt);z.x+=(tx-z.x)/dd*st;z.y+=(ty-z.y)/dd*st;if(Math.abs(tx-z.x)>.02)z.fx=tx>z.x?1:-1;z.ph+=dt*zsp*3}
@@ -4558,15 +4633,16 @@ function mzRender(t){var g=HMZ.ctx,M=HMZ.map,T=HMZ.T,p=HMZ.p;if(!g||!M||!p)retur
       var by=Y-T*.35+Math.sin(t*4+i)*T*.08;g.fillStyle="#f97316";g.beginPath();g.moveTo(X+T*.3,by);g.lineTo(X+T*.7,by);g.lineTo(X+T*.5,by+T*.22);g.closePath();g.fill();
       if(isNew){g.font="bold "+Math.round(T*.3)+"px sans-serif";g.fillStyle="#facc15";g.strokeStyle="rgba(0,0,0,.6)";g.lineWidth=3;g.strokeText("ใหม่!",X+T/2,by-T*.08);g.fillText("ใหม่!",X+T/2,by-T*.08)}}})});
   if(HMZ.path&&HMZ.path.length){g.fillStyle="rgba(255,255,255,.5)";HMZ.path.forEach(function(w,j){if(j%2===0){g.beginPath();g.arc(w.x*T,w.y*T,3,0,7);g.fill()}})}
+  mzItemsDraw(g,T,t,L);
   HMZ.dust.forEach(function(d){var a=(t-d.t0)/.5;g.fillStyle="rgba(255,255,255,"+(.5*(1-a))+")";g.beginPath();g.arc(d.x*T,d.y*T-a*T*.15,T*(.06+a*.12),0,7);g.fill()});
   for(var id in HMZ.others){var o=HMZ.others[id];L.push({y:o.y,f:function(o){return function(){mzActor(g,o.x*T,o.y*T,mzSprite(o.s,o.id),o.n||"",o.fx||1,o.mv,t,false,o.ph||0,1,null,[o.s,o.id])}}(o)})}
-  HMZ.zs.forEach(function(z){L.push({y:z.y,f:function(){var gi=z.gh&&mzImg("models/walk-ghost.webp?v=1");if(gi)mzWalker(g,z.x*T,(z.y-.12-Math.sin(t*3+z.ph)*.05)*T,gi,z.fx,true,z.ph*1.2,t,mzZsc()+.15,.9*Math.min(1,z.rise*1.5));else mzZombie(g,z.x*T,z.y*T,z.fx,z.ph,z.rise,t)}})});
+  HMZ.zs.forEach(function(z){if(z.dead)return;L.push({y:z.y,f:function(){var gi=z.gh&&mzImg("models/walk-ghost.webp?v=1");if(gi)mzWalker(g,z.x*T,(z.y-.12-Math.sin(t*3+z.ph)*.05)*T,gi,z.fx,true,z.ph*1.2,t,mzZsc()+.15,.9*Math.min(1,z.rise*1.5));else mzZombie(g,z.x*T,z.y*T,z.fx,z.ph,z.rise,t)}})});
   if(HMZ.bite){var b=HMZ.bite,ba=Math.min(1,(t-b.t0)/.6);L.push({y:b.y+.01,f:function(){mzZombie(g,b.x*T,b.y*T,b.fx,t*6,ba,t)}})}
   var dead=HMZ.dead,blink=t<HMZ.inv&&!dead?(Math.floor(t*10)%2?.35:1):1;
   L.push({y:p.y,f:function(){if(dead){var a=Math.min(1,(t-dead.t0)/.6);mzActor(g,dead.x*T,dead.y*T,mzSprite(mzMyKey(),S.me&&S.me.id),"💀",p.fx,false,t,true,0,0,1-a*.7,[mzMyKey(),S.me&&S.me.id]);return}mzActor(g,p.x*T,p.y*T,mzSprite(mzMyKey(),S.me&&S.me.id),(S.me&&(S.me.display_name||S.me.employee_no))||"ฉัน",p.fx,p.mv,t,true,p.ph,p.spd,blink,[mzMyKey(),S.me&&S.me.id])}});
   L.sort(function(a,b){return a.y-b.y}).forEach(function(a){a.f()});
   HMZ.fx=HMZ.fx.filter(function(f){var a=(t-f.t0);if(a>1.6)return false;g.globalAlpha=Math.max(0,1-a/1.6);g.fillStyle=f.c;g.font="bold "+Math.round(T*.45)+"px sans-serif";g.textAlign="center";g.strokeStyle="rgba(0,0,0,.5)";g.lineWidth=3;g.strokeText(f.s,f.x*T,(f.y-a*1.1)*T);g.fillText(f.s,f.x*T,(f.y-a*1.1)*T);g.globalAlpha=1;return true});
-  g.restore();
+  g.restore();mzMinimap(g,t);
   /* ลูกศรชี้ไปหินใหม่ที่อยู่นอกจอ */
   if(newest){var sx=(newest.x+.5-HMZ.camx)*T,sy=(newest.y+.5-HMZ.camy)*T;if(sx<0||sy<0||sx>vw||sy>vh){var ang=Math.atan2(sy-vh/2,sx-vw/2),mx=vw/2-40,my=vh/2-40,k=Math.min(Math.abs(mx/Math.cos(ang)),Math.abs(my/Math.sin(ang))),ax=vw/2+Math.cos(ang)*k,ay=vh/2+Math.sin(ang)*k;
     g.save();g.translate(ax,ay);g.rotate(ang);g.fillStyle="#facc15";g.strokeStyle="rgba(0,0,0,.5)";g.lineWidth=2;g.beginPath();g.moveTo(20,0);g.lineTo(-10,-13);g.lineTo(-4,0);g.lineTo(-10,13);g.closePath();g.fill();g.stroke();g.restore();
@@ -4587,10 +4663,10 @@ function mzPop(){var A=HMZ.ask,P=$("mz-pop");if(!P)return;if(!A){P.innerHTML="";
 async function mzLock(){var A=HMZ.ask;if(!A||A.sel==null||A.lock)return;A.lock=1;mzPop();qzMusOff(1);qzSnd("lock");var t0=Date.now();
   try{var r=await q(db.rpc("maze_answer",{p_stone:A.i,p_choice:A.sel}));await new Promise(function(z){setTimeout(z,Math.max(0,1500-(Date.now()-t0)))});A.lock=0;A.rev=r;mzPop();
     HMZ.st.stones=HMZ.st.stones||{};HMZ.st.stones[A.i]=r.correct?"right":"gone";HMZ.st.coins_day=r.coins_day;var M=HMZ.map,s=M.slots[A.i%M.slots.length],now=performance.now()/1000;
-    if(r.correct){qzSnd("right");HMZ.fx.push({x:s.x+.5,y:s.y,s:r.win?"+"+r.win+" 🪙":"✓",c:"#facc15",t0:now});if(r.win)qzBurst(r.win);if(r.right>=r.need&&r.right-1<r.need){setTimeout(function(){qzSnd("win");toast("🎉 ตอบครบแล้ว ประตู FINISH เปิด! เดินไปที่ทางออกได้เลย")},900)}}
+    if(r.correct){qzSnd("right");mzReward();HMZ.fx.push({x:s.x+.5,y:s.y,s:r.win?"+"+r.win+" 🪙":"✓",c:"#facc15",t0:now});if(r.win)qzBurst(r.win);if(r.right>=r.need&&r.right-1<r.need){setTimeout(function(){qzSnd("win");toast("🎉 ตอบครบแล้ว ประตู FINISH เปิด! เดินไปที่ทางออกได้เลย")},900)}}
     else{qzSnd("wrong");var ni=mzTotal()-1;HMZ.newAt[ni]=now+(r.correct?0:2.4);HMZ.fx.push({x:s.x+.5,y:s.y,s:"💨 หินหาย เกิดหินใหม่!",c:"#fde047",t0:now})}
     setTimeout(function(){HMZ.ask=null;mzPop();mzHud();HMZ.live=mzLive();qzMusOn(Math.min(4,Math.floor((HMZ.st.level-1)/3)));
-      if(!r.correct){var p=HMZ.p,d=[[1,0],[-1,0],[0,1],[0,-1]].find(function(d){return !mzSolid(p.x+d[0]*.8,p.y+d[1]*.8,true)})||[1,0];HMZ.bite={x:p.x+d[0]*.75,y:p.y+d[1]*.75,fx:d[0]>0?-1:1,t0:performance.now()/1000}}},r.correct?1500:2400)}catch(e){A.lock=0;toast(thErr(e));HMZ.ask=null;mzPop()}}
+      if(!r.correct){var inv=mzInvLoad();if(inv.a1>0){inv.a1--;mzInvSave();mzInvDraw();HMZ.fx.push({x:HMZ.p.x,y:HMZ.p.y-.8,s:"🧿 เครื่องรางกันกัด!",c:"#a5f3fc",t0:performance.now()/1000});toast("🧿 เครื่องรางช่วยไว้! ไม่โดนซอมบี้กัด");return}if(!HMZ.zs.some(function(z){return !z.dead})){toast("😎 ซอมบี้ถูกกำจัดหมดแล้ว รอดตัว!");return}var p=HMZ.p,d=[[1,0],[-1,0],[0,1],[0,-1]].find(function(d){return !mzSolid(p.x+d[0]*.8,p.y+d[1]*.8,true)})||[1,0];HMZ.bite={x:p.x+d[0]*.75,y:p.y+d[1]*.75,fx:d[0]>0?-1:1,t0:performance.now()/1000}}},r.correct?1500:2400)}catch(e){A.lock=0;toast(thErr(e));HMZ.ask=null;mzPop()}}
 function mzHud(){var s=HMZ.st,nr=mzRight(),H=document.querySelector(".mzhud");mzMini();if(!H)return;H.children[2].innerHTML='🪨 ถูก <b>'+nr+'</b>/'+s.need+(nr>=s.need?' <i class="mzok">ประตูเปิด!</i>':'');H.children[3].innerHTML=fmc()+' วันนี้ <b>'+num(s.coins_day)+'</b>/'+num(s.cap)}
 async function mzFinish(){if(HMZ.busy||HMZ.fin)return;HMZ.busy=1;HMZ.fin=1;try{var r=await q(db.rpc("maze_finish"));HMZ.busy=0;qzSnd("win");qzBurst(0);var L=r.loot;
     var P=$("mz-pop");P.innerHTML='<div class="mzq mzwin"><div class="qzlogo">🏁<b>ผ่านด่าน '+r.cleared+'!</b></div>'+(L?'<div class="mzloot"><small>🎁 กล่องสุ่มได้</small><b>'+esc(L.e||"🎁")+' '+esc(L.n||L.item||"")+(L.qty>1?' ×'+L.qty:'')+'</b>'+(L.rare?'<i>✨ ของหายาก!</i>':'')+(L.kind==="decor"?'<small>ของตกแต่งเข้าไปอยู่ในคลังของในฟาร์มแล้ว</small>':L.kind==="item"?'<small>เข้ายุ้งฉางฟาร์มแล้ว</small>':'')+'</div>':'<p class="sub">วันนี้รับกล่องครบแล้ว — ผ่านด่านต่อได้ พรุ่งนี้รับกล่องใหม่</p>')+
