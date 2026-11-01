@@ -1213,6 +1213,7 @@ small.subs{display:block;color:var(--muted);font-size:12.5px}
 .mzfull .mzpad{grid-template-columns:repeat(3,60px);grid-template-rows:repeat(2,60px);gap:6px;right:auto;left:max(16px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom))}.mzfull .mzpad button{font-size:24px}
 .mzinv{position:absolute;right:56px;top:8px;display:flex;gap:5px;z-index:3;max-width:62%;flex-wrap:wrap;justify-content:flex-end}.mzfull .mzinv{top:max(8px,env(safe-area-inset-top))}.mzinv button{position:relative;width:42px;height:42px;padding:0;border-radius:12px;background:rgba(15,23,42,.62);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:21px;line-height:1}.mzinv button.pass{border-color:#67e8f9}.mzinv button b{position:absolute;right:-4px;bottom:-4px;background:#f97316;border-radius:999px;font-size:11px;min-width:17px;height:17px;line-height:17px;padding:0 3px}
 @media (orientation:portrait){.mzfull .mzinv{top:96px}}
+.lvlock{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px;line-height:1.5}.lkms{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.lkm{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px;background:var(--surface)}.lkm input{margin:0}.lkm.on{background:#fee2e2;border-color:#f87171;color:#991b1b;font-weight:600}
 .mzbox,.mzq{color:#fff}.mzq .qzq p{color:#fff}.mzq .qzq small:not(.qzqn){color:#e0e7ff;opacity:.9}
 .mzbox{position:relative;border-radius:14px;overflow:hidden;border:3px solid #3f2a14;box-shadow:inset 0 0 0 2px #a16207;touch-action:none}.mzbox canvas{display:block}
 .mzpad{position:absolute;right:10px;bottom:10px;display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px}.mzpad button{background:rgba(15,23,42,.55);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:10px;font-size:18px;padding:0;touch-action:none}
@@ -1644,6 +1645,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
         <div><b>ผู้มาแทน (คู่กะ เข้า OT แทน) — ระบุเป็นรายวัน *</b><p class="sub">เลือกวันที่ลาก่อน แล้วใส่คู่กะที่มาแทนแต่ละวัน (วันควงกะ / วันหยุด ไม่ต้องใส่)</p><div id="lv-subs"></div></div>
         <label>เหตุผลการลา — ลาเพราะอะไร *<textarea id="lv-reason" rows="2" maxlength="500" required></textarea></label>
         <div class="filters"><label>สถานที่ไป<input type="text" id="lv-dest" maxlength="120"></label><label>จังหวัด<select id="lv-prov"></select></label></div>
+        <p class="lvlock" id="lv-lock" hidden></p>
         <p class="lvwarn" id="lv-warn" hidden></p>
         <div class="inline" style="justify-content:flex-end"><button type="reset" id="lv-reset">ล้าง</button><button class="primary" type="submit" id="lv-submit" data-ico="send">ส่งคำขอลา</button></div>
       </form>
@@ -1682,6 +1684,18 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <!-- LEAVE: จัดการวันลา -->
   <section class="view" id="v-leaveadmin" hidden>
     <div><h2>จัดการวันลา</h2><p class="sub">ตั้งสิทธิ์วันลารายคน · วันหยุด · ประเภทการลา · วันควงกะ · ส่งออกรายงาน</p></div>
+    <div class="panel adm">
+      <h3>🔒 ล็อกการจองลา</h3>
+      <p class="sub">ปิดรับใบลาเป็นรายเดือน และห้ามลาย้อนหลังเดือนก่อน — พนักงานและหัวหน้าจะจองลาเดือนที่ล็อกไม่ได้ ระบบขึ้นเตือนให้ติดต่อผู้ดูแลระบบ (Admin ยังลงใบลาแทนได้)</p>
+      <form id="lk-form">
+        <label class="check" style="flex-direction:row;align-items:center"><input type="checkbox" id="lk-on"> เปิดระบบล็อกการจองลา</label>
+        <label class="check" style="flex-direction:row;align-items:center"><input type="checkbox" id="lk-past"> ห้ามลาย้อนหลังเดือนก่อน (เช่น วันนี้เดือน พ.ย. จะลาวันที่ใน ต.ค. ไม่ได้)</label>
+        <p class="sub" style="margin:8px 0 4px">เลือกเดือนที่ปิดรับใบลา</p>
+        <div class="lkms" id="lk-months"></div>
+        <label>ข้อความเพิ่มเติม (ไม่บังคับ)<input type="text" id="lk-msg" maxlength="200" placeholder="เช่น ช่วงปิดงบปลายปี"></label>
+        <div class="inline"><span style="flex:1"></span><button type="submit" class="primary slim">บันทึกการล็อก</button></div>
+      </form>
+    </div>
     <div class="panel">
       <h3>สิทธิ์วันลารายคน</h3>
       <div class="filters"><label>ปี<select id="lb-year"></select></label><label>ประเภท<select id="lb-type"></select></label><label>แผนก<select id="lb-dept"></select></label><label>ค้นหา<input type="search" id="lb-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label></div>
@@ -7958,8 +7972,24 @@ async function renderLeave(){
   if(can("leave_appr")){var keep=$("lv-emp").value,ds=lvApprDepts();
     $("lv-emp").innerHTML='<option value="">ตัวฉันเอง ('+esc(S.me.display_name)+')</option>'+dirList().filter(function(e){return e.id!==S.me.id&&ds.indexOf(e.department_id)>=0}).sort(function(a,b){return String(a.display_name).localeCompare(String(b.display_name),"th")}).map(function(e){return '<option value="'+e.id+'">'+esc(e.employee_no+" · "+e.display_name)+'</option>'}).join("");$("lv-emp").value=keep}
   if(!$("lv-from").value){$("lv-from").value=today();$("lv-to").value=today()}
-  lvEmpChanged(true);
+  lvEmpChanged(true);lkGet().then(lkShow);
 }
+/* อัปเดต 184: ล็อกการจองลา (เดือนที่ปิดรับ + ห้ามลาย้อนหลังเดือนก่อน) — ฐานข้อมูลตรวจซ้ำอีกชั้น */
+var LKTH=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+function lkName(m){return LKTH[+m.slice(5,7)-1]+" "+(+m.slice(0,4)+543)}
+function lkNext(m){var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+"-"+(mo<10?"0":"")+mo}
+async function lkGet(){try{LV.lock=await q(db.rpc("leave_lock_get"))}catch(e){LV.lock=null}return LV.lock}
+function lkBlock(from,to){var c=LV.lock;if(!c||!c.on||c.exempt||!from)return "";var m0=String(c.today||today()).slice(0,7);if(c.no_past!==false&&from.slice(0,7)<m0)return "ห้ามลาย้อนหลังเดือนก่อน";
+  var ms=c.months||[],end=(to||from).slice(0,7);for(var d=from.slice(0,7);d<=end;d=lkNext(d))if(ms.indexOf(d)>=0)return "เดือน"+lkName(d)+" ปิดรับใบลา";return ""}
+function lkShow(){var el=$("lv-lock");if(!el)return;var half=$("lv-half").checked,from=$("lv-from").value,to=half?from:$("lv-to").value,why=lkBlock(from,to);el.hidden=!why;
+  el.innerHTML=why?'⛔ <b>ไม่สามารถจองลาได้</b> — '+esc(why)+(LV.lock&&LV.lock.msg?' ('+esc(LV.lock.msg)+')':'')+'<br>กรุณาติดต่อผู้ดูแลระบบ':'';$("lv-submit").disabled=!!why}
+function lkDraw(){var c=LV.lock||{},td=String(c.today||today()),y=+td.slice(0,4),m=+td.slice(5,7),ms=c.months||[],keys=[];
+  for(var i=-2;i<=13;i++){var mm=m+i,yy=y;while(mm>12){mm-=12;yy++}while(mm<1){mm+=12;yy--}keys.push(yy+"-"+(mm<10?"0":"")+mm)}ms.forEach(function(k){if(keys.indexOf(k)<0)keys.push(k)});keys.sort();
+  $("lk-on").checked=!!c.on;$("lk-past").checked=c.no_past!==false;$("lk-msg").value=c.msg||"";
+  $("lk-months").innerHTML=keys.map(function(k){var on=ms.indexOf(k)>=0;return '<label class="lkm'+(on?" on":"")+'"><input type="checkbox" value="'+k+'"'+(on?" checked":"")+'>'+(on?"🔒 ":"")+esc(lkName(k))+'</label>'}).join("")}
+$("lk-months").addEventListener("change",function(e){var l=e.target.closest(".lkm");if(l){l.classList.toggle("on",e.target.checked);l.lastChild.textContent=(e.target.checked?"🔒 ":"")+lkName(e.target.value)}});
+$("lk-form").addEventListener("submit",async function(ev){ev.preventDefault();var ms=[].map.call(document.querySelectorAll("#lk-months input:checked"),function(x){return x.value});
+  try{LV.lock=await q(db.rpc("leave_lock_set",{p:{on:$("lk-on").checked,no_past:$("lk-past").checked,months:ms,msg:$("lk-msg").value.trim()}}));lkDraw();toast(LV.lock.on?"🔒 บันทึกแล้ว — ล็อก "+(LV.lock.months.length?LV.lock.months.map(lkName).join(", "):"เฉพาะลาย้อนหลัง"):"🔓 ปิดระบบล็อกแล้ว — จองลาได้ตามปกติ")}catch(e){toast(thErr(e))}});
 function lvEmpChanged(keepShift){
   var e=lvTarget();LV.emp=e;
   $("lv-who").innerHTML=avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),e.phone].filter(Boolean).join(" · "))+'</small></div>';
@@ -7986,7 +8016,7 @@ function lvDays(){
   var opts=function(d){return '<option value="">'+(mates.length?"เลือกคู่กะที่มาแทน (กะ "+(opp?shiftLbl(opp):"A / B")+")":"— ไม่มีพนักงานอีกกะในแผนกนี้ —")+'</option>'+mates.map(function(m){return '<option value="'+m.id+'"'+(old[d]===m.id?" selected":"")+'>'+esc(m.display_name+" (กะ "+shiftLbl(m.shift)+")")+'</option>'}).join("")};
   $("lv-subs").innerHTML=ds.length>62?'<p class="sub">ช่วงยาวเกิน 62 วัน ไม่ต้องระบุผู้มาแทนรายวัน</p>':ds.map(function(d){var k=dayKind(d),ri=rotInfo(d),sl=my==="D"?"เช้า":my===ri.day?"เช้า":"ดึก";
     return '<div class="subrow k-'+k+'"><span class="sd">'+esc(wdD(d))+'<small>'+(k==="work"?"กะ"+shiftLbl(my)+" เข้า"+sl:"")+'</small></span>'+(k==="work"?'<select data-d="'+d+'">'+opts(d)+'</select>':'<span class="soff">'+(k==="rot"?"ควงกะ (ไม่ต้องมีผู้มาแทน)":k==="co"?"วันหยุดโรงงาน · "+esc((LV.hol[d].cn||LV.hol[d].names).join(", ")):"วันหยุด (อาทิตย์)")+'</span>')+'</div>'}).join("");
-  lvConflict();
+  lvConflict();lkShow();
 }
 async function lvConflict(){
   var w=$("lv-warn");w.hidden=true;var t=lvType(+$("lv-type").value),e=LV.emp;if(!t.team_limit||!e||!LV.days.length)return;
@@ -8004,6 +8034,7 @@ $("lvform").addEventListener("submit",async function(ev){
   ev.preventDefault();
   var e=LV.emp,t=+$("lv-type").value,half=$("lv-half").checked,from=$("lv-from").value,to=half?from:$("lv-to").value;
   if(!t){toast("เลือกประเภทการลา");return}if(!from||!to||to<from){toast("เลือกวันที่ให้ถูกต้อง");return}
+  var lkw=lkBlock(from,to);if(lkw){toast("⛔ ไม่สามารถจองลาได้: "+lkw+" — กรุณาติดต่อผู้ดูแลระบบ");return}
   if(!(LV.n>0)){toast("ช่วงวันที่เลือกเป็นวันหยุดทั้งหมด ไม่ต้องลา");return}
   if(LV.bal&&lvType(t).max_days>0&&LV.n>+LV.bal.remaining){toast("วันลาไม่เพียงพอ: คงเหลือ "+num(LV.bal.remaining)+" วัน แต่ขอลา "+num(LV.n)+" วัน");return}
   var subs=[],miss=[];
@@ -8014,7 +8045,7 @@ $("lvform").addEventListener("submit",async function(ev){
   var btn=$("lv-submit");btn.disabled=true;
   var ok=await act(function(){return q(db.from("leave_requests").insert({employee_id:e.id,leave_type_id:t,shift:$("lv-shift").value,start_date:from,end_date:to,half_day:half?document.querySelector('input[name=lvhp]:checked').value:null,
     reason:$("lv-reason").value.trim(),destination:$("lv-dest").value.trim(),province:$("lv-prov").value,substitutes:subs}))},"ส่งคำขอลาสำเร็จ 🎉 รอหัวหน้าอนุมัติ");
-  btn.disabled=false;
+  btn.disabled=false;lkShow();
   if(ok){$("lv-reason").value="";$("lv-dest").value="";$("lv-prov").value="";$("lv-half").checked=false;lvPendingDot();show(e.id===S.me.id?"myleave":"leaveappr")}
 });
 
@@ -8083,7 +8114,7 @@ document.addEventListener("click",function(ev){
 
 /* ---------- จัดการวันลา ---------- */
 async function renderLeaveAdmin(){
-  if(!can("leave_admin"))return;await lvMeta();if(S.admin)laDraw();
+  if(!can("leave_admin"))return;await lvMeta();if(S.admin){laDraw();lkGet().then(lkDraw)}
   var y0=new Date().getFullYear();
   ["lb-year","lh-year"].forEach(function(id){var s=$(id);if(!s.options.length)s.innerHTML=[y0+1,y0,y0-1].map(function(y){return '<option value="'+y+'"'+(y===y0?" selected":"")+'>'+(y+543)+'</option>'}).join("")});
   var ts=$("lb-type"),kt=ts.value;ts.innerHTML=LV.types.map(function(t){return '<option value="'+t.id+'">'+esc(t.name)+'</option>'}).join("");ts.value=kt||(LV.types.filter(function(t){return t.name==="ลาพักร้อน"})[0]||LV.types[0]||{}).id;
