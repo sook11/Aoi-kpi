@@ -2650,7 +2650,14 @@ function fillSelects(){
   setOptions($("f-kpi"),mineK,"เลือกหน้างาน");setOptions($("p-kpi"),ko,"ยังไม่ระบุ");setOptions($("e-kpi"),ko,"เลือกหน้างาน");
   showTarget();
 }
-function showTarget(){var k=S.kpis.filter(function(x){return x.id===$("f-kpi").value})[0];$("f-target").textContent=k&&k.target_per_hour!=null?num(k.target_per_hour):"—"}
+/* อัปเดต 187: เป้าหมายในหน้าบันทึกผลงาน = เป้ารายวัน (หน้า "กำหนดเป้าหมายรายวัน") ของวัน+แผนก+หน้างาน → ถ้าไม่มีใช้เป้าตั้งต้นของหน้างาน */
+var TGC={};
+async function showTarget(){var kid=$("f-kpi").value,k=S.kpis.filter(function(x){return x.id===kid})[0],d=$("f-date").value,dp=S.me&&S.me.department_id,o=$("f-target"),seq=(showTarget.n=(showTarget.n||0)+1);
+  var base=k&&k.target_per_hour!=null?num(k.target_per_hour):null;o.textContent=base||"—";o.title="";if(!k||!d||!dp)return;
+  var key=dp+"|"+kid+"|"+d,v=TGC[key];
+  if(v===undefined){try{var r=await db.from("daily_targets").select("target").eq("target_date",d).eq("department_id",dp).eq("workstation_id",kid).maybeSingle();v=r.data?r.data.target:null;if(!r.error)TGC[key]=v}catch(e){v=null}}
+  if(seq!==showTarget.n)return;
+  if(v!=null){o.textContent=num(v);o.title="เป้ารายวันของวันที่ "+d}else if(base){o.title="เป้าตั้งต้นของหน้างาน"}else{o.textContent="ยังไม่ได้ตั้งเป้า";o.title="ให้หัวหน้าตั้งที่เมนู กำหนดเป้าหมายรายวัน หรือ จัดการหน้างาน"}}
 
 /* ---------- หน้า: ภาพรวม ---------- */
 async function renderHome(){
@@ -3014,7 +3021,7 @@ async function renderTargets(){
       return tr+'</tr>'}).join("")+'</tbody></table></div>':emptyRow("ยังไม่มีหน้างานของแผนกนี้ เพิ่มได้ที่เมนูจัดการหน้างาน"))+'</div>';
   }).join("")||emptyRow("ยังไม่ได้รับมอบหมายแผนก ให้ Admin กำหนดสิทธิ์ก่อน");
 }
-$("tg-save").addEventListener("click",function(){
+$("tg-save").addEventListener("click",function(){TGC={};
   var up=[],del=[];
   document.querySelectorAll(".tgc").forEach(function(i){
     var old=TG.map[i.dataset.k],v=parseFloat(i.value),k=i.dataset.k.split("|");
@@ -8586,7 +8593,7 @@ $("logform").addEventListener("submit",function(ev){
   act(function(){return q(db.from("work_logs").insert({employee_id:S.me.id,work_date:date,shift:$("f-shift").value,workstation_id:$("f-kpi").value,output:o,note:$("f-note").value.trim()}))},"บันทึกผลงานแล้ว")
     .then(function(ok){btn.disabled=false;if(ok){$("f-out").value="";$("f-note").value="";dirty(date)}});
 });
-$("f-kpi").addEventListener("change",showTarget);
+$("f-kpi").addEventListener("change",showTarget);$("f-date").addEventListener("change",showTarget);
 
 /* ---------- ป๊อปอัป ---------- */
 var MZ=40;function openModal(id){$(id).style.zIndex=++MZ;$(id).hidden=false;var f=$(id).querySelector("input:not([type=file]),select");if(f)setTimeout(function(){f.focus()},50)}
