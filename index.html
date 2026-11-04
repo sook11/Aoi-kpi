@@ -2582,6 +2582,9 @@ function month(m){
   }).catch(function(e){delete S.cache[m];throw e});
   return S.cache[m];
 }
+/* อัปเดต 194: ยอดผลงานในรายงานไม่รวมรายการของหัวหน้างาน/Admin */
+function prodRows(rows){var L=S.leads;if(!L)return rows;return rows.filter(function(r){return !L[r.employee_id]})}
+async function loadLeads(){try{var a=await q(db.rpc("lead_ids"));var o={};(a||[]).forEach(function(id){o[id]=1});S.leads=o}catch(e){}}
 function total(rows){var o=0;rows.forEach(function(r){o+=+r.output||0});return o}
 function byKpi(rows){
   var m={};rows.forEach(function(r){var k=r.kpi_name||"ไม่ระบุ",a=m[k]||(m[k]={k:k,o:0,n:0});a.o+=+r.output||0;a.n++});
@@ -2602,7 +2605,7 @@ async function loadBase(){
     q(db.from("app_settings").select("*"))
   ]);
   S.depts=r[0];S.kpis=r[1];S.emps=r[2];S.settings={};r[3].forEach(function(x){S.settings[x.key]=x.value});
-  try{S.dir=await q(db.rpc("staff_directory"))}catch(e){S.dir=[]}
+  try{S.dir=await q(db.rpc("staff_directory"))}catch(e){S.dir=[]}await loadLeads();
   S.myDepts=S.admin?S.depts:S.mgr?S.depts.filter(function(d){return (S.me.allowed_departments||[]).indexOf(d.id)>=0}):S.depts.filter(function(d){return d.id===S.me.department_id});
 }
 /* ---------- สิทธิ์รายคน (Admin กำหนด) ---------- */
@@ -2664,7 +2667,7 @@ async function showTarget(){var kid=$("f-kpi").value,k=S.kpis.filter(function(x)
 async function renderHome(){
   renderMeCard();renderMySum();renderCeleb();askBirthday();
   var date=$("h-date").value||today(),dept=S.mgr?$("h-dept").value:"",m=date.slice(0,7);
-  var all=await month(m),logs=all.filter(function(r){return !dept||r.department_id===dept});
+  var all=prodRows(await month(m)),logs=all.filter(function(r){return !dept||r.department_id===dept});
   var day=logs.filter(function(r){return r.work_date===date});
   countTo($("st-day"),total(day));countTo($("st-month"),total(logs));countTo($("st-count"),logs.length);
   $("st-mlabel").textContent="ผลงาน "+parseYmd(m+"-01").toLocaleDateString("th-TH",{month:"short",year:"2-digit"});
@@ -2713,7 +2716,7 @@ async function renderLog(){
 /* ---------- หน้า: รายวัน ---------- */
 async function renderDaily(){
   var date=$("d-date").value||today(),dept=S.mgr?$("d-dept").value:"";
-  var rows=(await month(date.slice(0,7))).filter(function(r){return r.work_date===date&&(!dept||r.department_id===dept)});
+  var rows=(prodRows(await month(date.slice(0,7)))).filter(function(r){return r.work_date===date&&(!dept||r.department_id===dept)});
   $("d-label").textContent="ยอดรวมวันที่ "+thLong(date)+" · "+rows.length+" รายการ";
   $("d-total").textContent=num(total(rows))+" ชิ้น";
   $("d-rows").innerHTML=rows.length?rows.map(function(r){return logRow(r,{name:true,review:true})}).join(""):emptyRow("ไม่มีรายการในวันที่เลือก");
@@ -2723,7 +2726,7 @@ async function renderDaily(){
 function niceMax(v){if(v<=0)return 10;var p=Math.pow(10,Math.floor(Math.log10(v))),m=v/p;return (m<=1?1:m<=2?2:m<=4?4:m<=5?5:m<=8?8:10)*p}
 async function renderMonthly(){
   var m=$("m-month").value||today().slice(0,7),dept=S.mgr?$("m-dept").value:"";
-  var rows=(await month(m)).filter(function(r){return !dept||r.department_id===dept});
+  var rows=(prodRows(await month(m))).filter(function(r){return !dept||r.department_id===dept});
   var p=m.split("-"),n=new Date(+p[0],+p[1],0).getDate(),tot=total(rows);
   countTo($("m-total"),tot);countTo($("m-count"),rows.length);countTo($("m-avg"),Math.round(tot/n));
   var per=[];for(var i=0;i<n;i++)per.push(0);
@@ -2759,7 +2762,7 @@ async function renderStaff(){
   renderDeptNav();
   var dept=$("s-dept").value,qq=$("s-q").value.trim().toLowerCase(),sm=$("s-month").value||today().slice(0,7),tm=today().slice(0,7);if(sm>tm){sm=tm;$("s-month").value=tm}
   var y=+sm.slice(0,4),mo=+sm.slice(5,7)-1,n=new Date(y,mo+1,0).getDate(),td=sm===tm?+today().slice(8):n;
-  var logs=await month(sm),sum={};
+  var logs=prodRows(await month(sm)),sum={};
   logs.forEach(function(r){var h=sum[r.employee_id]||(sum[r.employee_id]={});h[r.work_date]=(h[r.work_date]||0)+(+r.output||0)});
   var list=S.emps.filter(function(e){return (!dept||e.department_id===dept)&&(!qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0)});
   $("s-sum").textContent="รายชื่อพนักงานแยกตามแผนก · "+list.length+" คน · ยอดผลิตเดือน "+MONTHS[mo]+" "+(y+543);
@@ -2818,14 +2821,14 @@ function logSheet(rows){
 $("d-export").addEventListener("click",async function(){
   try{
     var date=$("d-date").value||today(),dept=S.mgr?$("d-dept").value:"";
-    var rows=(await month(date.slice(0,7))).filter(function(r){return r.work_date===date&&(!dept||r.department_id===dept)});
+    var rows=(prodRows(await month(date.slice(0,7)))).filter(function(r){return r.work_date===date&&(!dept||r.department_id===dept)});
     exportXlsx("AOI-KPI-daily-"+date+".xlsx",[{name:"รายการ",rows:logSheet(rows)}]);
   }catch(e){toast(thErr(e))}
 });
 $("m-export").addEventListener("click",async function(){
   try{
     var m=$("m-month").value||today().slice(0,7),dept=S.mgr?$("m-dept").value:"";
-    var rows=(await month(m)).filter(function(r){return !dept||r.department_id===dept}),by={};
+    var rows=(prodRows(await month(m))).filter(function(r){return !dept||r.department_id===dept}),by={};
     rows.forEach(function(r){var a=by[r.employee_id]||(by[r.employee_id]={id:r.employee_id,o:0,n:0,d:{}});a.o+=+r.output||0;a.n++;a.d[r.work_date]=1});
     var people=Object.keys(by).map(function(k){var a=by[k],e=empOf(a.id)||{};return {"รหัสพนักงาน":e.employee_no||"","ชื่อ-นามสกุล":e.display_name||"","แผนก":deptName(e.department_id),"ยอดรวม":a.o,"จำนวนรายการ":a.n,"จำนวนวันที่ลง":Object.keys(a.d).length}}).sort(function(a,b){return b["ยอดรวม"]-a["ยอดรวม"]});
     exportXlsx("AOI-KPI-monthly-"+m+".xlsx",[{name:"สรุปรายคน",rows:people},{name:"สรุปตาม KPI",rows:byKpi(rows).map(function(a){return {"หน้างาน / KPI":a.k,"ยอดรวม":a.o,"จำนวนรายการ":a.n}})},{name:"รายการทั้งหมด",rows:logSheet(rows)}]);
@@ -2890,7 +2893,7 @@ $("m-kpix").addEventListener("click",async function(){
   var btn=this;btn.disabled=true;
   try{
     var m=$("m-month").value||today().slice(0,7),dept=$("m-dept").value;
-    var sheets=kpiSheets(m,dept,await month(m));
+    var sheets=kpiSheets(m,dept,prodRows(await month(m)));
     if(!sheets.length){toast("ไม่มีพนักงานในแผนกที่เลือก");return}
     if(!window.ExcelJS)await loadJs(EXCELJS_URL);
     var wb=kpiBook(window.ExcelJS,m,sheets,(S.settings.company_name&&S.settings.company_name.name)||"Apex Circuit (Thailand) Co., Ltd.");
@@ -2948,7 +2951,7 @@ $("in-copy").addEventListener("click",function(){var u=location.href.split("#")[
 /* ---------- หน้า: Admin Dashboard ---------- */
 async function renderAdmin(){
   if(!S.mgr)return;
-  var m=$("ad-month").value||today().slice(0,7),rows=await month(m),p=m.split("-"),n=new Date(+p[0],+p[1],0).getDate();
+  var m=$("ad-month").value||today().slice(0,7),rows=prodRows(await month(m)),p=m.split("-"),n=new Date(+p[0],+p[1],0).getDate();
   var people={};rows.forEach(function(r){people[r.employee_id]=1});
   countTo($("ad-total"),total(rows));countTo($("ad-count"),rows.length);countTo($("ad-people"),Object.keys(people).length);
   /* stacked bars: one colour per department, shared scale with the axis */
