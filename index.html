@@ -8051,7 +8051,7 @@ function lvDays(){
 async function lvConflict(){
   var w=$("lv-warn");w.hidden=true;var t=lvType(+$("lv-type").value),e=LV.emp;if(!t.team_limit||!e||!LV.days.length)return;
   try{var r=(await q(db.rpc("leave_calendar",{p_from:LV.days[0],p_to:LV.days[LV.days.length-1]}))).filter(function(x){return x.employee_id!==e.id&&x.department_id===e.department_id&&x.shift===$("lv-shift").value&&lvType(x.leave_type_id).team_limit});
-    if(r.length){w.hidden=false;w.textContent="⚠️ มีเพื่อนแผนกและกะเดียวกันลาช่วงนี้แล้ว: "+r.map(function(x){return x.name+" ("+rangeTxt(x.start_date,x.end_date)+")"}).join(", ")+" — ระบบจะไม่รับคำขอ ให้เลือกวันอื่น"}}catch(err){}
+    if(r.length){w.hidden=false;w.textContent="⚠️ มีเพื่อนแผนกและกะเดียวกันลาช่วงนี้แล้ว: "+r.map(function(x){return x.name+" ("+rangeTxt(x.start_date,x.end_date)+")"}).join(", ")+(S.admin?" — Admin บันทึกแทนได้ (ข้ามการตรวจนี้)":" — ระบบจะไม่รับคำขอ ให้เลือกวันอื่น")}}catch(err){}
 }
 $("lv-emp").addEventListener("change",function(){$("lv-shift").dataset.touched="";lvEmpChanged(false)});
 $("lv-type").addEventListener("change",function(){lvBal();lvConflict()});
