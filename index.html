@@ -4813,13 +4813,13 @@ async function qzSend(ch){if(QZ.busy)return;QZ.busy=1;clearInterval(QZ.tm);QZ.lo
 /* บังคับตอบวันละ 5 ข้อเมื่อเปิดแอป — เฉพาะพนักงาน (role = employee) · หัวหน้างานเข้าไปเล่นเองได้ */
 async function qzGateOpen(){var G=$("qz-gate");if(!G)return;QZ.gate=1;G.hidden=false;G.style.zIndex=99990;document.body.classList.add("qzlock");QZ.sel=null;QZ.aud=null;QZ.phone=null;QZ.rev=null;QZ.lock=0;QZ.lastQ=null;
   try{QZ.st=await q(db.rpc(QZ.gmode==="sess"?"quiz_gate_start":"quiz_today"))}catch(e){QZ.gate=0;G.hidden=true;document.body.classList.remove("qzlock");return}qzDraw()}
-/* กลับเข้าแอปหลังพับไว้เกิน 10 นาที = นับเป็นการเข้าแอปใหม่ */
+/* กลับเข้าแอปหลังพับไว้เกิน 10 นาที — ถ้าข้ามวันแล้วยังไม่ได้ตอบรอบประจำวัน ให้ตอบก่อน */
 (function(){var hid=0;document.addEventListener("visibilitychange",function(){if(document.hidden){hid=Date.now();return}if(!hid||Date.now()-hid<6e5)return;hid=0;try{if(!S.me||S.me.role!=="employee"||QZ.gate)return;QZ.sessDone=0;q(db.rpc("quiz_me",{p_from:today().slice(0,8)+"01",p_to:today()})).then(function(m){qzGateCheck(m)},function(){})}catch(e){}})})();
 function qzGateClose(){var s=QZ.st||{};if(!s.status||s.status==="playing")return;QZ.gate=0;QZ.sessDone=1;QZ.gmode=null;qzMusOff();$("qz-gate").hidden=true;document.body.classList.remove("qzlock");ME.t=0;try{renderMeCard()}catch(e){}}
-/* อัปเดต 191: พนักงานต้องตอบ 5 ข้อทุกครั้งที่เข้าแอป (ครั้งแรกของวัน = รอบประจำวัน · ครั้งต่อไป = รอบก่อนเข้าแอป) · หัวหน้างาน/Admin ไม่ต้อง */
-function qzGateCheck(m){try{if(!m||m.role!=="employee"||QZ.gate||QZ.sessDone)return;var td=m.today||{},c=td.cfg||{};if(c.gate===false)return;if(!td.status&&!(td.bank>=5))return;
-  var daily=!(td.round>0||td.daily_done)&&!(td.status&&td.status!=="playing");QZ.gmode=daily?"daily":"sess";
-  setTimeout(function(){if(!QZ.gate&&!QZ.sessDone)qzGateOpen()},600)}catch(e){}}
+/* อัปเดต 192: พนักงานตอบ 5 ข้อวันละครั้ง (รอบประจำวัน) ก่อนเข้าใช้งาน · หัวหน้างาน/Admin ไม่ต้อง */
+function qzGateCheck(m){try{if(!m||m.role!=="employee"||QZ.gate)return;var td=m.today||{},c=td.cfg||{};if(c.gate===false)return;if(!td.status&&!(td.bank>=5))return;
+  var daily=!(td.round>0||td.daily_done)&&!(td.status&&td.status!=="playing");if(!daily)return;QZ.gmode="daily";
+  setTimeout(function(){if(!QZ.gate)qzGateOpen()},600)}catch(e){}}
 document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-qz],[data-qzans],[data-qzll],[data-qzper],[data-qzsh],[data-qzrg]");if(!t)return;var D=t.dataset;
   if(D.qzans!=null){if(QZ.rev||QZ.busy||QZ.lock)return;QZ.sel=+D.qzans;qzSnd("sel");qzDraw();return}
   if(D.qz==="unsel"){QZ.sel=null;qzDraw();return}
