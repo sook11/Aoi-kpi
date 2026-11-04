@@ -1331,6 +1331,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
         <label>แผนก<select id="au-dept"></select></label>
         <label>ตำแหน่งงาน/หน้างาน<select id="au-kpi"></select></label>
         <label>กะการทำงาน<select id="au-shift"><option value="">เลือกกะ</option><option value="A">กะ A</option><option value="B">กะ B</option><option value="D">กะเช้าตลอด</option></select></label>
+        <label>วันเริ่มงาน<input type="date" id="au-start"></label>
         <label>เบอร์โทรศัพท์<input type="tel" id="au-phone" inputmode="tel" maxlength="20" placeholder="เช่น 0812345678" autocomplete="tel"></label>
       </div>
       <p class="sub" id="a-hint" hidden>ใช้รหัสพนักงานของคุณ แล้วตั้งรหัสผ่านเองอย่างน้อย 6 ตัว ขั้นถัดไปจะให้กรอกโปรไฟล์</p>
@@ -8962,7 +8963,8 @@ $("authform").addEventListener("submit",async function(ev){
   if(!/^[a-z0-9._-]+$/.test(no)){msg.textContent="รหัสพนักงานใช้ได้เฉพาะตัวเลขและตัวอักษรอังกฤษ";return}
   if(mode==="up"&&pw!==$("a-pw2").value){msg.textContent="รหัสผ่านสองช่องไม่ตรงกัน";return}
   var full=mode==="up"&&PUB===true;
-  if(full&&(!$("au-name").value.trim()||!$("au-dept").value||!$("au-shift").value)){msg.textContent="กรอกชื่อ-นามสกุล เลือกแผนก และกะการทำงาน";return}
+  if(full&&(!$("au-name").value.trim()||!$("au-dept").value||!$("au-shift").value||!$("au-start").value)){msg.textContent="กรอกชื่อ-นามสกุล เลือกแผนก กะการทำงาน และวันเริ่มงาน";return}
+  if(full&&$("au-start").value>isoOf(Date.now()+60*864e5)){msg.textContent="วันเริ่มงานไม่ถูกต้อง";return}
   btn.disabled=true;msg.textContent="";
   try{
     if(full){var dup=await db.rpc("signup_duplicate",{p_name:$("au-name").value,p_phone:$("au-phone").value,p_no:no});
@@ -8976,6 +8978,7 @@ $("authform").addEventListener("submit",async function(ev){
         var uid=r.data.user.id,mine=await q(db.from("employees").select("id").eq("user_id",uid).maybeSingle());
         if(mine)await q(db.rpc("save_my_profile",{p_display_name:$("au-name").value,p_shift:$("au-shift").value,p_workstation:$("au-kpi").value||null,p_phone:$("au-phone").value,p_avatar:AV.au}));
         else await q(db.rpc("register_profile",{p_display_name:$("au-name").value,p_department:$("au-dept").value,p_workstation:$("au-kpi").value||null,p_shift:$("au-shift").value,p_phone:$("au-phone").value,p_avatar:AV.au}));
+        if($("au-start").value)await q(db.rpc("set_my_start_date",{p_date:$("au-start").value}));
       }catch(e2){$("su-msg").textContent=thErr(e2);$("su-name").value=$("au-name").value;$("su-phone").value=$("au-phone").value}
     }
     await start();
