@@ -5973,7 +5973,12 @@ document.addEventListener("fullscreenchange",function(){if(document.body.classLi
 function fmEnter(on){faMusic(on);document.body.classList.toggle("farm-on",!!on&&fmIsTouch());try{if(on&&fmIsTouch()){fmLockLand()}
   else if(!on){if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});if(screen.orientation&&screen.orientation.unlock)try{screen.orientation.unlock()}catch(e){}
     document.body.classList.remove("farm-rot");var v=$("v-farm");if(v){v.style.width="";v.style.height=""}}}catch(e){}}
-function fmDecorPos(d){var ok={},used={},out=[],fi=0,FREE=FMAP.free.concat(fmParcelDecorCells(d));FREE.forEach(function(t){ok[t[0]+","+t[1]]=1});
+function fmDecorPos(d){var ok={},used={},out=[],fi=0,FREE=FMAP.free.concat(fmParcelDecorCells(d));FREE.forEach(function(t){ok[t[0]+","+t[1]]=1});var ok0=Object.assign({},ok);
+  /* อัปเดต 189: ตำแหน่งที่ผู้เล่นลากวางเองได้ทุกช่องในเขตฟาร์ม (เหมือนที่เซิร์ฟเวอร์อนุญาต) — เดิมรับแค่ช่องว่างผังเก่า ของเลยเด้งกลับ */
+  for(var zy=-1;zy<=12;zy++)for(var zx=-8;zx<=15;zx++)ok[zx+","+zy]=1;
+  /* ช่องว่างแบบเดิมไม่พอ → ต่อด้วยช่องอื่นในเขตฟาร์มที่วางได้จริง แทนการวางซ้อนกัน */
+  var nAuto=d.decor.filter(function(x){return !fmIsPet(x.item)&&!((FM.cat.decor[x.item]||{}).house)}).length;
+  if(nAuto>FREE.length){var EX=[];for(var ey=-1;ey<=12;ey++)for(var ex=-8;ex<=15;ex++){if(ok0[ex+","+ey])continue;var rr=[ex+.15,ey+.15,ex+.85,ey+.85];try{if(!fmLayAllowed(rr))continue;if(typeof fmDecorCellOK==="function"&&fmDecorCellOK(ex,ey,null)!==true)continue}catch(er){continue}EX.push([ex,ey])}FREE=FREE.concat(EX)}
   /* ตำแหน่งที่บันทึกไว้ใช้ได้เฉพาะช่องว่างจริง และห้ามซ้อนกัน — ไม่งั้นจัดวางให้ใหม่อัตโนมัติ */
   var L=d.decor.filter(function(x){return !fmIsPet(x.item)&&!((FM.cat.decor[x.item]||{}).house)});var fixed=L.map(function(x){var k=x.gx+","+x.gy;if(x.gx!=null&&x.gy!=null&&ok[k]&&!used[k]){used[k]=1;return true}return false});
   L.forEach(function(x,i){if(fixed[i]){out.push({d:x,x:x.gx,y:x.gy});return}
@@ -6448,7 +6453,7 @@ async function fkEnd(ok,msg){cancelAnimationFrame(FK.raf);var c=FK.cur;FK.st="bu
   try{var res=await q(db.rpc("fish_land",{p_id:c.id,p_ok:!!ok}));fkBob(0,0,false);
     if(!res.ok){sfx("lose");var f0=fkFish(res.fish);fkCard('<div class="fk-miss"><b>😢 '+esc(msg||"ปลาหลุด")+'</b><small>ตัวที่หลุดเป็นปลา'+FKR[res.r-1]+' ('+esc(f0.n)+')</small></div>')}
     else{sfx(res.r>=4||res.gold?"catchbig":"catch");setTimeout(fmMatPop,1200);var f=fkFish(res.fish);if(res.gold){FK.gold={caught:true,by:(S.me&&(S.me.display_name||S.me.name))||"คุณ",by_id:S.me&&S.me.id,weight:res.weight};if(FK.rt)try{FK.rt.send({type:"broadcast",event:"gold",payload:{by:FK.gold.by,by_id:FK.gold.by_id,weight:res.weight}})}catch(e){}}else if(c.gold)toast("มีคนตกปลาทองไปก่อนแล้ว — ได้ปลาตำนานแทน 🎉");fk3Catch(f,FK.bx,FK.by);if(FK.info){FK.info.week_points=(FK.info.week_points||0)+res.points;var bk=FK.info.book||(FK.info.book={}),o=bk[res.fish]||{n:0,best:0};o.n++;o.best=Math.max(o.best,res.weight);bk[res.fish]=o;fkHud()}
-      fkCard('<div class="fk-got" style="--rc:'+FKC[res.r-1]+'"><em>'+FKR[res.r-1]+' '+"★".repeat(res.r)+'</em>'+fkFE(f,72)+'<b>'+esc(f.n)+'</b><span class="fk-w">'+res.weight+' กก.</span><small>+'+res.points+' คะแนน · +'+res.xp+' XP · เข้ายุ้งฉาง</small>'+
+      fkCard('<div class="fk-got" style="--rc:'+FKC[res.r-1]+'"><em>'+FKR[res.r-1]+' '+"★".repeat(res.r)+'</em>'+fkFE(f,72)+'<b>'+esc(f.n)+'</b><span class="fk-w">'+res.weight+' กก.'+(f.w&&res.weight>f.w[1]?' 🐳 ตัวยักษ์!':'')+'</span><small>+'+res.points+' คะแนน · +'+res.xp+' XP · เข้ายุ้งฉาง</small>'+
         (res.gold?'<i class="fk-flag gold">🏆 ปลาทองประจำวัน! วันละ 1 ตัวทั้งบริษัท · ใช้ขยายยุ้งฉาง/พื้นที่ฟาร์มฟรีได้</i>':res.record?'<i class="fk-flag gold">🏆 สถิติใหม่ของทั้งบริษัท!</i>':res.first?'<i class="fk-flag">📖 ปลาใหม่ในสมุด!</i>':res.new_best?'<i class="fk-flag">⬆️ ตัวใหญ่ที่สุดของคุณ!</i>':'')+'<button type="button" class="sm fk-sell1" data-fksell="'+esc(res.fish)+':1">💰 ขายตัวนี้ '+fmc()+' +'+num(fkPrice(res.fish))+'</button></div>')}}
   catch(e){fkBob(0,0,false);sfx("error");toast(thErr(e));FK.st="idle";fkPlay()}}
 function fkCard(html){var el=$("fk-play");FK.st="result";el.innerHTML='<div class="fk-card">'+html+'<button type="button" class="fk-cast" data-fk="again">🎣 ตกต่อ</button></div>'}
