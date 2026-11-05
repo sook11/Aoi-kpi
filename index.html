@@ -1177,6 +1177,7 @@ body.farm-rot .ffloat{animation-name:ffloatR}
 .dtvoff{font-style:normal;font-size:11px;background:#fee2e2;color:#b91c1c;padding:2px 7px;border-radius:99px}
 .dtvthumbs{display:flex;flex-wrap:wrap;gap:6px}.dtvthumbs img{width:64px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1}
 @media (max-width:700px){.dtvr{grid-template-columns:54px 1fr 1.6fr .9fr .7fr .7fr .7fr 1fr}.dtvr .ph img{width:40px}.dtvdate{display:none}.dtvhead b{font-size:17px}}
+.dkrow{cursor:pointer;border-radius:10px}.dkrow:hover{background:#fef2f2}
 body.tvmode{background:#0f172a}
 body.tvmode header.top,body.tvmode nav.tabs,body.tvmode .marquee{display:none!important}
 body.tvmode .wrap{max-width:none;padding:16px}body.tvmode #app{padding-left:0!important}
@@ -4056,7 +4057,19 @@ function shiftTxt(s){return s?"กะ "+s:"-"}
 function mgrEmps(dept){var ids=permDepts().map(function(d){return d.id});
   return S.emps.filter(function(e){return e.active&&e.role==="employee"&&(S.admin||ids.indexOf(e.department_id)>=0)&&(!dept||e.department_id===dept)})
     .sort(function(a,b){return String(a.employee_no).localeCompare(String(b.employee_no))})}
-function matchQ(e,qq){qq=String(qq||"").trim().toLowerCase();return !qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0}
+/* อัปเดต 199: ค้นหาชื่อแบบยืดหยุ่น — ไม่ต้องพิมพ์ตรงเป๊ะ (ไม่สนช่องว่าง/วรรณยุกต์/คำนำหน้า, พิมพ์ตกหล่นหรือผิด 1 ตัวก็เจอ) */
+function qNorm(t){return String(t==null?"":t).toLowerCase().replace(/[็-๎]/g,"").replace(/\s+|\.|-/g,"").replace(/^(นางสาว|นาย|นาง|นส|ms|mrs|mr|miss)/,"")}
+function qSub(q,t){var i=0,st=-1;for(var j=0;j<t.length&&i<q.length;j++)if(t[j]===q[i]){if(st<0)st=j;i++}return i===q.length&&(j-st)<=q.length*2+1}
+function qLev1(q,t){var L=q.length;for(var w=L-1;w<=L+1;w++)for(var k=0;k+w<=t.length;k++){var a=q,b=t.substr(k,w),i=0,j=0,ed=0;while(i<a.length&&j<b.length&&ed<=1){if(a[i]===b[j]){i++;j++}else{ed++;if(a.length>b.length)i++;else if(a.length<b.length)j++;else{i++;j++}}}ed+=(a.length-i)+(b.length-j);if(ed<=1)return true}return false}
+function matchScore(e,qq){var raw=String(qq||"").trim().toLowerCase();if(!raw)return 1;
+  var no=String(e.employee_no||"").toLowerCase();if(no.indexOf(raw)>=0)return 4;
+  var q=qNorm(raw);if(!q)return 1;var ts=[e.display_name,e.full_name,e.nickname].filter(Boolean).map(qNorm),i;
+  for(i=0;i<ts.length;i++)if(ts[i].indexOf(q)>=0)return 3;
+  if(q.length<3)return 0;
+  for(i=0;i<ts.length;i++)if(qSub(q,ts[i]))return 2;
+  for(i=0;i<ts.length;i++)if(qLev1(q,ts[i]))return 1;
+  return 0}
+function matchQ(e,qq){return matchScore(e,qq)>0}
 async function attRange(from,to){return fetchAll(function(){return db.from("attendance").select("*").gte("work_date",from).lte("work_date",to).order("work_date").order("id")})}
 async function dedRange(from,to){return fetchAll(function(){var b=db.from("kpi_deductions").select("*");if(from)b=b.gte("work_date",from).lte("work_date",to);return b.order("work_date",{ascending:false}).order("id")})}
 function avatarHtml(e){var a=okAvatar(e&&e.avatar);return '<span class="avatar sm">'+(a?'<img alt="" src="'+a+'">':esc(String(e&&e.display_name||"?").trim().charAt(0)))+'</span>'}
@@ -8042,8 +8055,8 @@ document.querySelectorAll("[data-gmode]").forEach(function(b){b.addEventListener
 var DK={emp:null,amt:0};
 async function renderDeduct(){
   if(!can("deduct"))return;
-  var list=mgrEmps($("dd-dept").value).filter(function(e){return matchQ(e,$("dd-q").value)});
-  $("dd-rows").innerHTML=list.length?list.map(function(e){return '<div class="row"><div class="atwho">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div></div><button type="button" class="sm danger" data-dk="'+e.id+'">'+ico("minus")+'บันทึกหัก</button></div>'}).join(""):emptyRow("ไม่พบพนักงาน");
+  var ddq=$("dd-q").value,list=mgrEmps($("dd-dept").value).map(function(e){return [matchScore(e,ddq),e]}).filter(function(x){return x[0]>0}).sort(function(a,b){return b[0]-a[0]}).map(function(x){return x[1]});
+  $("dd-rows").innerHTML=list.length?list.map(function(e){return '<div class="row dkrow" data-dkrow="'+e.id+'"><div class="atwho">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div></div><button type="button" class="sm danger" data-dk="'+e.id+'">'+ico("minus")+'บันทึกหัก</button></div>'}).join(""):emptyRow("ไม่พบพนักงาน — ลองพิมพ์แค่บางส่วนของชื่อ หรือรหัสพนักงาน");
   var rec=await q(db.from("kpi_deductions").select("*").order("created_at",{ascending:false}).limit(10));
   $("dd-recent").innerHTML=rec.length?rec.map(dedRow).join(""):emptyRow("ยังไม่มีรายการหัก");
 }
@@ -9105,6 +9118,7 @@ document.addEventListener("click",function(ev){
   var da=ev.target.closest("[data-dayadd]");if(da){logAdd(da.dataset.dayadd,da.dataset.d);return}
   var dl=ev.target.closest("[data-daylog]");if(dl){dayLogEdit(dl.dataset.daylog,dl.dataset.d).catch(function(e){toast(thErr(e))});return}
   var head=ev.target.closest(".emphead[data-open]");if(head&&!ev.target.closest("button,label")){S.empId=head.dataset.open;if(S.tab==="staff"&&$("s-month").value)$("ed-month").value=$("s-month").value;show("emp");return}
+  var dkr=ev.target.closest("[data-dkrow]");if(dkr&&!ev.target.closest("button")){openDeduct(dkr.dataset.dkrow);return}
   var b=ev.target.closest("button");if(!b)return;var d=b.dataset;
   if(b.hasAttribute("data-sdept")){$("s-dept").value=d.sdept;if(S.tab==="staff"){refresh();window.scrollTo(0,0)}else show("staff");return}
   if(d.close){closeModal(d.close);return}
