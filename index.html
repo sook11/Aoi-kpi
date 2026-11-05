@@ -4337,7 +4337,20 @@ function dtvCfg(){var c=(S.settings&&S.settings.dtv_cfg)||{};return {page:+c.pag
 async function dtvFetch(){
   var r=await Promise.all(["dtv_channels","dtv_items","dtv_media","dtv_tickers","dtv_announcements"].map(function(t){return q(db.from(t).select("*").order(t==="dtv_tickers"?"created_at":"sort_order"))}));
   DT.data={ch:r[0],item:r[1],media:r[2],tick:r[3],ann:r[4],at:Date.now()};DT.online=true;
-  try{localStorage.setItem("aoi-dtv-cache",JSON.stringify(DT.data))}catch(e){}return DT.data}
+  try{localStorage.setItem("aoi-dtv-cache",JSON.stringify(DT.data))}catch(e){}setTimeout(dtvWarm,3000);return DT.data}
+/* อัปเดต 200: ใช้งานจอทีวีได้แม้ไม่มีอินเทอร์เน็ต — เก็บรูป/เสียงไว้ในเครื่อง, เปิดแอปใหม่ขณะออฟไลน์เข้าจอทีวีได้เลย, กลับมาออนไลน์แล้วอัปเดตเอง */
+var DTC="aoi-media-v1";
+function dtvUrls(){var d=DT.data||{},im=[],au=[];(d.media||[]).forEach(function(m){if(m.is_active)(m.image_urls||[]).forEach(function(u){im.push(u)})});(d.item||[]).forEach(function(i){var p=dtvPhoto(i);if(p)im.push(p)});
+  (d.ann||[]).forEach(function(a){if(a.is_active&&a.audio_type==="upload"&&a.audio_url)au.push(a.audio_url)});var ok=function(u){return /^https?:/.test(u)};return {im:im.filter(ok),au:au.filter(ok)}}
+async function dtvCacheOne(c,u){if(await c.match(u))return;var r;try{r=await fetch(u,{mode:"cors"});if(!r.ok)throw 0}catch(e){r=await fetch(u,{mode:"no-cors"})}await c.put(u,r)}
+async function dtvWarm(){if(!window.caches||DT.warming)return;DT.warming=1;try{var c=await caches.open(DTC),U=dtvUrls(),all=U.im.concat(U.au);for(var i=0;i<all.length;i++){try{await dtvCacheOne(c,all[i])}catch(e){}}}catch(e){}DT.warming=0}
+async function dtvAudioSrc(u){try{if(!window.caches)return u;var c=await caches.open(DTC),r=await c.match(u);if(!r){try{await dtvCacheOne(c,u);r=await c.match(u)}catch(e){}}if(r&&r.type!=="opaque"){var b=await r.blob();if(DT.audUrl)URL.revokeObjectURL(DT.audUrl);DT.audUrl=URL.createObjectURL(b);return DT.audUrl}}catch(e){}return u}
+function dtvOfflineBoot(){var k=null;try{k=JSON.parse(localStorage.getItem("aoi-dtv-kiosk")||"null")}catch(e){}
+  if(!k||!localStorage.getItem("aoi-dtv-cache")||!localStorage.getItem("aoi-dtv-ch"))return false;
+  S.me=k;S.admin=true;S.mgr=false;S.offline=true;S.dir=[];S.emps=[];S.depts=[];S.myDepts=[];S.settings={};
+  $("auth").hidden=true;$("setup").hidden=true;$("app").hidden=false;show("dtv");
+  var back=function(){fetch(SB_URL+"/auth/v1/health",{mode:"no-cors",cache:"no-store"}).then(function(){location.reload()},function(){})};
+  window.addEventListener("online",function(){setTimeout(back,3000)});setInterval(back,60000);return true}
 async function dtvLoad(){try{return await dtvFetch()}catch(e){DT.online=false;if(!DT.data){try{DT.data=JSON.parse(localStorage.getItem("aoi-dtv-cache")||"null")}catch(e2){}}if(!DT.data)throw e;return DT.data}}
 function dtvPhoto(it){if(it.photo_url)return it.photo_url;var e=(S.dir||[]).filter(function(x){return x.employee_no===it.employee_no})[0];return e&&e.avatar&&/^https?:|^data:/.test(e.avatar)?e.avatar:""}
 function dtvPerf(v){return v==null||v===""?"—":(+v).toFixed(2)+"%"}
@@ -4359,6 +4372,9 @@ async function renderDtv(){
   P.innerHTML='<div class="dtvscr" id="dtv-scr"><div class="dtvhead"><button type="button" class="dtvbk" data-dtvback="1" title="กลับ">←</button><span class="dtvic">📺</span><div><b>'+esc(ch.name)+'</b><small>CHANNEL DISPLAY</small></div><span class="dtvmeta" id="dtv-meta"></span><button type="button" class="dtvbk" data-dtvfs="1" title="เต็มจอ">⛶</button></div>'+
     '<div class="dtvmain" id="dtv-main"></div><div class="dtvtick" id="dtv-tick"></div>'+(DT.unlocked?'':'<button type="button" class="dtvunlock" data-dtvunlock="1"><span>🔊</span><b>แตะเพื่อเปิดเสียง</b><small>เปิดระบบประกาศเสียงตามเวลา และเสียงวิดีโอ</small></button>')+'</div>';
   DT.showTable=ch.show_table!==false;DT.view=DT.showTable?"table":"media";DT.mi=0;DT.page=0;DT.sig="";
+  try{if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){})}catch(e){}
+  try{localStorage.setItem("aoi-dtv-kiosk",JSON.stringify({id:S.me.id,display_name:S.me.display_name,role:"admin",avatar:S.me.avatar||""}))}catch(e){}
+  if(!DT.unlocked){try{var ta=new Audio("data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAAAAA==");ta.play().then(function(){dtvUnlock()},function(){})}catch(e){}}
   dtvTicker();dtvMeta();dtvShow();
   DT.tick=setInterval(function(){if(S.tab!=="dtv"){dtvStop();return}dtvClock()},1000);
   DT.load=setInterval(function(){if(S.tab!=="dtv")return;dtvLoad().then(function(){dtvMeta();dtvTicker(true);if(DT.view==="table")dtvTable(false)},function(){dtvMeta()})},15000);
@@ -4406,7 +4422,7 @@ function dtvClock(){var d=new Date(),c=$("dtv-clk"),t=$("dtv-date");if(c)c.textC
 function dtvUnlock(){DT.unlocked=true;try{var a=DT.audio=DT.audio||new Audio();a.src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAAAAA==";a.play().catch(function(){})}catch(e){}try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}
   var b=document.querySelector(".dtvunlock");if(b)b.remove();var v=document.querySelector("#dtv-main video");if(v){v.muted=false}}
 function dtvPlay(a){return new Promise(function(res){var done=false,fin=function(ok){if(done)return;done=true;clearTimeout(g);res(ok)},g=setTimeout(function(){fin(false)},120000);var v=document.querySelector("#dtv-main video"),vol=v?v.volume:1;if(v)v.volume=.15;var back=function(r){if(v)v.volume=vol;fin(r)};
-  if(a.audio_type==="upload"&&a.audio_url){var p=DT.audio=DT.audio||new Audio();p.onended=function(){back(true)};p.onerror=function(){back(false)};p.src=a.audio_url;p.volume=1;p.play().catch(function(){back(false)});return}
+  if(a.audio_type==="upload"&&a.audio_url){var p=DT.audio=DT.audio||new Audio();p.onended=function(){back(true)};p.onerror=function(){back(false)};dtvAudioSrc(a.audio_url).then(function(src){p.src=src;p.volume=1;p.play().catch(function(){back(false)})});return}
   if(a.script&&window.speechSynthesis){try{var u=new SpeechSynthesisUtterance(a.script);u.lang="th-TH";var th=speechSynthesis.getVoices().filter(function(x){return /^th/i.test(x.lang)})[0];if(th)u.voice=th;u.rate=.95;u.onend=function(){back(true)};u.onerror=function(){back(false)};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){back(false)}return}back(false)})}
 async function dtvAnnTick(){if(S.tab!=="dtv"||!DT.unlocked||DT.annBusy||!DT.data)return;var d=new Date(),hm=pad(d.getHours())+":"+pad(d.getMinutes()),tm=d.getHours()*60+d.getMinutes(),key0=d.toISOString().slice(0,16);
   var due=DT.data.ann.filter(function(a){return a.is_active&&((a.schedule_times||[]).indexOf(hm)>=0||(a.repeat_interval>0&&tm%a.repeat_interval===0))&&!DT.played[a.id+"_"+key0]});
@@ -9242,7 +9258,9 @@ function paintWho(){
   var a=okAvatar(S.me.avatar);$("who-av").innerHTML=a?'<img alt="" src="'+a+'">':esc(String(S.me.display_name||"?").trim().charAt(0));
 }
 async function start(){
-  var u=(await db.auth.getUser()).data.user;
+  var gu;try{gu=await Promise.race([db.auth.getUser(),new Promise(function(r){setTimeout(function(){r({data:{user:null},error:{message:"fetch timeout"}})},10000)})])}catch(e){gu={data:{user:null},error:e}}
+  if(gu.error&&/fetch|network|timeout|Failed/i.test(String(gu.error.message||gu.error.name||""))&&dtvOfflineBoot())return;
+  var u=gu.data.user;
   if(!u){$("auth").hidden=false;$("app").hidden=true;return}
   var me=await q(db.from("employees").select("*").eq("user_id",u.id).maybeSingle());
   if(me&&!me.active){await db.auth.signOut();$("auth").hidden=false;$("app").hidden=true;$("setup").hidden=true;$("a-msg").textContent="บัญชีนี้ถูกปิดใช้งาน ติดต่อผู้ดูแล";return}
