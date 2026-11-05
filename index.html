@@ -4276,7 +4276,7 @@ async function renderAttHist(){
   var rows=await q(db.from("attendance").select("*").eq("work_date",date)),by={};rows.forEach(function(r){by[r.employee_id]=r});
   var emps=mgrEmps(dept).filter(function(e){return matchQ(e,qq)});
   /* คนที่มีบันทึกแต่ไม่อยู่ในรายชื่อ (เช่นปิดใช้งานแล้ว) */
-  rows.forEach(function(r){if(!emps.some(function(e){return e.id===r.employee_id})){var e=empOf(r.employee_id);if(e&&(!dept||r.department_id===dept)&&matchQ(e,qq)&&(S.admin||S.myDepts.some(function(d){return d.id===r.department_id})))emps.push(e)}});
+  rows.forEach(function(r){if(!emps.some(function(e){return e.id===r.employee_id})){var e=empOf(r.employee_id);if(e&&(e.role||"employee")==="employee"&&(!dept||r.department_id===dept)&&matchQ(e,qq)&&(S.admin||S.myDepts.some(function(d){return d.id===r.department_id})))emps.push(e)}});
   var c={all:0,in:0,late:0,leave:0,absent:0,none:0};
   emps.forEach(function(e){var r=by[e.id];c.all++;c[{in:"in",late:"late",leave:"leave",absent:"absent",holi:"leave",none:"none"}[stGroup(r&&r.status)]]++});
   $("ah-sum").innerHTML='<span class="atc">ทั้งหมด <b>'+c.all+'</b></span><span class="atc g">มา <b>'+c.in+'</b></span><span class="atc r">ขาด <b>'+c.absent+'</b></span><span class="atc w">สาย <b>'+c.late+'</b></span><span class="atc p">ลา/หยุด <b>'+c.leave+'</b></span><span class="atc n">ยังไม่เช็ค <b>'+c.none+'</b></span>';
@@ -8540,7 +8540,8 @@ var ATT_COL={"มาทำงาน":["FFC6EFCE","FF006100"],"ขาดงาน
   "ลาพักร้อน":["FFDDEBF7","FF1F4E79"],"ลาตามสิทธิ์อื่น":["FFE7E6F7","FF3F3F8F"],"ลาอื่นๆ":["FFD9E2F3","FF2F5496"],"ลาแต่งงาน":["FFF4B8D0","FF9C2B6E"],"ลาฌาปณกิจ":["FFE4E4E7","FF3F3F46"],"หยุด (วันอาทิตย์, วันหยุดนักขัตฤกษ์)":["FFEDE4F7","FF5B2C8F"]};
 async function exportAttendanceReport(m,dept){
   var from=m+"-01",to=mEnd(m),rows=(await attRange(from,to)).filter(function(r){return !dept||r.department_id===dept});
-  var emps=mgrEmps(dept);rows.forEach(function(r){if(!emps.some(function(e){return e.id===r.employee_id})){var e=empOf(r.employee_id);if(e)emps.push(e)}});
+  var emps=mgrEmps(dept);rows.forEach(function(r){if(!emps.some(function(e){return e.id===r.employee_id})){var e=empOf(r.employee_id);if(e&&(e.role||"employee")==="employee")emps.push(e)}});
+  rows=rows.filter(function(r){return emps.some(function(e){return e.id===r.employee_id})});  /* อัปเดต 203: ไม่รวมหัวหน้างาน/Admin */
   var wb=await xlBook(),s=wb.addWorksheet("สรุป"),T={name:"Calibri",bold:true,size:11},N={name:"Calibri",size:11};
   s.getColumn(1).width=34;for(var c=2;c<=13;c++)s.getColumn(c).width=12;
   s.mergeCells("A1:M1");var a1=s.getCell("A1");a1.value="รายงานสรุปการเข้างาน";a1.font={name:"Calibri",bold:true,size:16};a1.alignment={horizontal:"center",vertical:"middle"};s.getRow(1).height=30;
