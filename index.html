@@ -1177,6 +1177,8 @@ body.farm-rot .ffloat{animation-name:ffloatR}
 .dtvoff{font-style:normal;font-size:11px;background:#fee2e2;color:#b91c1c;padding:2px 7px;border-radius:99px}
 .dtvthumbs{display:flex;flex-wrap:wrap;gap:6px}.dtvthumbs img{width:64px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1}
 @media (max-width:700px){.dtvr{grid-template-columns:54px 1fr 1.6fr .9fr .7fr .7fr .7fr 1fr}.dtvr .ph img{width:40px}.dtvdate{display:none}.dtvhead b{font-size:17px}}
+.ahrow{cursor:pointer}.ahrow:hover{background:#eff6ff}.ahcal{color:#2563eb;font-size:11px;white-space:nowrap}.ahhint{margin:-4px 0 0}
+.ahp tr.ahd-absent{background:#fef2f2}.ahp tr.ahd-late{background:#fffbeb}.ahp tr.ahd-leave{background:#f5f3ff}.ahp tr.ahd-none td{color:#94a3b8}
 .dkrow{cursor:pointer;border-radius:10px}.dkrow:hover{background:#fef2f2}
 body.tvmode{background:#0f172a}
 body.tvmode header.top,body.tvmode nav.tabs,body.tvmode .marquee{display:none!important}
@@ -1603,7 +1605,9 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <label>ค้นหา<input type="search" id="ah-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label>
     </div>
     <div class="atchips" id="ah-sum"></div>
+    <p class="sub ahhint">💡 ดูรายคน: พิมพ์ชื่อหรือรหัสในช่องค้นหา หรือกดที่ชื่อพนักงาน จะแสดงประวัติทั้งเดือนว่า มา / สาย / ขาด / ลา วันไหนบ้าง</p>
     <div class="panel"><div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>แผนก</th><th>กะ</th><th>เวลา</th><th>สถานะ</th><th>หมายเหตุ</th></tr></thead><tbody id="ah-rows"></tbody></table></div></div>
+    <div class="panel ahp" id="ah-person" hidden></div>
     <div class="panel"><h3>ส่งออกรายงาน Excel</h3><p class="sub">ไฟล์มี 2 ชีต: สรุป (จำนวนตามแผนกและสถานะ) และ ปฏิทิน (ตารางรายวันทั้งเดือน)</p>
       <div class="filters"><label>เดือน<input type="month" id="ah-month"></label></div>
       <div class="inline"><button type="button" class="primary" id="ah-export" data-ico="download">ส่งออกรายงาน Excel</button></div></div>
@@ -4279,10 +4283,31 @@ async function renderAttHist(){
   var list=emps.filter(function(e){var r=by[e.id];return !st||(r&&r.status===st)});
   list.sort(function(a,b){var ra=by[a.id],rb=by[b.id];return stIdx(ra&&ra.status)-stIdx(rb&&rb.status)||String(a.employee_no).localeCompare(String(b.employee_no))});
   $("ah-rows").innerHTML=list.length?list.map(function(e,i){var r=by[e.id]||{};
-    return '<tr><td>'+(i+1)+'</td><td>'+esc(e.employee_no)+'</td><td class="nm">'+esc(e.display_name)+'</td><td>'+esc(deptName(r.department_id||e.department_id))+'</td><td>'+esc(shiftTxt(r.shift||e.shift))+'</td><td>'+esc(r.check_in_time||"–")+'</td><td>'+stBadge(r.status,true)+'</td><td>'+esc(r.note||"–")+'</td></tr>'}).join(""):'<tr><td colspan="8">'+emptyRow("ไม่มีข้อมูล")+'</td></tr>';
+    return '<tr class="ahrow" data-ahemp="'+e.id+'"><td>'+(i+1)+'</td><td>'+esc(e.employee_no)+'</td><td class="nm">'+esc(e.display_name)+' <small class="ahcal">📅 ดูทั้งเดือน</small></td><td>'+esc(deptName(r.department_id||e.department_id))+'</td><td>'+esc(shiftTxt(r.shift||e.shift))+'</td><td>'+esc(r.check_in_time||"–")+'</td><td>'+stBadge(r.status,true)+'</td><td>'+esc(r.note||"–")+'</td></tr>'}).join(""):'<tr><td colspan="8">'+emptyRow("ไม่มีข้อมูล")+'</td></tr>';
+  var pe=(AT.ahEmp&&list.filter(function(x){return x.id===AT.ahEmp})[0])||(qq.trim()&&list.length===1?list[0]:null);
+  if(pe)ahPerson(pe).catch(function(e){toast(thErr(e))});else $("ah-person").hidden=true;
 }
+/* อัปเดต 202: ประวัติรายคนทั้งเดือน — มา / สาย / ขาด / ลา วันไหนบ้าง */
+async function ahPerson(e){
+  var el=$("ah-person");if(!el||!e)return;AT.ahEmp=e.id;
+  var m=AT.ahM||($("ah-date").value||today()).slice(0,7),from=m+"-01",to=mEnd(m),tdy=today();
+  var rows=await q(db.from("attendance").select("*").eq("employee_id",e.id).gte("work_date",from).lte("work_date",to).order("work_date")),by={};
+  rows.forEach(function(r){by[r.work_date]=r});
+  var days=datesBetween(from,to<tdy?to:tdy).reverse(),c={in:0,late:0,absent:0,leave:0,holi:0,none:0};
+  days.forEach(function(d){c[stGroup(by[d]&&by[d].status)]++});
+  var p=m.split("-"),ml=MONTHS[+p[1]-1]+" "+(+p[0]+543);
+  el.hidden=false;
+  el.innerHTML='<div class="headrow"><div class="atwho">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div></div>'+
+    '<div class="inline"><label>เดือน<input type="month" id="ah-pm" value="'+m+'"></label><button type="button" class="sm" data-ahclose="1">ปิด</button></div></div>'+
+    '<h3 style="margin:6px 0">ประวัติเดือน'+esc(ml)+'</h3>'+
+    '<div class="atchips"><span class="atc g">มา <b>'+c.in+'</b></span><span class="atc w">สาย/ต่อกะ <b>'+c.late+'</b></span><span class="atc r">ขาด <b>'+c.absent+'</b></span><span class="atc p">ลา <b>'+c.leave+'</b></span><span class="atc">หยุด <b>'+c.holi+'</b></span><span class="atc n">ไม่มีการเช็คชื่อ <b>'+c.none+'</b></span></div>'+
+    '<div class="scroll"><table class="tbl"><thead><tr><th>วันที่</th><th>สถานะ</th><th>เวลาเข้า</th><th>หมายเหตุ</th></tr></thead><tbody>'+
+    (days.length?days.map(function(d){var r=by[d]||{},g=stGroup(r.status);return '<tr class="ahd-'+g+'"><td class="nm">'+esc(wdD(d))+'</td><td>'+(r.status?stBadge(r.status,true):'<span class="stb none">ไม่มีการเช็คชื่อ</span>')+'</td><td>'+esc(r.check_in_time||"–")+'</td><td>'+esc(r.note||"–")+'</td></tr>'}).join(""):'<tr><td colspan="4">'+emptyRow("ยังไม่ถึงเดือนนี้")+'</td></tr>')+
+    '</tbody></table></div>';
+}
+document.addEventListener("change",function(ev){if(ev.target&&ev.target.id==="ah-pm"&&ev.target.value){AT.ahM=ev.target.value;var e=empOf(AT.ahEmp);if(e)ahPerson(e).catch(function(x){toast(thErr(x))})}});
 ["ah-date","ah-dept","ah-status"].forEach(function(id){$(id).addEventListener("change",refresh)});
-$("ah-q").addEventListener("input",function(){clearTimeout(AT._hq);AT._hq=setTimeout(refresh,200)});
+$("ah-q").addEventListener("input",function(){AT.ahEmp=null;AT.ahM=null;clearTimeout(AT._hq);AT._hq=setTimeout(refresh,200)});
 $("ah-export").addEventListener("click",async function(){
   var m=$("ah-month").value||today().slice(0,7),btn=this;btn.disabled=true;
   try{await exportAttendanceReport(m,$("ah-dept").value)}catch(e){toast(thErr(e))}
@@ -8510,7 +8535,7 @@ function hexArgb(h){h=String(h||"#3B82F6").replace("#","");return "FF"+(h.length
 function noTitle(n){return String(n||"").replace(/^(นางสาว|นาง|นาย|น\.ส\.)\s*/,"").replace(/\s+/g," ").trim()}
 
 /* ---------- 1) รายงานเช็คชื่อ: attendance_report_YYYY-MM-01_YYYY-MM-DD.xlsx (สรุป + ปฏิทิน) ---------- */
-var ATT_CODE={"มาทำงาน":"✓","ขาดงาน":"ข","เข้างานสาย":"ขส","ต่อกะสาย":"ตส","ลาป่วย":"ป","ลากิจ":"ก","ลาพักร้อน":"พ","ลาตามสิทธิ์อื่น":"ส","ลาอื่นๆ":"อ","ลาแต่งงาน":"ง","ลาฌาปณกิจ":"ฌ","หยุด (วันอาทิตย์, วันหยุดนักขัตฤกษ์)":"ห"};
+var ATT_CODE={"มาทำงาน":"มา","ขาดงาน":"ขาด","เข้างานสาย":"สาย","ต่อกะสาย":"ต่อกะ","ลาป่วย":"ป่วย","ลากิจ":"กิจ","ลาพักร้อน":"พักร้อน","ลาตามสิทธิ์อื่น":"สิทธิ์","ลาอื่นๆ":"ลาอื่น","ลาแต่งงาน":"แต่งงาน","ลาฌาปณกิจ":"ฌาปนกิจ","หยุด (วันอาทิตย์, วันหยุดนักขัตฤกษ์)":"หยุด"};
 var ATT_COL={"มาทำงาน":["FFC6EFCE","FF006100"],"ขาดงาน":["FFFFC7CE","FF9C0006"],"เข้างานสาย":["FFFFEB9C","FF9C6500"],"ต่อกะสาย":["FFBDD7EE","FF1F4E79"],"ลาป่วย":["FFE2EFDA","FF375623"],"ลากิจ":["FFFCE4D6","FF974706"],
   "ลาพักร้อน":["FFDDEBF7","FF1F4E79"],"ลาตามสิทธิ์อื่น":["FFE7E6F7","FF3F3F8F"],"ลาอื่นๆ":["FFD9E2F3","FF2F5496"],"ลาแต่งงาน":["FFF4B8D0","FF9C2B6E"],"ลาฌาปณกิจ":["FFE4E4E7","FF3F3F46"],"หยุด (วันอาทิตย์, วันหยุดนักขัตฤกษ์)":["FFEDE4F7","FF5B2C8F"]};
 async function exportAttendanceReport(m,dept){
@@ -8534,7 +8559,9 @@ async function exportAttendanceReport(m,dept){
   var p=m.split("-"),o=wb.addWorksheet("ปฏิทิน "+["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][+p[1]-1]+" "+(+p[0]+543));
   var days=datesBetween(from,to),F=[["employee_no","รหัสพนักงาน",12],["display_name","ชื่อ-นามสกุล",25],["dept","แผนก",28],["shift","กะ",8],["position","ตำแหน่ง",18]],h=F.length+1;
   F.forEach(function(f,i){o.getColumn(i+1).width=f[2];var cl=o.getCell(1,i+1);cl.value=f[1];cl.font={name:"Calibri",bold:true,size:10,color:{argb:"FFFFFFFF"}};cl.fill=xf("FF2F5496");cl.alignment={horizontal:"center",vertical:"middle",wrapText:true};cl.border=XBOX});
-  days.forEach(function(d,i){var col=h+i,dw=new Date(utcMs(d)).getUTCDay(),cl=o.getCell(1,col);o.getColumn(col).width=4.5;cl.value=+d.slice(8);cl.font={name:"Calibri",bold:true,size:9,color:{argb:dw===0||dw===6?"FFC00000":"FF000000"}};if(dw===0||dw===6)cl.fill=xf("FFFCE4D6");cl.alignment={horizontal:"center",vertical:"middle"};cl.border=XBOX});
+  days.forEach(function(d,i){var col=h+i,dw=new Date(utcMs(d)).getUTCDay(),cl=o.getCell(1,col);o.getColumn(col).width=4.5;cl.value=+d.slice(8);cl.font={name:"Calibri",bold:true,size:9,color:{argb:dw===0||dw===6?"FFC00000":"FF000000"}};if(dw===0||dw===6)cl.fill=xf("FFFCE4D6");cl.alignment={horizontal:"center",vertical:"middle"};cl.border=XBOX;o.getColumn(col).width=7.5});
+  var SC=[["มา","in","FFC6EFCE"],["สาย","late","FFFFEB9C"],["ขาด","absent","FFFFC7CE"],["ลา","leave","FFE4DFEC"],["หยุด","holi","FFF2F2F2"],["ไม่เช็ค","none","FFFFFFFF"]],sc0=h+days.length;
+  SC.forEach(function(x,i){var cl=o.getCell(1,sc0+i);o.getColumn(sc0+i).width=8;cl.value="รวม"+x[0];cl.font={name:"Calibri",bold:true,size:9,color:{argb:"FFFFFFFF"}};cl.fill=xf("FF2F5496");cl.alignment={horizontal:"center",vertical:"middle",wrapText:true};cl.border=XBOX});
   o.getRow(1).height=32;o.views=[{state:"frozen",xSplit:F.length,ySplit:1}];
   var map={};rows.forEach(function(r){(map[r.employee_id]=map[r.employee_id]||{})[r.work_date]=r.status});
   emps.sort(function(a,b){return String(a.employee_no).localeCompare(String(b.employee_no))});
@@ -8542,13 +8569,16 @@ async function exportAttendanceReport(m,dept){
     F.forEach(function(f,i){var cl=row.getCell(i+1);cl.value=vals[f[0]]||"";cl.font={name:"Calibri",size:11};cl.alignment={horizontal:"left",vertical:"middle"};cl.border=XBOX});
     var mm=map[e.id]||{};days.forEach(function(d,i){var cl=row.getCell(h+i),st=mm[d];
       if(st){var cc=ATT_COL[st]||["FFFFFFFF","FF000000"];cl.value=ATT_CODE[st]||st.charAt(0);cl.fill=xf(cc[0]);cl.font={name:"Calibri",size:8,color:{argb:cc[1]}}}
-      else{var dw=new Date(utcMs(d)).getUTCDay();cl.value=dw===0||dw===6?"-":"";cl.font={name:"Calibri",size:8,color:{argb:"FFC0C0C0"}}}
-      cl.alignment={horizontal:"center",vertical:"middle"};cl.border=XBOX});row.height=22});
+      else{cl.value=d<=today()?"ไม่เช็ค":"";cl.font={name:"Calibri",size:8,color:{argb:"FF9CA3AF"}}}
+      cl.alignment={horizontal:"center",vertical:"middle",shrinkToFit:true};cl.border=XBOX});
+    var cn={in:0,late:0,absent:0,leave:0,holi:0,none:0};days.forEach(function(d){if(d<=today())cn[stGroup(mm[d])]++});
+    SC.forEach(function(x,i){var cl=row.getCell(sc0+i);cl.value=cn[x[1]];cl.fill=xf(x[2]);cl.font={name:"Calibri",bold:true,size:10};cl.alignment={horizontal:"center",vertical:"middle"};cl.border=XBOX});row.height=22});
   var g=emps.length+2,gr=o.getRow(g);o.mergeCells(g,1,g,F.length);var gc=gr.getCell(1);gc.value="จำนวนคนมาทำงานต่อวัน";gc.font={name:"Calibri",bold:true,size:10,color:{argb:"FFFFFFFF"}};gc.fill=xf("FF2F5496");gc.alignment={horizontal:"center",vertical:"middle"};
   days.forEach(function(d,i){var n=0;emps.forEach(function(e){if((map[e.id]||{})[d]==="มาทำงาน")n++});var cl=gr.getCell(h+i);cl.value=n;cl.font={name:"Calibri",bold:true,size:9};cl.fill=xf("FFC6EFCE");cl.alignment={horizontal:"center",vertical:"middle"};cl.border=XBOX});gr.height=24;
   /* คำอธิบายรหัส */
   var lg=g+2;o.getCell(lg,1).value="คำอธิบาย:";o.getCell(lg,1).font={name:"Calibri",bold:true,size:10};
   Object.keys(ATT_CODE).forEach(function(st,i){var cl=o.getCell(lg+1+Math.floor(i/4),1+(i%4)*1);var cc=ATT_COL[st];cl.value=ATT_CODE[st]+" = "+(st===ST_HOLI?"หยุด":st);cl.fill=xf(cc[0]);cl.font={name:"Calibri",size:9,color:{argb:cc[1]}};cl.border=XBOX});
+  var nk=Object.keys(ATT_CODE).length,nc=o.getCell(lg+1+Math.floor(nk/4),1+(nk%4));nc.value="ไม่เช็ค = ไม่มีการเช็คชื่อวันนั้น";nc.font={name:"Calibri",size:9,color:{argb:"FF6B7280"}};nc.border=XBOX;
   await xlSave(wb,"attendance_report_"+from+"_"+to+".xlsx");
 }
 
@@ -9134,6 +9164,8 @@ document.addEventListener("click",function(ev){
   var da=ev.target.closest("[data-dayadd]");if(da){logAdd(da.dataset.dayadd,da.dataset.d);return}
   var dl=ev.target.closest("[data-daylog]");if(dl){dayLogEdit(dl.dataset.daylog,dl.dataset.d).catch(function(e){toast(thErr(e))});return}
   var head=ev.target.closest(".emphead[data-open]");if(head&&!ev.target.closest("button,label")){S.empId=head.dataset.open;if(S.tab==="staff"&&$("s-month").value)$("ed-month").value=$("s-month").value;show("emp");return}
+  var ahr=ev.target.closest("[data-ahemp]");if(ahr){var ae=empOf(ahr.dataset.ahemp);if(ae){AT.ahM=null;ahPerson(ae).then(function(){$("ah-person").scrollIntoView({behavior:"smooth",block:"start"})}).catch(function(x){toast(thErr(x))})}return}
+  if(ev.target.closest("[data-ahclose]")){AT.ahEmp=null;$("ah-person").hidden=true;return}
   var dkr=ev.target.closest("[data-dkrow]");if(dkr&&!ev.target.closest("button")){openDeduct(dkr.dataset.dkrow);return}
   var b=ev.target.closest("button");if(!b)return;var d=b.dataset;
   if(b.hasAttribute("data-sdept")){$("s-dept").value=d.sdept;if(S.tab==="staff"){refresh();window.scrollTo(0,0)}else show("staff");return}
