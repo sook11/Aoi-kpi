@@ -1129,6 +1129,53 @@ body.farm-rot .ffloat{animation-name:ffloatR}
 .amtgrid button{height:52px;font-size:18px;font-weight:700;border-radius:12px;justify-content:center}
 .amtgrid button.on{background:var(--bad);border-color:var(--bad);color:#fff}
 /* TV */
+/* อัปเดต 197: จอทีวีแผนก */
+.dtvpick{display:grid;justify-items:center;gap:10px;text-align:center;padding:10px 0}.dtvlogo{font-size:46px}
+.dtvchs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;width:100%;max-width:820px;margin:8px 0}
+.dtvch{display:grid;gap:4px;text-align:left;background:var(--card,#fff);border:1px solid var(--line,#e2e8f0);border-radius:16px;padding:16px;cursor:pointer}
+.dtvch:hover{border-color:#38bdf8;box-shadow:0 6px 20px rgba(14,165,233,.15)}.dtvch span{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#0f172a;font-size:20px}
+.dtvch small{color:#64748b}.dtvch i{font-style:normal;color:#0284c7;font-size:13px;margin-top:6px}
+.dtvscr{position:fixed;inset:0;z-index:60;background:#05070d;color:#e2e8f0;display:flex;flex-direction:column;font-family:inherit}
+.dtvhead{display:flex;align-items:center;gap:12px;padding:10px 18px;background:rgba(15,23,42,.85);border-bottom:1px solid #1e293b;flex-shrink:0}
+.dtvhead b{display:block;font-size:22px;color:#f8fafc;line-height:1.1}.dtvhead small{font-size:11px;color:#64748b;letter-spacing:.1em}
+.dtvic{width:38px;height:38px;border-radius:10px;background:rgba(34,211,238,.18);display:grid;place-items:center;font-size:20px}
+.dtvbk{background:none;border:0;color:#94a3b8;font-size:22px;cursor:pointer;padding:6px 10px;border-radius:8px}.dtvbk:hover{background:#1e293b;color:#fff}
+.dtvmeta{margin-left:auto;font-size:14px;color:#94a3b8;display:flex;gap:10px;align-items:center}.dtvmeta i{font-style:normal;font-size:12px;padding:3px 9px;border-radius:99px}.dtvmeta i.on{background:rgba(34,197,94,.18);color:#4ade80}.dtvmeta i.off{background:rgba(239,68,68,.18);color:#f87171}
+.dtvmain{flex:1;position:relative;overflow:hidden;padding:14px}
+.dtvin{animation:dtvin .7s ease}@keyframes dtvin{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+.dtvtbl{height:calc(100% - 18px);display:flex;flex-direction:column;border:1px solid rgba(34,211,238,.35);border-radius:14px;overflow:hidden;background:#0b1220}
+.dtvr{display:grid;grid-template-columns:100px 1fr 2fr 1fr 1fr 1fr 1fr 1.1fr;align-items:center;border-bottom:1px solid #1e293b;background:#0b1220}
+.dtvr.alt{background:#111a2c}.dtvr.top{background:rgba(239,68,68,.2)}
+.dtvr>span{text-align:center;font-weight:800;font-size:clamp(16px,2.3vw,34px);padding:0 6px;border-right:1px solid #1e293b;height:100%;display:flex;align-items:center;justify-content:center;line-height:1.1}
+.dtvr>span:last-child{border-right:0}.dtvr .nm{font-size:clamp(15px,2.1vw,32px)}.dtvr .red{color:#f87171}.dtvr .pf{color:#22d3ee}
+.dtvr.hd{background:#0891b2;color:#06121f;flex-shrink:0}.dtvr.hd>span{font-size:clamp(13px,1.5vw,22px);padding:12px 4px;border-right-color:rgba(255,255,255,.25)}
+.dtvr .ph img{width:64px;height:calc(100% - 8px);max-height:76px;object-fit:cover;border-radius:6px;border:1px solid #334155}
+.dtvr .ph em{width:52px;height:52px;border-radius:50%;background:rgba(34,211,238,.2);color:#22d3ee;display:grid;place-items:center;font-style:normal}
+.dtvwin{flex:1;overflow:hidden;position:relative}.dtvroll{position:absolute;left:0;right:0;top:0;will-change:transform}
+.dtvpg{display:flex;justify-content:center;gap:6px;margin-top:8px}.dtvpg i{width:8px;height:8px;border-radius:99px;background:#334155}.dtvpg i.on{width:24px;background:#22d3ee}
+.dtvmed{position:absolute;inset:14px;border-radius:14px;overflow:hidden;background:#0b1220;border:1px solid #1e293b;display:flex;flex-direction:column}
+.dtvmed video{flex:1;width:100%;height:100%;object-fit:contain;background:#000;min-height:0}
+.dtvimgs{flex:1;position:relative;min-height:0}.dtvimgs img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .8s}.dtvimgs img.on{opacity:1}
+.dtvcap{padding:8px 14px;color:#22d3ee;font-weight:700;display:flex;align-items:center;gap:10px;flex-shrink:0}.dtvdots{display:flex;gap:5px;margin-left:auto}.dtvdots i{width:8px;height:8px;border-radius:99px;background:#475569}.dtvdots i.on{background:#22d3ee;width:18px}
+.dtvtxt{justify-content:flex-start}.dtvth{padding:14px 18px;border-bottom:1px solid #1e293b;font-weight:800}.dtvtb{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;line-height:1.3;padding:20px}
+.dtvempty{height:100%;display:grid;place-content:center;justify-items:center;gap:6px;font-size:40px;color:#64748b}.dtvempty b{font-size:22px;color:#e2e8f0}.dtvempty small{font-size:14px}
+.dtvtick{flex-shrink:0;display:flex;align-items:stretch;background:rgba(15,23,42,.92);border-top:1px solid #1e293b;overflow:hidden;min-height:44px}
+.dtvclk{display:flex;align-items:center;padding:0 16px;background:rgba(34,211,238,.1);color:#22d3ee;font-weight:800;font-size:20px;white-space:nowrap;border-right:1px solid #1e293b;font-variant-numeric:tabular-nums}
+.dtvrun{flex:1;overflow:hidden;position:relative;display:flex;align-items:center}
+.dtvtrk{display:inline-block;white-space:nowrap;font-weight:800;line-height:1;padding-left:10px}.dtvtrk.go{animation:dtvrun linear infinite;padding-left:0}
+.dtvtrk .star{color:#64748b;margin:0 26px}.dtvtrk .dim{color:#64748b;font-size:15px}
+@keyframes dtvrun{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+.dtvdate{display:flex;align-items:center;padding:0 16px;color:#94a3b8;white-space:nowrap;border-left:1px solid #1e293b}
+.dtvunlock{position:absolute;inset:0;z-index:5;display:grid;place-content:center;justify-items:center;gap:8px;background:rgba(5,7,13,.82);border:0;color:#e2e8f0;cursor:pointer;font-family:inherit}
+.dtvunlock span{font-size:64px}.dtvunlock b{font-size:28px}.dtvunlock small{color:#94a3b8}
+.dtvtabs{margin-bottom:10px;flex-wrap:wrap}.dtvform{display:grid;gap:8px;margin-bottom:12px;border:1px solid #bae6fd;background:#f0f9ff}
+.dtvform textarea{min-height:60px}.dtvmsg{font-size:13px;color:#0369a1}
+.dtvimp{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:10px;padding:10px;border-radius:12px;background:#f8fafc;border:1px dashed #cbd5e1}
+.dtvrow .l{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.dtvrow .l small{flex-basis:100%}.dtvrow .r{display:flex;gap:6px}
+.dtvav{width:38px;height:38px;border-radius:8px;object-fit:cover}.dtvav.sq{width:54px}.dtvdot{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:middle}
+.dtvoff{font-style:normal;font-size:11px;background:#fee2e2;color:#b91c1c;padding:2px 7px;border-radius:99px}
+.dtvthumbs{display:flex;flex-wrap:wrap;gap:6px}.dtvthumbs img{width:64px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1}
+@media (max-width:700px){.dtvr{grid-template-columns:54px 1fr 1.6fr .9fr .7fr .7fr .7fr 1fr}.dtvr .ph img{width:40px}.dtvdate{display:none}.dtvhead b{font-size:17px}}
 body.tvmode{background:#0f172a}
 body.tvmode header.top,body.tvmode nav.tabs,body.tvmode .marquee{display:none!important}
 body.tvmode .wrap{max-width:none;padding:16px}body.tvmode #app{padding-left:0!important}
@@ -1634,6 +1681,13 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   </section>
 
 
+  <!-- อัปเดต 197: จอทีวีแผนก -->
+  <section class="view" id="v-dtv" hidden><div id="dtv-box"></div></section>
+  <section class="view" id="v-dtvadm" hidden>
+    <div class="headrow"><div><h2>📺 จัดการจอทีวีแผนก</h2><p class="sub">ช่องแผนก · ตารางผลงานพนักงาน (นำเข้า Excel) · สื่อรูป/วิดีโอ/ข้อความ · ข้อความวิ่ง · ประกาศเสียงตามเวลา</p></div><button type="button" class="primary" data-tab="dtv">▶ เปิดจอแสดงผล</button></div>
+    <div id="dtvadm-box"></div>
+  </section>
+
   <!-- LEAVE: ขอลา -->
   <section class="view" id="v-leave" hidden>
     <div><h2>ขอลางาน</h2><p class="sub">กรอกข้อมูลเพื่อยื่นคำขอลา · วันอาทิตย์และวันหยุดโรงงานไม่นับเป็นวันลา</p></div>
@@ -1813,6 +1867,8 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button data-tab="deduct" data-perm="deduct">หัก KPI</button>
       <button data-tab="dedrep" data-perm="deduct">รายงานหัก KPI</button>
       <button data-tab="tv" data-perm="att_view">หน้าจอ TV</button>
+      <button data-tab="dtv" class="adm">📺 จอทีวีแผนก</button>
+      <button data-tab="dtvadm" class="adm">⚙️ จัดการจอทีวีแผนก</button>
       <button data-tab="admin" class="mgr">Admin Dashboard</button>
       <button data-tab="targets" class="mgr">กำหนดเป้าหมายรายวัน</button>
       <button data-tab="kpis" class="adm">จัดการหน้างาน</button>
@@ -2213,6 +2269,8 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <button data-tab="deduct" data-perm="deduct" class="navx">หัก KPI</button>
   <button data-tab="dedrep" data-perm="deduct" class="navx">รายงานหัก KPI</button>
   <button data-tab="tv" data-perm="att_view" class="navx">หน้าจอ TV</button>
+  <button data-tab="dtv" class="adm navx">📺 จอทีวีแผนก</button>
+  <button data-tab="dtvadm" class="adm navx">⚙️ จัดการจอทีวีแผนก</button>
   <span class="navlabel mgr" data-g="adm">⚙️ ADMIN · ตั้งค่า</span>
   <button data-tab="admin" class="mgr navx">Admin Dashboard</button>
   <button data-tab="targets" class="mgr navx">กำหนดเป้าหมายรายวัน</button>
@@ -4251,6 +4309,168 @@ async function renderAttDash(){
   $("ad2-ded").innerHTML='<div class="stat bad"><small>ยอดหักรวม</small><b>'+baht(sum)+'</b></div><div class="stat"><small>คนถูกหัก</small><b>'+Object.keys(pp).length+'</b></div><div class="stat"><small>หักสูงสุด/คน</small><b>'+baht(mx)+'</b></div>';
 }
 ["ad2-date","ad2-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
+
+/* ===================== อัปเดต 197: จอทีวีแผนก (ย้ายจาก PulseCast / Base44) ===================== */
+var DT={ch:null,data:null,view:"table",mi:0,page:0,raf:0,tm:0,tick:0,load:0,ann:0,unlocked:false,played:{},sig:"",annBusy:false,audio:null,admSec:"ch",admCh:"",edit:null};
+var DTF={
+  ch:{t:"dtv_channels",n:"ช่อง (Channel)",ord:"sort_order",f:[["name","ชื่อช่อง / แผนก","text",1],["description","คำอธิบาย","text"],["color","สีประจำช่อง","color","#00ffff"],["show_table","แสดงตารางพนักงาน","bool",true],["is_active","เปิดใช้งาน","bool",true],["sort_order","ลำดับ","num",0]]},
+  item:{t:"dtv_items",n:"ตารางพนักงาน",ord:"sort_order",f:[["channel_id","ช่อง","channel"],["employee_no","รหัสพนักงาน","text",1],["full_name","ชื่อ-นามสกุล","text",1],["photo_url","รูปพนักงาน (เว้นว่าง = ใช้รูปในแอป)","image"],["inspection","Inspection","num"],["c15","3NN15","num"],["c16","3NN16","num"],["total","รวม","num"],["performance","Performance (%)","num"],["sort_order","ลำดับ","num",0],["is_active","แสดงผล","bool",true]]},
+  media:{t:"dtv_media",n:"สื่อ (ข้อความ/วิดีโอ/รูป)",ord:"sort_order",f:[["channel_id","ช่อง (เว้นว่าง = ทุกช่อง)","channel"],["type","ประเภท","select","image_slideshow",[["image_slideshow","สไลด์รูปภาพ"],["video","วิดีโอ"],["text","ข้อความ"]]],["title","หัวข้อ","text",1],["content","ข้อความ (ประเภทข้อความ)","textarea"],["video_url","วิดีโอ","video"],["image_urls","รูปภาพ (หลายรูปได้)","images"],["display_duration","แสดงนาน (วินาที)","num",10],["play_interval","วิดีโอ: เล่นซ้ำได้ทุก N นาที (0 = ทุกรอบ)","num",0],["font_size","ขนาดตัวอักษรข้อความ (px)","num",60],["font_color","สีข้อความ","color","#ef4444"],["title_font_size","ขนาดหัวข้อ (px)","num",36],["title_font_color","สีหัวข้อ","color","#00ffff"],["sort_order","ลำดับ","num",0],["is_active","แสดงผล","bool",true]]},
+  tick:{t:"dtv_tickers",n:"ข้อความวิ่ง",ord:"created_at",f:[["channel_id","ช่อง (เว้นว่าง = ทุกช่อง)","channel"],["message","ข้อความ","textarea",1],["font_size","ขนาดตัวอักษร (px)","num",50],["font_color","สีตัวอักษร","color","#ef4444"],["priority","ระดับ","select","normal",[["normal","ปกติ"],["urgent","ด่วน"]]],["is_active","แสดงผล","bool",true]]},
+  ann:{t:"dtv_announcements",n:"ประกาศเสียงตามเวลา",ord:"sort_order",f:[["title","ชื่อประกาศ","text",1],["audio_type","ประเภทเสียง","select","tts",[["tts","อ่านข้อความอัตโนมัติ (TTS)"],["upload","ไฟล์เสียง MP3"]]],["script","ข้อความให้ระบบอ่าน (TTS)","textarea"],["audio_url","ไฟล์เสียง","audio"],["schedule_times","เวลาประกาศ (คั่นด้วย , เช่น 08:00, 12:00)","times"],["repeat_interval","วนซ้ำทุก N นาที (0 = ไม่วน)","num",0],["sort_order","ลำดับ","num",0],["is_active","เปิดใช้งาน","bool",true]]}
+};
+function dtvCfg(){var c=(S.settings&&S.settings.dtv_cfg)||{};return {page:+c.page_secs||30,table:+c.table_secs||30}}
+async function dtvFetch(){
+  var r=await Promise.all(["dtv_channels","dtv_items","dtv_media","dtv_tickers","dtv_announcements"].map(function(t){return q(db.from(t).select("*").order(t==="dtv_tickers"?"created_at":"sort_order"))}));
+  DT.data={ch:r[0],item:r[1],media:r[2],tick:r[3],ann:r[4],at:Date.now()};DT.online=true;
+  try{localStorage.setItem("aoi-dtv-cache",JSON.stringify(DT.data))}catch(e){}return DT.data}
+async function dtvLoad(){try{return await dtvFetch()}catch(e){DT.online=false;if(!DT.data){try{DT.data=JSON.parse(localStorage.getItem("aoi-dtv-cache")||"null")}catch(e2){}}if(!DT.data)throw e;return DT.data}}
+function dtvPhoto(it){if(it.photo_url)return it.photo_url;var e=(S.dir||[]).filter(function(x){return x.employee_no===it.employee_no})[0];return e&&e.avatar&&/^https?:|^data:/.test(e.avatar)?e.avatar:""}
+function dtvPerf(v){return v==null||v===""?"—":(+v).toFixed(2)+"%"}
+function dtvStop(){cancelAnimationFrame(DT.raf);clearTimeout(DT.tm);clearInterval(DT.tick);clearInterval(DT.load);clearInterval(DT.ann);DT.raf=DT.tm=DT.tick=DT.load=DT.ann=0;var v=document.querySelector("#dtv-main video");if(v)try{v.pause()}catch(e){}try{if(DT.audio)DT.audio.pause();speechSynthesis.cancel()}catch(e){}}
+
+/* ---------- หน้าเลือกช่อง / จอแสดงผล ---------- */
+async function renderDtv(){
+  var P=$("dtv-box");if(!P)return;dtvStop();
+  if(DT.ch==null&&!DT.picked){DT.picked=1;try{DT.ch=localStorage.getItem("aoi-dtv-ch")||null}catch(e){}}
+  try{await dtvLoad()}catch(e){P.innerHTML=emptyRow(esc(thErr(e)));return}
+  if(DT.ch&&DT.ch!=="*"&&!DT.data.ch.some(function(c){return c.id===DT.ch}))DT.ch=null;
+  if(!DT.ch){document.body.classList.remove("tvmode");var chs=DT.data.ch.filter(function(c){return c.is_active});
+    P.innerHTML='<div class="dtvpick"><div class="dtvlogo">📺</div><h2>เลือกช่องแสดงผล</h2><p class="sub">เลือกแผนกที่ต้องการแสดงบนจอทีวี · เปิดค้างไว้ได้ทั้งวัน ข้อมูลอัปเดตเองทุก 15 วินาที</p><div class="dtvchs">'+
+      chs.map(function(c){return '<button type="button" class="dtvch" data-dtvch="'+c.id+'"><span style="background:'+esc(c.color||"#00ffff")+'">'+esc(Array.from(c.name||"?")[0])+'</span><b>'+esc(c.name)+'</b><small>'+esc(c.description||"")+'</small><i>เข้าจอแสดงผล →</i></button>'}).join("")+
+      '<button type="button" class="dtvch" data-dtvch="*"><span style="background:#a78bfa">★</span><b>ทุกช่อง</b><small>รวมทุกแผนก</small><i>เข้าจอแสดงผล →</i></button></div>'+
+      (S.admin?'<button type="button" class="sm" data-tab="dtvadm">⚙️ จัดการจอทีวีแผนก</button>':'')+'</div>';return}
+  document.body.classList.add("tvmode");
+  var ch=DT.ch==="*"?{name:"ทุกช่อง",show_table:true}:(DT.data.ch.filter(function(c){return c.id===DT.ch})[0]||{name:"ช่อง",show_table:true});
+  P.innerHTML='<div class="dtvscr" id="dtv-scr"><div class="dtvhead"><button type="button" class="dtvbk" data-dtvback="1" title="กลับ">←</button><span class="dtvic">📺</span><div><b>'+esc(ch.name)+'</b><small>CHANNEL DISPLAY</small></div><span class="dtvmeta" id="dtv-meta"></span><button type="button" class="dtvbk" data-dtvfs="1" title="เต็มจอ">⛶</button></div>'+
+    '<div class="dtvmain" id="dtv-main"></div><div class="dtvtick" id="dtv-tick"></div>'+(DT.unlocked?'':'<button type="button" class="dtvunlock" data-dtvunlock="1"><span>🔊</span><b>แตะเพื่อเปิดเสียง</b><small>เปิดระบบประกาศเสียงตามเวลา และเสียงวิดีโอ</small></button>')+'</div>';
+  DT.showTable=ch.show_table!==false;DT.view=DT.showTable?"table":"media";DT.mi=0;DT.page=0;DT.sig="";
+  dtvTicker();dtvMeta();dtvShow();
+  DT.tick=setInterval(function(){if(S.tab!=="dtv"){dtvStop();return}dtvClock()},1000);
+  DT.load=setInterval(function(){if(S.tab!=="dtv")return;dtvLoad().then(function(){dtvMeta();dtvTicker(true);if(DT.view==="table")dtvTable(false)},function(){dtvMeta()})},15000);
+  DT.ann=setInterval(dtvAnnTick,5000);
+  dtvAutoUnlock();dtvWake();
+}
+/* เปิดค้าง 24 ชม.: กันจอดับ + เปิดเสียงเองถ้าเบราว์เซอร์อนุญาต (ตั้ง Chrome: Site settings → Sound/Autoplay = Allow) */
+function dtvWake(){try{if(navigator.wakeLock&&!DT.wl)navigator.wakeLock.request("screen").then(function(w){DT.wl=w;w.addEventListener("release",function(){DT.wl=null})}).catch(function(){})}catch(e){}}
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&S.tab==="dtv"&&DT.ch)dtvWake()});
+function dtvAutoUnlock(){if(DT.unlocked)return;try{var a=new Audio("data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAAAAA==");var p=a.play();if(p&&p.then)p.then(function(){dtvUnlock()},function(){})}catch(e){}}
+function dtvItems(){return DT.data.item.filter(function(i){return i.is_active&&(DT.ch==="*"||i.channel_id===DT.ch)}).sort(function(a,b){return (+a.performance||0)-(+b.performance||0)})}
+function dtvMedia(){return DT.data.media.filter(function(m){if(!m.is_active)return false;if(DT.ch!=="*"&&m.channel_id&&m.channel_id!==DT.ch)return false;if(m.type==="video"){if(!m.video_url)return false;if(m.play_interval>0){var lp=0;try{lp=+localStorage.getItem("aoi-dtv-vp-"+m.id)||0}catch(e){}if(Date.now()-lp<m.play_interval*60000)return false}}if(m.type==="image_slideshow"&&!(m.image_urls||[]).length)return false;return true})}
+function dtvMeta(){var e=$("dtv-meta");if(!e||!DT.data)return;var n=dtvItems().length,t=new Date(DT.data.at||Date.now()).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});e.innerHTML='👥 '+n+' รายการ <i class="'+(DT.online!==false?"on":"off")+'">'+(DT.online!==false?"● ออนไลน์":"● ออฟไลน์")+' · '+t+'</i>'}
+function dtvShow(){clearTimeout(DT.tm);cancelAnimationFrame(DT.raf);if(S.tab!=="dtv")return;var M=dtvMedia();
+  if(DT.view==="table"&&DT.showTable){dtvTable(true);if(M.length)DT.tm=setTimeout(function(){DT.view="media";DT.mi=0;dtvShow()},dtvCfg().table*1000);return}
+  if(!M.length){if(DT.showTable){DT.view="table";dtvTable(true)}else $("dtv-main").innerHTML='<div class="dtvempty">📭<b>ยังไม่มีสื่อในช่องนี้</b><small>เพิ่มได้ที่ จัดการจอทีวีแผนก</small></div>';return}
+  if(DT.mi>=M.length){DT.mi=0;if(DT.showTable){DT.view="table";return dtvShow()}}
+  var m=M[DT.mi],el=$("dtv-main"),next=function(){DT.mi++;dtvShow()};
+  if(m.type==="video"){el.innerHTML='<div class="dtvmed dtvin"><video src="'+esc(m.video_url)+'" autoplay playsinline'+(DT.unlocked?'':' muted')+'></video><div class="dtvcap">🎬 '+esc(m.title)+'</div></div>';var v=el.querySelector("video");
+    v.onended=function(){try{localStorage.setItem("aoi-dtv-vp-"+m.id,String(Date.now()))}catch(e){}next()};v.onerror=next;DT.tm=setTimeout(next,15*60000);return}
+  if(m.type==="image_slideshow"){var im=m.image_urls||[],d=Math.max(3,+m.display_duration||10);
+    el.innerHTML='<div class="dtvmed dtvin"><div class="dtvimgs">'+im.map(function(u,i){return '<img src="'+esc(u)+'" alt=""'+(i?'':' class="on"')+'>'}).join("")+'</div><div class="dtvcap">🖼️ '+esc(m.title)+(im.length>1?'<span class="dtvdots">'+im.map(function(_,i){return '<i'+(i?'':' class="on"')+'></i>'}).join("")+'</span>':'')+'</div></div>';
+    if(im.length>1){var k=0,per=Math.max(3,d/im.length)*1000,rot=function(){var ims=el.querySelectorAll(".dtvimgs img"),ds=el.querySelectorAll(".dtvdots i");if(!ims.length)return;k=(k+1)%ims.length;ims.forEach(function(x,j){x.classList.toggle("on",j===k)});ds.forEach(function(x,j){x.classList.toggle("on",j===k)})};var iv=setInterval(function(){if(!el.querySelector(".dtvimgs")){clearInterval(iv);return}rot()},per);DT.tm=setTimeout(function(){clearInterval(iv);next()},d*1000)}
+    else DT.tm=setTimeout(next,d*1000);return}
+  el.innerHTML='<div class="dtvmed dtvtxt dtvin"><div class="dtvth" style="font-size:'+(+m.title_font_size||36)+'px;color:'+esc(m.title_font_color||"#00ffff")+'">💬 '+esc(m.title)+'</div><div class="dtvtb" style="font-size:'+(+m.font_size||60)+'px;color:'+esc(m.font_color||"#ef4444")+'">'+esc(m.content||"").replace(/\n/g,"<br>")+'</div></div>';
+  DT.tm=setTimeout(next,Math.max(3,+m.display_duration||10)*1000)}
+var DTROWS=8;
+function dtvTable(fresh){var el=$("dtv-main");if(!el)return;var A=dtvItems(),sig=JSON.stringify(A.map(function(x){return [x.id,x.performance,x.total,x.inspection,x.photo_url]}));
+  if(!fresh&&sig===DT.sig&&el.querySelector(".dtvtbl"))return;DT.sig=sig;
+  if(!A.length){el.innerHTML='<div class="dtvempty">👥<b>ยังไม่มีข้อมูลพนักงาน</b><small>นำเข้า Excel ได้ที่ จัดการจอทีวีแผนก</small></div>';return}
+  var pages=Math.max(1,Math.ceil(A.length/DTROWS));if(DT.page>=pages)DT.page=0;var rows=A.slice(DT.page*DTROWS,DT.page*DTROWS+DTROWS);
+  var row=function(e,i){var g=DT.page*DTROWS+i,ph=dtvPhoto(e);return '<div class="dtvr'+(g<5?' top':i%2?' alt':'')+'"><span class="ph">'+(ph?'<img src="'+esc(ph)+'" alt="">':'<em>'+esc((e.full_name||"?").charAt(0))+'</em>')+'</span><span class="n">'+esc(e.employee_no||"—")+'</span><span class="nm">'+esc(e.full_name||"—")+'</span><span class="n">'+(e.inspection==null?"—":num(e.inspection))+'</span><span class="n red">'+(e.c15==null?"—":num(e.c15))+'</span><span class="n red">'+(e.c16==null?"—":num(e.c16))+'</span><span class="n">'+(e.total==null?"—":num(e.total))+'</span><span class="n pf">'+dtvPerf(e.performance)+'</span></div>'};
+  el.innerHTML='<div class="dtvtbl dtvin"><div class="dtvr hd"><span>พนักงาน</span><span>รหัสพนักงาน</span><span>ชื่อ-นามสกุล</span><span>Inspection</span><span>3NN15</span><span>3NN16</span><span>รวม</span><span>Performance</span></div><div class="dtvwin" id="dtv-win"><div class="dtvroll" id="dtv-roll">'+rows.map(row).join("")+rows.map(row).join("")+'</div></div></div>'+
+    (pages>1?'<div class="dtvpg">'+Array.from({length:pages}).map(function(_,i){return '<i'+(i===DT.page?' class="on"':'')+'></i>'}).join("")+'</div>':'');
+  cancelAnimationFrame(DT.raf);var win=$("dtv-win"),roll=$("dtv-roll"),rh=win.clientHeight/DTROWS;roll.querySelectorAll(".dtvr").forEach(function(r){r.style.height=rh+"px"});
+  var off=0,loops=0,last=0,max=rows.length*rh,step=function(ts){if(!roll.isConnected)return;if(!last)last=ts;off+=40*(ts-last)/1000;last=ts;if(off>=max){off=0;loops++;if(loops>=2){setTimeout(function(){if(DT.view==="table"){DT.page=(DT.page+1)%pages;dtvTable(true)}},800);return}}roll.style.transform="translateY(-"+off+"px)";DT.raf=requestAnimationFrame(step)};
+  DT.raf=requestAnimationFrame(step)}
+function dtvTicker(soft){var el=$("dtv-tick");if(!el||!DT.data)return;var T=DT.data.tick.filter(function(t){return t.is_active&&(DT.ch==="*"||!t.channel_id||t.channel_id===DT.ch)}),sig=JSON.stringify(T.map(function(t){return [t.id,t.message,t.font_size,t.font_color]}));if(soft&&sig===DT.tsig)return;DT.tsig=sig;
+  var fs=T.length?Math.max.apply(null,T.map(function(t){return +t.font_size||50})):40;
+  el.style.height=(Math.min(fs,90)+20)+"px";
+  el.innerHTML='<span class="dtvclk" id="dtv-clk"></span><div class="dtvrun"><div class="dtvtrk" id="dtv-trk">'+(T.length?'⚡ '+T.map(function(t){return '<span style="font-size:'+Math.min(+t.font_size||50,90)+'px;color:'+esc(t.font_color||"#ef4444")+'">'+esc(t.message)+'</span>'}).join('<b class="star">★</b>'):'<span class="dim">Department Display TV — ระบบแสดงผลแผนก</span>')+'</div></div><span class="dtvdate" id="dtv-date"></span>';
+  var trk=$("dtv-trk");if(trk&&T.length){var d=(trk.scrollWidth+window.innerWidth)/150;trk.style.animationDuration=d+"s";trk.classList.add("go")}dtvClock()}
+function dtvClock(){var d=new Date(),c=$("dtv-clk"),t=$("dtv-date");if(c)c.textContent="🕐 "+d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit",second:"2-digit"});if(t)t.textContent=d.toLocaleDateString("th-TH",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}
+/* ---------- ประกาศเสียงตามเวลา ---------- */
+function dtvUnlock(){DT.unlocked=true;try{var a=DT.audio=DT.audio||new Audio();a.src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAAAAA==";a.play().catch(function(){})}catch(e){}try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}
+  var b=document.querySelector(".dtvunlock");if(b)b.remove();var v=document.querySelector("#dtv-main video");if(v){v.muted=false}}
+function dtvPlay(a){return new Promise(function(res){var done=false,fin=function(ok){if(done)return;done=true;clearTimeout(g);res(ok)},g=setTimeout(function(){fin(false)},120000);var v=document.querySelector("#dtv-main video"),vol=v?v.volume:1;if(v)v.volume=.15;var back=function(r){if(v)v.volume=vol;fin(r)};
+  if(a.audio_type==="upload"&&a.audio_url){var p=DT.audio=DT.audio||new Audio();p.onended=function(){back(true)};p.onerror=function(){back(false)};p.src=a.audio_url;p.volume=1;p.play().catch(function(){back(false)});return}
+  if(a.script&&window.speechSynthesis){try{var u=new SpeechSynthesisUtterance(a.script);u.lang="th-TH";var th=speechSynthesis.getVoices().filter(function(x){return /^th/i.test(x.lang)})[0];if(th)u.voice=th;u.rate=.95;u.onend=function(){back(true)};u.onerror=function(){back(false)};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){back(false)}return}back(false)})}
+async function dtvAnnTick(){if(S.tab!=="dtv"||!DT.unlocked||DT.annBusy||!DT.data)return;var d=new Date(),hm=pad(d.getHours())+":"+pad(d.getMinutes()),tm=d.getHours()*60+d.getMinutes(),key0=d.toISOString().slice(0,16);
+  var due=DT.data.ann.filter(function(a){return a.is_active&&((a.schedule_times||[]).indexOf(hm)>=0||(a.repeat_interval>0&&tm%a.repeat_interval===0))&&!DT.played[a.id+"_"+key0]});
+  if(!due.length)return;DT.annBusy=true;try{for(var i=0;i<due.length;i++){DT.played[due[i].id+"_"+key0]=1;await dtvPlay(due[i])}}finally{DT.annBusy=false}}
+document.addEventListener("click",function(ev){var t=ev.target.closest&&ev.target.closest("[data-dtvch],[data-dtvback],[data-dtvfs],[data-dtvunlock]");if(!t)return;var D=t.dataset;
+  if(D.dtvch){DT.ch=D.dtvch;try{localStorage.setItem("aoi-dtv-ch",DT.ch)}catch(e){}renderDtv();return}
+  if(D.dtvback){dtvStop();DT.ch=null;try{localStorage.removeItem("aoi-dtv-ch")}catch(e){}if(document.fullscreenElement)document.exitFullscreen().catch(function(){});renderDtv();return}
+  if(D.dtvfs){if(!document.fullscreenElement)(document.documentElement.requestFullscreen?document.documentElement.requestFullscreen():Promise.resolve()).catch(function(){});else document.exitFullscreen().catch(function(){});return}
+  if(D.dtvunlock){dtvUnlock();return}});
+window.addEventListener("resize",function(){if(S.tab==="dtv"&&DT.ch&&DT.view==="table")dtvTable(true)});
+
+/* ---------- จัดการจอทีวีแผนก ---------- */
+async function renderDtvAdm(){var P=$("dtvadm-box");if(!P)return;if(!S.admin){P.innerHTML=emptyRow("เฉพาะ Admin");return}
+  try{await dtvFetch()}catch(e){P.innerHTML=emptyRow(esc(thErr(e)));return}dtvAdmDraw()}
+function dtvChName(id){if(!id)return "ทุกช่อง";var c=DT.data.ch.filter(function(x){return x.id===id})[0];return c?c.name:"(ช่องถูกลบ)"}
+function dtvAdmDraw(){var P=$("dtvadm-box"),sec=DT.admSec,F=DTF[sec],D=DT.data,cfg=dtvCfg();
+  var tabs=[["ch","📡 ช่อง"],["item","👥 ตารางพนักงาน"],["media","🖼️ สื่อ"],["tick","📣 ข้อความวิ่ง"],["ann","🔊 ประกาศเสียง"],["cfg","⏱️ ความเร็ว"]];
+  var h='<div class="chips dtvtabs">'+tabs.map(function(t){return '<button type="button" class="chipsel'+(sec===t[0]?" on":"")+'" data-dtvsec="'+t[0]+'">'+t[1]+'</button>'}).join("")+'</div>';
+  if(sec==="cfg"){P.innerHTML=h+'<div class="panel dtvform"><h3>⏱️ ความเร็วการแสดงผล</h3><label>แสดงตารางพนักงานนาน (วินาที) ก่อนสลับไปสื่อ<input type="number" id="dtv-tsec" min="5" value="'+cfg.table+'"></label><p class="sub">ตารางแสดงทีละ 8 คน เลื่อนวน 2 รอบแล้วเปลี่ยนหน้าอัตโนมัติ · สื่อแต่ละชิ้นแสดงตามเวลาที่ตั้งในสื่อนั้น</p><button type="button" class="primary" data-dtvcfg="1">💾 บันทึก</button></div>';return}
+  var L=D[sec]||[];if(sec==="item"&&DT.admCh)L=L.filter(function(x){return x.channel_id===DT.admCh});
+  if(sec==="item")L=L.slice().sort(function(a,b){return (+a.performance||0)-(+b.performance||0)});
+  h+='<div class="panel"><div class="headrow"><h3>'+F.n+' <small>('+L.length+')</small></h3><button type="button" class="sm primary" data-dtvnew="1">＋ เพิ่ม</button></div>';
+  if(sec==="item")h+='<div class="dtvimp"><label>ช่อง<select id="dtv-ich"><option value="">ทุกช่อง</option>'+D.ch.map(function(c){return '<option value="'+c.id+'"'+(DT.admCh===c.id?' selected':'')+'>'+esc(c.name)+'</option>'}).join("")+'</select></label><label class="filebtn" data-ico="upload">📥 นำเข้า Excel / CSV (แทนที่ข้อมูลช่องนี้)<input type="file" id="dtv-xls" accept=".xlsx,.xls,.csv" hidden></label><small class="sub">คอลัมน์: รหัสพนักงาน, ชื่อ-นามสกุล, Inspection, 3NN15, 3NN16, รวม, Performance</small></div>';
+  if(DT.edit&&DT.edit.sec===sec)h+=dtvForm(sec,DT.edit.row);
+  h+='<div class="rows">'+(L.length?L.map(function(r){return '<div class="row dtvrow"><div class="l">'+dtvSum(sec,r)+'</div><div class="r"><button type="button" class="sm" data-dtved="'+r.id+'">แก้ไข</button><button type="button" class="sm danger" data-dtvdel="'+r.id+'">ลบ</button></div></div>'}).join(""):emptyRow("ยังไม่มีรายการ"))+'</div></div>';
+  P.innerHTML=h}
+function dtvSum(sec,r){var off=r.is_active===false?' <i class="dtvoff">ปิดอยู่</i>':'';
+  if(sec==="ch")return '<b><span class="dtvdot" style="background:'+esc(r.color)+'"></span>'+esc(r.name)+'</b>'+off+'<small>'+esc(r.description||"")+(r.show_table===false?' · ไม่แสดงตาราง':'')+' · ลำดับ '+r.sort_order+'</small>';
+  if(sec==="item"){var ph=dtvPhoto(r);return (ph?'<img class="dtvav" src="'+esc(ph)+'" alt="">':'')+'<b>'+esc(r.employee_no)+' · '+esc(r.full_name)+'</b>'+off+'<small>'+esc(dtvChName(r.channel_id))+' · Inspection '+(r.inspection==null?"—":num(r.inspection))+' · 3NN15 '+(r.c15==null?"—":r.c15)+' · 3NN16 '+(r.c16==null?"—":r.c16)+' · รวม '+(r.total==null?"—":r.total)+' · '+dtvPerf(r.performance)+'</small>'}
+  if(sec==="media"){var ic={video:"🎬",image_slideshow:"🖼️",text:"💬"}[r.type]||"•",th=r.type==="image_slideshow"&&(r.image_urls||[])[0];return (th?'<img class="dtvav sq" src="'+esc(th)+'" alt="">':'')+'<b>'+ic+' '+esc(r.title)+'</b>'+off+'<small>'+esc(dtvChName(r.channel_id))+' · '+(r.type==="image_slideshow"?(r.image_urls||[]).length+' รูป · ':'')+r.display_duration+' วินาที · ลำดับ '+r.sort_order+'</small>'}
+  if(sec==="tick")return '<b style="color:'+esc(r.font_color)+'">'+esc(r.message)+'</b>'+off+'<small>'+esc(dtvChName(r.channel_id))+' · '+r.font_size+'px'+(r.priority==="urgent"?' · ด่วน':'')+'</small>';
+  if(sec==="ann")return '<b>🔊 '+esc(r.title)+'</b>'+off+'<small>'+(r.audio_type==="upload"?"ไฟล์เสียง":"อ่านข้อความ")+' · '+((r.schedule_times||[]).length?"เวลา "+(r.schedule_times||[]).join(", "):"")+(r.repeat_interval>0?" · ทุก "+r.repeat_interval+" นาที":"")+'</small>'+(r.audio_type==="upload"&&r.audio_url?'<audio controls preload="none" src="'+esc(r.audio_url)+'"></audio>':'');return ""}
+function dtvForm(sec,r){var F=DTF[sec];r=r||{};var chOpt=function(v){return '<option value="">'+(sec==="item"?"— เลือกช่อง —":"ทุกช่อง")+'</option>'+DT.data.ch.map(function(c){return '<option value="'+c.id+'"'+(v===c.id?' selected':'')+'>'+esc(c.name)+'</option>'}).join("")};
+  return '<div class="dtvform panel"><h3>'+(r.id?"✏️ แก้ไข":"＋ เพิ่ม")+' '+F.n+'</h3>'+F.f.map(function(f){var k=f[0],v=r[k]!=null?r[k]:(f[3]!=null&&f[3]!==1?f[3]:""),id="dtvf-"+k;
+    if(f[2]==="bool")return '<label class="qzchk"><input type="checkbox" id="'+id+'"'+(r[k]!=null?(r[k]?' checked':''):(f[3]?' checked':''))+'> '+f[1]+'</label>';
+    if(f[2]==="channel")return '<label>'+f[1]+'<select id="'+id+'">'+chOpt(r[k]||(sec==="item"&&!r.id?DT.admCh:""))+'</select></label>';
+    if(f[2]==="select")return '<label>'+f[1]+'<select id="'+id+'">'+f[4].map(function(o){return '<option value="'+o[0]+'"'+(String(v)===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join("")+'</select></label>';
+    if(f[2]==="textarea")return '<label>'+f[1]+'<textarea id="'+id+'" rows="3">'+esc(v)+'</textarea></label>';
+    if(f[2]==="color")return '<label>'+f[1]+'<input type="color" id="'+id+'" value="'+esc(v||"#ffffff")+'"></label>';
+    if(f[2]==="num")return '<label>'+f[1]+'<input type="number" step="any" id="'+id+'" value="'+esc(v)+'"></label>';
+    if(f[2]==="times")return '<label>'+f[1]+'<input id="'+id+'" value="'+esc((r[k]||[]).join(", "))+'" placeholder="08:00, 12:00, 17:00"></label>';
+    if(f[2]==="images")return '<label>'+f[1]+'<textarea id="'+id+'" rows="2" placeholder="ลิงก์รูป 1 บรรทัดต่อ 1 รูป">'+esc((r[k]||[]).join("\n"))+'</textarea></label><label class="filebtn sm">📷 อัปโหลดรูป<input type="file" accept="image/*" multiple hidden data-dtvup="'+id+'" data-multi="1"></label><div class="dtvthumbs" id="'+id+'-th">'+(r[k]||[]).map(function(u){return '<img src="'+esc(u)+'" alt="">'}).join("")+'</div>';
+    if(f[2]==="image"||f[2]==="video"||f[2]==="audio"){var acc={image:"image/*",video:"video/*",audio:"audio/*"}[f[2]];return '<label>'+f[1]+'<input id="'+id+'" value="'+esc(v)+'" placeholder="ลิงก์ หรือกดอัปโหลด"></label><label class="filebtn sm">⬆️ อัปโหลดไฟล์<input type="file" accept="'+acc+'" hidden data-dtvup="'+id+'"></label>'}
+    return '<label>'+f[1]+'<input id="'+id+'" value="'+esc(v)+'"></label>'}).join("")+
+    '<div class="inline"><button type="button" class="primary" data-dtvsave="1">💾 บันทึก</button><button type="button" data-dtvcancel="1">ยกเลิก</button>'+(sec==="ann"?'<button type="button" data-dtvtest="1">▶️ ทดลองฟัง</button>':'')+'</div><div class="dtvmsg" id="dtv-msg"></div></div>'}
+function dtvRead(sec){var F=DTF[sec],o={},bad=null;F.f.forEach(function(f){var k=f[0],el=$("dtvf-"+k);if(!el)return;var v=f[2]==="bool"?el.checked:el.value;
+  if(f[2]==="num"){v=String(v).trim()===""?(k==="sort_order"||k==="display_duration"||k==="font_size"||k==="title_font_size"||k==="play_interval"||k==="repeat_interval"?(f[3]||0):null):+v;if(v!=null&&isNaN(v))v=null}
+  else if(f[2]==="channel")v=v||null;else if(f[2]==="times")v=String(v).split(/[,\s]+/).map(function(x){var m=x.match(/^(\d{1,2})[:.](\d{2})$/);return m?pad(+m[1])+":"+m[2]:""}).filter(Boolean);
+  else if(f[2]==="images")v=String(v).split(/\n+/).map(function(x){return x.trim()}).filter(Boolean);else if(typeof v==="string")v=v.trim();
+  if(f[3]===1&&(v===""||v==null))bad=f[1];o[k]=v});if(bad)throw new Error("กรอก "+bad);
+  if(sec==="item"&&!o.channel_id)throw new Error("เลือกช่องของพนักงาน");if(sec==="media"&&o.type==="video"&&!o.video_url)throw new Error("ใส่ลิงก์หรืออัปโหลดวิดีโอ");if(sec==="media"&&o.type==="image_slideshow"&&!o.image_urls.length)throw new Error("ใส่รูปอย่างน้อย 1 รูป");
+  if(sec==="ann"&&o.audio_type==="upload"&&!o.audio_url)throw new Error("อัปโหลดไฟล์เสียง");if(sec==="ann"&&o.audio_type==="tts"&&!o.script)throw new Error("พิมพ์ข้อความให้ระบบอ่าน");return o}
+async function dtvUpload(file){if(file.size>104857600)throw new Error("ไฟล์ใหญ่เกิน 100 MB");var ext=((file.name.match(/\.(\w+)$/)||[0,"bin"])[1]).toLowerCase(),path="dtv/"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
+  var up=await db.storage.from("tv-media").upload(path,file,{contentType:file.type||"application/octet-stream",upsert:false});if(up.error)throw up.error;return db.storage.from("tv-media").getPublicUrl(path).data.publicUrl}
+function dtvNum(x){if(x==null||x==="")return null;var n=parseFloat(String(x).replace(/[,%\s]/g,""));return isNaN(n)?null:n}
+async function dtvImport(file){var ch=$("dtv-ich").value;if(!ch){toast("เลือกช่องก่อนนำเข้า");return}if(!window.XLSX){toast("ตัวอ่าน Excel ยังโหลดไม่เสร็จ ลองใหม่");return}
+  var wb=XLSX.read(await file.arrayBuffer(),{type:"array"}),A=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:""}),h=-1;
+  for(var i=0;i<Math.min(A.length,15);i++)if(A[i].some(function(c){return /รหัส/.test(String(c))})){h=i;break}if(h<0){toast("ไม่พบหัวคอลัมน์ รหัสพนักงาน");return}
+  var H=A[h].map(function(c){return String(c).trim()}),col=function(re){for(var j=0;j<H.length;j++)if(re.test(H[j]))return j;return -1};
+  var cn=col(/รหัส/),cm=col(/ชื่อ/),ci=col(/^inspection/i),c5=col(/3NN15/i),c6=col(/3NN16/i),ct=col(/^รวม|total/i),cp=col(/perf/i),rows=[];
+  for(var r=h+1;r<A.length;r++){var x=A[r],no=String(x[cn]==null?"":x[cn]).replace(/\.0+$/,"").trim(),nm=cm>=0?String(x[cm]||"").trim():"";if(!no&&!nm)continue;var pf=cp>=0?dtvNum(x[cp]):null;if(pf!=null&&pf<=1&&String(x[cp]).indexOf("%")<0)pf=pf*100;
+    var old=DT.data.item.filter(function(o){return o.channel_id===ch&&o.employee_no===no})[0];
+    rows.push({channel_id:ch,employee_no:no,full_name:nm,photo_url:old?old.photo_url:"",inspection:ci>=0?dtvNum(x[ci]):null,c15:c5>=0?dtvNum(x[c5]):null,c16:c6>=0?dtvNum(x[c6]):null,total:ct>=0?dtvNum(x[ct]):null,performance:pf==null?null:Math.round(pf*100)/100,sort_order:rows.length,is_active:true})}
+  if(!rows.length){toast("ไม่พบข้อมูลในไฟล์");return}
+  await q(db.from("dtv_items").delete().eq("channel_id",ch));await q(db.from("dtv_items").insert(rows));toast("นำเข้า "+rows.length+" คนแล้ว (รูปเดิมของรหัสเดียวกันยังอยู่)");await renderDtvAdm()}
+document.addEventListener("change",async function(ev){var t=ev.target;if(!t)return;
+  if(t.id==="dtv-ich"){DT.admCh=t.value;dtvAdmDraw();return}
+  if(t.id==="dtv-xls"&&t.files[0]){var f=t.files[0];t.value="";try{await dtvImport(f)}catch(e){toast(thErr(e))}return}
+  if(t.dataset&&t.dataset.dtvup&&t.files.length){var target=$(t.dataset.dtvup),fs=[].slice.call(t.files),msg=$("dtv-msg");t.value="";try{for(var i=0;i<fs.length;i++){if(msg)msg.textContent="⏳ กำลังอัปโหลด "+(i+1)+"/"+fs.length+" · "+fs[i].name;var u=await dtvUpload(fs[i]);if(t.dataset.multi){target.value=(target.value.trim()?target.value.trim()+"\n":"")+u;var th=$(t.dataset.dtvup+"-th");if(th)th.insertAdjacentHTML("beforeend",'<img src="'+esc(u)+'" alt="">')}else target.value=u}if(msg)msg.textContent="✅ อัปโหลดแล้ว อย่าลืมกดบันทึก"}catch(e){if(msg)msg.textContent="❌ "+thErr(e)}}});
+document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-dtvsec],[data-dtvnew],[data-dtved],[data-dtvdel],[data-dtvsave],[data-dtvcancel],[data-dtvcfg],[data-dtvtest]");if(!t)return;var D=t.dataset,sec=DT.admSec,F=DTF[sec];
+  if(D.dtvsec){DT.admSec=D.dtvsec;DT.edit=null;dtvAdmDraw();return}
+  if(D.dtvnew){DT.edit={sec:sec,row:null};dtvAdmDraw();window.scrollTo(0,0);return}
+  if(D.dtved){DT.edit={sec:sec,row:(DT.data[sec]||[]).filter(function(x){return x.id===D.dtved})[0]};dtvAdmDraw();window.scrollTo(0,0);return}
+  if(D.dtvcancel){DT.edit=null;dtvAdmDraw();return}
+  if(D.dtvdel){if(!armed(t,"แตะอีกครั้ง เพื่อลบ"))return;try{await q(db.from(F.t).delete().eq("id",D.dtvdel));toast("ลบแล้ว");await renderDtvAdm()}catch(e){toast(thErr(e))}return}
+  if(D.dtvsave){var msg=$("dtv-msg");t.disabled=true;try{var o=dtvRead(sec),id=DT.edit&&DT.edit.row&&DT.edit.row.id;if(id)await q(db.from(F.t).update(o).eq("id",id));else await q(db.from(F.t).insert(o));DT.edit=null;toast("บันทึกแล้ว");await renderDtvAdm()}catch(e){if(msg)msg.textContent="❌ "+thErr(e)}t.disabled=false;return}
+  if(D.dtvtest){try{var a=dtvRead("ann");DT.unlocked=true;await dtvPlay(a)}catch(e){toast(thErr(e))}return}
+  if(D.dtvcfg){var v=Math.max(5,+$("dtv-tsec").value||30);try{var cur=(S.settings&&S.settings.dtv_cfg)||{};cur=Object.assign({},cur,{table_secs:v});await q(db.from("app_settings").upsert({key:"dtv_cfg",value:cur}));S.settings.dtv_cfg=cur;toast("บันทึกแล้ว")}catch(e){toast(thErr(e))}return}});
 
 /* ---------- หน้าจอ TV ---------- */
 var TV={tick:0,data:0};
@@ -8586,10 +8806,10 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-ot
   if(t.id==="ot-rsave"){var R={work:{},hol_monthly:{},hol_daily:{},sunday:$("ot-sun").checked};document.querySelectorAll("[data-otr]").forEach(function(i){var p=i.dataset.otr.split(":"),v=parseFloat(i.value);if(v>0)R[p[0]][p[1]]=v});t.disabled=true;
     q(db.from("app_settings").upsert({key:"ot_rules",value:R})).then(function(){S.settings.ot_rules=R;t.disabled=false;toast("บันทึกกฎ OT แล้ว — ใช้กับการสแกนครั้งต่อไป")},function(e){t.disabled=false;toast(thErr(e))});return}});
 
-var RENDER={quiz:renderQuiz,locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+var RENDER={dtv:renderDtv,dtvadm:renderDtvAdm,quiz:renderQuiz,locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
+var TABS=["quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm","dtv","dtvadm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab!=="quiz"&&!QZ.gate){qzMusOff(1);qzThemeOff()}if(tab!=="quiz"){mzRtClose();if(document.body.classList.contains("mzfull-on"))mzFullOff()}if(tab==="quiz")QZ.stopped=0;
@@ -8598,8 +8818,8 @@ function show(tab){
   if(tab==="emp"&&!S.mgr&&!can("emp"))tab="home";
   var TP={att:"att_check",attqr:"att_check",attdash:"att_view",atthist:"att_view",tv:"att_view",deduct:"deduct",dedrep:"deduct",empmgr:"emp",leaveappr:"leave_view",leaveadmin:"leave_admin"};
   if(TP[tab]&&!can(TP[tab]))tab=tab.indexOf("leave")===0?"myleave":"home";
-  if(tab!=="tv")document.body.classList.remove("tvmode");
-  if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms"||tab==="rewardadm"||tab==="usage"||tab==="locmap")&&!S.admin)tab="home";
+  if(tab!=="tv"&&tab!=="dtv")document.body.classList.remove("tvmode");if(tab!=="dtv"&&typeof dtvStop==="function")dtvStop();
+  if((tab==="telegram"||tab==="kpis"||tab==="announce"||tab==="perms"||tab==="rewardadm"||tab==="usage"||tab==="locmap"||tab==="dtv"||tab==="dtvadm")&&!S.admin)tab="home";
   if(tab==="chat"){$("chat-dot").hidden=true;$("chat-dot2").hidden=true}
   var wasFarm=S.tab==="farm";S.tab=tab;logUse(tab);document.body.classList.toggle("farm-full",tab==="farm");if(tab==="farm"&&!wasFarm)fmEnter(true);if(wasFarm&&tab!=="farm")fmEnter(false);
   TABS.forEach(function(t){$("v-"+t).hidden=t!==tab});
