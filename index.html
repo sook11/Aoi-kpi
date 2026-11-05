@@ -4743,12 +4743,12 @@ document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev
 window.addEventListener("resize",function(){if(HMZ.cv&&HMZ.cv.isConnected)mzCanvas()});
 var QZL=["ก","ข","ค","ง"],QZLL=[["swap","เปลี่ยนข้อ","🔄"]];
 function qzEl(){return QZ.gate?$("qzg-stage"):$("qz-stage")}
-async function renderQuiz(){if(QZ.gate)return;try{QZ.st=await q(db.rpc("quiz_today"));var c0=QZ.st.cfg||{};if(QZ.st.daily_done&&c0.free_on!==false&&(QZ.st.bank||0)>=5){qzStats();if(S.admin)qzAdmin();else $("qz-adm").hidden=true;renderMaze();return}}catch(e){$("qz-stage").innerHTML=emptyRow(esc(thErr(e)));return}mzRtClose();$("qz-stage").classList.remove("mzstage");QZ.sel=null;QZ.aud=null;QZ.phone=null;QZ.rev=null;QZ.lock=0;QZ.lastQ=null;qzDraw();qzStats();if(S.admin)qzAdmin();else $("qz-adm").hidden=true}
+async function renderQuiz(){if(QZ.gate)return;qzThemeSync();try{QZ.st=await q(db.rpc("quiz_today"));var c0=QZ.st.cfg||{};if(QZ.st.daily_done&&c0.free_on!==false&&(QZ.st.bank||0)>=5){qzStats();if(S.admin)qzAdmin();else $("qz-adm").hidden=true;renderMaze();return}}catch(e){$("qz-stage").innerHTML=emptyRow(esc(thErr(e)));return}mzRtClose();$("qz-stage").classList.remove("mzstage");QZ.sel=null;QZ.aud=null;QZ.phone=null;QZ.rev=null;QZ.lock=0;QZ.lastQ=null;qzDraw();qzStats();if(S.admin)qzAdmin();else $("qz-adm").hidden=true}
 function qzLadder(s){var L=(s.cfg&&s.cfg.ladder)||[20,40,60,80,100],R=s.res||[];return '<div class="qzlad">'+L.map(function(v,i){return {i:i,v:v}}).reverse().map(function(x){var r=R[x.i],cls=r===true?"won":r===false?"miss":s.status==="playing"&&x.i===s.step?"cur":"";return '<div class="'+cls+'"><span>'+(x.i+1)+(r===true?" ✓":r===false?" ✗":"")+'</span><b>'+fmc()+' '+num(x.v)+'</b></div>'}).join("")+'<small>ถูกครบ 5 ข้อ โบนัส +'+num((s.cfg&&s.cfg.bonus)||0)+'</small></div>'}
 function qzCoin(){return '<div class="qz3d"><div class="qzc3">'+[0,1,2,3,4,5,6].map(function(i){return '<i style="--z:'+(i-3)*2+'px"></i>'}).join("")+'<b class="f">🏆</b><b class="k">H.P.E</b></div><span class="qzpod"></span></div>'}
 function qzFx(){return '<div class="qzfx" aria-hidden="true"><i class="qb1"></i><i class="qb2"></i><i class="qb3"></i><b class="qst"></b></div><button type="button" class="qzsnd" data-qz="snd" title="เปิด/ปิดเสียง">'+(QZ.snd?"🔊":"🔇")+'</button>'}
 var QZTIP='💡 เกมนี้อยู่ที่ <b>ฟาร์ม → 🏆 แชมป์</b> หรือ <b>เมนู → 🏆 H.P.E Champion</b> — เข้าไปดูอันดับ สถิติ และใช้เหรียญที่ได้ในฟาร์มแลกรางวัล';
-function qzDraw(){var s=QZ.st||{},P=qzEl();if(!P)return;clearInterval(QZ.tm);var secs=+(s.cfg&&s.cfg.secs)||0,tl=secs?"ข้อละ "+secs+" วินาที":"ไม่จำกัดเวลา";
+function qzDraw(){var s=QZ.st||{},P=qzEl();if(!P)return;qzThemeSync();clearInterval(QZ.tm);var secs=+(s.cfg&&s.cfg.secs)||0,tl=secs?"ข้อละ "+secs+" วินาที":"ไม่จำกัดเวลา";
   if(!s.status){qzMusOff();P.innerHTML=qzFx()+'<div class="qzwelcome">'+qzCoin()+'<div class="qzlogo"><b>H.P.E Champion</b><small>'+(QZ.gate?"คำถามประจำวัน — ตอบให้ครบ 5 ข้อก่อนเข้าใช้งานแอป":"ตอบคำถามจากคู่มือการทำงาน")+'</small></div><ul><li>วันละ '+((s.cfg&&s.cfg.per_day)||5)+' ข้อ สุ่มใหม่ทุกวัน · '+tl+'</li><li>ต้องตอบให้ครบ 5 ข้อ · ตอบถูกได้เหรียญฟาร์มตามขั้นบันได · ตอบผิดไม่เป็นไร ไปข้อต่อไปได้</li><li>ถูกครบ 5 ข้อ รับโบนัส +'+num((s.cfg&&s.cfg.bonus)||0)+'</li><li>🔄 เปลี่ยนข้อได้รอบละ 1 ครั้ง (ถ้าไม่แน่ใจข้อไหน)</li>'+(s.cfg&&s.cfg.free_on===false?'':'<li>🔁 ครบรอบประจำวันแล้ว เข้ามาเล่นต่อเนื่องได้เรื่อย ๆ กด ⏹ หยุดเล่นเมื่อไหร่ก็ได้ (ถูกข้อละ '+num(s.cfg&&s.cfg.free_per!=null?s.cfg.free_per:20)+' เหรียญ สูงสุดวันละ '+num(s.cfg&&s.cfg.free_cap!=null?s.cfg.free_cap:300)+')</li>')+'</ul>'+qzLadder(s)+(s.bank>=5?'<button type="button" class="primary qzgo" data-qz="start">▶ '+(QZ.gate?"เริ่มตอบคำถาม":"เริ่มเล่นวันนี้")+'</button>':'<p class="sub">ยังไม่มีคำถามในระบบ'+(S.admin?' — นำเข้าคำถามด้านล่าง':' — รอ Admin เพิ่มคำถาม')+'</p>')+'</div>';return}
   if(s.round>0&&!s.gate&&(s.status!=="playing"||QZ.rev&&QZ.rev.end)){qzMusOff();var R2=s.res||[],n2=R2.filter(function(x){return x}).length,cap2=s.cfg&&s.cfg.free_cap!=null?s.cfg.free_cap:300;
     P.innerHTML=qzFx()+'<div class="qzend">'+qzCoin()+'<div class="qzlogo"><b>หยุดเล่นแล้ว · ตอบ '+R2.length+' ข้อ ถูก '+n2+'</b><small>เล่นต่อเนื่อง · ได้ '+fmc()+' '+num(s.coins)+' เหรียญ · ถูกติดกันสูงสุด 🔥'+qzBest(R2)+'</small></div>'+
@@ -4790,7 +4790,13 @@ function qzNz(t,d,v,ft,fq,dest,fq2){var c=FA.ctx;if(!QZ.nbuf){var n=c.sampleRate
   s.connect(f);f.connect(g);g.connect(dest);s.start(t,Math.random()*.4);s.stop(t+d+.08)}
 function qzOsc(f,t,d,type,v,dest,f2,att){var c=FA.ctx,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+Math.min(d,.12));
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+(att||.004));g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest);o.start(t);o.stop(t+d+.05)}
-function qzMusOn(lv){var c=qzA();if(!c||!FA.out)return;lv=Math.max(0,Math.min(4,lv|0));if(QZ.mus&&QZ.mus.lv===lv)return;qzMusOff(1);
+/* อัปเดต 195: เพลงประจำเกม "ก้าวไปด้วยกัน" — เล่นเมื่อเปิดหน้า H.P.E Champion (หน้าแรก/สรุป) · ตอนตอบคำถาม/เขาวงกตใช้ดนตรีเกมแทน */
+function qzThemeVis(){var v=$("v-quiz");return !!(QZ.gate||(v&&!v.hidden))}
+function qzThemeOff(){var a=QZ.th;if(a&&!a.paused){try{a.pause()}catch(e){}}}
+function qzThemeOn(){if(!QZ.snd||QZ.mus||!qzThemeVis())return;var a=QZ.th;if(!a){a=QZ.th=new Audio("music/music/hpe-theme.mp3");a.loop=true;a.volume=.5;a.preload="auto"}
+  if(!a.paused)return;var p=a.play();if(p&&p.catch)p.catch(function(){if(QZ.thArm)return;QZ.thArm=1;var go=function(){QZ.thArm=0;document.removeEventListener("pointerdown",go,true);qzThemeOn()};document.addEventListener("pointerdown",go,true)})}
+function qzThemeSync(){setTimeout(function(){if(QZ.mus||!QZ.snd||!qzThemeVis())qzThemeOff();else qzThemeOn()},60)}
+function qzMusOn(lv){qzThemeOff();var c=qzA();if(!c||!FA.out)return;lv=Math.max(0,Math.min(4,lv|0));if(QZ.mus&&QZ.mus.lv===lv)return;qzMusOff(1);
   var t0=c.currentTime,comp=c.createDynamicsCompressor();comp.threshold.value=-20;comp.knee.value=6;comp.ratio.value=5;comp.attack.value=.003;comp.release.value=.12;
   var g=c.createGain();g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(1.25,t0+.5);g.connect(comp);comp.connect(FA.out);
   var lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.value=700+lv*150;lp.Q.value=6;lp.connect(g);
@@ -4819,7 +4825,7 @@ async function qzGateOpen(){var G=$("qz-gate");if(!G)return;QZ.gate=1;G.hidden=f
   try{QZ.st=await q(db.rpc(QZ.gmode==="sess"?"quiz_gate_start":"quiz_today"))}catch(e){QZ.gate=0;G.hidden=true;document.body.classList.remove("qzlock");return}qzDraw()}
 /* กลับเข้าแอปหลังพับไว้เกิน 10 นาที — ถ้าข้ามวันแล้วยังไม่ได้ตอบรอบประจำวัน ให้ตอบก่อน */
 (function(){var hid=0;document.addEventListener("visibilitychange",function(){if(document.hidden){hid=Date.now();return}if(!hid||Date.now()-hid<6e5)return;hid=0;try{if(!S.me||S.me.role!=="employee"||QZ.gate)return;QZ.sessDone=0;q(db.rpc("quiz_me",{p_from:today().slice(0,8)+"01",p_to:today()})).then(function(m){qzGateCheck(m)},function(){})}catch(e){}})})();
-function qzGateClose(){var s=QZ.st||{};if(!s.status||s.status==="playing")return;QZ.gate=0;QZ.sessDone=1;QZ.gmode=null;qzMusOff();$("qz-gate").hidden=true;document.body.classList.remove("qzlock");ME.t=0;try{renderMeCard()}catch(e){}}
+function qzGateClose(){var s=QZ.st||{};if(!s.status||s.status==="playing")return;QZ.gate=0;QZ.sessDone=1;QZ.gmode=null;qzMusOff();qzThemeSync();$("qz-gate").hidden=true;document.body.classList.remove("qzlock");ME.t=0;try{renderMeCard()}catch(e){}}
 /* อัปเดต 192: พนักงานตอบ 5 ข้อวันละครั้ง (รอบประจำวัน) ก่อนเข้าใช้งาน · หัวหน้างาน/Admin ไม่ต้อง */
 function qzGateCheck(m){try{if(!m||m.role!=="employee"||QZ.gate)return;var td=m.today||{},c=td.cfg||{};if(c.gate===false)return;if(!td.status&&!(td.bank>=5))return;
   var daily=!(td.round>0||td.daily_done)&&!(td.status&&td.status!=="playing");if(!daily)return;QZ.gmode="daily";
@@ -4828,7 +4834,7 @@ document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev
   if(D.qzans!=null){if(QZ.rev||QZ.busy||QZ.lock)return;QZ.sel=+D.qzans;qzSnd("sel");qzDraw();return}
   if(D.qz==="unsel"){QZ.sel=null;qzDraw();return}
   if(D.qz==="lock"){if(QZ.sel==null)return;qzSend(QZ.sel);return}
-  if(D.qz==="snd"){QZ.snd=!QZ.snd;try{localStorage.setItem("aoi-qz-snd",QZ.snd?"1":"0")}catch(e){}if(!QZ.snd)qzMusOff(1);t.textContent=QZ.snd?"🔊":"🔇";var s0=QZ.st||{};if(QZ.snd&&s0.status==="playing"&&!QZ.rev&&!QZ.lock)qzMusOn(s0.step);return}
+  if(D.qz==="snd"){QZ.snd=!QZ.snd;try{localStorage.setItem("aoi-qz-snd",QZ.snd?"1":"0")}catch(e){}if(!QZ.snd)qzMusOff(1);qzThemeSync();t.textContent=QZ.snd?"🔊":"🔇";var s0=QZ.st||{};if(QZ.snd&&s0.status==="playing"&&!QZ.rev&&!QZ.lock)qzMusOn(s0.step);return}
   if(D.qz==="gateclose"){qzGateClose();return}
   if(D.qz==="stop"){if(QZ.busy||QZ.lock)return;t.disabled=true;try{QZ.st=await q(db.rpc("quiz_stop"));QZ.stopped=1;QZ.rev={end:1};QZ.sel=null;qzMusOff();qzSnd("ll");qzDraw();qzStats();ME.t=0}catch(e){toast(thErr(e));t.disabled=false}return}
   if(D.qz==="again"){t.disabled=true;faUnlock&&faUnlock();qzMusOff(1);QZ.rev=null;QZ.sel=null;renderMaze();return}/* อัปเดต 173: เล่นต่อ = เข้าเขาวงกต */
@@ -8579,7 +8585,7 @@ function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};ret
 var TABS=["quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
-  if(tab!=="quiz"&&!QZ.gate)qzMusOff(1);if(tab!=="quiz"){mzRtClose();if(document.body.classList.contains("mzfull-on"))mzFullOff()}if(tab==="quiz")QZ.stopped=0;
+  if(tab!=="quiz"&&!QZ.gate){qzMusOff(1);qzThemeOff()}if(tab!=="quiz"){mzRtClose();if(document.body.classList.contains("mzfull-on"))mzFullOff()}if(tab==="quiz")QZ.stopped=0;
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
   if(["staff","targets","allowmgr","admin","daily","monthly","top"].indexOf(tab)>=0&&!S.mgr)tab="home";
   if(tab==="emp"&&!S.mgr&&!can("emp"))tab="home";
