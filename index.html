@@ -6699,11 +6699,14 @@ var FKFISH=["fk_fish","fk_tide","fk_koi","fk_bluefin","fk_tuna","fk_shad","fk_be
 /* อัปเดต 206: นางฟ้า/เทวดาบินในแผนที่ (ฟาร์ม + บึงตกปลา) */
 var FFLY=["angelwb","seraph","fairy","dawn","seraphina","sylvana","guardian"];
 function fm3FlyMk(par,list,n,o){var out=[],st=Math.floor(Math.random()*list.length);for(var i=0;i<n;i++)(function(i){var k=list[(st+i*2)%list.length];
-  fm3File("c_"+k).then(function(G){var nd=G.scene.getObjectByName("K_c_"+k);if(!nd)return;var m=nd.clone();m.traverse(function(x){if(x.isMesh){x.castShadow=false;x.frustumCulled=false;x.userData.shared=1}});
+  fm3File("c_"+k).then(function(G){var nd=G.scene.getObjectByName("K_c_"+k);if(!nd)return;var m=nd.clone(),WU={uPh:{value:0},uAmp:{value:0},uWA:{value:.55},uWT:{value:0}};m.traverse(function(x){if(x.isMesh){x.castShadow=false;x.frustumCulled=false;fm3WalkMat(x,WU)}});
     m.rotation.y=Math.PI/2;var b=new THREE.Group();b.add(m);var w=new THREE.Group();w.add(b);w.scale.setScalar((k==="guardian"?.75:1)*o.sc);
-    w.userData={a:Math.random()*6.28,r:o.r0+Math.random()*(o.r1-o.r0),h:o.h0+Math.random()*(o.h1-o.h0),sp:(.07+Math.random()*.06)*(i%2?1:-1),k:Math.random()*9,cx:o.cx||0,cz:o.cz||0,ex:o.ex||1,b:b};par.add(w);out.push(w)},function(){})})(i);return out}
+    w.userData={a:Math.random()*6.28,r:o.r0+Math.random()*(o.r1-o.r0),h:o.h0+Math.random()*(o.h1-o.h0),sp:(.07+Math.random()*.06)*(i%2?1:-1),k:Math.random()*9,cx:o.cx||0,cz:o.cz||0,ex:o.ex||1,b:b,wu:WU,wp:0};par.add(w);out.push(w)},function(){})})(i);return out}
 function fm3FlyStep(L,t,dt){(L||[]).forEach(function(w){var U=w.userData;U.a+=U.sp*dt;var r=U.r*(1+Math.sin(t*.13+U.k)*.18),x=U.cx+Math.cos(U.a)*r*U.ex,z=U.cz+Math.sin(U.a)*r,y=U.h+Math.sin(t*.9+U.k)*.6;
-  var dx=-Math.sin(U.a)*r*U.ex*Math.sign(U.sp),dz=Math.cos(U.a)*r*Math.sign(U.sp);w.position.set(x,y,z);w.rotation.y=Math.atan2(-dz,dx);U.b.rotation.x=Math.sin(t*1.4+U.k)*.09;U.b.rotation.z=-.2-Math.sin(t*.7+U.k)*.06;U.b.position.y=Math.sin(t*2.2+U.k)*.14})}
+  var dx=-Math.sin(U.a)*r*U.ex*Math.sign(U.sp),dz=Math.cos(U.a)*r*Math.sign(U.sp);w.position.set(x,y,z);w.rotation.y=Math.atan2(-dz,dx);U.b.rotation.x=Math.sin(t*1.4+U.k)*.09;U.b.rotation.z=-.2-Math.sin(t*.7+U.k)*.06;
+  /* กระพือปีก: ช่วงร่อน (ปีกกางนิ่ง) สลับกับช่วงกระพือแรง · ตัวลอยขึ้นตามจังหวะกระพือ */
+  var gl=Math.sin(t*.35+U.k),amp=gl>.55?.12:.55,fq=gl>.55?2.2:7.5;U.wp+=dt*fq;if(U.wu){U.wu.uWA.value+=(amp-U.wu.uWA.value)*Math.min(1,dt*3);U.wu.uWT.value=U.wp}
+  U.b.position.y=Math.sin(t*2.2+U.k)*.1-Math.sin(U.wp)*.06*(amp/.55)})}
 function fk3ExtraStep(t,dt){var X=FK3.X;if(!X)return;fm3FlyStep(X.fly,t,dt);(X.lotus||[]).forEach(function(o){o.position.y=.02+Math.sin(t*1.1+o.userData.lotus)*.015;o.rotation.z=Math.sin(t*.8+o.userData.lotus)*.012});
   X.fish.forEach(function(o){var U=o.userData;U.a+=U.sp*dt;var x=Math.cos(U.a)*FK3RX*U.r+Math.sin(t*.4+U.k)*.6,z=Math.sin(U.a)*FK3RZ*U.r;o.position.set(x,U.y+Math.sin(t*1.7+U.k)*.03,z);
     o.rotation.y=Math.atan2(-Math.sin(U.a)*FK3RX*U.sp,Math.cos(U.a)*FK3RZ*U.sp)+Math.sin(t*9+U.k)*.12;o.rotation.z=Math.sin(t*3+U.k)*.08});
@@ -7875,15 +7878,23 @@ function fm3Admin(V){fm3File("admin").then(function(G){if(!V.g.parent||V.kk)retu
 function fm3Baker(V){fm3StatChar(V,"admin2","K_admin2",2.35)}
 function fm3ChPpl(V,i){var k=FCH[(i||0)%FCH.length];fm3StatChar(V,"c_"+k,"K_c_"+k,2.2)}
 /* อัปเดต 170: ตัวละครชิบิ (โมเดลชิ้นเดียว) — ก้าวขา/แกว่งแขนด้วย vertex shader + ยกแสงที่หน้า/ตัวไม่ให้มืดด่าง */
-function fm3WalkMat(m,u){var g=m.geometry;if(!g.boundingBox)g.computeBoundingBox();var B=g.boundingBox,H=B.max.y-B.min.y,cx=(B.min.x+B.max.x)/2,cz=(B.min.z+B.max.z)/2;
+/* อัปเดต 207: ปีกขยับจริง — หาปีกจากรูปทรง (ส่วนที่อยู่หลังลำตัว เหนือเอว ห่างจากแนวกระดูกสันหลัง) แล้วกระพือขึ้นลง + ตีไปหน้าหลัง */
+function fm3WingGeo(g){if(g.userData.wing)return g.userData.wing;if(!g.boundingBox)g.computeBoundingBox();var B=g.boundingBox,H=B.max.y-B.min.y,P=g.attributes.position,sz=0,n=0,sx=0;
+  for(var i=0;i<P.count;i+=3){var y=P.getY(i);if(y<B.min.y+H*.35){sz+=P.getZ(i);sx+=P.getX(i);n++}}var bz=n?sz/n:(B.min.z+B.max.z)/2,bx=n?sx/n:(B.min.x+B.max.x)/2;
+  return g.userData.wing={bx:bx,bz:bz,H:H,y0:B.min.y}}
+function fm3WalkMat(m,u){var g=m.geometry;if(!g.boundingBox)g.computeBoundingBox();var B=g.boundingBox,H=B.max.y-B.min.y,cx=(B.min.x+B.max.x)/2,cz=(B.min.z+B.max.z)/2,W=fm3WingGeo(g);
   var mt=m.material.clone();mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=.38;mt.roughness=1;mt.metalness=0;
   u.uHip={value:B.min.y+H*.22};u.uArm0={value:B.min.y+H*.27};u.uArm1={value:B.min.y+H*.5};u.uArmX={value:H*.15};u.uCx={value:cx};u.uCz={value:cz};
-  mt.onBeforeCompile=function(sh){for(var k in u)sh.uniforms[k]=u[k];sh.vertexShader="uniform float uPh,uAmp,uHip,uArm0,uArm1,uArmX,uCx,uCz;\n"+sh.vertexShader.replace("#include <begin_vertex>",
-    "#include <begin_vertex>\nfloat sd=transformed.x<uCx?-1.:1.;float wz=transformed.z<uCz-uArmX*.45?.3:1.;if(transformed.y<uHip){float a=sin(uPh)*uAmp*sd*wz;float d=uHip-transformed.y;transformed.z+=d*sin(a);transformed.y=uHip-d*cos(a)+max(0.,sin(uPh*sd))*uAmp*d*.25;}else if(transformed.y<uArm1&&abs(transformed.x-uCx)>uArmX){float a=-sin(uPh)*uAmp*.8*sd;float d=clamp((uArm1-transformed.y)/(uArm1-uArm0),0.,1.)*(uArm1-uArm0);transformed.z+=d*sin(a);}")};
-  mt.customProgramCacheKey=function(){return "fmwalk"};m.material=mt}
-function fm3StatChar(V,file,node,scl){fm3File(file).then(function(G){if(!V.g.parent||V.kk)return;var n=G.scene.getObjectByName(node);if(!n)return;var o=n.clone(),WU=/^c_/.test(file)?{uPh:{value:0},uAmp:{value:0}}:null;o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.frustumCulled=false;if(WU){m.receiveShadow=false;fm3WalkMat(m,WU)}}});
+  if(!u.uWA)u.uWA={value:0};if(!u.uWT)u.uWT={value:0};u.uWx={value:W.bx};u.uWzc={value:W.bz-H*.035};u.uWzw={value:H*.06};u.uWl0={value:H*.2};u.uWh0={value:W.y0+H*.6};u.uWh1={value:W.y0+H*.7};u.uWy0={value:W.y0+H*.4};u.uWy1={value:W.y0+H*.55};u.uWpy={value:W.y0+H*.68};u.uWx0={value:H*.03};u.uWxw={value:H*.14};
+  mt.onBeforeCompile=function(sh){for(var k in u)sh.uniforms[k]=u[k];sh.vertexShader="uniform float uPh,uAmp,uHip,uArm0,uArm1,uArmX,uCx,uCz,uWA,uWT,uWx,uWzc,uWzw,uWy0,uWy1,uWpy,uWx0,uWxw,uWl0,uWh0,uWh1;\n"+sh.vertexShader.replace("#include <begin_vertex>",
+    "#include <begin_vertex>\nfloat wdx=transformed.x-uWx,wsd=wdx<0.?-1.:1.;float wm=uWA>0.?max(clamp((uWzc-transformed.z)/uWzw,0.,1.)*smoothstep(uWy0,uWy1,transformed.y)*clamp((abs(wdx)-uWx0)/uWxw,0.,1.),clamp((abs(wdx)-uWl0)/uWxw,0.,1.)*smoothstep(uWh0,uWh1,transformed.y)):0.;bool isW=wm>.02;"+
+    "if(isW){float th=uWA*sin(uWT)*wm*wsd;float dy=transformed.y-uWpy;float c=cos(th),s=sin(th);float nx=wdx*c-dy*s;transformed.y=uWpy+wdx*s+dy*c;float b=-uWA*.55*cos(uWT)*wm*wsd;float dz=transformed.z-uWzc;transformed.z=uWzc+nx*sin(b)+dz*cos(b);transformed.x=uWx+nx*cos(b)-dz*sin(b);}"+
+    "float sd=transformed.x<uCx?-1.:1.;float wz=transformed.z<uCz-uArmX*.45?.3:1.;if(transformed.y<uHip){float a=sin(uPh)*uAmp*sd*wz;float d=uHip-transformed.y;transformed.z+=d*sin(a);transformed.y=uHip-d*cos(a)+max(0.,sin(uPh*sd))*uAmp*d*.25;}else if(!isW&&transformed.y<uArm1&&abs(transformed.x-uCx)>uArmX){float a=-sin(uPh)*uAmp*.8*sd;float d=clamp((uArm1-transformed.y)/(uArm1-uArm0),0.,1.)*(uArm1-uArm0);transformed.z+=d*sin(a);}")};
+  mt.customProgramCacheKey=function(){return "fmwalk2"};m.material=mt}
+var FWCH={angelwb:1,seraph:1,fairy:1,dawn:1,seraphina:1,sylvana:1,guardian:1,solarwing:1};
+function fm3StatChar(V,file,node,scl){fm3File(file).then(function(G){if(!V.g.parent||V.kk)return;var n=G.scene.getObjectByName(node);if(!n)return;var o=n.clone(),WU=/^c_/.test(file)?{uPh:{value:0},uAmp:{value:0},uWA:{value:FWCH[file.slice(2)]?.22:0},uWT:{value:0}}:null;o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.frustumCulled=false;if(WU){m.receiveShadow=false;fm3WalkMat(m,WU)}}});
   var w=new THREE.Group(),b=new THREE.Group();b.add(o);o.rotation.y=Math.PI/2;w.add(b);w.scale.setScalar(scl);V.g.add(w);if(V.m)V.m.visible=false;
-  var K={o:o,adm:2,walk:0,t:0,lt:performance.now()/1000,A:{}};K.mx={update:function(dt){K.t+=dt;var k=Math.min(1,dt*10);if(WU){WU.uAmp.value+=((K.walk?.46:0)-WU.uAmp.value)*Math.min(1,dt*8);if(K.walk)WU.uPh.value=K.t*9}if(K.walk){var ph=K.t*9;b.position.y=Math.abs(Math.sin(ph))*(WU?.03:.045);b.rotation.x=WU?0:Math.sin(ph)*.09;b.rotation.z=WU?Math.sin(ph)*.04:0}else{b.position.y+=(Math.sin(K.t*2)*.006-b.position.y)*k;b.rotation.x*=1-k;b.rotation.z=Math.sin(K.t*1.3)*.025}}};V.kk=K},function(){})}
+  var K={o:o,adm:2,walk:0,t:0,lt:performance.now()/1000,A:{}};K.mx={update:function(dt){K.t+=dt;var k=Math.min(1,dt*10);if(WU){WU.uWT.value=K.t*(K.walk?6:3.2);WU.uAmp.value+=((K.walk?.46:0)-WU.uAmp.value)*Math.min(1,dt*8);if(K.walk)WU.uPh.value=K.t*9}if(K.walk){var ph=K.t*9;b.position.y=Math.abs(Math.sin(ph))*(WU?.03:.045);b.rotation.x=WU?0:Math.sin(ph)*.09;b.rotation.z=WU?Math.sin(ph)*.04:0}else{b.position.y+=(Math.sin(K.t*2)*.006-b.position.y)*k;b.rotation.x*=1-k;b.rotation.z=Math.sin(K.t*1.3)*.025}}};V.kk=K},function(){})}
 /* ร่างที่ใช้เดิน: เลือกได้ เก็บไว้ในเครื่อง */
 function fmAvaList(){return [["auto","อัตโนมัติ"],["nathan","👨 Nathan"],["baker","👩‍🍳 สาวเบเกอร์"]].concat(FKK.map(function(k,i){return ["kk"+i,"🧝 "+FKKN[i]]}),FCH.map(function(k,i){return ["ch"+i,"👑 "+FCHN[i]]}))}
 var FKF=["baker","kk2","kk4","kk5","ch0","ch1","ch3","ch4"];/* ร่างผู้หญิง สำหรับผู้เล่นทั่วไป (สุ่มตามรหัสพนักงาน) */
