@@ -6070,7 +6070,7 @@ function fm3TruckStep(){var tk=FM3.truckG;if(!tk)return;if(FM.truck&&FM.truck!==
 function fm3DN(){if(!FM3.sun)return;var n=fmIsNight();FM3.sun.intensity=n?.3:1.05;FM3.hemi.intensity=n?.4:.72;if(FM3.skyN!==n){FM3.skyN=n;if(FM3.scene.background&&FM3.scene.background.dispose)FM3.scene.background.dispose();FM3.scene.background=fm3Sky(n)}if(FM3.scene.fog)FM3.scene.fog.color.set(n?0x16234a:0xd3e8ee);fm3AmbNight(n)}
 /* ===================== อัปเดต 125: ฉากรอบฟาร์ม 3D — เนินเขา ภูเขา ท้องฟ้า เมฆ นก บอลลูน หมู่บ้าน ถนน ===================== */
 function fm3TerrH(x,z){var r=Math.hypot(x,z);if(r<58)return 0;var e=(r-58)/10;return Math.pow(e,1.35)*1.7*(1+fk3Noise(x*.03,0,z*.03)*.5)+e*fk3Noise(x*.08,1,z*.08)*1.2}
-function fm3Scenery(st){var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:[],birds:[],sheep:[]};try{A.fly=fm3FlyMk(g,FFLY,4,{r0:9,r1:17,h0:6,h1:9,sc:2.2,ex:1.15})}catch(e){}
+function fm3Scenery(st){var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:[],birds:[],sheep:[]};try{A.fly=fm3FlyMk(g,FFLY,3,{r0:13,r1:22,h0:13,h1:17,sc:2.2,ex:1.15})}catch(e){}
   /* พื้นดินเป็นเนินคลื่นรอบฟาร์ม */
   var tg=new THREE.PlaneGeometry(520,520,130,130);tg.rotateX(-Math.PI/2);var P=tg.attributes.position,C=new Float32Array(P.count*3);
   for(var i=0;i<P.count;i++){var x=P.getX(i),z=P.getZ(i),r=Math.hypot(x,z),h=r<57?-.35:fm3TerrH(x,z);if(Math.abs(x-1)<3.2&&z>50)h=Math.min(h,fm3TerrH(1,z));P.setY(i,h);
@@ -6771,7 +6771,7 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[],lotus
     FK3.X.mer.push({g:p2,b:b2,mx:m2,swim:0,ph:2})},function(){})}
 var FKFISH=["fk_fish","fk_tide","fk_koi","fk_bluefin","fk_tuna","fk_shad","fk_belida","fk_illus","fk_aris"];
 /* อัปเดต 206: นางฟ้า/เทวดาบินในแผนที่ (ฟาร์ม + บึงตกปลา) */
-var FFLY=["angelwb","seraph","fairy","dawn","seraphina","sylvana","guardian"];
+var FFLY=["fairy","dawn","seraphina","sylvana","guardian"];
 function fm3FlyMk(par,list,n,o){var out=[],st=Math.floor(Math.random()*list.length);for(var i=0;i<n;i++)(function(i){var k=list[(st+i*2)%list.length];
   fm3File("c_"+k).then(function(G){var nd=G.scene.getObjectByName("K_c_"+k);if(!nd)return;var m=nd.clone(),WU={uPh:{value:0},uAmp:{value:0},uWA:{value:.55},uWT:{value:0},cf:FCF[k]};m.traverse(function(x){if(x.isMesh){x.castShadow=false;x.frustumCulled=false;fm3WalkMat(x,WU)}});
     m.rotation.y=Math.PI/2;var b=new THREE.Group();b.add(m);var w=new THREE.Group();w.add(b);w.scale.setScalar((k==="guardian"?.75:1)*o.sc);
@@ -7955,7 +7955,7 @@ function fm3Admin(V){fm3File("admin").then(function(G){if(!V.g.parent||V.kk)retu
   var mx=new THREE.AnimationMixer(o),act=mx.clipAction(G.animations[0]);V.kk={o:o,mx:mx,A:{Walking_A:act},cur:null,lt:performance.now()/1000,adm:1}},function(){})}
 /* อัปเดต 104: ร่าง "สาวเบเกอร์" (โมเดลนิ่ง ไม่มีโครงกระดูก → ขยับด้วยโค้ด: เด้ง/โยกเวลาเดิน) */
 function fm3Baker(V){fm3StatChar(V,"admin2","K_admin2",2.35)}
-function fm3ChPpl(V,i){var k=FCH[(i||0)%FCH.length];fm3StatChar(V,"c_"+k,"K_c_"+k,2.2)}
+function fm3ChPpl(V,i){var k=FCH[(i||0)%FCH.length];if(k==="angelwb")k="prince";else if(k==="seraph")k="regal";fm3StatChar(V,"c_"+k,"K_c_"+k,2.2)}
 /* อัปเดต 170: ตัวละครชิบิ (โมเดลชิ้นเดียว) — ก้าวขา/แกว่งแขนด้วย vertex shader + ยกแสงที่หน้า/ตัวไม่ให้มืดด่าง */
 /* อัปเดต 207: ปีกขยับจริง — หาปีกจากรูปทรง (ส่วนที่อยู่หลังลำตัว เหนือเอว ห่างจากแนวกระดูกสันหลัง) แล้วกระพือขึ้นลง + ตีไปหน้าหลัง */
 function fm3WingGeo(g){if(g.userData.wing)return g.userData.wing;if(!g.boundingBox)g.computeBoundingBox();var B=g.boundingBox,H=B.max.y-B.min.y,P=g.attributes.position,sz=0,n=0,sx=0;
