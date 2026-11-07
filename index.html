@@ -6607,19 +6607,43 @@ function fk3Resize(){if(!FK3.on||!FK3.R)return;var cv=$("fk3-cv");if(!cv)return;
 function fk3Char(key,seed,name,admin){var V={g:new THREE.Group()};FK3.g.add(V.g);
   var ph=new THREE.Group();fk3M(new THREE.CapsuleGeometry?new THREE.CapsuleGeometry(.32,.7,6,12):new THREE.CylinderGeometry(.32,.32,1.3,12),0x60a5fa,0,.85,0,ph);fk3M(new THREE.SphereGeometry(.3,16,12),0xfcd9b6,0,1.65,0,ph);V.g.add(ph);V.m=ph;
   var a=fkBody(key,seed,admin);fm3BodyKey(V,a);V.key=a;
-  var rod=new THREE.Group();rod.position.set(.32,.95,.32);rod.rotation.z=-.95;V.g.add(rod);var L1=1.55,L2=1.15;fk3M(new THREE.CylinderGeometry(.03,.048,L1,8),0x3f2a14,0,L1/2,0,rod);fk3M(new THREE.CylinderGeometry(.07,.07,.12,10),0x111827,0,.35,.06,rod,false).rotation.x=Math.PI/2;
-  var jt=new THREE.Group();jt.position.y=L1;rod.add(jt);fk3M(new THREE.CylinderGeometry(.012,.03,L2,6),0x1f2937,0,L2/2,0,jt,false);
-  var tip=new THREE.Object3D();tip.position.set(0,L2,0);jt.add(tip);V.rod=rod;V.bend=jt;V.tip=tip;
+  var rod=new THREE.Group();rod.position.set(.32,.95,.32);rod.rotation.z=-.95;V.g.add(rod);var L1=1.55,L2=1.15;V.shaft=fk3M(new THREE.CylinderGeometry(.03,.048,L1,8),0x3f2a14,0,L1/2,0,rod);V.reel=fk3M(new THREE.CylinderGeometry(.07,.07,.12,10),0x111827,0,.35,.06,rod,false);V.reel.rotation.x=Math.PI/2;
+  var jt=new THREE.Group();jt.position.y=L1;rod.add(jt);V.tipm=fk3M(new THREE.CylinderGeometry(.012,.03,L2,6),0x1f2937,0,L2/2,0,jt,false);
+  var tip=new THREE.Object3D();tip.position.set(0,L2,0);jt.add(tip);V.rod=rod;V.bend=jt;V.tip=tip;V.L1=L1;V.L2=L2;
   var tg=fk3Tag((admin?"👑 ":"")+name,admin?"#92400e":"#14532d");tg.position.set(0,a==="nathan"?3.3:a==="baker"?3.2:3.1,0);tg.scale.multiplyScalar(.85);V.g.add(tg);V.tag=tg;return V}
+/* อัปเดต 210: คันเบ็ดแต่ละระดับหน้าตาไม่เหมือนกัน
+   1 ไม้ธรรมดา · 2 ไม้ไผ่เขียวพันด้ายขาว · 3 คาร์บอนฟ้า+รอกเงิน · 4 แดงเพลิง+ห่วงทอง · 5 คริสตัลม่วงเรืองแสง+ประกาย · 6 เบ็ดเทพ: ทองคำ+สายฟ้าแลบ+ออร่า */
+var FKROD={1:{s:0x6b4423,t:0x3f2a14,r:0x374151},2:{s:0x65a30d,t:0x3f6212,r:0x1f2937,w:0xf8fafc,n:3},3:{s:0x1d4ed8,t:0x0f172a,r:0xcbd5e1,w:0xe2e8f0,n:4},
+  4:{s:0xdc2626,t:0x7f1d1d,r:0xfbbf24,w:0xfbbf24,n:5,e:0x3b0a0a},5:{s:0x9333ea,t:0xc084fc,r:0xe9d5ff,w:0xf5d0fe,n:6,e:0x4c1d95,glow:0xd8b4fe,sp:1},6:{s:0xb87800,t:0xf2c230,r:0xfff3b0,w:0xffffff,n:7,e:0x5a3500,glow:0xfff59d,sp:1,bolt:1}};
+function fk3Glow(c,sz){var cv=document.createElement("canvas");cv.width=cv.height=64;var x=cv.getContext("2d"),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,"rgba(255,255,255,1)");g.addColorStop(.35,"rgba(255,255,255,.55)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(0,0,64,64);
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),color:c,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));sp.scale.set(sz,sz,1);return sp}
+function fk3RodSkin(V,lv){lv=Math.max(1,Math.min(6,+lv||1));if(V.rodLv===lv)return;V.rodLv=lv;var o=FKROD[lv];
+  function mt(m,c,e){m.material=new THREE.MeshLambertMaterial({color:c,emissive:e||0})}
+  mt(V.shaft,o.s,o.e);mt(V.tipm,o.t,o.e);mt(V.reel,o.r,lv>=4?(lv===6?0x6b4500:0x3a2600):0);
+  if(V.rfx){V.rfx.forEach(function(x){if(x.parent)x.parent.remove(x)})}V.rfx=[];V.bolts=null;V.sparks=null;
+  if(o.n){for(var i=0;i<o.n;i++){var f=(i+.5)/o.n,par=f<.58?V.rod:V.bend,y=f<.58?f/.58*V.L1:(f-.58)/.42*V.L2,ring=new THREE.Mesh(new THREE.TorusGeometry(f<.58?.05:.03,.009,5,10),new THREE.MeshLambertMaterial({color:o.w,emissive:lv>=5?o.e:0}));ring.rotation.x=Math.PI/2;ring.position.y=y;par.add(ring);V.rfx.push(ring)}}
+  if(o.glow){var gl=fk3Glow(o.glow,lv===6?.75:.5);gl.position.set(0,V.L2,0);V.bend.add(gl);V.rfx.push(gl);V.tglow=gl;
+    var au=fk3Glow(o.glow,lv===6?1.6:1.1);au.material.opacity=.35;au.position.set(0,V.L1*.55,0);V.rod.add(au);V.rfx.push(au);V.aura=au}else{V.tglow=V.aura=null}
+  if(o.sp){var N=lv===6?26:16,pg=new THREE.BufferGeometry(),pa=new Float32Array(N*3);pg.setAttribute("position",new THREE.BufferAttribute(pa,3));
+    var pt=new THREE.Points(pg,new THREE.PointsMaterial({color:o.glow,size:lv===6?.11:.08,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));pt.frustumCulled=false;V.rod.add(pt);V.rfx.push(pt);V.sparks={p:pt,n:N,s:Array.from({length:N},function(){return [Math.random(),Math.random()*6.28,Math.random()]})}}
+  if(o.bolt){var B=[];for(var j=0;j<3;j++){var ln=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshBasicMaterial({color:j?0xfff27a:0xffffff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));ln.frustumCulled=false;V.rod.add(ln);V.rfx.push(ln);B.push(ln)}V.bolts=B;V.bt=0}}
+/* เอฟเฟกต์เคลื่อนไหวของคัน: ประกายวน, ปลายคันเต้นเป็นจังหวะ, สายฟ้าแลบแว็บ ๆ (ระดับ 6) */
+function fk3RodFx(V,t,dt){if(!V.rodLv||V.rodLv<5||!V.rod.visible)return;var lv=V.rodLv,big=FK3.wind&&V===FK3.me&&t-FK3.wind<1.1;
+  if(V.tglow){var k=1+Math.sin(t*(lv===6?9:5))*.25+(big?.6:0);V.tglow.scale.setScalar((lv===6?.75:.5)*k)}if(V.aura)V.aura.material.opacity=.22+Math.sin(t*3)*.1+(big?.25:0);
+  var S=V.sparks;if(S){var a=S.p.geometry.attributes.position;for(var i=0;i<S.n;i++){var q=S.s[i];q[0]+=dt*(.18+q[2]*.2);if(q[0]>1){q[0]-=1;q[1]=Math.random()*6.28}var y=q[0]*(V.L1+V.L2*.6),r=.07+Math.sin(t*4+i)*.03+q[2]*.06,an=q[1]+t*(2+q[2]*2);a.setXYZ(i,Math.cos(an)*r,y,Math.sin(an)*r)}a.needsUpdate=true;S.p.material.opacity=.6+Math.sin(t*7)*.3}
+  if(V.bolts){V.bt-=dt;if(V.bt<=0){V.bt=(big?.05:.09)+Math.random()*(big?.05:.35);V.bolts.forEach(function(ln,j){var on=big||Math.random()<.55;ln.visible=on;if(!on)return;var y0=Math.random()*V.L1*.6,y1=y0+.5+Math.random()*(V.L1*.7),pts=[],cp=new THREE.CurvePath();
+      for(var i=0;i<8;i++){var f=i/7,j2=(i===0||i===7)?0:1;pts.push(new THREE.Vector3((Math.random()-.5)*.26*j2,y0+(y1-y0)*f,(Math.random()-.5)*.26*j2))}for(i=0;i<7;i++)cp.add(new THREE.LineCurve3(pts[i],pts[i+1]));
+      ln.geometry.dispose();ln.geometry=new THREE.TubeGeometry(cp,21,j?.013:.022,4,false);ln.material.opacity=.95})}
+    else V.bolts.forEach(function(ln){ln.material.opacity*=Math.pow(.02,dt)})}}
 function fk3Face(V,tx,tz){var p=V.g.position;V.g.rotation.y=Math.atan2(-(tz-p.z),tx-p.x)}
 function fk3Kill(V){if(!V)return;if(V.g.parent)V.g.parent.remove(V.g);V.g.traverse(function(o){if(o.userData.shared)return;if(o.geometry&&o.geometry.dispose)o.geometry.dispose();if(o.isSprite&&o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}});if(V.bob&&V.bob.parent)V.bob.parent.remove(V.bob);if(V.line&&V.line.parent)V.line.parent.remove(V.line)}
-function fk3Me(){if(!FK3.on)return;fk3Kill(FK3.me);var V=FK3.me=fk3Char(fmAva(),S.me&&S.me.id,"คุณ",!!S.admin);if(!FK3.pos){var sp=null;try{sp=JSON.parse(localStorage.getItem("aoi-fish-spot")||"null")}catch(e){}if(!sp||!fk3Walkable(sp.x,sp.z))sp={x:0,z:4.9};FK3.pos={x:sp.x,z:sp.z};FK3.spot={x:sp.x,z:sp.z};FK3.hd=0}
+function fk3Me(){if(!FK3.on)return;fk3Kill(FK3.me);var V=FK3.me=fk3Char(fmAva(),S.me&&S.me.id,"คุณ",!!S.admin);fk3RodSkin(V,(FK.info||{}).rod||1);if(!FK3.pos){var sp=null;try{sp=JSON.parse(localStorage.getItem("aoi-fish-spot")||"null")}catch(e){}if(!sp||!fk3Walkable(sp.x,sp.z))sp={x:0,z:4.9};FK3.pos={x:sp.x,z:sp.z};FK3.spot={x:sp.x,z:sp.z};FK3.hd=0}
   V.g.position.set(FK3.pos.x,fk3OnDock(FK3.pos.x,FK3.pos.z)?.5:0,FK3.pos.z);var d=fk3Dir(FK3.spot.x,FK3.spot.z);if(FK3.walk){V.g.rotation.y=FK3.hd-Math.PI/2;V.rod.visible=false}else fk3Face(V,FK3.spot.x+d[0],FK3.spot.z+d[1])}
 function fk3Others(){if(!FK3.on)return;var now=Date.now(),seen={},L=(FK.pres||[]).slice(0,12);
   L.forEach(function(p,i){seen[p.id]=1;var C=FK3.chars[p.id],key=p.body||"auto";if(C&&C.key0!==key){fk3Kill(C);C=null}
     var sp=typeof p.x==="number"&&typeof p.z==="number"&&fk3Walkable(p.x,p.z)?[p.x,p.z]:fk3Spot((fmHash(p.id)+i)%12);
     if(C&&Math.hypot(C.to[0]-sp[0],C.to[1]-sp[1])>.3){C.to=sp;C.bob.visible=false}
-    if(!C){C=fk3Char(key,p.id,nick(p.name)||p.name,!!p.admin);C.key0=key;C.to=sp;C.g.position.set(sp[0],fk3OnDock(sp[0],sp[1])?.5:0,sp[1]);fk3Face(C,0,0);
+    if(C)fk3RodSkin(C,p.rod||1);if(!C){C=fk3Char(key,p.id,nick(p.name)||p.name,!!p.admin);fk3RodSkin(C,p.rod||1);C.key0=key;C.to=sp;C.g.position.set(sp[0],fk3OnDock(sp[0],sp[1])?.5:0,sp[1]);fk3Face(C,0,0);
       C.bob=fk3BobMesh();fk3OthBob(C);FK3.g.add(C.bob);
       C.line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(new Array(10).fill(0).map(function(){return new THREE.Vector3()})),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.7}));C.line.frustumCulled=false;FK3.g.add(C.line);C.ph=frand(i*7)*6;FK3.chars[p.id]=C}
     var Lc=p.last,brag=Lc&&now-new Date(Lc.at).getTime()<90000?"🎉 "+fkFish(Lc.fish).n+" "+Lc.weight+" กก.":"";
@@ -6627,8 +6651,18 @@ function fk3Others(){if(!FK3.on)return;var now=Date.now(),seen={},L=(FK.pres||[]
   Object.keys(FK3.chars).forEach(function(id){if(!seen[id]){fk3Kill(FK3.chars[id]);delete FK3.chars[id]}})}
 function fk3E(x){return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2}
 /* ท่าเหวี่ยงเบ็ด: เงื้อคันไปด้านหลังเหนือไหล่ → สะบัดไปข้างหน้า (ปลายคันโค้ง) → ทุ่นพุ่งออกไป · ตอนดึงคันโก่งตามแรงปลา */
-function fk3RodPose(V,t){var r=V.rod,b=V.bend,z=-.95,bd=0,w=FK3.wind,e=w?t-w:9,st=FK.st;
-  if(e<1.05){if(e<.4){var u=fk3E(e/.4);z=-.95+(.55+.95)*u;bd=.22*u}else if(e<.54){var u2=(e-.4)/.14;z=.55-(2.05*u2);bd=.22-.75*u2}else{var u3=fk3E(Math.min(1,(e-.54)/.5));z=-1.5+.5*u3;bd=-.53*(1-u3)}}
+/* อัปเดต 210: ท่าเหวี่ยงเบ็ดสุ่ม 4 แบบ — 0 เหวี่ยงข้ามหัว · 1 เหวี่ยงข้างลำตัว (บิดตัว) · 2 หมุนตัว 1 รอบแล้วสะบัด · 3 ย่อตัวกระโดดเหวี่ยงสุดแรง */
+function fk3CastBody(V,e){var g=V.g,cs=FK3.cs||0,ry=V.ry0!=null?V.ry0:g.rotation.y,y0=V.y0||0,tw=0,hop=0,lean=0,rx=0,ry2=0,sc=1;
+  if(e>=1.2){if(V.castOn){g.rotation.y=ry;g.position.y=y0;g.rotation.z=0;g.scale.set(1,1,1);V.rod.rotation.y=0;V.castOn=false}return}V.castOn=true;
+  if(cs===0){lean=e<.4?.18*fk3E(e/.4):e<.6?.18-.5*((e-.4)/.2):-.32*(1-fk3E(Math.min(1,(e-.6)/.6)))}
+  else if(cs===1){if(e<.42){var u=fk3E(e/.42);tw=.9*u;ry2=-1.1*u}else if(e<.62){var u2=(e-.42)/.2;tw=.9-1.5*u2;ry2=-1.1+1.6*u2}else{var u3=fk3E(Math.min(1,(e-.62)/.58));tw=-.6*(1-u3);ry2=.5*(1-u3)}lean=-.12*Math.sin(Math.min(1,e/1.2)*Math.PI)}
+  else if(cs===2){if(e<.55){tw=Math.PI*2*fk3E(e/.55);hop=Math.sin(e/.55*Math.PI)*.18}else lean=-.28*Math.sin(Math.min(1,(e-.55)/.65)*Math.PI)}
+  else{if(e<.25){sc=1-.12*fk3E(e/.25);lean=.12*e/.25}else if(e<.75){var k=(e-.25)/.5;sc=.88+.2*Math.sin(k*Math.PI)+.12*k;hop=Math.sin(k*Math.PI)*.75;lean=.12-.5*k}else{var k2=fk3E(Math.min(1,(e-.75)/.45));sc=1+(1-k2)*.0;lean=-.38*(1-k2)}}
+  g.rotation.y=ry+tw;g.position.y=y0+hop;g.rotation.z=lean;g.scale.set(1,sc<1?sc:1,1);g.scale.y=sc;V.rod.rotation.y=ry2}
+function fk3RodPose(V,t){var r=V.rod,b=V.bend,z=-.95,bd=0,w=FK3.wind,e=w?t-w:9,st=FK.st,cs=FK3.cs||0;fk3CastBody(V,e);
+  if(e<1.05){if(cs===1){var a1=e<.42?fk3E(e/.42):e<.62?1-(e-.42)/.2*1.4:-.4+.4*fk3E(Math.min(1,(e-.62)/.43));z=-.95+.35*a1;bd=.3*a1}
+   else if(cs===2&&e<.55){z=-.6;bd=.15*Math.sin(e*20)}
+   else{var e2=cs===2?(e-.55)/.5*1.05:cs===3?Math.max(0,e-.15)*1.1:e;e2=Math.min(1.04,e2);if(e2<.4){var u=fk3E(e2/.4);z=-.95+(.55+.95)*u;bd=.22*u}else if(e2<.54){var u2=(e2-.4)/.14;z=.55-(2.05*u2);bd=.22-.75*u2}else{var u3=fk3E(Math.min(1,(e2-.54)/.5));z=-1.5+.5*u3;bd=-.53*(1-u3)}}}
   else if(st==="reel"){z=-.42+Math.sin(t*14)*.05;bd=-.75+Math.sin(t*9)*.12}
   else if(st==="bite"){z=-.85+Math.sin(t*30)*.05;bd=-.45+Math.sin(t*24)*.15}
   else if(st==="wait"){z=-1.0+Math.sin(t*1.3)*.02;bd=-.12}
@@ -6644,13 +6678,13 @@ function fk3Catch(f,bx,by){if(!FK3.on)return;var b=fk3BobXZ(bx,by),s=fk3Sprite(f
 function fk3Loop(){FK3.raf=requestAnimationFrame(fk3Loop);if(!FK3.on||!FK.on||document.hidden)return;var t=performance.now()/1000,dt=Math.min(.05,t-FK3.lt);FK3.lt=t;FK3.t=t;FK3.dt=dt;
   if(FK3.walk)fk3WalkStep(dt);else FK3.ctl.update();Object.keys(FK3.chars).forEach(function(k){fk3OthStep(FK3.chars[k],dt)});fk3SceneStep(t,dt);fk3ExtraStep(t,dt);(FK3.pads||[]).forEach(function(p){p.position.y=.07+Math.sin(t*1.3+p.userData.pad)*.012});
   var all=[FK3.me].concat(Object.keys(FK3.chars).map(function(k){return FK3.chars[k]}));
-  all.forEach(function(V){if(!V)return;var K=V.kk;if(K){var d=Math.min(.1,Math.max(0,t-(K.lt||t)));K.lt=t;fm3KKPlay(K,(V===FK3.me?FK3.walk&&FK3.moving:V.walking)?"Walking_A":"Idle_A");K.mx.update(d)}V.rod.rotation.x=Math.sin(t*1.1+(V.ph||0))*.04});
+  all.forEach(function(V){if(!V)return;var K=V.kk;if(K){var d=Math.min(.1,Math.max(0,t-(K.lt||t)));K.lt=t;fm3KKPlay(K,(V===FK3.me?FK3.walk&&FK3.moving:V.walking)?"Walking_A":"Idle_A");K.mx.update(d)}if(V!==FK3.me||!(FK3.wind&&t-FK3.wind<1.6))V.rod.rotation.x=Math.sin(t*1.1+(V.ph||0))*.04;fk3RodFx(V,t,dt)});
   /* เพื่อน: ทุ่นลอยขึ้นลง + สาย */
   Object.keys(FK3.chars).forEach(function(k){var C=FK3.chars[k],b=C.bob;if(C.walking||!b.visible){C.line.visible=false;return}C.line.visible=true;b.position.y=.06+Math.sin(t*2+C.ph)*.03;var dip=Math.sin(t*.7+C.ph*3)>.97;if(dip)b.position.y-=.12;
     var a=C.tip.getWorldPosition(new THREE.Vector3());fk3Line(C.line,a,b.position.clone().add(new THREE.Vector3(0,.15,0)),.5)});
   /* ทุ่นของเรา ตามสถานะมินิเกม */
   var bel=$("fk-bob"),show=bel&&!bel.hidden,B=FK3.bob,tip=FK3.me&&FK3.me.tip?FK3.me.tip.getWorldPosition(new THREE.Vector3()):new THREE.Vector3(0,3,4);
-  if(show&&!FK3.cast){var p=fk3BobXZ(FK.bx,FK.by);FK3.cast={t0:Math.max(t,(FK3.wind||0)+.5),to:p};FK3.splashed=0}
+  if(show&&!FK3.cast){var p=fk3BobXZ(FK.bx,FK.by);FK3.cast={t0:Math.max(t,(FK3.wind||0)+[.5,.58,.8,.6][FK3.cs||0]),to:p};FK3.splashed=0}
   if(!show&&FK3.cast){FK3.cast=null;B.visible=false;FK3.line.visible=false}
   if(FK3.cast){var c=FK3.cast,u=Math.max(0,Math.min(1,(t-c.t0)/.7)),tx=c.to[0],tz=c.to[1];B.visible=t>=c.t0;FK3.line.visible=t>=c.t0;
     if(u<1){var uu=1-Math.pow(1-u,1.6);B.position.set(tip.x+(tx-tip.x)*uu,tip.y+(0.06-tip.y)*u+Math.sin(u*Math.PI)*2.6,tip.z+(tz-tip.z)*uu)}
@@ -6816,7 +6850,7 @@ function fkOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||FK.o
   var el=document.createElement("div");el.id="fm-lake";box.appendChild(el);fkDraw();fkLoad();fkPres();FK.hb=setInterval(function(){if(!document.hidden)fkPres()},20000);sfx("open")}
 function fkClose(){if(!FK.on)return;FK.on=false;fk3Stop();fkRtClose();cancelAnimationFrame(FK.raf);clearInterval(FK.hb);var el=$("fm-lake");if(el)el.remove();q(db.rpc("fish_leave")).catch(function(){});
   fmLoad().then(function(d){FM.d=d;FM.keep=true;drawFarm()},function(){})}
-async function fkLoad(){try{FK.info=await q(db.rpc("fish_info"));if(FK.info&&FK.info.gold){FK.gold=FK.info.gold;var M0=FK.gold.mermaid;if(M0&&M0.caught&&M0.secs!=null&&M0.secs<58&&FK.merFxWeek!==M0.week)fkMerFx(60-M0.secs,M0.by,M0.weight)}fkAutoBait();fkHud();fkPlay()}catch(e){toast(thErr(e))}}
+async function fkLoad(){try{FK.info=await q(db.rpc("fish_info"));if(FK3.me&&FK.info)fk3RodSkin(FK3.me,FK.info.rod||1);if(FK.info&&FK.info.gold){FK.gold=FK.info.gold;var M0=FK.gold.mermaid;if(M0&&M0.caught&&M0.secs!=null&&M0.secs<58&&FK.merFxWeek!==M0.week)fkMerFx(60-M0.secs,M0.by,M0.weight)}fkAutoBait();fkHud();fkPlay()}catch(e){toast(thErr(e))}}
 function fkPres(){if(FK.info)fkGoldLoad();var A={p_avatar:fmAva()};if(FK3.on&&FK3.spot){A.p_x=Math.round(FK3.spot.x*100)/100;A.p_z=Math.round(FK3.spot.z*100)/100}q(db.rpc("fish_presence",A)).then(function(L){FK.pres=Array.isArray(L)?L:[];fkOthers()},function(){})}
 function fkDraw(){var el=$("fm-lake");if(!el)return;if(FK3.on||FK3.tok)fk3Stop();FK.svg2=false;
   if(fk3Want()){el.innerHTML='<canvas id="fk3-cv"></canvas><div class="fk3-load">🎣 กำลังโหลดทะเลสาบ 3D…</div><div class="fk3hide"><div id="fk-others"></div><svg class="fk-line"><path id="fk-path" d=""/></svg><div id="fk-bob" class="fk-bob" hidden></div><div id="fk-me"><img alt=""></div></div>'+
@@ -6867,7 +6901,7 @@ function fkPlay(){var el=$("fk-play");if(!el)return;var st=FK.st;
   else if(st==="reel")el.innerHTML='<div class="fk-reel"><div class="fk-bar"><i id="fk-zone"></i><b id="fk-fish">🐟</b></div><div class="fk-prog"><i id="fk-pg"></i></div></div><button type="button" class="fk-cast hold" id="fk-hold">💪 กดค้างเพื่อดึง</button><p class="fk-tip">ประคองแถบเขียวให้ทับตัวปลา จนหลอดเต็ม</p>';
   else if(st==="busy")el.innerHTML='<p class="fk-say">…</p>'}
 function fkBob(x,y,show){var b=$("fk-bob"),p=$("fk-path");if(!b||!p)return;b.hidden=!show;if(!show){p.setAttribute("d","");return}var P=fk2P(x,y),T=fk2P(55.5,70.5);b.style.left=P[0]+"%";b.style.top=P[1]+"%";p.setAttribute("d","M"+T[0]+" "+T[1]+" Q "+((T[0]+P[0])/2)+" "+(Math.min(T[1],P[1])-10)+" "+P[0]+" "+(P[1]+1))}
-async function fkCast(){if(FK.st!=="idle")return;fkAutoBait();if(!FK.bait){sfx("error");toast("🪱 เหยื่อหมดแล้ว — ซื้อเหยื่อที่ร้านอุปกรณ์ก่อนนะ");fkSheet("shop");return}FK.st="busy";if(FK3.on){FK3.wind=performance.now()/1000;sfx("cast")}fkPlay();
+async function fkCast(){if(FK.st!=="idle")return;fkAutoBait();if(!FK.bait){sfx("error");toast("🪱 เหยื่อหมดแล้ว — ซื้อเหยื่อที่ร้านอุปกรณ์ก่อนนะ");fkSheet("shop");return}FK.st="busy";if(FK3.on){FK3.wind=performance.now()/1000;FK3.cs=((FK3.cs||0)+1+Math.floor(Math.random()*3))%4;if(FK3.me){FK3.me.ry0=FK3.me.g.rotation.y;FK3.me.y0=FK3.me.g.position.y}sfx("cast")}fkPlay();
   try{var r=await q(db.rpc("fish_cast",{p_bait:FK.bait||null}));FK.cur=r;if(!FK3.on){sfx("cast");setTimeout(function(){if(FK.st==="wait")sfx("splash")},550)}
     if(FK.info){FK.info.bait[FK.bait]=Math.max(0,(FK.info.bait[FK.bait]||0)-1);fkAutoBait();fkHud()}
     var tx=32+Math.random()*36,ty=34+Math.random()*18;FK.bx=tx;FK.by=ty;fkBob(tx,ty,true);var b=$("fk-bob");b.classList.remove("dip");b.classList.add("fly");setTimeout(function(){b&&b.classList.remove("fly")},600);
@@ -6936,7 +6970,7 @@ document.addEventListener("click",function(ev){if(!FK.on)return;var t=ev.target.
   if(D.fkscope){FK.scope=D.fkscope;fkBoardLoad();return}
   if(D.fkbait!=null){if(FK.st!=="idle"&&FK.st!=="result")return;FK.bait=D.fkbait;sfx("tap");fkHud();return}
   if(D.fkava){if(!S.admin)return;try{localStorage.setItem("aoi-farm-ava",D.fkava)}catch(e){}sfx("tap");var im=document.querySelector("#fk-me img");if(im)im.src=fkSpr(D.fkava,S.me&&S.me.id);fk3Me();fkSheet("ava");fkPres();return}
-  if(D.fkbuy){var p=D.fkbuy.split(":");t.disabled=true;q(db.rpc("fish_buy",{p_kind:p[0],p_key:p[1],p_qty:+(p[2]||1)})).then(function(i){FK.info=i;sfx("buy");toast(p[0]==="rod"?"🎣 ได้เบ็ดใหม่แล้ว!":"🪱 ซื้อเหยื่อแล้ว");if(p[0]==="bait")FK.bait=p[1];fkHud();fkSheet("shop")},function(e){t.disabled=false;sfx("error");toast(thErr(e))});return}});
+  if(D.fkbuy){var p=D.fkbuy.split(":");t.disabled=true;q(db.rpc("fish_buy",{p_kind:p[0],p_key:p[1],p_qty:+(p[2]||1)})).then(function(i){FK.info=i;sfx("buy");toast(p[0]==="rod"?"🎣 ได้เบ็ดใหม่แล้ว!":"🪱 ซื้อเหยื่อแล้ว");if(p[0]==="rod"&&FK3.me)fk3RodSkin(FK3.me,(i||{}).rod||1);if(p[0]==="bait")FK.bait=p[1];fkHud();fkSheet("shop")},function(e){t.disabled=false;sfx("error");toast(thErr(e))});return}});
 document.addEventListener("keydown",function(e){if(!FK.on||e.code!=="Space"||$("fk-sheet")&&!$("fk-sheet").hidden)return;e.preventDefault();if(FK3.walk){fk3Walk(false);return}if(FK.st==="reel"){FK.space=true;return}if(e.repeat)return;if(FK.st==="idle")fkCast();else if(FK.st==="wait"||FK.st==="bite")fkHook();else if(FK.st==="result"){FK.st="idle";fkPlay()}});
 document.addEventListener("keyup",function(e){if(e.code==="Space")FK.space=false});
 window.addEventListener("pagehide",function(){if(FK.on)q(db.rpc("fish_leave")).catch(function(){})});
