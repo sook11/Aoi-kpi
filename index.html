@@ -1179,6 +1179,12 @@ body.farm-rot .ffloat{animation-name:ffloatR}
 @media (max-width:700px){.dtvr{grid-template-columns:54px 1fr 1.6fr .9fr .7fr .7fr .7fr 1fr}.dtvr .ph img{width:40px}.dtvdate{display:none}.dtvhead b{font-size:17px}}
 .ahrow{cursor:pointer}.ahrow:hover{background:#eff6ff}.ahcal{color:#2563eb;font-size:11px;white-space:nowrap}.ahhint{margin:-4px 0 0}
 .ahp tr.ahd-absent{background:#fef2f2}.ahp tr.ahd-late{background:#fffbeb}.ahp tr.ahd-leave{background:#f5f3ff}.ahp tr.ahd-none td{color:#94a3b8}
+.missbox{border:2px solid #f59e0b;background:#fffbeb;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}.missbox>b{color:#b45309}.missbox>small{color:#92400e}
+.misschips{display:flex;flex-wrap:wrap;gap:6px}.misschips .chipsel{font-size:13px}.missbox.shake{animation:mshake .5s}@keyframes mshake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.mascat svg{width:100%;height:auto;display:block}.magrid{stroke:#e2e8f0;stroke-width:1}.maax{font-size:11px;fill:#64748b}.mascat circle{fill-opacity:.75;stroke:#fff;stroke-width:1.5;cursor:pointer}.mascat circle:hover{fill-opacity:1;r:8}
+.malegend{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.malg{display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}.malg.off{opacity:.4}.malg i,.madot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.matip{display:none;margin-top:8px;background:#0f172a;color:#fff;border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.6}.matip.on{display:block}
+.mabar{display:inline-block;width:70px;height:8px;background:#f1f5f9;border-radius:4px;margin-right:6px;vertical-align:middle;overflow:hidden}.mabar i{display:block;height:100%}
 .dkrow{cursor:pointer;border-radius:10px}.dkrow:hover{background:#fef2f2}
 body.tvmode{background:#0f172a}
 body.tvmode header.top,body.tvmode nav.tabs,body.tvmode .marquee{display:none!important}
@@ -1467,6 +1473,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
           <label>ยอดผลงาน<input type="number" id="f-out" min="0" step="any" inputmode="decimal" placeholder="จำนวน" required></label>
           <label>เป้าหมาย (ชิ้น/กะ)<output class="target" id="f-target">—</output></label>
         </div>
+        <div class="missbox" id="f-miss" hidden><b>⚠️ ยอดไม่ถึงเป้า — เลือกเหตุผล (บังคับ)</b><small id="f-mgap"></small><div class="misschips" id="f-mreason"></div></div>
         <label>หมายเหตุ<textarea id="f-note" rows="2" maxlength="200" placeholder="รายละเอียดเพิ่มเติม (ไม่บังคับ)"></textarea></label>
         <button class="primary" type="submit" data-ico="check">บันทึกผลงาน</button>
       </form>
@@ -1849,6 +1856,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button data-tab="ot">⏱️ OT (ล่วงเวลา)</button>
       <button data-tab="staff" class="mgr">พนักงาน</button>
       <button data-tab="top" class="mgr">Top 5 ยอดผลิต</button>
+      <button data-tab="missan" class="mgr">📉 วิเคราะห์ไม่ถึงเป้า</button>
       <button data-tab="tt">ติ่งต๊อง</button>
       <button data-tab="chat">แชต<i class="navdot" id="chat-dot2" hidden></i></button>
       <button data-tab="ideas">ไอเดียปรับปรุงงาน</button>
@@ -1890,6 +1898,23 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   </section>
 
   <!-- TOP -->
+  <!-- อัปเดต 204: วิเคราะห์เหตุผลที่ไม่ถึงเป้า -->
+  <section class="view" id="v-missan" hidden>
+    <div><h2>📉 วิเคราะห์ยอดไม่ถึงเป้า</h2><p class="sub">เหตุผลที่พนักงานเลือกตอนลงยอดต่ำกว่าเป้า — ดูว่าปัญหาไหนเกิดบ่อยและทำให้ยอดหายมากที่สุด</p></div>
+    <div class="filters">
+      <label>ตั้งแต่<input type="date" id="ma-from"></label>
+      <label>ถึง<input type="date" id="ma-to"></label>
+      <label>แผนก<select id="ma-dept"></select></label>
+      <label>หน้างาน<select id="ma-ws"><option value="">ทุกหน้างาน</option></select></label>
+    </div>
+    <div class="stats" id="ma-kpi"></div>
+    <div class="panel"><h3>Scatter Plot — แต่ละจุด = 1 รายการที่ไม่ถึงเป้า</h3><p class="sub">แกนนอน = วันที่ · แกนตั้ง = % ของเป้าที่ทำได้ · สี = เหตุผล (กดที่ชื่อเหตุผลเพื่อดูเฉพาะเหตุผลนั้น · แตะจุดเพื่อดูรายละเอียด)</p>
+      <div class="malegend" id="ma-leg"></div><div class="mascat" id="ma-scat"></div><div class="matip" id="ma-tip"></div></div>
+    <div class="panel"><h3>Scatter Plot — เหตุผล × % ของเป้า</h3><p class="sub">แต่ละแถว = เหตุผล · จุดยิ่งอยู่ซ้ายยิ่งได้น้อย — ใช้ดูว่าเหตุผลไหนทำให้ยอดตกหนัก</p><div class="mascat" id="ma-scat2"></div></div>
+    <div class="panel"><h3>สรุปตามเหตุผล (เรียงจากเกิดบ่อยสุด)</h3><div class="scroll"><table class="tbl"><thead><tr><th>เหตุผล</th><th>ครั้ง</th><th>สัดส่วน</th><th>สะสม</th><th>ยอดที่ขาดรวม</th><th>เฉลี่ย % เป้า</th></tr></thead><tbody id="ma-par"></tbody></table></div></div>
+    <div class="panel"><h3>รายการล่าสุด</h3><div class="scroll"><table class="tbl"><thead><tr><th>วันที่</th><th>พนักงาน</th><th>หน้างาน</th><th>ได้/เป้า</th><th>%</th><th>เหตุผล</th><th>หมายเหตุ</th></tr></thead><tbody id="ma-rows"></tbody></table></div></div>
+  </section>
+
   <section class="view" id="v-top" hidden>
     <div><h2>Top ยอดผลิต</h2><p class="sub" id="t-sub">อันดับพนักงานตามยอดผลิตรวม</p></div>
     <div class="filters">
@@ -2246,6 +2271,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
   <button data-tab="staff" class="mgr navx">พนักงาน</button>
   <div class="navsub mgr" id="nav-depts"></div>
   <button data-tab="top" class="mgr navx">Top 5 ยอดผลิต</button>
+  <button data-tab="missan" class="mgr navx">วิเคราะห์ไม่ถึงเป้า</button>
   <button data-tab="allowance" class="navx">KPI / Allowance</button>
   <span class="navlabel" data-g="soc">🛍️ ร้านค้า · ติ่งต๊อง · แชต</span>
   <button data-tab="shop" class="navx">สินค้า</button>
@@ -2722,11 +2748,66 @@ function fillSelects(){
 /* อัปเดต 187: เป้าหมายในหน้าบันทึกผลงาน = เป้ารายวัน (หน้า "กำหนดเป้าหมายรายวัน") ของวัน+แผนก+หน้างาน → ถ้าไม่มีใช้เป้าตั้งต้นของหน้างาน */
 var TGC={};
 async function showTarget(){var kid=$("f-kpi").value,k=S.kpis.filter(function(x){return x.id===kid})[0],d=$("f-date").value,dp=S.me&&S.me.department_id,o=$("f-target"),seq=(showTarget.n=(showTarget.n||0)+1);
-  var base=k&&k.target_per_hour!=null?num(k.target_per_hour):null;o.textContent=base||"—";o.title="";if(!k||!d||!dp)return;
+  var base=k&&k.target_per_hour!=null?num(k.target_per_hour):null;o.textContent=base||"—";o.title="";o.dataset.v=k&&k.target_per_hour!=null?k.target_per_hour:"";missCheck();if(!k||!d||!dp)return;
   var key=dp+"|"+kid+"|"+d,v=TGC[key];
   if(v===undefined){try{var r=await db.from("daily_targets").select("target").eq("target_date",d).eq("department_id",dp).eq("workstation_id",kid).maybeSingle();v=r.data?r.data.target:null;if(!r.error)TGC[key]=v}catch(e){v=null}}
   if(seq!==showTarget.n)return;
+  if(v!=null){o.dataset.v=v;missCheck()}
   if(v!=null){o.textContent=num(v);o.title="เป้ารายวันของวันที่ "+d}else if(base){o.title="เป้าตั้งต้นของหน้างาน"}else{o.textContent="ยังไม่ได้ตั้งเป้า";o.title="ให้หัวหน้าตั้งที่เมนู กำหนดเป้าหมายรายวัน หรือ จัดการหน้างาน"}}
+
+/* ---------- อัปเดต 204: วิเคราะห์ยอดไม่ถึงเป้า ---------- */
+var MA={rows:[],only:null};
+var MA_COL=["#ef4444","#f59e0b","#8b5cf6","#0ea5e9","#14b8a6","#ec4899","#6366f1","#84cc16","#f97316","#64748b","#94a3b8"];
+function maCol(r){var i=MISS_R.map(function(x){return x[1]}).indexOf(r);return MA_COL[i<0?10:i]}
+async function renderMissAn(){
+  if(!S.mgr)return;
+  var dsel=$("ma-dept");if(dsel.options.length<1)setOptions(dsel,S.myDepts.map(function(x){return {v:x.id,t:x.name}}),S.admin?"ทุกแผนก":S.myDepts.length>1?"ทุกแผนกที่ดูแล":null);
+  var ws=$("ma-ws");if(ws.options.length<2)ws.insertAdjacentHTML("beforeend",S.kpis.map(function(k){return '<option value="'+k.id+'">'+esc(k.name)+'</option>'}).join(""));
+  if(!$("ma-from").value){$("ma-from").value=today().slice(0,8)+"01";$("ma-to").value=today()}
+  var fr=$("ma-from").value,to=$("ma-to").value,dp=dsel.value,wk=ws.value;
+  var qy=db.from("work_logs").select("id,employee_id,work_date,shift,workstation_id,kpi_name,output,target,miss_reason,note,department_id").gte("work_date",fr).lte("work_date",to).gt("target",0).order("work_date",{ascending:false}).limit(5000);
+  if(dp)qy=qy.eq("department_id",dp);else if(!S.admin)qy=qy.in("department_id",S.myDepts.map(function(d){return d.id}));
+  if(wk)qy=qy.eq("workstation_id",wk);
+  var all=prodRows(await q(qy)),miss=all.filter(function(r){return +r.output<+r.target});
+  miss.forEach(function(r){r.pct=Math.max(0,Math.round(+r.output*1000/+r.target)/10);r.gap=+r.target-+r.output;r.rs=r.miss_reason||"ไม่ระบุ (ก่อนเปิดระบบ)"});
+  MA.rows=miss;
+  var withR=miss.filter(function(r){return r.miss_reason}).length,avg=miss.length?Math.round(miss.reduce(function(a,r){return a+r.pct},0)/miss.length):0,gap=miss.reduce(function(a,r){return a+r.gap},0);
+  $("ma-kpi").innerHTML='<div class="stat"><small>รายการที่มีเป้า</small><b>'+num(all.length)+'</b></div><div class="stat bad"><small>ไม่ถึงเป้า</small><b>'+num(miss.length)+'</b><em>'+(all.length?Math.round(miss.length*100/all.length):0)+'% ของทั้งหมด</em></div><div class="stat"><small>เฉลี่ยทำได้ (เฉพาะที่ไม่ถึง)</small><b>'+avg+'%</b></div><div class="stat"><small>ยอดที่ขาดรวม</small><b>'+num(Math.round(gap))+'</b><em>มีเหตุผล '+withR+' / '+miss.length+'</em></div>';
+  maDraw();
+}
+function maDraw(){
+  var miss=MA.rows,cnt={};miss.forEach(function(r){cnt[r.rs]=(cnt[r.rs]||0)+1});
+  var keys=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
+  if(MA.only&&!cnt[MA.only])MA.only=null;
+  $("ma-leg").innerHTML=keys.map(function(k){return '<button type="button" class="malg'+(MA.only&&MA.only!==k?" off":"")+'" data-maonly="'+esc(k)+'"><i style="background:'+maCol(k)+'"></i>'+esc(k)+' <b>'+cnt[k]+'</b></button>'}).join("")+(MA.only?'<button type="button" class="malg" data-maonly="">แสดงทั้งหมด</button>':"");
+  var pts=miss.filter(function(r){return !MA.only||r.rs===MA.only});
+  if(!miss.length){$("ma-scat").innerHTML=$("ma-scat2").innerHTML=emptyRow("ช่วงนี้ไม่มีรายการที่ไม่ถึงเป้า 🎉");$("ma-par").innerHTML="";$("ma-rows").innerHTML="";return}
+  /* scatter 1: วันที่ × % */
+  var fr=$("ma-from").value,to=$("ma-to").value,days=Math.max(1,(utcMs(to)-utcMs(fr))/864e5),W=860,H=340,L=46,R=14,T=14,B=40;
+  var X=function(d){return L+(utcMs(d)-utcMs(fr))/864e5/days*(W-L-R)},Y=function(p){return T+(1-Math.min(p,100)/100)*(H-T-B)};
+  var jit=function(id,n){var h=0;for(var i=0;i<id.length;i++)h=(h*31+id.charCodeAt(i))%997;return (h/997-.5)*n};
+  var g='';[0,25,50,75,100].forEach(function(p){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(p)+'" y2="'+Y(p)+'" class="magrid"/><text x="'+(L-6)+'" y="'+(Y(p)+4)+'" class="maax" text-anchor="end">'+p+'%</text>'});
+  var step=Math.max(1,Math.ceil(days/10));for(var i=0;i<=days;i+=step){var d=isoOf(utcMs(fr)+i*864e5);g+='<text x="'+X(d)+'" y="'+(H-B+18)+'" class="maax" text-anchor="middle">'+esc(shortD(d))+'</text>'}
+  var dots=pts.map(function(r){return '<circle cx="'+(X(r.work_date)+jit(r.id,Math.min(14,(W-L-R)/days*.6))).toFixed(1)+'" cy="'+Y(r.pct).toFixed(1)+'" r="6" fill="'+maCol(r.rs)+'" data-mapt="'+r.id+'"/>'}).join("");
+  $("ma-scat").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Scatter plot วันที่กับเปอร์เซ็นต์ของเป้า">'+g+'<text x="'+L+'" y="'+(H-4)+'" class="maax">วันที่ →</text>'+dots+'</svg>';
+  /* scatter 2: เหตุผล × % */
+  var rk=keys.filter(function(k){return !MA.only||k===MA.only}),RH=34,H2=rk.length*RH+44,L2=200,W2=860;
+  var X2=function(p){return L2+Math.min(p,100)/100*(W2-L2-R)},g2='';
+  [0,25,50,75,100].forEach(function(p){g2+='<line x1="'+X2(p)+'" x2="'+X2(p)+'" y1="8" y2="'+(H2-30)+'" class="magrid"/><text x="'+X2(p)+'" y="'+(H2-12)+'" class="maax" text-anchor="middle">'+p+'%</text>'});
+  rk.forEach(function(k,i){var cy=14+i*RH+RH/2;g2+='<text x="'+(L2-8)+'" y="'+(cy+4)+'" class="maax" text-anchor="end">'+esc(k.length>24?k.slice(0,23)+"…":k)+'</text>';
+    pts.filter(function(r){return r.rs===k}).forEach(function(r){g2+='<circle cx="'+X2(r.pct).toFixed(1)+'" cy="'+(cy+jit(r.id,RH*.6)).toFixed(1)+'" r="6" fill="'+maCol(k)+'" data-mapt="'+r.id+'"/>'})});
+  $("ma-scat2").innerHTML='<svg viewBox="0 0 '+W2+' '+H2+'" role="img" aria-label="Scatter plot เหตุผลกับเปอร์เซ็นต์ของเป้า">'+g2+'</svg>';
+  /* ตารางสรุป */
+  var tot=miss.length,cum=0;
+  $("ma-par").innerHTML=keys.map(function(k){var L3=miss.filter(function(r){return r.rs===k}),n=L3.length;cum+=n;var gp=L3.reduce(function(a,r){return a+r.gap},0),ap=Math.round(L3.reduce(function(a,r){return a+r.pct},0)/n);
+    return '<tr><td class="nm"><i class="madot" style="background:'+maCol(k)+'"></i>'+esc(k)+'</td><td class="n"><b>'+n+'</b></td><td class="n"><span class="mabar"><i style="width:'+Math.round(n*100/tot)+'%;background:'+maCol(k)+'"></i></span>'+Math.round(n*100/tot)+'%</td><td class="n">'+Math.round(cum*100/tot)+'%</td><td class="n">'+num(Math.round(gp))+'</td><td class="n">'+ap+'%</td></tr>'}).join("");
+  $("ma-rows").innerHTML=pts.slice(0,200).map(function(r){var e=empOf(r.employee_id)||{};return '<tr><td>'+esc(shortD(r.work_date))+'</td><td class="nm">'+esc(e.display_name||"-")+'</td><td>'+esc(r.kpi_name||"")+'</td><td class="n">'+num(+r.output)+' / '+num(+r.target)+'</td><td class="n">'+r.pct+'%</td><td><i class="madot" style="background:'+maCol(r.rs)+'"></i>'+esc(r.rs)+'</td><td>'+esc(r.note||"–")+'</td></tr>'}).join("");
+}
+document.addEventListener("click",function(ev){var t=ev.target.closest&&ev.target.closest("[data-maonly],[data-mapt]");if(!t)return;
+  if(t.dataset.maonly!=null){var k=t.dataset.maonly;MA.only=(k&&MA.only!==k)?k:null;maDraw();return}
+  var r=MA.rows.filter(function(x){return x.id===t.dataset.mapt})[0],tp=$("ma-tip");if(!r)return;var e=empOf(r.employee_id)||{};
+  tp.innerHTML='<b>'+esc(e.display_name||"-")+'</b> · '+esc(wdD(r.work_date))+' · กะ '+esc(r.shift||"")+'<br>'+esc(r.kpi_name||"")+' — ได้ '+num(+r.output)+' / เป้า '+num(+r.target)+' (<b>'+r.pct+'%</b>)<br><i class="madot" style="background:'+maCol(r.rs)+'"></i>'+esc(r.rs)+(r.note?' · '+esc(r.note):'');tp.classList.add("on")});
+["ma-from","ma-to","ma-dept","ma-ws"].forEach(function(id){$(id).addEventListener("change",refresh)});
 
 /* ---------- หน้า: ภาพรวม ---------- */
 async function renderHome(){
@@ -5103,8 +5184,14 @@ async function qzGateOpen(){var G=$("qz-gate");if(!G)return;QZ.gate=1;G.hidden=f
 (function(){var hid=0;document.addEventListener("visibilitychange",function(){if(document.hidden){hid=Date.now();return}if(!hid||Date.now()-hid<6e5)return;hid=0;try{if(!S.me||S.me.role!=="employee"||QZ.gate)return;QZ.sessDone=0;q(db.rpc("quiz_me",{p_from:today().slice(0,8)+"01",p_to:today()})).then(function(m){qzGateCheck(m)},function(){})}catch(e){}})})();
 function qzGateClose(){var s=QZ.st||{};if(!s.status||s.status==="playing")return;QZ.gate=0;QZ.sessDone=1;QZ.gmode=null;qzMusOff();qzThemeSync();$("qz-gate").hidden=true;document.body.classList.remove("qzlock");ME.t=0;try{renderMeCard()}catch(e){}}
 /* อัปเดต 192: พนักงานตอบ 5 ข้อวันละครั้ง (รอบประจำวัน) ก่อนเข้าใช้งาน · หัวหน้างาน/Admin ไม่ต้อง */
+/* อัปเดต 204: เปิดแอป → บังหน้าจอด้วยหน้าคำถามทันที แล้วเช็คว่าวันนี้ตอบแล้วหรือยัง */
+function qzGateBoot(){try{if(QZ.gate||QZ.sessDone)return;var G=$("qz-gate"),st=$("qzg-stage");if(!G)return;
+  st.innerHTML='<div class="qzload" style="text-align:center;padding:40px 10px;color:#64748b">⏳ กำลังเตรียมคำถามประจำวัน…</div>';G.hidden=false;G.style.zIndex=99990;document.body.classList.add("qzlock");
+  var done=function(){if(!QZ.gate){G.hidden=true;document.body.classList.remove("qzlock")}};
+  q(db.rpc("quiz_me",{p_from:today().slice(0,8)+"01",p_to:today()})).then(function(m){QZ.bootNow=1;qzGateCheck(m);QZ.bootNow=0;done()},done)}catch(e){}}
 function qzGateCheck(m){try{if(!m||m.role!=="employee"||QZ.gate)return;var td=m.today||{},c=td.cfg||{};if(c.gate===false)return;if(!td.status&&!(td.bank>=5))return;
   var daily=!(td.round>0||td.daily_done)&&!(td.status&&td.status!=="playing");if(!daily)return;QZ.gmode="daily";
+  if(QZ.bootNow){qzGateOpen();return}
   setTimeout(function(){if(!QZ.gate)qzGateOpen()},600)}catch(e){}}
 document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-qz],[data-qzans],[data-qzll],[data-qzper],[data-qzsh],[data-qzrg]");if(!t)return;var D=t.dataset;
   if(D.qzans!=null){if(QZ.rev||QZ.busy||QZ.lock)return;QZ.sel=+D.qzans;qzSnd("sel");qzDraw();return}
@@ -8867,15 +8954,15 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-ot
   if(t.id==="ot-rsave"){var R={work:{},hol_monthly:{},hol_daily:{},sunday:$("ot-sun").checked};document.querySelectorAll("[data-otr]").forEach(function(i){var p=i.dataset.otr.split(":"),v=parseFloat(i.value);if(v>0)R[p[0]][p[1]]=v});t.disabled=true;
     q(db.from("app_settings").upsert({key:"ot_rules",value:R})).then(function(){S.settings.ot_rules=R;t.disabled=false;toast("บันทึกกฎ OT แล้ว — ใช้กับการสแกนครั้งต่อไป")},function(e){t.disabled=false;toast(thErr(e))});return}});
 
-var RENDER={dtv:renderDtv,dtvadm:renderDtvAdm,quiz:renderQuiz,locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+var RENDER={missan:renderMissAn,dtv:renderDtv,dtvadm:renderDtvAdm,quiz:renderQuiz,locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm","dtv","dtvadm"];
+var TABS=["missan","quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm","dtv","dtvadm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(tab!=="quiz"&&!QZ.gate){qzMusOff(1);qzThemeOff()}if(tab!=="quiz"){mzRtClose();if(document.body.classList.contains("mzfull-on"))mzFullOff()}if(tab==="quiz")QZ.stopped=0;
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
-  if(["staff","targets","allowmgr","admin","daily","monthly","top"].indexOf(tab)>=0&&!S.mgr)tab="home";
+  if(["staff","targets","allowmgr","admin","daily","monthly","top","missan"].indexOf(tab)>=0&&!S.mgr)tab="home";
   if(tab==="emp"&&!S.mgr&&!can("emp"))tab="home";
   var TP={att:"att_check",attqr:"att_check",attdash:"att_view",atthist:"att_view",tv:"att_view",deduct:"deduct",dedrep:"deduct",empmgr:"emp",leaveappr:"leave_view",leaveadmin:"leave_admin"};
   if(TP[tab]&&!can(TP[tab]))tab=tab.indexOf("leave")===0?"myleave":"home";
@@ -8898,11 +8985,24 @@ $("logform").addEventListener("submit",function(ev){
   ev.preventDefault();
   var date=$("f-date").value,o=parseFloat($("f-out").value);
   if(!date||!$("f-shift").value||!$("f-kpi").value||isNaN(o)){toast("เลือกวันที่ กะ หน้างาน และกรอกยอดผลงานให้ครบ");return}
+  missCheck();var mr="";
+  if(!$("f-miss").hidden){mr=MISS.sel||"";
+    if(!mr){toast("⚠️ ยอดไม่ถึงเป้า กรุณาเลือกเหตุผลที่ไม่ได้ตามเป้าก่อนบันทึก");$("f-miss").classList.add("shake");setTimeout(function(){$("f-miss").classList.remove("shake")},600);$("f-miss").scrollIntoView({behavior:"smooth",block:"center"});return}
+    if(mr==="อื่นๆ"&&!$("f-note").value.trim()){toast("เลือก \"อื่นๆ\" แล้ว กรุณาพิมพ์เหตุผลในช่องหมายเหตุ");$("f-note").focus();return}}
   var btn=ev.target.querySelector("button[type=submit]");btn.disabled=true;
-  act(function(){return q(db.from("work_logs").insert({employee_id:S.me.id,work_date:date,shift:$("f-shift").value,workstation_id:$("f-kpi").value,output:o,note:$("f-note").value.trim()}))},"บันทึกผลงานแล้ว")
-    .then(function(ok){btn.disabled=false;if(ok){$("f-out").value="";$("f-note").value="";dirty(date)}});
+  act(function(){return q(db.from("work_logs").insert({employee_id:S.me.id,work_date:date,shift:$("f-shift").value,workstation_id:$("f-kpi").value,output:o,note:$("f-note").value.trim(),miss_reason:mr}))},"บันทึกผลงานแล้ว")
+    .then(function(ok){btn.disabled=false;if(ok){$("f-out").value="";$("f-note").value="";MISS.sel=null;missCheck();dirty(date)}});
 });
 $("f-kpi").addEventListener("change",showTarget);$("f-date").addEventListener("change",showTarget);
+/* อัปเดต 204: ยอดไม่ถึงเป้า → บังคับเลือกเหตุผล */
+var MISS_R=[["🔧","เครื่องจักรเสีย/รอซ่อม"],["📦","งานไม่พอ/รองานเข้า"],["🧩","งานยาก/Defect เยอะ"],["💻","โปรแกรม/ระบบมีปัญหา"],["🔄","เปลี่ยนรุ่นงาน/ตั้งค่าเครื่อง"],["🤝","ถูกยืมไปช่วยงานอื่น"],["📚","ประชุม/อบรม"],["⏰","ลาครึ่งวัน/มาสาย/ออกก่อน"],["🙋","ยังไม่ชำนาญ/พนักงานใหม่"],["📝","อื่นๆ"]];
+var MISS={sel:null};
+function missCheck(){var bx=$("f-miss");if(!bx)return;var t=parseFloat($("f-target").dataset.v),o=parseFloat($("f-out").value),show=t>0&&!isNaN(o)&&o<t;bx.hidden=!show;
+  if(!show)return;$("f-mgap").textContent="ได้ "+num(o)+" จากเป้า "+num(t)+" · ขาดอีก "+num(Math.round((t-o)*100)/100)+" ("+Math.round(o*100/t)+"% ของเป้า)";
+  $("f-mreason").innerHTML=MISS_R.map(function(r){return '<button type="button" class="chipsel'+(MISS.sel===r[1]?" on":"")+'" data-missr="'+esc(r[1])+'">'+r[0]+" "+esc(r[1])+'</button>'}).join("");
+  $("f-note").placeholder=MISS.sel==="อื่นๆ"?"พิมพ์เหตุผลที่ไม่ได้ตามเป้า (บังคับ)":"รายละเอียดเพิ่มเติม (ไม่บังคับ)"}
+$("f-out").addEventListener("input",missCheck);
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-missr]");if(!b)return;MISS.sel=b.dataset.missr;missCheck();if(MISS.sel==="อื่นๆ")$("f-note").focus()});
 
 /* ---------- ป๊อปอัป ---------- */
 var MZ=40;function openModal(id){$(id).style.zIndex=++MZ;$(id).hidden=false;var f=$(id).querySelector("input:not([type=file]),select");if(f)setTimeout(function(){f.focus()},50)}
@@ -9322,6 +9422,7 @@ async function start(){
   ["t-date","tl-date"].forEach(function(id){$(id).value=today()});["t-month","am-month","tg-month","ad-month","ed-month"].forEach(function(id){$(id).value=today().slice(0,7)});
   $("auth").hidden=true;$("app").hidden=false;
   show(spStart());                              /* หน้าแรกตามที่ Admin กำหนด (ค่าเริ่มต้น: ติ่งต๊อง) */
+  if(me.role==="employee")qzGateBoot();         /* อัปเดต 204: คำถามประจำวันขึ้นเป็นหน้าแรกทันที */
   nwLoad().catch(function(){});
   loadMarquee().catch(function(){});chatLive();ntReg().then(ntLoad).then(function(){setTimeout(ntAsk,1500)});
   if(/^#(chat|shop)$/.test(location.hash)){show(location.hash.slice(1));history.replaceState(null,"",location.pathname)}
