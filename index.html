@@ -6705,7 +6705,8 @@ function fm3FlyMk(par,list,n,o){var out=[],st=Math.floor(Math.random()*list.leng
 function fm3FlyStep(L,t,dt){(L||[]).forEach(function(w){var U=w.userData;U.a+=U.sp*dt;var r=U.r*(1+Math.sin(t*.13+U.k)*.18),x=U.cx+Math.cos(U.a)*r*U.ex,z=U.cz+Math.sin(U.a)*r,y=U.h+Math.sin(t*.9+U.k)*.6;
   var dx=-Math.sin(U.a)*r*U.ex*Math.sign(U.sp),dz=Math.cos(U.a)*r*Math.sign(U.sp);w.position.set(x,y,z);w.rotation.y=Math.atan2(-dz,dx);U.b.rotation.x=Math.sin(t*1.4+U.k)*.09;U.b.rotation.z=-.2-Math.sin(t*.7+U.k)*.06;
   /* กระพือปีก: ช่วงร่อน (ปีกกางนิ่ง) สลับกับช่วงกระพือแรง · ตัวลอยขึ้นตามจังหวะกระพือ */
-  var gl=Math.sin(t*.35+U.k),amp=gl>.55?.12:.55,fq=gl>.55?2.2:7.5;U.wp+=dt*fq;if(U.wu){U.wu.uWA.value+=(amp-U.wu.uWA.value)*Math.min(1,dt*3);U.wu.uWT.value=U.wp}
+  var gl=Math.sin(t*.35+U.k),amp=gl>.55?.12:.55,fq=gl>.55?2.2:7.5;U.wp+=dt*fq;U.lp=(U.lp||0)+dt*(gl>.55?1.6:3.2);
+  if(U.wu){U.wu.uWA.value+=(amp-U.wu.uWA.value)*Math.min(1,dt*3);U.wu.uWT.value=U.wp;U.wu.uAmp.value+=((gl>.55?.12:.24)-U.wu.uAmp.value)*Math.min(1,dt*2);U.wu.uPh.value=U.lp}
   U.b.position.y=Math.sin(t*2.2+U.k)*.1-Math.sin(U.wp)*.06*(amp/.55)})}
 function fk3ExtraStep(t,dt){var X=FK3.X;if(!X)return;fm3FlyStep(X.fly,t,dt);(X.lotus||[]).forEach(function(o){o.position.y=.02+Math.sin(t*1.1+o.userData.lotus)*.015;o.rotation.z=Math.sin(t*.8+o.userData.lotus)*.012});
   X.fish.forEach(function(o){var U=o.userData;U.a+=U.sp*dt;var x=Math.cos(U.a)*FK3RX*U.r+Math.sin(t*.4+U.k)*.6,z=Math.sin(U.a)*FK3RZ*U.r;o.position.set(x,U.y+Math.sin(t*1.7+U.k)*.03,z);
@@ -7894,7 +7895,7 @@ function fm3WalkMat(m,u){var g=m.geometry;if(!g.boundingBox)g.computeBoundingBox
 var FWCH={angelwb:1,seraph:1,fairy:1,dawn:1,seraphina:1,sylvana:1,guardian:1,solarwing:1};
 function fm3StatChar(V,file,node,scl){fm3File(file).then(function(G){if(!V.g.parent||V.kk)return;var n=G.scene.getObjectByName(node);if(!n)return;var o=n.clone(),WU=/^c_/.test(file)?{uPh:{value:0},uAmp:{value:0},uWA:{value:FWCH[file.slice(2)]?.22:0},uWT:{value:0}}:null;o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.frustumCulled=false;if(WU){m.receiveShadow=false;fm3WalkMat(m,WU)}}});
   var w=new THREE.Group(),b=new THREE.Group();b.add(o);o.rotation.y=Math.PI/2;w.add(b);w.scale.setScalar(scl);V.g.add(w);if(V.m)V.m.visible=false;
-  var K={o:o,adm:2,walk:0,t:0,lt:performance.now()/1000,A:{}};K.mx={update:function(dt){K.t+=dt;var k=Math.min(1,dt*10);if(WU){WU.uWT.value=K.t*(K.walk?6:3.2);WU.uAmp.value+=((K.walk?.46:0)-WU.uAmp.value)*Math.min(1,dt*8);if(K.walk)WU.uPh.value=K.t*9}if(K.walk){var ph=K.t*9;b.position.y=Math.abs(Math.sin(ph))*(WU?.03:.045);b.rotation.x=WU?0:Math.sin(ph)*.09;b.rotation.z=WU?Math.sin(ph)*.04:0}else{b.position.y+=(Math.sin(K.t*2)*.006-b.position.y)*k;b.rotation.x*=1-k;b.rotation.z=Math.sin(K.t*1.3)*.025}}};V.kk=K},function(){})}
+  var K={o:o,adm:2,walk:0,t:0,lt:performance.now()/1000,A:{}};K.mx={update:function(dt){K.t+=dt;var k=Math.min(1,dt*10);if(WU){WU.uWT.value=K.t*(K.walk?6:3.2);WU.uAmp.value+=((K.walk?.46:.07)-WU.uAmp.value)*Math.min(1,dt*6);K.ph=(K.ph||0)+dt*(K.walk?9:1.7);WU.uPh.value=K.ph}if(K.walk){var ph=K.t*9;b.position.y=Math.abs(Math.sin(ph))*(WU?.03:.045);b.rotation.x=WU?0:Math.sin(ph)*.09;b.rotation.z=WU?Math.sin(ph)*.04:0}else{b.position.y+=(Math.sin(K.t*2)*.006-b.position.y)*k;b.rotation.x*=1-k;b.rotation.z=Math.sin(K.t*1.3)*.025}}};V.kk=K},function(){})}
 /* ร่างที่ใช้เดิน: เลือกได้ เก็บไว้ในเครื่อง */
 function fmAvaList(){return [["auto","อัตโนมัติ"],["nathan","👨 Nathan"],["baker","👩‍🍳 สาวเบเกอร์"]].concat(FKK.map(function(k,i){return ["kk"+i,"🧝 "+FKKN[i]]}),FCH.map(function(k,i){return ["ch"+i,"👑 "+FCHN[i]]}))}
 var FKF=["baker","kk2","kk4","kk5","ch0","ch1","ch3","ch4"];/* ร่างผู้หญิง สำหรับผู้เล่นทั่วไป (สุ่มตามรหัสพนักงาน) */
