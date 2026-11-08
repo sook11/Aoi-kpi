@@ -6524,7 +6524,7 @@ function fk3Stream(cl,objs){cl.updateMatrixWorld(true);var rc=new THREE.Raycaste
   for(i=0;i<pts.length;i++){var t=D[i]/L,w=.42+t*.25;pa.push(pts[i].x-w,pts[i].y,pts[i].z,pts[i].x+w,pts[i].y,pts[i].z);ua.push(0,1-t,1,1-t);if(i<pts.length-1){var a=i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
   var gg=new THREE.BufferGeometry();gg.setAttribute("position",new THREE.Float32BufferAttribute(pa,3));gg.setAttribute("uv",new THREE.Float32BufferAttribute(ua,2));gg.setIndex(ix);
   var m=fk3FallMat(.9,.95,4.2),rb=new THREE.Mesh(gg,m);cl.add(rb);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m);
-  var sp=new THREE.Mesh(new THREE.CircleGeometry(.55,20),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.6,depthWrite:false}));sp.rotation.x=-Math.PI/2;sp.position.copy(pts[0]).y+=.03;cl.add(sp)}
+}
 /* สระบนเกาะ: ผิวน้ำไหลเข้าหาปากน้ำตก */
 function fk3PoolFlow(w){var m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uT:{value:0}},
   vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
