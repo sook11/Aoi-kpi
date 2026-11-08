@@ -6437,6 +6437,9 @@ function fk3Scenery(g,sc){var RM=new THREE.MeshLambertMaterial({vertexColors:tru
   for(i=0;i<16;i++)FK3.TPX.push([-12+i*1.6+(frand(i*3)-.5),FK3CL.z-6.5-frand(i*5)*2.5,.8+frand(i)*.4,frand(i*8),2]);
   /* กระท่อมชาวประมง + กองไฟ + ม้านั่ง + ป้าย + เรือพาย */
   var hut=new THREE.Group();hut.position.set(17.2,0,6.6);hut.rotation.y=-.9;g.add(hut);FK3.fx.hut=[17.2,6.6];
+  /* อัปเดต 218: บ้านชาวประมง → บ้านไม้ไผ่ใต้ถุนสูงหลังคามุงจาก (โมเดล) */
+  fm3File("x_kubo").then(function(G){var n=G.scene.getObjectByName("K_x_kubo");if(!n||!hut.parent)return;var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(5.2);
+    o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.receiveShadow=true;if(m.material){m.material.side=THREE.DoubleSide;m.material.metalness=0;m.material.roughness=1}}});hut.children.forEach(function(c){c.visible=false});hut.add(w)},function(){});
   fk3M(new THREE.BoxGeometry(3.6,.3,3),0x6b4423,0,.15,0,hut);fk3M(new THREE.BoxGeometry(3.2,2.2,2.6),0xb7844f,0,1.4,0,hut);
   for(i=0;i<5;i++)fk3M(new THREE.BoxGeometry(3.25,.06,2.65),0x8e6236,0,.55+i*.45,0,hut,false);
   var roof=new THREE.Mesh(new THREE.CylinderGeometry(.01,2.5,1.6,4,1),fk3Mat(0xb4432f));roof.position.set(0,3.3,0);roof.rotation.y=Math.PI/4;roof.scale.set(1.15,1,.95);roof.castShadow=true;hut.add(roof);
@@ -6511,12 +6514,13 @@ function fk3RockFall(cl,rk){var ln=new THREE.Vector3(-FK3CL.x-rk.position.x,0,-F
   var pd=new THREE.Mesh(new THREE.CircleGeometry(1.05,28),new THREE.MeshLambertMaterial({color:0x3fa6dc,transparent:true,opacity:.92}));pd.rotation.x=-Math.PI/2;pd.position.set(0,.53,.95);pd.scale.set(1,.75,1);g.add(pd);
   for(i=0;i<2;i++){var rg=new THREE.Mesh(new THREE.RingGeometry(.92,1,40),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(0,.56,.95);rg.userData.o=i/2+frand(bx)*.3;rg.userData.s=.38;g.add(rg);(FK3.fx.rings=FK3.fx.rings||[]).push(rg)}}
 /* อัปเดต 217: ต้นน้ำ — ภูเขาหลังเกาะ + ลำธารไหลลงจากไหล่เขาเข้าสระบนเกาะ (น้ำตกจึงมีที่มา) */
-function fk3Source(cl){fk3Mountain(cl,.6,-11,9.5,22,7.3,false);fk3Mountain(cl,-7.5,-14,8,15,3.1,false);fk3Mountain(cl,9,-14.5,8.5,16,5.7,false);
-  var C=new THREE.CatmullRomCurve3([new THREE.Vector3(.7,13.2,-7.3),new THREE.Vector3(.2,11.2,-6.6),new THREE.Vector3(.9,9.2,-5.6),new THREE.Vector3(.4,7.7,-4.3),new THREE.Vector3(.6,6.86,-3.1)]),N=40,pa=[],ua=[],ix=[],up=new THREE.Vector3(0,1,0),sd=new THREE.Vector3();
+function fk3Source(cl){fm3File("x_clift").then(function(G){var n=G.scene.getObjectByName("K_x_clift");if(!n||!cl.parent)return;[[26,-Math.PI*.75,.6,-14.5],[19,2.9,-11.5,-15.5],[21,4.2,12.5,-16]].forEach(function(q){var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(q[0]);w.rotation.y=q[1];w.position.set(q[2],-.8,q[3]);
+    o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w)})},function(){fk3Mountain(cl,.6,-11,9.5,22,7.3,false);fk3Mountain(cl,-7.5,-14,8,15,3.1,false);fk3Mountain(cl,9,-14.5,8.5,16,5.7,false)});
+  var C=new THREE.CatmullRomCurve3([new THREE.Vector3(.7,10.4,-6.9),new THREE.Vector3(.4,9.2,-5.9),new THREE.Vector3(.8,8,-4.8),new THREE.Vector3(.5,7.3,-3.9),new THREE.Vector3(.6,6.86,-3.1)]),N=40,pa=[],ua=[],ix=[],up=new THREE.Vector3(0,1,0),sd=new THREE.Vector3();
   for(var i=0;i<=N;i++){var t=i/N,p=C.getPoint(t),tg=C.getTangent(t);sd.crossVectors(tg,up).normalize();var w=.38+t*.3;pa.push(p.x-sd.x*w,p.y+.12,p.z-sd.z*w,p.x+sd.x*w,p.y+.12,p.z+sd.z*w);ua.push(0,1-t,1,1-t);if(i<N){var a=i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
   var gg=new THREE.BufferGeometry();gg.setAttribute("position",new THREE.Float32BufferAttribute(pa,3));gg.setAttribute("uv",new THREE.Float32BufferAttribute(ua,2));gg.setIndex(ix);
   var m=fk3FallMat(.9,.95,4.2),rb=new THREE.Mesh(gg,m);cl.add(rb);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m);
-  var sp=new THREE.Mesh(new THREE.CircleGeometry(.7,20),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7,depthWrite:false}));sp.position.set(.7,13.35,-7.25);sp.rotation.x=-1.1;cl.add(sp)}
+  var sp=new THREE.Mesh(new THREE.CircleGeometry(.7,20),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7,depthWrite:false}));sp.position.set(.7,10.55,-6.85);sp.rotation.x=-1.1;cl.add(sp)}
 /* สระบนเกาะ: ผิวน้ำไหลเข้าหาปากน้ำตก */
 function fk3PoolFlow(w){var m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uT:{value:0}},
   vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
@@ -7234,7 +7238,7 @@ var FM3M={},FM3MK={pet_bee:"bee",cow:"cow",husky:"husky",dog:"shiba",horse:"hors
 function fm3LoadExtra(){if(THREE.GLTFLoader&&THREE.SkeletonUtils&&window.fflate)return Promise.resolve();if(FM3.ex)return FM3.ex;
   var add=function(src){return new Promise(function(ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})},B="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/";
   FM3.ex=Promise.all([add(B+"loaders/GLTFLoader.js"),add(B+"utils/SkeletonUtils.js"),add(B+"libs/fflate.min.js")]);FM3.ex.catch(function(){FM3.ex=null});return FM3.ex}
-var FM3F={},FMV={x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
+var FM3F={},FMV={x_clift:1,x_kubo:1,x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
 function fm3File(n){if(!window.fetch)return Promise.reject(new Error("fetch"));if(FM3F[n])return FM3F[n];var base=window.FM3_MODEL_BASE||"models/";
   FM3F[n]=fm3LoadExtra().then(function(){return fetch(base+"fm-"+n+".bin"+(FMV[n]?"?v="+FMV[n]:""))}).then(function(r){if(!r.ok)throw new Error("model");return r.arrayBuffer()}).then(function(ab){var u=new Uint8Array(ab);if(u[0]===0x1f&&u[1]===0x8b)u=fflate.gunzipSync(u);
     return new Promise(function(ok,bad){new THREE.GLTFLoader().parse(u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength),"",ok,bad)})}).then(function(g){g.scene.traverse(function(o){o.userData.shared=1;if(o.isMesh){o.castShadow=true;[].concat(o.material).forEach(function(m){if(m.__c)return;m.__c=1;if(/^d_/.test(n)){m.flatShading=true;m.side=THREE.DoubleSide}if("metalness" in m){m.metalness=0;m.roughness=.9}if(m.color)m.color.convertLinearToSRGB();if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}if(/Leaves/.test(m.name||"")){m.alphaTest=.5;m.transparent=false;m.side=THREE.DoubleSide}})}});return g});
