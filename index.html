@@ -6412,7 +6412,7 @@ function fk3Scenery(g,sc){var RM=new THREE.MeshLambertMaterial({vertexColors:tru
   /* หน้าผา + น้ำตก */
   var cl=new THREE.Group();cl.position.set(FK3CL.x,0,FK3CL.z);g.add(cl);var H=[6.4,7.2,7.8,6.9,5.6,7.4,8.1,7.3,6.2],TOPS=[];
   for(i=-4;i<=4;i++){var r=2.3+frand(i+20)*.6,hh=H[i+4],xx=i*2.05+(frand(i*3+7)-.5)*.5,zz=-Math.abs(i)*.55+(frand(i*5+1)-.5)*.6;if(i===0){hh=5.2;zz=-1.2}
-    var rk=new THREE.Mesh(fk3RockGeo(r,i*1.7+3,hh/(r*2)*1.05,null,1),RM);rk.position.set(xx,hh/2-.4,zz);rk.rotation.y=frand(i+9)*3;rk.castShadow=true;rk.receiveShadow=true;cl.add(rk);
+    var rk=new THREE.Mesh(fk3RockGeo(r,i*1.7+3,hh/(r*2)*1.05,null,1),RM);rk.position.set(xx,hh/2-.4,zz);rk.userData.ci=i;rk.rotation.y=frand(i+9)*3;rk.castShadow=true;rk.receiveShadow=true;cl.add(rk);
     TOPS.push([xx+FK3CL.x,zz+FK3CL.z,hh-.3])}
   for(i=0;i<9;i++){var br=new THREE.Mesh(fk3RockGeo(.5+frand(i*4)*.7,i*2.3+11,.8),RM);br.position.set((frand(i*7)-.5)*15,.2,-9+frand(i*3)*1.6);if(Math.abs(br.position.x)<2.2)br.position.x+=br.position.x<0?-2.5:2.5;br.castShadow=true;cl.add(br)}
   var back=new THREE.Mesh(fk3RockGeo(5,41,.75,null,1),RM);back.position.set(0,3.3,-5.5);back.scale.set(1.9,1,1);cl.add(back);
@@ -6430,8 +6430,8 @@ function fk3Scenery(g,sc){var RM=new THREE.MeshLambertMaterial({vertexColors:tru
   var mt=fk3SoftTex();for(i=0;i<14;i++){var ms=new THREE.Sprite(new THREE.SpriteMaterial({map:mt,transparent:true,opacity:.0,depthWrite:false,color:0xffffff}));ms.userData.o=i/14;cl.add(ms);FK3.fx.mist.push(ms)}
   FK3.fx.fallPos=[FK3CL.x,FK3CL.z+3.9];
   /* อัปเดต 214: เกาะลอยฟ้า + ต้นไม้ใหญ่ + สระบนเกาะ (โมเดล) วางบนหน้าผา — สายน้ำจากเกาะไหลต่อลงบึงด้วยน้ำตก shader */
-  fm3File("x_isle").then(function(G){var n=G.scene.getObjectByName("K_x_isle");if(!n||!cl.parent)return;var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(12);w.position.set(1.2,2.15,.32);
-    o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);riv.visible=false;fall.position.set(0,3.78,2.3);fall.scale.set(.32,1.35,1);fall2.position.set(0,3.8,2.42);fall2.scale.set(.26,1.35,1);FK3.fx.narrow=1},function(){});
+  fm3File("x_isle").then(function(G){var n=G.scene.getObjectByName("K_x_isle");if(!n||!cl.parent)return;var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(12);w.position.set(1.2,-.6,.32);cl.children.forEach(function(c){if(c.userData.ci!=null&&c.userData.ci>=-2&&c.userData.ci<=3)c.visible=false});
+    o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);riv.visible=false;fall.position.set(0,2.4,2.3);fall.scale.set(.32,.86,1);fall2.position.set(0,2.42,2.42);fall2.scale.set(.26,.86,1);FK3.fx.narrow=1},function(){});
   /* ต้นไม้บนหน้าผา */
   TOPS.forEach(function(t,j){if(Math.abs(t[0]-FK3CL.x-1.2)<6.2)return;FK3.TPX.push([t[0]+(frand(j)-.5)*.8,t[1]-.4,.6+frand(j*3)*.35,frand(j*7),t[2]])});
   for(i=0;i<16;i++)FK3.TPX.push([-12+i*1.6+(frand(i*3)-.5),FK3CL.z-6.5-frand(i*5)*2.5,.8+frand(i)*.4,frand(i*8),Math.abs(-12+i*1.6)<8?6.4:2]);
