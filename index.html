@@ -6578,8 +6578,8 @@ function fk3BobXZ(bx,by){var P=FK3.spot||{x:0,z:4.9},d=fk3Dir(P.x,P.z),dist=5+(5
 /* อัปเดต 119: เดินรอบทะเลสาบเพื่อเปลี่ยนที่ตกปลา */
 function fk3Dir(x,z){var l=Math.hypot(x,z)||1;return [-x/l,-z/l]}
 function fk3OnDock(x,z){return Math.abs(x)<1.1&&z>4.25&&z<11.1}
-function fk3Walkable(x,z){if(fk3OnDock(x,z))return true;var n=Math.hypot(x/FK3RX,z/FK3RZ);if(n<1.02||n>1.78)return false;if(Math.abs(x-FK3CL.x)<FK3CL.hw+.4&&z<FK3CL.z+4.3)return false;if(Math.hypot(x-17.2,z-6.6)<2.7||Math.hypot(x-13.8,z-9.2)<1.1||(Math.abs(x+3.2)<1.3&&Math.abs(z-12.4)<.5))return false;
-  return !(FK3.TP||[]).some(function(t){return Math.hypot(t[0]-x,t[1]-z)<.55*t[2]+.25})}
+function fk3Walkable(x,z){if(fk3OnDock(x,z))return true;var n=Math.hypot(x/FK3RX,z/FK3RZ);if(n<.99||n>1.78)return false;if(Math.abs(x-FK3CL.x)<FK3CL.hw+.4&&z<FK3CL.z+4.3)return false;if(Math.hypot(x-17.2,z-6.6)<2.7||Math.hypot(x-13.8,z-9.2)<1.1||(Math.abs(x+3.2)<1.3&&Math.abs(z-12.4)<.5))return false;
+  return !(FK3.TP||[]).some(function(t){return Math.hypot(t[0]-x,t[1]-z)<.2*t[2]+.2})}
 function fk3Walk(on){if(!FK3.on)return;if(on&&FK.st!=="idle"&&FK.st!=="result")return;FK3.walk=!!on;FK3.joy={x:0,y:0};var el=$("fm-lake");if(el)el.classList.toggle("fk3walk",!!on);
   if(on){FK.st="idle";var d=fk3Dir(FK3.pos.x,FK3.pos.z);FK3.hd=Math.atan2(d[0],d[1]);FK3.cyaw=FK3.hd;FK3.ctl.enabled=false;if(FK3.me)FK3.me.rod.visible=false}
   else{FK3.spot={x:FK3.pos.x,z:FK3.pos.z};var d2=fk3Dir(FK3.pos.x,FK3.pos.z);if(FK3.me){fk3Face(FK3.me,FK3.pos.x+d2[0],FK3.pos.z+d2[1]);FK3.me.rod.visible=true}
@@ -6631,7 +6631,7 @@ function fk3Build(){var cv=$("fk3-cv");if(!cv)return;var R;try{R=new THREE.WebGL
   /* พื้นหญ้า + เนินไกล ๆ + เมฆ */
   [[-30,30,-80,1.6],[6,36,-95,2],[38,28,-75,1.4],[-64,26,-60,1.3],[70,34,-50,1.5],[-20,40,-120,2.4],[50,42,-120,2.2]].forEach(function(p){var s=fk3Cloud();s.position.set(p[0],p[1],p[2]);s.scale.set(16*p[3],8*p[3],1);g.add(s)});
   /* ทะเลสาบ: ก้นทราย · น้ำลึกตรงกลาง · ผิวน้ำมีลายคลื่นเลื่อนได้ · ขอบทราย */
-  var rim=fk3M(new THREE.RingGeometry(.94,1.09,96),0xd9b47a,0,.025,0,g,false);rim.rotation.x=-Math.PI/2;rim.scale.set(FK3RX,FK3RZ,1);rim.receiveShadow=true;
+  var rim=fk3M(new THREE.RingGeometry(.94,1.22,96),0xd9b47a,0,.025,0,g,false);rim.rotation.x=-Math.PI/2;rim.scale.set(FK3RX,FK3RZ,1);rim.receiveShadow=true;
   var bed=fk3M(new THREE.CircleGeometry(1,96),0x1f6f99,0,-.4,0,g,false);bed.rotation.x=-Math.PI/2;bed.scale.set(FK3RX,FK3RZ,1);
   var deep=fk3M(new THREE.CircleGeometry(1,64),0x0c4a6e,0,-.35,0,g,false);deep.rotation.x=-Math.PI/2;deep.scale.set(FK3RX*.62,FK3RZ*.58,1);
   var wt=FK3.wt=fk3WaterTex(),wm=FK3.wmat=fk3WaterMat();
@@ -6651,7 +6651,7 @@ function fk3Build(){var cv=$("fk3-cv");if(!cv)return;var R;try{R=new THREE.WebGL
       var st=fk3M(new THREE.CylinderGeometry(.025,.035,h,5),0x4d7c32,x,h/2,z,g,false);st.rotation.z=(frand(k*3+j)-.5)*.2;if(k%3===0)fk3M(new THREE.CylinderGeometry(.06,.06,.28,8),0x6b3f1d,x,h+.1,z,g,false)}});
   [[-120,1.06,.6],[-60,1.07,.45],[10,1.06,.55],[170,1.07,.5],[-15,1.05,.35],[140,1.06,.4]].forEach(function(r,j){var a=r[0]*Math.PI/180,m=fk3M(new THREE.DodecahedronGeometry(r[2],0),0x9ca3af,Math.cos(a)*FK3RX*r[1],r[2]*.4,Math.sin(a)*FK3RZ*r[1],g);m.rotation.set(j,j*2,0)});
   /* ต้นไม้รอบทะเลสาบ (โมเดลต้นไม้ใบเยอะชุดเดียวกับฟาร์ม · โหลดไม่ได้ใช้ต้นไม้ธรรมดา) */
-  var TP=[];for(i=0;i<190;i++){var ta=frand(i*13+5)*360;if(ta>58&&ta<122)continue;var tr=1.38+Math.pow(frand(i*7+1),.8)*1.9,a2=ta*Math.PI/180;TP.push([Math.cos(a2)*FK3RX*tr,Math.sin(a2)*FK3RZ*tr,.75+frand(i*3)*.6,frand(i*9)])}
+  var TP=[];for(i=0;i<190;i++){var ta=frand(i*13+5)*360;if(ta>58&&ta<122)continue;var tr=1.5+Math.pow(frand(i*7+1),.8)*1.78,a2=ta*Math.PI/180;TP.push([Math.cos(a2)*FK3RX*tr,Math.sin(a2)*FK3RZ*tr,.75+frand(i*3)*.6,frand(i*9)])}
   for(i=0;i<26;i++){var tx=-30+i*2.4+(frand(i*5)-.5)*1.6;TP.push([tx,-RZb(tx)-(frand(i*11)*3),.9+frand(i*2)*.5,frand(i*4)])}
   function RZb(x){return FK3RZ*2.1+Math.abs(x)*.05}
   [[-4,-14],[3,-14.5],[9,-13.5]].forEach(function(p,j){TP.push([p[0],p[1],1.1,frand(j+40)])});
@@ -6846,7 +6846,7 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[],lotus
       o.userData={a:frand(i*7)*6.28,r:.25+frand(i*5)*.6,sp:(.1+frand(i*9)*.12)*(i%2?1:-1),y:-.08-frand(i*4)*.1,k:frand(i)*9};g.add(o);FK3.X.fish.push(o)}},function(){})});
   /* นางฟ้า/เทวดาบินวนเหนือบึง + เจ้าหญิงสยามนั่งชมวิวบนเกาะกลางน้ำ */
   FK3.X.fly=[];
-  fm3File("c_siam").then(function(G){if(!ok())return;var nd=G.scene.getObjectByName("K_c_siam");if(!nd)return;var o=nd.clone();o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.userData.shared=1}});var w=new THREE.Group();w.add(o);w.scale.setScalar(1.35);w.position.set(-10.3,.1,-3.7);w.rotation.y=.75;g.add(w);FK3.X.siam=w;var au=fk3Glow(0xffd76a,3.4);au.position.set(-10.3,1.5,-3.7);au.material.opacity=.45;g.add(au);FK3.X.siamAura=au;var pm=fm3Emoji("🙏",.9);pm.position.set(-10.3,3.6,-3.7);g.add(pm);FK3.X.siamMark=pm},function(){});
+  if(0)fm3File("c_siam").then(function(G){if(!ok())return;var nd=G.scene.getObjectByName("K_c_siam");if(!nd)return;var o=nd.clone();o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.userData.shared=1}});var w=new THREE.Group();w.add(o);w.scale.setScalar(1.35);w.position.set(-10.3,.1,-3.7);w.rotation.y=.75;g.add(w);FK3.X.siam=w;var au=fk3Glow(0xffd76a,3.4);au.position.set(-10.3,1.5,-3.7);au.material.opacity=.45;g.add(au);FK3.X.siamAura=au;var pm=fm3Emoji("🙏",.9);pm.position.set(-10.3,3.6,-3.7);g.add(pm);FK3.X.siamMark=pm},function(){});
   /* นางเงือก 2 ตัว: ตัวหนึ่งว่ายวนรอบทะเลสาบ · อีกตัวพักที่เกาะกลางน้ำ */
   fm3File("fk_mermaid").then(function(G){if(!ok()||!THREE.SkeletonUtils)return;var A={};G.animations.forEach(function(c,i){A[i]=c});
     function mk(){var o=THREE.SkeletonUtils.clone(G.scene);o.traverse(function(m){m.userData.shared=1;if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});return o}
@@ -6980,7 +6980,7 @@ function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},r
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+(FK.pray&&FK.pray.kind==='big'&&FK.pray.casts_left>0?' · 🙏 พรปลาใหญ่ ×'+FK.pray.casts_left:'')+'</div>'+
     '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button>'+(FK3.on?'<div class="fk-zm"><button type="button" data-fk="zin" aria-label="ซูมเข้า">＋</button><button type="button" data-fk="zout" aria-label="ซูมออก">－</button></div>':'')+'<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
-    '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button><button type="button" data-fk="pet">🐾<small>สัตว์เลี้ยง</small></button><button type="button" data-fk="pray"'+(FK.pray&&FK.pray.kind?'':' class="on"')+'>🙏<small>ขอพร</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'</div>'+
+    '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button><button type="button" data-fk="pet">🐾<small>สัตว์เลี้ยง</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'</div>'+
     '<div class="fk-baits"><small class="fk-bt">เหยื่อ</small>'+
     Object.keys(c.baits||{}).sort(function(a,b){return (c.baits[a].cost||0)-(c.baits[b].cost||0)}).filter(function(k){return (B[k]||0)>0||FK.bait===k}).map(function(k){var o=c.baits[k],n=B[k]||0;return '<button type="button" data-fkbait="'+k+'"'+(FK.bait===k?' class="on"':'')+(n?'':' disabled')+' title="'+esc(o.n)+'">'+o.e+' <b>'+n+'</b></button>'}).join("")+'</div>';fkTickUpd()}
 function fkHasBait(){var B=(FK.info||{}).bait||{};return Object.keys(B).some(function(k){return B[k]>0})}
