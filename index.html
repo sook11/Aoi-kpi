@@ -6419,7 +6419,7 @@ function fk3Scenery(g,sc){var RM=new THREE.MeshLambertMaterial({vertexColors:tru
   /* ลำธารบนหน้าผา → น้ำตก */
   /* อัปเดต 213: น้ำตกแบบ shader — สายน้ำไหลหลายชั้น ฟองขาวช่วงล่าง ขอบน้ำฟุ้ง ละอองกระเซ็น วงคลื่นที่ฐาน */
   var fg=new THREE.PlaneGeometry(2.8,5.6,24,32),FP=fg.attributes.position;for(i=0;i<FP.count;i++){var yy=FP.getY(i),xx2=FP.getX(i)/1.4,u=(2.8-yy)/5.6,th=xx2*.95,fR=1.62*(1+u*.3);FP.setX(i,Math.sin(th)*fR);FP.setZ(i,(Math.cos(th)-1)*fR*.95+Math.pow(u,1.7)*1.25+Math.sin(u*9)*.04)}
-  var fall=new THREE.Mesh(fg,fk3FallMat(1,.95,0));fall.position.set(0,3.78,2.3);fall.scale.set(.32,1.35,1);cl.add(fall);var fall2=new THREE.Mesh(fg,fk3FallMat(1.6,.55,7.3));fall2.position.set(0,3.8,2.42);fall2.scale.set(.26,1.35,1);cl.add(fall2);FK3.fx.fall2=fall2;FK3.fx.fmats=[fall.material,fall2.material];
+  var fall=new THREE.Mesh(fg,fk3FallMat(1,.95,0));fall.position.set(0,2.7,2.15);cl.add(fall);var fall2=new THREE.Mesh(fg,fk3FallMat(1.6,.55,7.3));fall2.position.set(0,2.72,2.32);fall2.scale.set(.82,1,1);cl.add(fall2);FK3.fx.fall2=fall2;FK3.fx.fmats=[fall.material,fall2.material];
   var sg=new THREE.BufferGeometry(),SN=150,sa=new Float32Array(SN*3);sg.setAttribute("position",new THREE.BufferAttribute(sa,3));var spr=new THREE.Points(sg,new THREE.PointsMaterial({map:fk3SoftTex(),color:0xffffff,size:.5,transparent:true,opacity:.75,depthWrite:false}));spr.frustumCulled=false;cl.add(spr);
   FK3.fx.spray={p:spr,n:SN,s:Array.from({length:SN},function(_,k){return [frand(k*3.1),frand(k*5.7),frand(k*7.9),frand(k*1.3)]})};
   FK3.fx.rings=[];for(i=0;i<4;i++){var rg=new THREE.Mesh(new THREE.RingGeometry(.92,1,56),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(0,.1,3.9);rg.userData.o=i/4;cl.add(rg);FK3.fx.rings.push(rg)}
@@ -6431,7 +6431,7 @@ function fk3Scenery(g,sc){var RM=new THREE.MeshLambertMaterial({vertexColors:tru
   FK3.fx.fallPos=[FK3CL.x,FK3CL.z+3.9];
   /* อัปเดต 214: เกาะลอยฟ้า + ต้นไม้ใหญ่ + สระบนเกาะ (โมเดล) วางบนหน้าผา — สายน้ำจากเกาะไหลต่อลงบึงด้วยน้ำตก shader */
   fm3File("x_isle").then(function(G){var n=G.scene.getObjectByName("K_x_isle");if(!n||!cl.parent)return;var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(12);w.position.set(1.2,2.15,.32);
-    o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);riv.visible=false},function(){});
+    o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);riv.visible=false;fall.position.set(0,3.78,2.3);fall.scale.set(.32,1.35,1);fall2.position.set(0,3.8,2.42);fall2.scale.set(.26,1.35,1);FK3.fx.narrow=1},function(){});
   /* ต้นไม้บนหน้าผา */
   TOPS.forEach(function(t,j){if(Math.abs(t[0]-FK3CL.x-1.2)<6.2)return;FK3.TPX.push([t[0]+(frand(j)-.5)*.8,t[1]-.4,.6+frand(j*3)*.35,frand(j*7),t[2]])});
   for(i=0;i<16;i++)FK3.TPX.push([-12+i*1.6+(frand(i*3)-.5),FK3CL.z-6.5-frand(i*5)*2.5,.8+frand(i)*.4,frand(i*8),Math.abs(-12+i*1.6)<8?6.4:2]);
@@ -6496,7 +6496,7 @@ function fk3FallMat(sp,al,sd){return new THREE.ShaderMaterial({transparent:true,
    "float ed=smoothstep(0.,.07+.05*n2,x)*smoothstep(1.,.93-.05*n1,x);float a=uA*ed*(.72+.28*max(st,foam));\n"+
    "gl_FragColor=vec4(col,a);\n#include <fog_fragment>\n}"})}
 function fk3SceneStep(t,dt){var X=FK3.fx;if(!X)return;if(X.ft)X.ft.offset.y=t*1.35;if(X.fmats)X.fmats.forEach(function(m){m.uniforms.uT.value=t});
-  if(X.spray){var S=X.spray,pa=S.p.geometry.attributes.position;for(var si=0;si<S.n;si++){var q=S.s[si],u=(t*(.9+q[3]*.6)+q[0])%1,tt=u*.9,vy=1.6+q[1]*2.4,vx=(q[2]-.5)*2.2;pa.setXYZ(si,(q[0]-.5)*1.5+vx*tt*.7,.12+vy*tt-4.9*tt*tt*.9,3.75+(q[3]-.3)*1.1+tt*.9)}pa.needsUpdate=true}
+  if(X.spray){var S=X.spray,pa=S.p.geometry.attributes.position;for(var si=0;si<S.n;si++){var q=S.s[si],u=(t*(.9+q[3]*.6)+q[0])%1,tt=u*.9,vy=1.6+q[1]*2.4,vx=(q[2]-.5)*2.2;pa.setXYZ(si,(q[0]-.5)*(X.narrow?1.5:2.9)+vx*tt*(X.narrow?.7:1),.12+vy*tt-4.9*tt*tt*.9,3.75+(q[3]-.3)*1.1+tt*.9)}pa.needsUpdate=true}
   if(X.rings)X.rings.forEach(function(r){var u=(t*.45+r.userData.o)%1,sc=.8+u*2.4;r.scale.set(sc*1.25,sc*.8,1);r.material.opacity=(1-u)*.55});if(X.rt)X.rt.offset.y=-t*.5;if(FK3.wmat)FK3.wmat.uniforms.uT.value=t;
   if(X.foam){X.foam.rotation.z=t*.25;var fs=1+Math.sin(t*3)*.04;X.foam.scale.set(1.25*fs,.8*fs,1)}
   X.mist.forEach(function(m){var u=(t*.22+m.userData.o)%1,a=m.userData.o*37;m.position.set(Math.sin(a)*1.4*(.4+u),.3+u*3.2,3.9+Math.cos(a)*.8);var s=1.4+u*2.6;m.scale.set(s,s,1);m.material.opacity=Math.sin(u*Math.PI)*.45});
