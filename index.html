@@ -6669,9 +6669,9 @@ function fk3PetStep(P,V,t,dt){var o=V.g.position,mv=Math.hypot(o.x-P.ox,o.z-P.oz
   var kk=Math.min(1,P.spd/((FPSPD[P.k]||.5)*1.5)),hop=0;if(P.jump){var jt=t-P.jump;if(jt>.7)P.jump=0;else hop=Math.sin(jt/.7*Math.PI)*.45}
   var y=P.md==="bird"?2.2+Math.sin(t*1.7)*.4:P.md==="swim"?-.08+Math.sin(t*2)*.03:(fk3OnDock(P.x,P.z)?.5:0)+hop;P.g.position.set(P.x,y,P.z);
   var m=P.m,U=m.userData;m.rotation.y=P.hd;var bd=U.body;if(bd&&U.chibi&&kk>.05)bd.position.y=Math.abs(Math.sin(P.ph))*.12*kk;
-  (U.legs||[]).forEach(function(l){l.rotation.z=P.md==="bird"?-.6:Math.sin(P.ph+l.userData.o)*.7*kk});fm3Drive(m,dt,kk,P.ph,kk<.05&&Math.sin(t*.3)>.5,P.jump);
+  (U.legs||[]).forEach(function(l){l.rotation.z=P.md==="bird"?-.6:Math.sin(P.ph+l.userData.o)*.7*kk});fm3Drive(m,dt,kk,P.ph,false,P.jump);
   (U.wings||[]).forEach(function(wg,i){wg.rotation.x=P.md==="bird"?Math.sin(t*24)*(i?1:-1)*.9:0});
-  var uo=U.uaObj;if(uo){uo.position.y=Math.abs(Math.sin(P.ph))*.035*kk;uo.rotation.z=Math.sin(P.ph)*.07*kk;if(U.legU){U.legU.uPh.value=P.ph;U.legU.uK.value=P.md==="bird"?0:kk;if(U.legU.uW){U.legU.uW.value+=((P.md==="bird"?1:0)-U.legU.uW.value)*Math.min(1,dt*6);U.legU.uWp.value=t*17}}}}
+  var uo=U.uaObj;if(uo){if(U.uaY0==null)U.uaY0=uo.position.y;uo.position.y=U.uaY0+Math.abs(Math.sin(P.ph))*.035*kk;uo.rotation.z=Math.sin(P.ph)*.07*kk;if(U.legU){U.legU.uPh.value=P.ph;U.legU.uK.value=P.md==="bird"?0:kk;if(U.legU.uW){U.legU.uW.value+=((P.md==="bird"?1:0)-U.legU.uW.value)*Math.min(1,dt*6);U.legU.uWp.value=t*17}}}}
 /* รายการสัตว์ที่พามาได้: สัตว์เลี้ยง + สัตว์ในฟาร์มของเรา (Admin เลือกได้ทุกตัว) */
 function fkPetList(){var c=FM.cat||{},L=[],seen={},addk=function(k,n,e){if(seen[k])return;seen[k]=1;L.push([k,n,e])};
   if(S.admin){Object.keys(c.decor||{}).forEach(function(k){var o=c.decor[k];if(o.pet&&!o.hide)addk(k,o.n,o.e)});Object.keys(c.animals||{}).forEach(function(k){var o=c.animals[k];addk(k,o.n||k,o.e||"🐾")})}
