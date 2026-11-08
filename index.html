@@ -6508,11 +6508,12 @@ function fk3IsleRocks(o,cl){var mesh=null;o.traverse(function(m){if(m.isMesh&&!m
 function fk3RockFall(cl,rk){var ln=new THREE.Vector3(-FK3CL.x-rk.position.x,0,-FK3CL.z-rk.position.z).normalize(),P=rk.geometry.attributes.position,v=new THREE.Vector3(),fr=-1e9,top=0,i;
   rk.updateMatrix();for(i=0;i<P.count;i++){v.fromBufferAttribute(P,i).applyMatrix4(rk.matrix);top=Math.max(top,v.y)}
   for(i=0;i<P.count;i++){v.fromBufferAttribute(P,i).applyMatrix4(rk.matrix);if(v.y>top*.55){var d=(v.x-rk.position.x)*ln.x+(v.z-rk.position.z)*ln.z;if(d>fr)fr=d}}
-  var ht=top*.86+.5,fg=new THREE.PlaneGeometry(2.8,5.6,12,24),FP=fg.attributes.position;for(i=0;i<FP.count;i++){var yy=FP.getY(i),xx2=FP.getX(i)/1.4,u=(2.8-yy)/5.6,th=xx2*.9,fR=1.5*(1+u*.35);FP.setX(i,Math.sin(th)*fR);FP.setZ(i,(Math.cos(th)-1)*fR*.9+Math.pow(u,1.8)*.9)}
-  var g=new THREE.Group(),bx=rk.position.x+ln.x*(fr-.15),bz=rk.position.z+ln.z*(fr-.15);g.position.set(bx,-.5,bz);g.rotation.y=Math.atan2(ln.x,ln.z);cl.add(g);
+  var ht=top*.86+.5,fg=new THREE.PlaneGeometry(2.8,5.6,12,24),FP=fg.attributes.position;for(i=0;i<FP.count;i++){var yy=FP.getY(i),xx2=FP.getX(i)/1.4,u=(2.8-yy)/5.6,th=xx2*.9,fR=1.5*(1+u*.35);FP.setX(i,Math.sin(th)*fR);FP.setZ(i,(Math.cos(th)-1)*fR*.9+Math.pow(u,1.6)*1.4)}
+  var g=new THREE.Group(),bx=rk.position.x+ln.x*(fr+.1),bz=rk.position.z+ln.z*(fr+.1);g.position.set(bx,-.5,bz);g.rotation.y=Math.atan2(ln.x,ln.z);cl.add(g);
   var sy=ht/5.6,m1=fk3FallMat(1.2,.92,frand(bx)*9),m2=fk3FallMat(1.8,.5,frand(bz)*9+3);var f1=new THREE.Mesh(fg,m1);f1.scale.set(.2,sy,1);f1.position.y=ht/2;g.add(f1);var f2=new THREE.Mesh(fg,m2);f2.scale.set(.15,sy,1);f2.position.set(0,ht/2+.02,.08);g.add(f2);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m1,m2);
   var pd=new THREE.Mesh(new THREE.CircleGeometry(1.05,28),new THREE.MeshLambertMaterial({color:0x3fa6dc,transparent:true,opacity:.92}));pd.rotation.x=-Math.PI/2;pd.position.set(0,.53,.95);pd.scale.set(1,.75,1);g.add(pd);
   for(i=0;i<2;i++){var rg=new THREE.Mesh(new THREE.RingGeometry(.92,1,40),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.position.set(0,.56,.95);rg.userData.o=i/2+frand(bx)*.3;rg.userData.s=.38;g.add(rg);(FK3.fx.rings=FK3.fx.rings||[]).push(rg)}
+  fk3Mist(g,0,.75,1.25,1.6);
   /* ลำธารจากแอ่งน้ำ ไหลลงบึง */
   g.updateMatrix();var p0=new THREE.Vector3(0,0,1.7).applyMatrix4(g.matrix),lc=new THREE.Vector3(-FK3CL.x,0,-FK3CL.z),dir=lc.clone().sub(p0).setY(0).normalize(),pts=[],q=p0.clone(),k=0,sx=new THREE.Vector3(-dir.z,0,dir.x);
   for(k=0;k<120;k++){var wx=q.x+FK3CL.x,wz=q.z+FK3CL.z;pts.push(q.clone().addScaledVector(sx,Math.sin(k*.45)*.25));if(Math.hypot(wx/FK3RX,wz/FK3RZ)<.96)break;q.addScaledVector(dir,.25)}
@@ -6523,11 +6524,11 @@ function fk3Source(cl,iw){fm3File("x_clift").then(function(G){var n=G.scene.getO
     o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);W.push(w)});fk3Stream(cl,[W[0],iw])},function(){fk3Mountain(cl,.6,-11,9.5,22,7.3,false);fk3Mountain(cl,-7.5,-14,8,15,3.1,false);fk3Mountain(cl,9,-14.5,8.5,16,5.7,false)})}
 /* ลำธารบนชั้นหน้าผา → ตกลงสระบนเกาะ: ยิงลำแสงลงหาผิวหน้าผา/เกาะจริงทุกช่วง น้ำจึงแนบพื้น ไม่ลอย */
 function fk3Stream(cl,objs){cl.updateMatrixWorld(true);var rc=new THREE.Raycaster(),inv=new THREE.Matrix4().copy(cl.matrixWorld).invert(),x=.6,z,top=0,zf=null;
-  for(z=-3.3;z>=-6;z-=.1){rc.set(new THREE.Vector3(x,60,z).applyMatrix4(cl.matrixWorld),new THREE.Vector3(0,-1,0));var h=rc.intersectObject(objs[0],true)[0];if(!h)continue;var p=h.point.clone().applyMatrix4(inv);if(p.y>8){top=p.y;zf=z+.12;break}}
+  for(z=-3.3;z>=-6;z-=.1){rc.set(new THREE.Vector3(x,60,z).applyMatrix4(cl.matrixWorld),new THREE.Vector3(0,-1,0));var h=rc.intersectObject(objs[0],true)[0];if(!h)continue;var p=h.point.clone().applyMatrix4(inv);if(p.y>8){top=p.y;zf=z+.3;break}}
   if(zf==null)return;var ht=top-6.7;if(ht<1)return;var fg=new THREE.PlaneGeometry(2.8,5.6,12,24),FP=fg.attributes.position;
-  for(var i=0;i<FP.count;i++){var yy=FP.getY(i),xx2=FP.getX(i)/1.4,u=(2.8-yy)/5.6,th=xx2*.9,fR=1.5*(1+u*.3);FP.setX(i,Math.sin(th)*fR);FP.setZ(i,(Math.cos(th)-1)*fR*.9+Math.pow(u,1.8)*.35)}
+  for(var i=0;i<FP.count;i++){var yy=FP.getY(i),xx2=FP.getX(i)/1.4,u=(2.8-yy)/5.6,th=xx2*.9,fR=1.5*(1+u*.3);FP.setX(i,Math.sin(th)*fR);FP.setZ(i,(Math.cos(th)-1)*fR*.9+Math.pow(u,1.6)*.9)}
   var g=new THREE.Group();g.position.set(x,6.7,zf);cl.add(g);var m1=fk3FallMat(1.1,.92,5.5),m2=fk3FallMat(1.7,.5,8.1),f1=new THREE.Mesh(fg,m1);f1.scale.set(.22,ht/5.6,1);f1.position.y=ht/2;g.add(f1);
-  var f2=new THREE.Mesh(fg,m2);f2.scale.set(.16,ht/5.6,1);f2.position.set(0,ht/2+.02,.06);g.add(f2);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m1,m2)}
+  var f2=new THREE.Mesh(fg,m2);f2.scale.set(.16,ht/5.6,1);f2.position.set(0,ht/2+.02,.06);g.add(f2);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m1,m2);fk3Mist(g,0,.25,.9,1.3)}
 /* สระบนเกาะ: ผิวน้ำไหลเข้าหาปากน้ำตก */
 function fk3PoolFlow(w){var m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uT:{value:0}},
   vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
@@ -6535,16 +6536,19 @@ function fk3PoolFlow(w){var m=new THREE.ShaderMaterial({transparent:true,depthWr
    "void main(){vec2 u=vUv;vec2 q=vec2((u.x-.37)*(.55+.45*u.y)*7.,u.y*5.+uT*1.3);float a=n(q),b=n(q*2.1+3.);float st=smoothstep(.62,.9,a*.6+b*.5);"+
    "vec2 e=(u-.5)*2.;float msk=smoothstep(1.,.62,length(e*vec2(1.,.92)));vec3 col=mix(vec3(.25,.75,.95),vec3(1.),st*.85);gl_FragColor=vec4(col,msk*(.18+.55*st));}"});
   var pl=new THREE.Mesh(new THREE.PlaneGeometry(.4,.47),m);pl.rotation.x=-Math.PI/2;pl.position.set(-.05,.614,-.06);w.add(pl);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m)}
+/* ละอองน้ำฟุ้งที่ฐานน้ำตก (ให้ปลายสายน้ำกลืนกับแอ่ง ไม่ตัดเป็นขอบแข็ง) */
+function fk3Mist(par,x,y,z,sz){var tx=fk3SoftTex();for(var i=0;i<3;i++){var m=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,opacity:0,depthWrite:false,color:0xffffff}));m.position.set(x+(i-1)*.25,y,z);m.userData={o:i/3+Math.random()*.2,s:sz,y0:y};par.add(m);(FK3.fx.mist2=FK3.fx.mist2||[]).push(m)}}
 function fk3FallMat(sp,al,sd){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uS:{value:sp},uA:{value:al},uD:{value:sd}}]),
   vertexShader:"varying vec2 vUv;\n#include <fog_pars_vertex>\nvoid main(){vUv=uv;vec4 mvPosition=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*mvPosition;\n#include <fog_vertex>\n}",
   fragmentShader:"uniform float uT,uS,uA,uD;varying vec2 vUv;\n#include <fog_pars_fragment>\nfloat h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}\n"+
    "void main(){float y=vUv.y,x=vUv.x;float sp=uT*uS;float n1=n(vec2(x*11.+uD,y*2.2+sp*1.7)),n2=n(vec2(x*27.+uD*2.,y*5.+sp*2.9)),n3=n(vec2(x*55.,y*11.+sp*4.2));\n"+
    "float st=smoothstep(.5,.9,n1*.55+n2*.35+n3*.25);float foam=smoothstep(.32,0.,y)*(.65+.35*n2)+smoothstep(.93,1.,y)*.7;\n"+
    "vec3 deep=vec3(.16,.52,.74),lite=vec3(.62,.86,.97);vec3 col=mix(deep,lite,.25+.5*n1+.25*(1.-y));col=mix(col,vec3(1.),clamp(st*.85+foam,0.,1.));col+=vec3(.08)*n3;\n"+
-   "float ed=smoothstep(0.,.07+.05*n2,x)*smoothstep(1.,.93-.05*n1,x);float a=uA*ed*(.72+.28*max(st,foam));\n"+
+   "float ed=smoothstep(0.,.07+.05*n2,x)*smoothstep(1.,.93-.05*n1,x);float a=uA*ed*(.72+.28*max(st,foam))*smoothstep(0.,.07,y)*smoothstep(1.,.95,y+.02*n2);\n"+
    "gl_FragColor=vec4(col,a);\n#include <fog_fragment>\n}"})}
 function fk3SceneStep(t,dt){var X=FK3.fx;if(!X)return;if(X.ft)X.ft.offset.y=t*1.35;if(X.fmats)X.fmats.forEach(function(m){m.uniforms.uT.value=t});
   if(X.spray){var S=X.spray,pa=S.p.geometry.attributes.position;for(var si=0;si<S.n;si++){var q=S.s[si],u=(t*(.9+q[3]*.6)+q[0])%1,tt=u*.9,vy=1.6+q[1]*2.4,vx=(q[2]-.5)*2.2;pa.setXYZ(si,(q[0]-.5)*(X.narrow?1.5:2.9)+vx*tt*(X.narrow?.7:1),.12+vy*tt-4.9*tt*tt*.9,3.75+(q[3]-.3)*1.1+tt*.9)}pa.needsUpdate=true}
+  if(X.mist2)X.mist2.forEach(function(m){var u=(t*.35+m.userData.o)%1,s=m.userData.s*(.7+u*.9);m.scale.set(s,s,1);m.position.y=m.userData.y0+u*.6;m.material.opacity=Math.sin(u*Math.PI)*.5});
   if(X.rings)X.rings.forEach(function(r){var u=(t*.45+r.userData.o)%1,sc=(.8+u*2.4)*(r.userData.s||1);r.scale.set(sc*1.25,sc*.8,1);r.material.opacity=(1-u)*.55});if(X.rt)X.rt.offset.y=-t*.5;if(FK3.wmat)FK3.wmat.uniforms.uT.value=t;
   if(X.foam){X.foam.rotation.z=t*.25;var fs=1+Math.sin(t*3)*.04;X.foam.scale.set(1.25*fs,.8*fs,1)}
   X.mist.forEach(function(m){var u=(t*.22+m.userData.o)%1,a=m.userData.o*37;m.position.set(Math.sin(a)*1.4*(.4+u),.3+u*3.2,3.9+Math.cos(a)*.8);var s=1.4+u*2.6;m.scale.set(s,s,1);m.material.opacity=Math.sin(u*Math.PI)*.45});
