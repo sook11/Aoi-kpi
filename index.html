@@ -6517,14 +6517,12 @@ function fk3RockFall(cl,rk){var ln=new THREE.Vector3(-FK3CL.x-rk.position.x,0,-F
 function fk3Source(cl,iw){fm3File("x_clift").then(function(G){var n=G.scene.getObjectByName("K_x_clift");if(!n||!cl.parent)return;var W=[];[[26,-Math.PI*.75,.6,-10.6],[19,2.9,-11,-12],[21,4.2,12,-12.5]].forEach(function(q){var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(q[0]);w.rotation.y=q[1];w.position.set(q[2],-.8,q[3]);
     o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);W.push(w)});fk3Stream(cl,[W[0],iw])},function(){fk3Mountain(cl,.6,-11,9.5,22,7.3,false);fk3Mountain(cl,-7.5,-14,8,15,3.1,false);fk3Mountain(cl,9,-14.5,8.5,16,5.7,false)})}
 /* ลำธารบนชั้นหน้าผา → ตกลงสระบนเกาะ: ยิงลำแสงลงหาผิวหน้าผา/เกาะจริงทุกช่วง น้ำจึงแนบพื้น ไม่ลอย */
-function fk3Stream(cl,objs){cl.updateMatrixWorld(true);var rc=new THREE.Raycaster(),inv=new THREE.Matrix4().copy(cl.matrixWorld).invert(),pts=[],x=.6,z,h,lp=null;
-  for(z=-6.4;z<=-3.0;z+=.12){var o=new THREE.Vector3(x,60,z).applyMatrix4(cl.matrixWorld);rc.set(o,new THREE.Vector3(0,-1,0));h=rc.intersectObjects(objs,true)[0];if(!h)continue;var p=h.point.clone().applyMatrix4(inv);if(p.y<5.5)continue;
-    if(lp&&lp.y-p.y>.6){pts.push(new THREE.Vector3(x,lp.y,p.z-.02))}pts.push(new THREE.Vector3(x,p.y+.07,p.z));lp=p}
-  if(pts.length<4)return;var pa=[],ua=[],ix=[],L=0,D=[0];for(var i=1;i<pts.length;i++){L+=pts[i].distanceTo(pts[i-1]);D.push(L)}
-  for(i=0;i<pts.length;i++){var t=D[i]/L,w=.42+t*.25;pa.push(pts[i].x-w,pts[i].y,pts[i].z,pts[i].x+w,pts[i].y,pts[i].z);ua.push(0,1-t,1,1-t);if(i<pts.length-1){var a=i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
-  var gg=new THREE.BufferGeometry();gg.setAttribute("position",new THREE.Float32BufferAttribute(pa,3));gg.setAttribute("uv",new THREE.Float32BufferAttribute(ua,2));gg.setIndex(ix);
-  var m=fk3FallMat(.9,.95,4.2),rb=new THREE.Mesh(gg,m);cl.add(rb);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m);
-}
+function fk3Stream(cl,objs){cl.updateMatrixWorld(true);var rc=new THREE.Raycaster(),inv=new THREE.Matrix4().copy(cl.matrixWorld).invert(),x=.6,z,top=0,zf=null;
+  for(z=-3.3;z>=-6;z-=.1){rc.set(new THREE.Vector3(x,60,z).applyMatrix4(cl.matrixWorld),new THREE.Vector3(0,-1,0));var h=rc.intersectObject(objs[0],true)[0];if(!h)continue;var p=h.point.clone().applyMatrix4(inv);if(p.y>8){top=p.y;zf=z+.12;break}}
+  if(zf==null)return;var ht=top-6.7;if(ht<1)return;var fg=new THREE.PlaneGeometry(2.8,5.6,12,24),FP=fg.attributes.position;
+  for(var i=0;i<FP.count;i++){var yy=FP.getY(i),xx2=FP.getX(i)/1.4,u=(2.8-yy)/5.6,th=xx2*.9,fR=1.5*(1+u*.3);FP.setX(i,Math.sin(th)*fR);FP.setZ(i,(Math.cos(th)-1)*fR*.9+Math.pow(u,1.8)*.35)}
+  var g=new THREE.Group();g.position.set(x,6.7,zf);cl.add(g);var m1=fk3FallMat(1.1,.92,5.5),m2=fk3FallMat(1.7,.5,8.1),f1=new THREE.Mesh(fg,m1);f1.scale.set(.22,ht/5.6,1);f1.position.y=ht/2;g.add(f1);
+  var f2=new THREE.Mesh(fg,m2);f2.scale.set(.16,ht/5.6,1);f2.position.set(0,ht/2+.02,.06);g.add(f2);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m1,m2)}
 /* สระบนเกาะ: ผิวน้ำไหลเข้าหาปากน้ำตก */
 function fk3PoolFlow(w){var m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uT:{value:0}},
   vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
