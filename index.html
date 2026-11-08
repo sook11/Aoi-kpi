@@ -6415,7 +6415,7 @@ function fk3Scenery(g,sc){var RM=new THREE.MeshLambertMaterial({vertexColors:tru
     var rk=new THREE.Mesh(fk3RockGeo(r,i*1.7+3,hh/(r*2)*1.05,null,1),RM);rk.position.set(xx,hh/2-.4,zz);rk.userData.ci=i;rk.rotation.y=frand(i+9)*3;rk.castShadow=true;rk.receiveShadow=true;cl.add(rk);
     TOPS.push([xx+FK3CL.x,zz+FK3CL.z,hh-.3])}
   for(i=0;i<9;i++){var br=new THREE.Mesh(fk3RockGeo(.5+frand(i*4)*.7,i*2.3+11,.8),RM);br.position.set((frand(i*7)-.5)*15,.2,-9+frand(i*3)*1.6);if(Math.abs(br.position.x)<2.2)br.position.x+=br.position.x<0?-2.5:2.5;br.castShadow=true;cl.add(br)}
-  var back=new THREE.Mesh(fk3RockGeo(5,41,.75,null,1),RM);back.position.set(0,3.3,-5.5);back.scale.set(1.9,1,1);cl.add(back);
+  var back=new THREE.Mesh(fk3RockGeo(5,41,.75,null,1),RM);back.position.set(0,3.3,-5.5);back.userData.ci=99;back.scale.set(1.9,1,1);cl.add(back);
   /* ลำธารบนหน้าผา → น้ำตก */
   /* อัปเดต 213: น้ำตกแบบ shader — สายน้ำไหลหลายชั้น ฟองขาวช่วงล่าง ขอบน้ำฟุ้ง ละอองกระเซ็น วงคลื่นที่ฐาน */
   var fg=new THREE.PlaneGeometry(2.8,5.6,24,32),FP=fg.attributes.position;for(i=0;i<FP.count;i++){var yy=FP.getY(i),xx2=FP.getX(i)/1.4,u=(2.8-yy)/5.6,th=xx2*.95,fR=1.62*(1+u*.3);FP.setX(i,Math.sin(th)*fR);FP.setZ(i,(Math.cos(th)-1)*fR*.95+Math.pow(u,1.7)*1.25+Math.sin(u*9)*.04)}
@@ -6430,11 +6430,11 @@ function fk3Scenery(g,sc){var RM=new THREE.MeshLambertMaterial({vertexColors:tru
   var mt=fk3SoftTex();for(i=0;i<14;i++){var ms=new THREE.Sprite(new THREE.SpriteMaterial({map:mt,transparent:true,opacity:.0,depthWrite:false,color:0xffffff}));ms.userData.o=i/14;cl.add(ms);FK3.fx.mist.push(ms)}
   FK3.fx.fallPos=[FK3CL.x,FK3CL.z+3.9];
   /* อัปเดต 214: เกาะลอยฟ้า + ต้นไม้ใหญ่ + สระบนเกาะ (โมเดล) วางบนหน้าผา — สายน้ำจากเกาะไหลต่อลงบึงด้วยน้ำตก shader */
-  fm3File("x_isle").then(function(G){var n=G.scene.getObjectByName("K_x_isle");if(!n||!cl.parent)return;var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(12);w.position.set(1.2,-.6,.32);cl.children.forEach(function(c){if(c.userData.ci!=null&&c.userData.ci>=-2&&c.userData.ci<=3)c.visible=false});
-    o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);riv.visible=false;fall.position.set(0,2.4,2.3);fall.scale.set(.32,.86,1);fall2.position.set(0,2.42,2.42);fall2.scale.set(.26,.86,1);FK3.fx.narrow=1},function(){});
+  fm3File("x_isle").then(function(G){var n=G.scene.getObjectByName("K_x_isle");if(!n||!cl.parent)return;var o=n.clone(),w=new THREE.Group();w.add(o);w.scale.setScalar(12);w.position.set(1.2,-.6,.32);cl.children.forEach(function(c){if(c.userData.ci!=null)c.visible=false});fk3IsleRocks(o,cl);fk3PoolFlow(w);
+    o.traverse(function(m){if(m.isMesh){m.receiveShadow=true;if(m.material){m.material.metalness=0;m.material.roughness=1}}});cl.add(w);riv.visible=false;fall.position.set(0,3.3,2.3);fall.scale.set(.32,1.18,1);fall2.position.set(0,3.32,2.42);fall2.scale.set(.26,1.18,1);FK3.fx.narrow=1},function(){});
   /* ต้นไม้บนหน้าผา */
-  TOPS.forEach(function(t,j){if(Math.abs(t[0]-FK3CL.x-1.2)<6.2)return;FK3.TPX.push([t[0]+(frand(j)-.5)*.8,t[1]-.4,.6+frand(j*3)*.35,frand(j*7),t[2]])});
-  for(i=0;i<16;i++)FK3.TPX.push([-12+i*1.6+(frand(i*3)-.5),FK3CL.z-6.5-frand(i*5)*2.5,.8+frand(i)*.4,frand(i*8),Math.abs(-12+i*1.6)<8?6.4:2]);
+  TOPS.forEach(function(t,j){return;FK3.TPX.push([t[0]+(frand(j)-.5)*.8,t[1]-.4,.6+frand(j*3)*.35,frand(j*7),t[2]])});
+  for(i=0;i<16;i++)FK3.TPX.push([-12+i*1.6+(frand(i*3)-.5),FK3CL.z-6.5-frand(i*5)*2.5,.8+frand(i)*.4,frand(i*8),2]);
   /* กระท่อมชาวประมง + กองไฟ + ม้านั่ง + ป้าย + เรือพาย */
   var hut=new THREE.Group();hut.position.set(17.2,0,6.6);hut.rotation.y=-.9;g.add(hut);FK3.fx.hut=[17.2,6.6];
   fk3M(new THREE.BoxGeometry(3.6,.3,3),0x6b4423,0,.15,0,hut);fk3M(new THREE.BoxGeometry(3.2,2.2,2.6),0xb7844f,0,1.4,0,hut);
@@ -6487,6 +6487,27 @@ function fk3WaterMat(){var U=THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{u
       "float sp=pow(max(dot(reflect(-uSun,n),V),0.),90.);col+=vec3(1.,.97,.88)*sp*1.3;float gl=step(.985,fract(sin(dot(floor(p*6.),vec2(12.9,78.2)))*43758.5+uT*.25))*sp*4.;col+=gl;\n"+
       "float fe=smoothstep(.9,.99,vR)*(.55+.45*sin(vR*90.-uT*2.5+sin(atan(vW.z,vW.x)*14.)*2.));col=mix(col,vec3(1.),fe*.75);\n"+
       "gl_FragColor=vec4(col,mix(.82,.96,dp));\n#include <fog_fragment>\n}"})}
+/* อัปเดต 215: หินหน้าผาข้างเกาะ = ชิ้นหินจากโมเดลเกาะเอง (ลาย/สีเดียวกัน) — แยกชิ้นที่ไม่ติดกันออกมาตอนโหลด ไม่ต้องมีไฟล์เพิ่ม */
+function fk3IsleRocks(o,cl){var mesh=null;o.traverse(function(m){if(m.isMesh&&!mesh)mesh=m});if(!mesh)return;mesh.updateWorldMatrix(true,false);var w0=o.parent;w0.updateWorldMatrix(true,false);
+  var g=mesh.geometry,P=g.attributes.position,U=g.attributes.uv,I=g.index?g.index.array:null,n=P.count,T=I?I.length:n,km={},rep=new Int32Array(n),par=new Int32Array(n),i,k;
+  for(i=0;i<n;i++){k=Math.round(P.getX(i)*3000)+","+Math.round(P.getY(i)*3000)+","+Math.round(P.getZ(i)*3000);if(km[k]==null)km[k]=i;rep[i]=km[k];par[i]=i}
+  function f(x){while(par[x]!==x){par[x]=par[par[x]];x=par[x]}return x}function idx(t){return I?I[t]:t}
+  for(var t=0;t<T;t+=3){var a=f(rep[idx(t)]),b=f(rep[idx(t+1)]),c=f(rep[idx(t+2)]);if(a!==b)par[a]=b;b=f(b);if(c!==b)par[c]=b}
+  var C={};for(t=0;t<T;t+=3){var r=f(rep[idx(t)]);(C[r]=C[r]||[]).push(t)}var L=Object.keys(C).map(function(r){return C[r]}).filter(function(x){return x.length>200}).sort(function(a,b){return b.length-a.length}).slice(1,5);
+  var M=new THREE.Matrix4().copy(w0.matrixWorld).invert().multiply(mesh.matrixWorld),v=new THREE.Vector3();
+  var PL=[[0,14,8.8,-1.2,.6],[1,15,-7.4,-1.6,2.2],[3,13,-10,1.2,1],[2,17,11.3,.4,4],[1,10,-12.6,-2.6,5],[0,9,13.6,-3.2,3.3]];
+  PL.forEach(function(p){var ts=L[p[0]];if(!ts)return;var pa=new Float32Array(ts.length*9),ua=new Float32Array(ts.length*6),mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9],j=0;
+    ts.forEach(function(t){for(var q=0;q<3;q++){var vi=idx(t+q);v.fromBufferAttribute(P,vi).applyMatrix4(M);pa[j*3]=v.x;pa[j*3+1]=v.y;pa[j*3+2]=v.z;ua[j*2]=U.getX(vi);ua[j*2+1]=U.getY(vi);[v.x,v.y,v.z].forEach(function(c,d){mn[d]=Math.min(mn[d],c);mx[d]=Math.max(mx[d],c)});j++}});
+    var cx=(mn[0]+mx[0])/2,cz=(mn[2]+mx[2])/2;for(j=0;j<pa.length;j+=3){pa[j]-=cx;pa[j+1]-=mn[1];pa[j+2]-=cz}
+    var gg=new THREE.BufferGeometry();gg.setAttribute("position",new THREE.BufferAttribute(pa,3));gg.setAttribute("uv",new THREE.BufferAttribute(ua,2));gg.computeVertexNormals();
+    var rk=new THREE.Mesh(gg,mesh.material);rk.scale.setScalar(p[1]);rk.position.set(p[2],-.5,p[3]);rk.rotation.y=p[4];rk.receiveShadow=true;rk.castShadow=true;cl.add(rk)})}
+/* สระบนเกาะ: ผิวน้ำไหลเข้าหาปากน้ำตก */
+function fk3PoolFlow(w){var m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uT:{value:0}},
+  vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
+  fragmentShader:"uniform float uT;varying vec2 vUv;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}"+
+   "void main(){vec2 u=vUv;vec2 q=vec2((u.x-.37)*(.55+.45*u.y)*7.,u.y*5.+uT*1.3);float a=n(q),b=n(q*2.1+3.);float st=smoothstep(.62,.9,a*.6+b*.5);"+
+   "vec2 e=(u-.5)*2.;float msk=smoothstep(1.,.62,length(e*vec2(1.,.92)));vec3 col=mix(vec3(.25,.75,.95),vec3(1.),st*.85);gl_FragColor=vec4(col,msk*(.18+.55*st));}"});
+  var pl=new THREE.Mesh(new THREE.PlaneGeometry(.4,.47),m);pl.rotation.x=-Math.PI/2;pl.position.set(-.05,.614,-.06);w.add(pl);(FK3.fx.fmats=FK3.fx.fmats||[]).push(m)}
 function fk3FallMat(sp,al,sd){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uS:{value:sp},uA:{value:al},uD:{value:sd}}]),
   vertexShader:"varying vec2 vUv;\n#include <fog_pars_vertex>\nvoid main(){vUv=uv;vec4 mvPosition=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*mvPosition;\n#include <fog_vertex>\n}",
   fragmentShader:"uniform float uT,uS,uA,uD;varying vec2 vUv;\n#include <fog_pars_fragment>\nfloat h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}\n"+
