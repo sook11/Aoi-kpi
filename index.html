@@ -1378,6 +1378,9 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 .emtbl td{vertical-align:middle}.emtbl tr.off td{opacity:.55}
 .dbadge{display:inline-block;background:color-mix(in srgb,var(--c4) 14%,transparent);color:var(--c4);border-radius:99px;padding:2px 10px;font-size:12.5px;white-space:nowrap}
 .emact{display:inline-flex;gap:2px}.emact .iconbtn{width:34px;height:34px}.emact .iconbtn.danger{color:var(--bad)}
+
+/* อัปเดต 232: ผู้เล่นภายนอก */
+body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!important}
 </style>
 </head>
 <body>
@@ -1394,6 +1397,7 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <label>รหัสพนักงาน<input type="text" id="a-no" inputmode="numeric" autocomplete="username" required></label>
       <label>รหัสผ่าน<input type="password" id="a-pw" autocomplete="current-password" minlength="6" required></label>
       <label id="a-pw2wrap" hidden>ยืนยันรหัสผ่าน<input type="password" id="a-pw2" autocomplete="new-password" minlength="6"></label>
+      <label id="g-nickwrap" hidden>ชื่อในเกม<input type="text" id="g-nick" maxlength="24" placeholder="เช่น น้องฟ้า, FarmKing" autocomplete="nickname"></label>
       <div id="a-more" class="more" hidden>
         <label class="avpick" title="เพิ่มรูปพนักงาน"><img id="au-img" alt="" hidden><span id="au-ph">+</span><input type="file" id="au-file" accept="image/*" hidden></label>
         <p class="sub" style="text-align:center">แตะเพื่อเพิ่มรูปพนักงาน (ไม่บังคับ)</p>
@@ -1409,7 +1413,8 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
     <p class="sub" style="text-align:center;font-size:11.5px">upload-update-28</p>
-    <p class="sub">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
+    <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
+    <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
 </div>
 
@@ -8177,7 +8182,7 @@ function fmSeedHtml(){var c=FM.cat,l=fmL(),it=FM.d.items||{},SH=FM.short||[];ret
 function fmSeed(slot){FM.slot=slot;FM.t="seed";fmSheet()}
 document.addEventListener("change",function(ev){if(ev.target&&ev.target.id==="fm-sl-item"){FM.slItem=ev.target.value;FM.slQty=1;FM.slPrice=0;fmSheet()}});
 document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmfly],[data-fmupg],[data-fmlake],[data-fminfo],[data-fmsunlock],[data-fmava],[data-fmtact],[data-fmtp],[data-fmveh],[data-fmvuse],[data-fmt],[data-fmp],[data-fmh],[data-fmx],[data-fmf],[data-fmc],[data-fms],[data-fmba],[data-fmbd],[data-fmv],[data-fmback],[data-fmlike],[data-fmseed],[data-fmclose],[data-fmexit],[data-fmz],[data-fmaud],[data-fmedit],[data-fmdec],[data-fmtile],[data-fmod],[data-fmos],[data-fmbu],[data-fmdn],[data-fmgive],[data-fmgto],[data-fm3d],[data-fmpet],[data-fmboost],[data-fmbp],[data-fmland],[data-fmparcel],[data-fmpbuy],[data-fmpuse],[data-fmtree],[data-fmmach],[data-fmmb],[data-fmmake],[data-fmjc],[data-fmsl],[data-fmslok],[data-fmsq],[data-fmsp],[data-fmsc],[data-fmscol],[data-fmsb],[data-fmvis],[data-fmvs],[data-fmvk],[data-fmqc],[data-fmst],[data-fmpf],[data-fmpfc],[data-fmrep],[data-fmup],[data-fmtool],[data-fmuns],[data-fmsto],[data-fmchop],[data-fmbox],[data-fmad],[data-fmadup],[data-fmadclr],[data-fmrot],[data-fmpen],[data-fmhalf],[data-fmshalf]");if(!t)return;var D=t.dataset;
-  if(D.fmexit){sfx("close");FM.edit=false;FM.sel=null;show("home");return}
+  if(D.fmexit){sfx("close");if(S.guest){if(confirm("ออกจากเกม (ออกจากระบบ)?"))db.auth.signOut().then(function(){location.reload()});return}FM.edit=false;FM.sel=null;show("home");return}
   if(D.fmedit&&FM3.on&&D.fmedit==="on"&&!FM.lay3skip){if(FM3.tp)fm3TPToggle(false);if(fmLayStart()){sfx("open");var hh=$("fm-hud");if(hh)hh.querySelectorAll(".fdock,.fact").forEach(function(x){x.style.display="none"});return}}FM.lay3skip=0;if(D.fmedit&&FM3.on&&D.fmedit==="on"){FM3.on=false;FM3.back=1;toast("จัดฟาร์มใช้มุมมอง 2D ชั่วคราว")}if(D.fmedit&&D.fmedit!=="on"&&FM3.back){FM3.back=0;FM.edit=false;FM.sel=null;FM.t="farm";toast("บันทึกการจัดฟาร์มแล้ว ✨");fm3Toggle(true);return}
   if(D.fmedit){FM.edit=D.fmedit==="on";FM.sel=null;FM.t="farm";sfx(FM.edit?"open":"buy");if(!FM.edit)toast("บันทึกการจัดฟาร์มแล้ว ✨");FM.keep=true;drawFarm();return}
   if(D.fmdec&&FM.edit){var sw=FM.sel&&FM.sel!==D.fmdec?FM.sel:null;
@@ -9215,6 +9220,7 @@ function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};ret
 var TABS=["missan","quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm","dtv","dtvadm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
+  if(S.guest&&tab!=="farm")tab="farm";
   if(tab!=="quiz"&&!QZ.gate){qzMusOff(1);qzThemeOff()}if(tab!=="quiz"){mzRtClose();if(document.body.classList.contains("mzfull-on"))mzFullOff()}if(tab==="quiz")QZ.stopped=0;
   if(tab==="emp"&&!(S.empId&&empOf(S.empId)))tab="staff";
   if(["staff","targets","allowmgr","admin","daily","monthly","top","missan"].indexOf(tab)>=0&&!S.mgr)tab="home";
@@ -9590,12 +9596,19 @@ $("sh-q").addEventListener("input",function(){if(S.tab==="shop")drawShop()});
 
 /* ---------- เข้าสู่ระบบ ---------- */
 var mode="in";
+/* อัปเดต 232: ลิงก์เกมสำหรับผู้เล่นภายนอก (?play หรือ /play/) — สมัครด้วยชื่อผู้ใช้ + ชื่อในเกม เล่นได้เฉพาะฟาร์ม/ตกปลา */
+var PLAY=/[?&]play\b/.test(location.search);try{if(PLAY)localStorage.setItem("aoi-play","1");else if(localStorage.getItem("aoi-play")==="1")PLAY=true}catch(e){}
+function playUI(){if(!PLAY)return;PUB=false;var c=document.querySelector("#auth .card");if(!c)return;
+  var h=c.querySelector(".applogo h1"),sb=c.querySelector(".applogo .sub");if(h)h.textContent="AOI Farm";if(sb)sb.textContent="เกมฟาร์ม & ตกปลา · สมัครเล่นได้ฟรี";
+  var ln=$("a-no").closest("label");if(ln&&ln.firstChild&&ln.firstChild.nodeType===3)ln.firstChild.textContent="ชื่อผู้ใช้ (อังกฤษ/ตัวเลข)";$("a-no").setAttribute("inputmode","text");$("a-no").placeholder="เช่น farmking99";
+  $("a-forgot").textContent="ลืมรหัสผ่าน: แจ้งผู้ดูแลเกมให้รีเซ็ตให้";$("g-staff").hidden=false;document.title="AOI Farm"}
 function setMode(m){
   mode=m;$("mode-in").setAttribute("aria-pressed",m==="in");$("mode-up").setAttribute("aria-pressed",m==="up");
   $("a-pw2wrap").hidden=m!=="up";$("a-hint").hidden=m!=="up";$("a-submit").textContent=m==="in"?"เข้าสู่ระบบ":"สมัครใช้งาน";
   $("a-pw").autocomplete=m==="in"?"current-password":"new-password";$("a-msg").textContent="";
-  $("a-more").hidden=!(m==="up"&&PUB);
+  $("a-more").hidden=!(m==="up"&&PUB);$("g-nickwrap").hidden=!(PLAY&&m==="up");
   $("a-hint").textContent=PUB?"กรอกข้อมูลให้ครบ ตั้งรหัสผ่านอย่างน้อย 6 ตัว แล้วกดสมัครใช้งาน":"ใช้รหัสพนักงานของคุณ แล้วตั้งรหัสผ่านเองอย่างน้อย 6 ตัว ขั้นถัดไปจะให้กรอกโปรไฟล์";
+  if(PLAY){$("a-hint").textContent="ตั้งชื่อผู้ใช้ (อังกฤษ/ตัวเลข) ไว้ใช้เข้าเล่น ชื่อในเกมใช้ภาษาไทยได้ รหัสผ่านอย่างน้อย 6 ตัว";return}
   if(m==="up"&&PUB===null)loadPublic();
 }
 /* รายชื่อแผนก/หน้างานสำหรับหน้าสมัคร (อ่านได้ก่อนล็อกอินเมื่อฐานข้อมูลเปิดให้) ถ้าอ่านไม่ได้จะใช้แบบสองขั้นแทน */
@@ -9610,12 +9623,14 @@ async function loadPublic(){
   }catch(e){PUB=false}
   if(mode==="up")setMode("up");
 }
-$("mode-in").addEventListener("click",function(){setMode("in")});
+$("mode-in").addEventListener("click",function(){setMode("in")});playUI();
+$("g-staffa").addEventListener("click",function(ev){ev.preventDefault();try{localStorage.removeItem("aoi-play")}catch(e){}location.href=location.pathname.replace(/play\/?$/,"")});
 $("mode-up").addEventListener("click",function(){setMode("up")});
 $("authform").addEventListener("submit",async function(ev){
   ev.preventDefault();
   var no=$("a-no").value.trim().toLowerCase(),pw=$("a-pw").value,msg=$("a-msg"),btn=$("a-submit");
-  if(!/^[a-z0-9._-]+$/.test(no)){msg.textContent="รหัสพนักงานใช้ได้เฉพาะตัวเลขและตัวอักษรอังกฤษ";return}
+  if(!/^[a-z0-9._-]+$/.test(no)){msg.textContent=PLAY?"ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษรอังกฤษและตัวเลข":"รหัสพนักงานใช้ได้เฉพาะตัวเลขและตัวอักษรอังกฤษ";return}
+  if(PLAY&&mode==="up"){var nk0=$("g-nick").value.trim();if(nk0.length<2||nk0.length>24){msg.textContent="ตั้งชื่อในเกม 2–24 ตัวอักษร";return}if(no.length<3){msg.textContent="ชื่อผู้ใช้อย่างน้อย 3 ตัว";return}}
   if(mode==="up"&&pw!==$("a-pw2").value){msg.textContent="รหัสผ่านสองช่องไม่ตรงกัน";return}
   var full=mode==="up"&&PUB===true;
   if(full&&(!$("au-name").value.trim()||!$("au-dept").value||!$("au-shift").value||!$("au-start").value)){msg.textContent="กรอกชื่อ-นามสกุล เลือกแผนก กะการทำงาน และวันเริ่มงาน";return}
@@ -9624,9 +9639,11 @@ $("authform").addEventListener("submit",async function(ev){
   try{
     if(full){var dup=await db.rpc("signup_duplicate",{p_name:$("au-name").value,p_phone:$("au-phone").value,p_no:no});
       if(dup.data){msg.textContent=dup.data;btn.disabled=false;return}}
-    var r=mode==="in"?await db.auth.signInWithPassword({email:no+DOMAIN,password:pw}):await db.auth.signUp({email:no+DOMAIN,password:pw});
+    var em=(PLAY?"g.":"")+no+DOMAIN;
+    var r=mode==="in"?await db.auth.signInWithPassword({email:em,password:pw}):await db.auth.signUp({email:em,password:pw});
     if(r.error)throw r.error;
     if(!r.data.session){msg.textContent="ระบบยังเปิดการยืนยันอีเมลอยู่ ให้ผู้ดูแลปิด Confirm email ใน Supabase ก่อน";btn.disabled=false;return}
+    if(PLAY&&mode==="up"){try{await q(db.rpc("guest_register",{p_nick:$("g-nick").value.trim()}))}catch(e3){try{localStorage.setItem("aoi-gnick",$("g-nick").value.trim())}catch(e4){}msg.textContent=thErr(e3);btn.disabled=false;return}}
     if(full){
       /* บัญชีสร้างแล้ว: บันทึกโปรไฟล์ต่อทันที ถ้าขั้นนี้พลาด หน้าตั้งค่าโปรไฟล์จะขึ้นให้กรอกซ้ำ */
       try{
@@ -9652,6 +9669,9 @@ async function start(){
   if(!u){$("auth").hidden=false;$("app").hidden=true;return}
   var me=await q(db.from("employees").select("*").eq("user_id",u.id).maybeSingle());
   if(me&&!me.active){await db.auth.signOut();$("auth").hidden=false;$("app").hidden=true;$("setup").hidden=true;$("a-msg").textContent="บัญชีนี้ถูกปิดใช้งาน ติดต่อผู้ดูแล";return}
+  if(!me&&/^g\./.test(u.email||"")){var nk=prompt("ตั้งชื่อในเกม (2–24 ตัวอักษร)",(function(){try{return localStorage.getItem("aoi-gnick")||""}catch(e){return ""}})());
+    if(nk){try{await q(db.rpc("guest_register",{p_nick:nk.trim()}));return start()}catch(e){alert(thErr(e))}}
+    await db.auth.signOut();PLAY=true;playUI();$("auth").hidden=false;$("app").hidden=true;return}
   if(!me){
     var base=await Promise.all([q(db.from("departments").select("*").order("sort_order").order("name")),q(db.from("workstations").select("*").eq("active",true).order("name"))]);
     setOptions($("su-dept"),base[0].map(function(d){return {v:d.id,t:d.name}}),"เลือกแผนก");
@@ -9660,6 +9680,9 @@ async function start(){
     $("auth").hidden=true;$("app").hidden=true;$("setup").hidden=false;return;
   }
   $("setup").hidden=true;
+  if(me.is_guest){S.me=me;S.uid=u.id;S.admin=false;S.mgr=false;S.guest=true;S.cache={};S.depts=[];S.kpis=[];S.emps=[me];S.settings={};S.dir=[];S.myDepts=[];S.leads=[];
+    document.body.classList.add("guest");try{localStorage.setItem("aoi-play","1")}catch(e){}document.title="AOI Farm";
+    $("auth").hidden=true;$("app").hidden=false;show("farm");return}
   S.me=me;S.uid=u.id;S.admin=me.role==="admin";S.mgr=can("kpi");S.cache={};
   await loadBase();
   document.querySelectorAll(".mgr").forEach(function(el){el.hidden=!S.mgr});
