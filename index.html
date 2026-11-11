@@ -1381,6 +1381,8 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 
 /* อัปเดต 232: ผู้เล่นภายนอก */
 body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!important}
+
+.fm3err{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px;background:#dcfce7;color:#14532d}.fm3err small{opacity:.8;max-width:320px}.fm3err button{margin-top:6px;padding:10px 18px;border-radius:999px;border:0;background:#16a34a;color:#fff;font-weight:700}
 </style>
 </head>
 <body>
@@ -5253,7 +5255,7 @@ function qz3Tex(){var c=document.createElement("canvas");c.width=c.height=512;va
   var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t}
 function qz3Dot(){var c=document.createElement("canvas");c.width=c.height=64;var g=c.getContext("2d"),gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,"rgba(255,255,255,1)");gr.addColorStop(.25,"rgba(190,220,255,.8)");gr.addColorStop(1,"rgba(120,170,255,0)");g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)}
 function qz3Build(){var T=THREE,cv=document.createElement("canvas");cv.className="qz3cv";
-  var r=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:"low-power"});r.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.15;
+  var r=glMake({canvas:cv,antialias:true,powerPreference:"low-power"});r.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.15;
   var sc=new T.Scene();sc.background=new T.Color(0x030718);sc.fog=new T.FogExp2(0x030718,.045);var cam=new T.PerspectiveCamera(38,16/9,.1,80);
   QZ3.cv=cv;QZ3.r=r;QZ3.sc=sc;QZ3.cam=cam;QZ3.m={};QZ3.blink=[];
   sc.add(new T.HemisphereLight(0x6d8bff,0x0a0f2e,.55));
@@ -6144,8 +6146,21 @@ function fm3AmbStep(t,dt){var A=FM3.amb;if(!A)return;fm3FlyStep(A.fly,t,dt);A.cl
   A.sheep.forEach(function(s,i){s.children[1].position.y=.75+Math.max(0,Math.sin(t*.7+i*2))*-.25})}
 function fm3AmbNight(n){var A=FM3.amb;if(!A)return;A.sun.visible=!n;A.moon.visible=!!n;A.stars.visible=!!n;A.clouds.forEach(function(c){c.material.color.set(n?0x3b4a6b:0xffffff);c.material.opacity=n?.55:.92});if(A.balloon)A.balloon.visible=!n;A.birds.forEach(function(b){b.visible=!n})}
 /* ---------- สร้าง/เปิด ฉาก 3D ---------- */
+/* อัปเดต 233: iPhone จอเขียวว่าง ("getShaderPrecisionFormat … null") — เดิมสร้าง WebGL ใหม่ทุกครั้งที่ฉากถูกวาดใหม่แต่ไม่คืน context เก่า
+   Safari บน iOS จำกัดจำนวน/หน่วยความจำ WebGL ต่อแท็บ พอครบแล้ว context ใหม่ได้แบบเสีย → three.js ล้ม
+   แก้: คืน context เก่าทุกครั้ง (forceContextLoss) · ลองใหม่แบบเบาลงถ้าสร้างไม่ได้ · กันค่าว่างจาก getShaderPrecisionFormat · ภาพหายกลางทางให้สร้างใหม่เอง */
+function glFix(){["WebGLRenderingContext","WebGL2RenderingContext"].forEach(function(n){var P=window[n]&&window[n].prototype;if(!P||P.__aoiGpf||!P.getShaderPrecisionFormat)return;var f=P.getShaderPrecisionFormat;
+  P.getShaderPrecisionFormat=function(){var r=null;try{r=f.apply(this,arguments)}catch(e){}return r||{rangeMin:127,rangeMax:127,precision:23}};P.__aoiGpf=1})}
+function glKill(r){if(!r)return;try{r.dispose()}catch(e){}try{r.forceContextLoss()}catch(e){}try{var c=r.domElement;if(c){c.width=1;c.height=1}}catch(e){}}
+function glOk(r){try{var g=r&&r.getContext();return !!g&&!g.isContextLost()}catch(e){return false}}
+function glMake(o){glFix();var r=null;try{r=new THREE.WebGLRenderer(o)}catch(e){r=null}
+  if(!glOk(r)){glKill(r);r=null;var o2=Object.assign({},o,{antialias:false,powerPreference:"default"});try{r=new THREE.WebGLRenderer(o2)}catch(e){r=null}if(r&&!glOk(r)){glKill(r);r=null}}
+  if(!r)throw new Error("GL");return r}
+function glWatch(cv,fn){if(!cv||cv.__aoiGlw)return;cv.__aoiGlw=1;cv.addEventListener("webglcontextlost",function(ev){ev.preventDefault();setTimeout(fn,600)},false)}
+function fm3GlFail(box){if(box)box.innerHTML='<div class="fm3err"><b>🖥️ ฉาก 3D เปิดไม่ได้ชั่วคราว</b><small>เครื่องหน่วยความจำกราฟิกเต็ม — ปิดแท็บอื่น/แอปอื่นแล้วกดลองใหม่</small><button type="button" onclick="location.reload()">↻ ลองใหม่</button></div>'}
 function fm3Mount(){var box=$("fm-world");if(!box)return false;box.innerHTML='<div class="fwin f3win" id="fm-win"><canvas id="fm3-cv"></canvas></div>';var cv=$("fm3-cv");
-  if(!FM3.renderer){FM3.renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:"high-performance"})}else{FM3.renderer.dispose();FM3.renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true})}
+  var old=FM3.renderer;FM3.renderer=null;glKill(old);try{FM3.renderer=glMake({canvas:cv,antialias:true,powerPreference:"high-performance"})}catch(e){FM3.ready=false;fm3GlFail(box);return false}
+  glWatch(cv,function(){if(S.tab==="farm"&&!FK.on&&$("fm3-cv")===cv){FM3.ready=false;try{if(FM.v||FM.d)fm3Render(FM.v||FM.d,!FM.v);else fm3Mount()}catch(e){}}});
   var R=FM3.renderer;R.setPixelRatio(Math.min(window.devicePixelRatio||1,fmIsTouch()?1.5:2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
   if(!FM3.scene){var sc=FM3.scene=new THREE.Scene();sc.background=fm3Sky(0);sc.fog=new THREE.Fog(0xd3e8ee,90,430);
     FM3.hemi=new THREE.HemisphereLight(0xfff3dc,0x6b5a3a,.72);sc.add(FM3.hemi);var sun=FM3.sun=new THREE.DirectionalLight(0xffdcae,1.05);sun.position.set(20,26,6);sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;sun.castShadow=true;sun.shadow.mapSize.set(fmIsTouch()?1024:2048,fmIsTouch()?1024:2048);
@@ -6642,7 +6657,7 @@ function fk3Tag(txt,col,bg){var c=document.createElement("canvas"),x=c.getContex
   x.fillStyle=bg||"rgba(255,255,255,.92)";var r=22;x.beginPath();x.moveTo(r,2);x.arcTo(w-2,2,w-2,48,r);x.arcTo(w-2,48,2,48,r);x.arcTo(2,48,2,2,r);x.arcTo(2,2,w-2,2,r);x.fill();
   x.fillStyle=col||"#14532d";x.font=F;x.textAlign="center";x.textBaseline="middle";x.fillText(txt,w/2,27);
   var s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));s.scale.set(w/50*.5,.5,1);s.renderOrder=9;return s}
-function fk3Build(){var cv=$("fk3-cv");if(!cv)return;var R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true})}catch(e){throw e}
+function fk3Build(){var cv=$("fk3-cv");if(!cv)return;var R;R=glMake({canvas:cv,antialias:true})
   FK3={on:true,tok:FK3.tok,R:R,keepMat:{},rip:[],jumps:[],chars:{},lt:performance.now()/1000,nextRip:0,nextJump:3+Math.random()*4};
   R.setPixelRatio(Math.min(window.devicePixelRatio||1,fmIsTouch()?1.5:2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
   var sc=FK3.sc=new THREE.Scene();sc.background=fm3Sky(0);sc.fog=new THREE.Fog(0xd8ecf3,55,175);
