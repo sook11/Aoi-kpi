@@ -1383,6 +1383,13 @@ nav.tabs button[data-g][aria-current="page"] .ico{color:var(--gc)}
 body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!important}
 
 .fm3err{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px;background:#dcfce7;color:#14532d}.fm3err small{opacity:.8;max-width:320px}.fm3err button{margin-top:6px;padding:10px 18px;border-radius:999px;border:0;background:#16a34a;color:#fff;font-weight:700}
+
+/* อัปเดต 234: ปฏิทินลา — ของฉัน / คนแทน + กล่องแจ้งเตือน */
+.cev2.mine{outline:3px solid #1d4ed8;outline-offset:1px}.cev2.subme{outline:3px dashed #db2777;outline-offset:1px}
+.cvme{display:inline-block;font-size:10px;font-weight:800;background:#fff;color:#1d4ed8;border-radius:6px;padding:0 5px;margin:0 3px 2px 0}.cvme.sub{color:#be185d}
+.lcme{display:grid;gap:8px;margin:0 0 12px}.lcme-row{border-radius:14px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe}.lcme-row.sub{background:#fdf2f8;border-color:#fbcfe8}
+.lcme-row b{display:block;margin-bottom:6px}.lcme-row div{display:flex;flex-wrap:wrap;gap:6px}.lcchip{background:#fff;border-radius:999px;padding:4px 10px;font-size:13px;border:1px solid rgba(0,0,0,.08)}
+.dnlist{display:grid;gap:8px}.dnitem{border-radius:12px;background:#fdf2f8;border:1px solid #fbcfe8;padding:10px 12px}.dnitem p{margin:4px 0;line-height:1.5}.dnitem small{opacity:.7}
 </style>
 </head>
 <body>
@@ -1757,6 +1764,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
     <div><h2>ปฏิทินลา</h2><p class="sub">ใครลาวันไหน · เช้า/ดึก ของแต่ละกะ · วันควงกะ · วันหยุดโรงงาน</p></div>
     <div class="filters"><label>เดือน<input type="month" id="lc-month"></label><label>แผนก<select id="lc-dept"></select></label><label>กะ<select id="lc-shift"><option value="">ทุกกะ</option><option value="A">กะ A</option><option value="B">กะ B</option><option value="D">กะ AA</option></select></label></div>
     <div class="inline"><button type="button" class="primary" id="lc-export" data-ico="download">ส่งออกปฏิทินลาทั้งปี (Excel)</button></div>
+    <div class="lcme" id="lc-me" hidden></div>
     <div class="panel"><div class="calgrid" id="lc-grid"></div>
       <div class="callegend"><span><i class="lg-co"></i>วันหยุดโรงงาน</span><span><i class="lg-pu"></i>วันหยุดราชการ (โรงงานทำงาน)</span><span><i class="lg-rot"></i>วันควงกะ</span><span><i class="lg-pend"></i>รออนุมัติ</span></div></div>
     <div class="panel"><h3>รายการลาเดือนนี้</h3><div class="rows" id="lc-list"></div></div>
@@ -2342,6 +2350,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 <div id="stage" class="stage" hidden><div class="curtain l"></div><div class="curtain r"></div><div class="spot"></div><div class="stbody" id="st-body"></div>
   <div class="stbtns"><button type="button" class="primary" id="st-again">🎲 สุ่มคนต่อไป</button><button type="button" id="st-close">ปิด</button></div></div>
 <div class="modal" id="m-ot" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="ot-det"></div></div>
+<div class="modal" id="m-dn" hidden><div class="box nwbox" role="dialog" aria-modal="true"><div class="headrow"><h3 style="font-size:18px">📬 แจ้งเตือนถึงคุณ</h3><button type="button" class="iconbtn" id="dn-x" data-ico="x" aria-label="ปิด"></button></div><div id="dn-list" class="dnlist"></div><div class="inline" style="gap:8px;margin-top:12px;flex-wrap:wrap"><button type="button" class="primary" id="dn-ok">รับทราบ</button><button type="button" id="dn-cal">📅 ดูในปฏิทินลา</button></div></div></div>
 <div class="modal" id="m-news" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="nw-view"></div></div>
 <div class="modal" id="m-newsed" hidden><div class="box nwbox" role="dialog" aria-modal="true"><div class="headrow"><h3 style="font-size:18px">📢 โพสต์ประชาสัมพันธ์</h3><button type="button" class="iconbtn" data-close="m-newsed" data-ico="x" aria-label="ปิด"></button></div><div id="nwe-body" class="nwebody"></div><button type="button" class="primary" id="nwe-save">💾 บันทึก / โพสต์</button></div></div>
 <div class="modal" id="m-perm" hidden>
@@ -8759,7 +8768,13 @@ function subsHtml(s){s=Array.isArray(s)?s:[];var w=s.filter(function(x){return x
 async function renderLeaveCal(){
   await lvMeta();
   var m=$("lc-month").value||today().slice(0,7);$("lc-month").value=m;var dept=$("lc-dept").value;
-  var first=m+"-01",last=mEnd(m),lsh=$("lc-shift").value,rows=(await q(db.rpc("leave_calendar",{p_from:first,p_to:last}))).filter(function(r){return (!dept||r.department_id===dept)&&(!lsh||r.shift===lsh)});
+  var first=m+"-01",last=mEnd(m),lsh=$("lc-shift").value,all=await q(db.rpc("leave_calendar",{p_from:first,p_to:last})),rows=all.filter(function(r){return (!dept||r.department_id===dept)&&(!lsh||r.shift===lsh)});
+  /* อัปเดต 234: คนลาเห็นวันที่ตัวเองจอง · คนแทนเห็นวันที่ต้องมาแทนคู่กะ */
+  var meId=S.me&&S.me.id,cut=function(n){return String(n||"").replace(/^(นางสาว|นาง|นาย)\s*/,"")},myL=all.filter(function(r){return r.employee_id===meId}),myS=[];
+  all.forEach(function(r){(Array.isArray(r.substitutes)?r.substitutes:[]).forEach(function(x){if(x&&x.emp_id===meId&&x.date>=first&&x.date<=last)myS.push({d:x.date,r:r})})});myS.sort(function(a,b){return a.d<b.d?-1:1});
+  var mh='';if(myL.length)mh+='<div class="lcme-row mine"><b>📌 วันลาของฉันเดือนนี้</b><div>'+myL.map(function(r){return '<span class="lcchip">'+esc(rangeTxt(r.start_date,r.end_date))+' · '+esc(lvType(r.leave_type_id).name)+' · '+(r.status==="pending"?"⏳ รออนุมัติ":"✓ อนุมัติแล้ว")+((Array.isArray(r.substitutes)?r.substitutes:[]).some(function(x){return x.name})?' · แทน: '+esc(Array.from(new Set(r.substitutes.filter(function(x){return x.name}).map(function(x){return cut(x.name)}))).join(", ")):'')+'</span>'}).join("")+'</div></div>';
+  if(myS.length)mh+='<div class="lcme-row sub"><b>🔁 วันที่คุณต้องมาแทนคู่กะ (OT)</b><div>'+myS.map(function(o){return '<span class="lcchip">'+esc(shortD(o.d))+' · แทน '+esc(cut(o.r.name))+' ('+esc(lvType(o.r.leave_type_id).name)+(o.r.shift?' กะ '+esc(shiftLbl(o.r.shift)):'')+')'+(o.r.status==="pending"?' · ⏳ รออนุมัติ':'')+'</span>'}).join("")+'</div></div>';
+  $("lc-me").innerHTML=mh;$("lc-me").hidden=!mh;
   var by={};rows.forEach(function(r){datesBetween(r.start_date<first?first:r.start_date,r.end_date>last?last:r.end_date).forEach(function(d){if(dayKind(d)==="work"||r.half_day)(by[d]=by[d]||[]).push(r)})});
   var start=new Date(utcMs(first)).getUTCDay(),days=datesBetween(first,last),h='';
   ["อา","จ","อ","พ","พฤ","ศ","ส"].forEach(function(w){h+='<div class="cw">'+w+'</div>'});
@@ -8769,7 +8784,8 @@ async function renderLeaveCal(){
       (k==="work"||k==="rot"||k==="co"?'<small class="cds">เช้า '+ri.day+' · ดึก '+ri.night+'</small>':'')+
       (hol?'<small class="hol'+(hol.co?" co":"")+'">'+(hol.co?"🏭 วันหยุดโรงงาน: ":"🇹🇭 ")+esc((hol.co&&hol.cn?hol.cn:hol.names).join(", "))+'</small>':(k==="sun"?'<small class="hol co">วันหยุด</small>':''))+
       list.map(function(r){var t=lvType(r.leave_type_id),pd=r.status==="pending",nm=String(r.name).replace(/^(นางสาว|นาง|นาย)\s*/,""),sb=(Array.isArray(r.substitutes)?r.substitutes:[]).filter(function(x){return x.date===d&&(x.name||x.rotation)})[0];
-        return '<div class="cev2'+(pd?" pend":"")+'" style="--tc:'+esc(t.color)+'" title="'+esc(r.name+" · "+t.name+" · "+(pd?"รออนุมัติ":"อนุมัติแล้ว"))+'"><span class="cvb">'+(pd?"⏳ รออนุมัติ":"✓ อนุมัติแล้ว")+'</span><b>'+esc(t.name)+(r.half_day?" (ครึ่ง"+(r.half_day==="am"?"เช้า":"บ่าย")+")":"")+'</b><span class="cvn">'+esc(nm)+(r.shift?' ('+esc(shiftLbl(r.shift))+')':'')+'</span>'+(sb?'<span class="cvs">'+(sb.rotation?"🔁 ควงกะ":"แทน: "+esc(String(sb.name).replace(/^(นางสาว|นาง|นาย)\s*/,"")))+'</span>':'')+'</div>'}).join("")+'</div>'});
+        var own=r.employee_id===meId,subMe=(Array.isArray(r.substitutes)?r.substitutes:[]).some(function(x){return x.date===d&&x.emp_id===meId});
+        return '<div class="cev2'+(pd?" pend":"")+(own?" mine":"")+(subMe?" subme":"")+'" style="--tc:'+esc(t.color)+'" title="'+esc(r.name+" · "+t.name+" · "+(pd?"รออนุมัติ":"อนุมัติแล้ว"))+'">'+(own?'<span class="cvme">📌 ของฉัน</span>':'')+(subMe?'<span class="cvme sub">🔁 คุณต้องแทน</span>':'')+'<span class="cvb">'+(pd?"⏳ รออนุมัติ":"✓ อนุมัติแล้ว")+'</span><b>'+esc(t.name)+(r.half_day?" (ครึ่ง"+(r.half_day==="am"?"เช้า":"บ่าย")+")":"")+'</b><span class="cvn">'+esc(nm)+(r.shift?' ('+esc(shiftLbl(r.shift))+')':'')+'</span>'+(sb?'<span class="cvs">'+(sb.rotation?"🔁 ควงกะ":"แทน: "+esc(String(sb.name).replace(/^(นางสาว|นาง|นาย)\s*/,"")))+'</span>':'')+'</div>'}).join("")+'</div>'});
   $("lc-grid").innerHTML=h;
   $("lc-list").innerHTML=rows.length?rows.map(function(r){return '<div class="row"><div class="l"><b>'+esc(r.name)+'</b><div class="lvl1">'+typeChip(r.leave_type_id)+'<span>'+esc(rangeTxt(r.start_date,r.end_date))+' · '+num(r.total_days)+' วัน</span></div><small>'+esc([deptName(r.department_id),"กะ "+shiftLbl(r.shift)].join(" · "))+'</small>'+subsHtml(r.substitutes)+'</div>'+lvStatus(r.status)+'</div>'}).join(""):emptyRow("ไม่มีคนลาในเดือนนี้");
 }
@@ -9718,8 +9734,16 @@ async function start(){
   if(me.role==="employee")qzGateBoot();         /* อัปเดต 204: คำถามประจำวันขึ้นเป็นหน้าแรกทันที */
   nwLoad().catch(function(){});
   loadMarquee().catch(function(){});chatLive();ntReg().then(ntLoad).then(function(){setTimeout(ntAsk,1500)});
-  if(/^#(chat|shop)$/.test(location.hash)){show(location.hash.slice(1));history.replaceState(null,"",location.pathname)}
+  if(/^#(chat|shop|leavecal)$/.test(location.hash)){show(location.hash.slice(1));history.replaceState(null,"",location.pathname)}
+  setTimeout(dnCheck,2500);
 }
+/* อัปเดต 234: กล่องแจ้งเตือนส่วนตัว (เช่น ถูกใส่ชื่อมาแทนคู่กะ) */
+var DN={ids:[],at:0};
+async function dnCheck(){if(!S.me||S.guest)return;DN.at=Date.now();try{var r=await q(db.from("notify_direct").select("id,title,body,created_at").is("read_at",null).order("created_at",{ascending:false}).limit(20));if(!r||!r.length)return;
+  DN.ids=r.map(function(x){return x.id});$("dn-list").innerHTML=r.map(function(x){return '<div class="dnitem"><b>'+esc(x.title)+'</b><p>'+esc(x.body)+'</p><small>'+esc(new Date(x.created_at).toLocaleString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))+'</small></div>'}).join("");openModal("m-dn")}catch(e){}}
+function dnDone(){var ids=DN.ids;DN.ids=[];closeModal("m-dn");if(ids.length)db.rpc("notify_direct_read",{p_ids:ids}).then(function(){},function(){})}
+$("dn-ok").addEventListener("click",dnDone);$("dn-x").addEventListener("click",dnDone);$("dn-cal").addEventListener("click",function(){dnDone();show("leavecal")});
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&S.me&&Date.now()-DN.at>60000&&$("m-dn").hidden)dnCheck()});
 start().catch(function(e){$("auth").hidden=false;$("a-msg").textContent=thErr(e)});
 })();
 </script>
