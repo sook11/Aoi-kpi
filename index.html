@@ -1390,6 +1390,9 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .lcme{display:grid;gap:8px;margin:0 0 12px}.lcme-row{border-radius:14px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe}.lcme-row.sub{background:#fdf2f8;border-color:#fbcfe8}
 .lcme-row b{display:block;margin-bottom:6px}.lcme-row div{display:flex;flex-wrap:wrap;gap:6px}.lcchip{background:#fff;border-radius:999px;padding:4px 10px;font-size:13px;border:1px solid rgba(0,0,0,.08)}
 .dnlist{display:grid;gap:8px}.dnitem{border-radius:12px;background:#fdf2f8;border:1px solid #fbcfe8;padding:10px 12px}.dnitem p{margin:4px 0;line-height:1.5}.dnitem small{opacity:.7}
+
+/* อัปเดต 236 */
+.maexp{gap:8px;flex-wrap:wrap;margin:6px 0 10px}
 </style>
 </head>
 <body>
@@ -1929,12 +1932,18 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <section class="view" id="v-missan" hidden>
     <div><h2>📉 วิเคราะห์ยอดไม่ถึงเป้า</h2><p class="sub">เหตุผลที่พนักงานเลือกตอนลงยอดต่ำกว่าเป้า — ดูว่าปัญหาไหนเกิดบ่อยและทำให้ยอดหายมากที่สุด</p></div>
     <div class="filters">
-      <label>ตั้งแต่<input type="date" id="ma-from"></label>
-      <label>ถึง<input type="date" id="ma-to"></label>
+      <label>ช่วงเวลา<select id="ma-mode"><option value="month">รายเดือน</option><option value="year">รายปี</option><option value="custom">กำหนดเอง</option></select></label>
+      <label id="ma-mwrap">เดือน<input type="month" id="ma-month"></label>
+      <label id="ma-ywrap" hidden>ปี<select id="ma-year"></select></label>
+      <label class="ma-cw" hidden>ตั้งแต่<input type="date" id="ma-from"></label>
+      <label class="ma-cw" hidden>ถึง<input type="date" id="ma-to"></label>
       <label>แผนก<select id="ma-dept"></select></label>
       <label>หน้างาน<select id="ma-ws"><option value="">ทุกหน้างาน</option></select></label>
     </div>
+    <div class="inline maexp"><button type="button" class="primary" id="ma-xlsx" data-ico="download">ส่งออก Excel (Dashboard + Data)</button><button type="button" id="ma-html">🖨️ รายงานสรุป (เปิดดู/พิมพ์ PDF)</button></div>
     <div class="stats" id="ma-kpi"></div>
+    <div class="panel" id="ma-mpanel" hidden><h3>แยกรายเดือน</h3><p class="sub">แท่ง = จำนวนครั้งที่ไม่ถึงเป้า แยกสีตามเหตุผล · เส้น = % ของรายการทั้งหมดที่ไม่ถึงเป้า</p><div class="mascat" id="ma-mchart"></div>
+      <div class="scroll"><table class="tbl"><thead><tr><th>เดือน</th><th>รายการที่มีเป้า</th><th>ไม่ถึงเป้า</th><th>% ไม่ถึง</th><th>ยอดที่ขาดรวม</th><th>เฉลี่ย % เป้า</th><th>เหตุผลอันดับ 1</th></tr></thead><tbody id="ma-mrows"></tbody></table></div></div>
     <div class="panel"><h3>Scatter Plot — แต่ละจุด = 1 รายการที่ไม่ถึงเป้า</h3><p class="sub">แกนนอน = วันที่ · แกนตั้ง = % ของเป้าที่ทำได้ · สี = เหตุผล (กดที่ชื่อเหตุผลเพื่อดูเฉพาะเหตุผลนั้น · แตะจุดเพื่อดูรายละเอียด)</p>
       <div class="malegend" id="ma-leg"></div><div class="mascat" id="ma-scat"></div><div class="matip" id="ma-tip"></div></div>
     <div class="panel"><h3>Scatter Plot — เหตุผล × % ของเป้า</h3><p class="sub">แต่ละแถว = เหตุผล · จุดยิ่งอยู่ซ้ายยิ่งได้น้อย — ใช้ดูว่าเหตุผลไหนทำให้ยอดตกหนัก</p><div class="mascat" id="ma-scat2"></div></div>
@@ -2807,18 +2816,110 @@ async function renderMissAn(){
   if(!S.mgr)return;
   var dsel=$("ma-dept");if(dsel.options.length<1)setOptions(dsel,S.myDepts.map(function(x){return {v:x.id,t:x.name}}),S.admin?"ทุกแผนก":S.myDepts.length>1?"ทุกแผนกที่ดูแล":null);
   var ws=$("ma-ws");if(ws.options.length<2)ws.insertAdjacentHTML("beforeend",S.kpis.map(function(k){return '<option value="'+k.id+'">'+esc(k.name)+'</option>'}).join(""));
-  if(!$("ma-from").value){$("ma-from").value=today().slice(0,8)+"01";$("ma-to").value=today()}
-  var fr=$("ma-from").value,to=$("ma-to").value,dp=dsel.value,wk=ws.value;
-  var qy=db.from("work_logs").select("id,employee_id,work_date,shift,workstation_id,kpi_name,output,target,miss_reason,note,department_id").gte("work_date",fr).lte("work_date",to).gt("target",0).order("work_date",{ascending:false}).limit(5000);
-  if(dp)qy=qy.eq("department_id",dp);else if(!S.admin)qy=qy.in("department_id",S.myDepts.map(function(d){return d.id}));
-  if(wk)qy=qy.eq("workstation_id",wk);
-  var all=prodRows(await q(qy)),miss=all.filter(function(r){return +r.output<+r.target});
+  /* อัปเดต 236: เลือกเป็นเดือน/ปี/กำหนดเอง + ดึงข้อมูลครบทุกแถว (แบ่งหน้า) */
+  var ys=$("ma-year");if(!ys.options.length){var y0=+today().slice(0,4);for(var yy=y0;yy>=y0-3;yy--)ys.insertAdjacentHTML("beforeend",'<option value="'+yy+'">'+yy+' ('+(yy+543)+')</option>')}
+  if(!$("ma-month").value)$("ma-month").value=today().slice(0,7);
+  var md=$("ma-mode").value;$("ma-mwrap").hidden=md!=="month";$("ma-ywrap").hidden=md!=="year";document.querySelectorAll(".ma-cw").forEach(function(l){l.hidden=md!=="custom"});
+  if(md==="month"){var mm=$("ma-month").value;$("ma-from").value=mm+"-01";$("ma-to").value=mEnd(mm)}
+  else if(md==="year"){$("ma-from").value=ys.value+"-01-01";$("ma-to").value=ys.value+"-12-31"}
+  else if(!$("ma-from").value){$("ma-from").value=today().slice(0,8)+"01";$("ma-to").value=today()}
+  var fr=$("ma-from").value,to=$("ma-to").value,dp=dsel.value,wk=ws.value,raw=[];
+  for(var pg=0;pg<60;pg++){
+    var qy=db.from("work_logs").select("id,employee_id,work_date,shift,workstation_id,kpi_name,output,target,miss_reason,note,department_id").gte("work_date",fr).lte("work_date",to).gt("target",0).order("work_date",{ascending:false}).order("id",{ascending:true}).range(pg*1000,pg*1000+999);
+    if(dp)qy=qy.eq("department_id",dp);else if(!S.admin)qy=qy.in("department_id",S.myDepts.map(function(d){return d.id}));
+    if(wk)qy=qy.eq("workstation_id",wk);
+    var part=await q(qy);raw=raw.concat(part);if(part.length<1000)break}
+  var all=prodRows(raw),miss=all.filter(function(r){return +r.output<+r.target});MA.all=all;
   miss.forEach(function(r){r.pct=Math.max(0,Math.round(+r.output*1000/+r.target)/10);r.gap=+r.target-+r.output;r.rs=r.miss_reason||"ไม่ระบุ (ก่อนเปิดระบบ)"});
   MA.rows=miss;
   var withR=miss.filter(function(r){return r.miss_reason}).length,avg=miss.length?Math.round(miss.reduce(function(a,r){return a+r.pct},0)/miss.length):0,gap=miss.reduce(function(a,r){return a+r.gap},0);
   $("ma-kpi").innerHTML='<div class="stat"><small>รายการที่มีเป้า</small><b>'+num(all.length)+'</b></div><div class="stat bad"><small>ไม่ถึงเป้า</small><b>'+num(miss.length)+'</b><em>'+(all.length?Math.round(miss.length*100/all.length):0)+'% ของทั้งหมด</em></div><div class="stat"><small>เฉลี่ยทำได้ (เฉพาะที่ไม่ถึง)</small><b>'+avg+'%</b></div><div class="stat"><small>ยอดที่ขาดรวม</small><b>'+num(Math.round(gap))+'</b><em>มีเหตุผล '+withR+' / '+miss.length+'</em></div>';
-  maDraw();
+  maDraw();maMonths();
 }
+/* แยกรายเดือน */
+function maMonthAgg(){var all=MA.all||[],by={};all.forEach(function(r){var m=r.work_date.slice(0,7),o=by[m]=by[m]||{m:m,n:0,miss:0,gap:0,pct:0,rs:{}};o.n++;if(+r.output<+r.target){o.miss++;o.gap+=+r.target-+r.output;var p=Math.max(0,Math.round(+r.output*1000/+r.target)/10);o.pct+=p;var k=r.miss_reason||"ไม่ระบุ (ก่อนเปิดระบบ)";o.rs[k]=(o.rs[k]||0)+1}});
+  return Object.keys(by).sort().map(function(m){var o=by[m];o.top=Object.keys(o.rs).sort(function(a,b){return o.rs[b]-o.rs[a]})[0]||"";o.avg=o.miss?Math.round(o.pct/o.miss):0;o.rate=o.n?Math.round(o.miss*1000/o.n)/10:0;return o})}
+function maMonthLbl(m){return parseYmd(m+"-01").toLocaleDateString("th-TH",{month:"short",year:"2-digit"})}
+function maMonths(){var A=maMonthAgg(),pn=$("ma-mpanel");pn.hidden=A.length<2;if(A.length<2){$("ma-mchart").innerHTML="";$("ma-mrows").innerHTML="";return}
+  $("ma-mchart").innerHTML=maMonthSvg(A);
+  $("ma-mrows").innerHTML=A.map(function(o){return '<tr><td class="nm">'+esc(maMonthLbl(o.m))+'</td><td class="n">'+num(o.n)+'</td><td class="n"><b>'+num(o.miss)+'</b></td><td class="n">'+o.rate+'%</td><td class="n">'+num(Math.round(o.gap))+'</td><td class="n">'+o.avg+'%</td><td>'+(o.top?'<i class="madot" style="background:'+maCol(o.top)+'"></i>'+esc(o.top)+' ('+o.rs[o.top]+')':'–')+'</td></tr>'}).join("")}
+function maMonthSvg(A){var keys={};A.forEach(function(o){Object.keys(o.rs).forEach(function(k){keys[k]=(keys[k]||0)+o.rs[k]})});var K=Object.keys(keys).sort(function(a,b){return keys[b]-keys[a]});
+  var W=860,H=300,L=46,R=46,T=16,B=44,mx=Math.max(1,Math.max.apply(null,A.map(function(o){return o.miss}))),bw=(W-L-R)/A.length,g='';
+  var Y=function(v){return T+(1-v/mx)*(H-T-B)},Yp=function(p){return T+(1-Math.min(p,100)/100)*(H-T-B)};
+  for(var i=0;i<=4;i++){var v=Math.round(mx*i/4);g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="magrid"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" class="maax" text-anchor="end">'+v+'</text><text x="'+(W-R+6)+'" y="'+(Yp(i*25)+4)+'" class="maax">'+(i*25)+'%</text>'}
+  A.forEach(function(o,i){var x=L+i*bw+bw*.18,w=bw*.64,y0=Y(0);K.forEach(function(k){var c=o.rs[k]||0;if(!c)return;var h=y0-Y(c);g+='<rect x="'+x.toFixed(1)+'" y="'+(y0-h).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="'+maCol(k)+'"><title>'+esc(maMonthLbl(o.m)+" · "+k+": "+c)+'</title></rect>';y0-=h});
+    g+='<text x="'+(L+i*bw+bw/2).toFixed(1)+'" y="'+(H-B+18)+'" class="maax" text-anchor="middle">'+esc(maMonthLbl(o.m))+'</text><text x="'+(L+i*bw+bw/2).toFixed(1)+'" y="'+(Y(o.miss)-5).toFixed(1)+'" class="maax" text-anchor="middle">'+o.miss+'</text>'});
+  g+='<polyline fill="none" stroke="#0f172a" stroke-width="2" points="'+A.map(function(o,i){return (L+i*bw+bw/2).toFixed(1)+","+Yp(o.rate).toFixed(1)}).join(" ")+'"/>'+A.map(function(o,i){return '<circle cx="'+(L+i*bw+bw/2).toFixed(1)+'" cy="'+Yp(o.rate).toFixed(1)+'" r="4" fill="#0f172a"><title>'+esc(maMonthLbl(o.m))+' ไม่ถึงเป้า '+o.rate+'%</title></circle>'}).join("");
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="กราฟแยกรายเดือน">'+g+'</svg>'}
+/* สรุปกลุ่ม (พนักงาน / หน้างาน) */
+function maGroup(keyf){var by={};(MA.all||[]).forEach(function(r){var k=keyf(r);var o=by[k]=by[k]||{k:k,n:0,miss:0,gap:0,pct:0,rs:{}};o.n++;if(+r.output<+r.target){o.miss++;o.gap+=+r.target-+r.output;o.pct+=Math.max(0,Math.round(+r.output*1000/+r.target)/10);var rr=r.miss_reason||"ไม่ระบุ (ก่อนเปิดระบบ)";o.rs[rr]=(o.rs[rr]||0)+1}});
+  return Object.keys(by).map(function(k){var o=by[k];o.top=Object.keys(o.rs).sort(function(a,b){return o.rs[b]-o.rs[a]})[0]||"";o.avg=o.miss?Math.round(o.pct/o.miss):0;o.rate=o.n?Math.round(o.miss*1000/o.n)/10:0;return o}).sort(function(a,b){return b.miss-a.miss||b.gap-a.gap})}
+function maPeriodTxt(){var md=$("ma-mode").value,fr=$("ma-from").value,to=$("ma-to").value;return md==="month"?parseYmd(fr).toLocaleDateString("th-TH",{month:"long",year:"numeric"}):md==="year"?"ปี "+(+fr.slice(0,4)+543):dmy(fr)+" – "+dmy(to)}
+function maScopeTxt(){var d=$("ma-dept"),w=$("ma-ws");return [d.value?d.options[d.selectedIndex].text:(S.admin?"ทุกแผนก":"แผนกที่ดูแล"),w.value?w.options[w.selectedIndex].text:"ทุกหน้างาน"].join(" · ")}
+function maReasonAgg(){var miss=MA.rows||[],cnt={};miss.forEach(function(r){var o=cnt[r.rs]=cnt[r.rs]||{k:r.rs,n:0,gap:0,pct:0};o.n++;o.gap+=r.gap;o.pct+=r.pct});var tot=miss.length,cum=0;
+  return Object.keys(cnt).map(function(k){return cnt[k]}).sort(function(a,b){return b.n-a.n}).map(function(o){cum+=o.n;o.share=tot?Math.round(o.n*1000/tot)/10:0;o.cum=tot?Math.round(cum*1000/tot)/10:0;o.avg=Math.round(o.pct/o.n);return o})}
+/* ส่งออก Excel: Dashboard + ตารางแยก + ข้อมูลดิบ (ใส่ตัวกรองไว้ทุกแผ่น) */
+async function maExportXlsx(){var all=MA.all||[],miss=MA.rows||[];if(!all.length){toast("ช่วงนี้ไม่มีข้อมูล");return}
+  var wb=await xlBook(),H={name:"Calibri",bold:true,size:11,color:{argb:"FFFFFFFF"}},HF=xf("FF1E3A8A"),N={name:"Calibri",size:11};
+  var period=maPeriodTxt(),scope=maScopeTxt(),gap=miss.reduce(function(a,r){return a+r.gap},0),avg=miss.length?Math.round(miss.reduce(function(a,r){return a+r.pct},0)/miss.length):0;
+  function head(ws,row,cols){var r=ws.getRow(row);cols.forEach(function(c,i){var cl=r.getCell(i+1);cl.value=c;cl.font=H;cl.fill=HF;cl.alignment={vertical:"middle",horizontal:"center",wrapText:true};cl.border=XBOX});r.height=22}
+  function body(ws,row,vals,fmt){var r=ws.getRow(row);vals.forEach(function(v,i){var cl=r.getCell(i+1);cl.value=v;cl.font=N;cl.border=XBOX;if(fmt&&fmt[i])cl.numFmt=fmt[i]});return r}
+  function bar(ws,ref,col){try{ws.addConditionalFormatting({ref:ref,rules:[{type:"dataBar",cfvo:[{type:"num",value:0},{type:"max"}],color:{argb:col||"FF8B5CF6"},gradient:false}]})}catch(e){}}
+  /* 1) Dashboard */
+  var d=wb.addWorksheet("Dashboard",{views:[{showGridLines:false}]});[30,14,14,14,16,14,30].forEach(function(w,i){d.getColumn(i+1).width=w});
+  d.mergeCells("A1:G1");d.getCell("A1").value="📉 วิเคราะห์ยอดไม่ถึงเป้า — "+period;d.getCell("A1").font={name:"Calibri",bold:true,size:18,color:{argb:"FF1E3A8A"}};d.getRow(1).height=32;
+  d.mergeCells("A2:G2");d.getCell("A2").value=scope+" · ส่งออกเมื่อ "+new Date().toLocaleString("th-TH");d.getCell("A2").font={name:"Calibri",size:10,color:{argb:"FF64748B"}};
+  var cards=[["รายการที่มีเป้า",all.length,"FFE0E7FF"],["ไม่ถึงเป้า",miss.length,"FFFEE2E2"],["% ไม่ถึงเป้า",all.length?miss.length/all.length:0,"FFFEF3C7"],["เฉลี่ยทำได้ (ที่ไม่ถึง)",avg/100,"FFDCFCE7"],["ยอดที่ขาดรวม",Math.round(gap),"FFFCE7F3"]];
+  cards.forEach(function(c,i){var col=i+1+(i>=3?1:0);var a=d.getCell(4,col),b=d.getCell(5,col);a.value=c[0];a.font={name:"Calibri",size:10,color:{argb:"FF475569"}};b.value=c[1];b.font={name:"Calibri",bold:true,size:18};[a,b].forEach(function(x){x.fill=xf(c[2]);x.alignment={horizontal:"center",vertical:"middle"}});b.numFmt=i===2||i===3?"0.0%":"#,##0"});d.getRow(5).height=30;
+  var r0=7;d.getCell(r0,1).value="สรุปตามเหตุผล (Pareto)";d.getCell(r0,1).font={name:"Calibri",bold:true,size:13};
+  head(d,r0+1,["เหตุผล","ครั้ง","สัดส่วน","สะสม","ยอดที่ขาดรวม","เฉลี่ย % เป้า"]);
+  var RA=maReasonAgg();RA.forEach(function(o,i){var r=body(d,r0+2+i,[o.k,o.n,o.share/100,o.cum/100,Math.round(o.gap),o.avg/100],[null,"#,##0","0.0%","0.0%","#,##0","0%"]);r.getCell(1).font={name:"Calibri",bold:true,color:{argb:hexArgb(maCol(o.k))}}});
+  if(RA.length){bar(d,"B"+(r0+2)+":B"+(r0+1+RA.length),"FF8B5CF6");bar(d,"E"+(r0+2)+":E"+(r0+1+RA.length),"FFEF4444")}
+  var r1=r0+3+RA.length+1,MA2=maMonthAgg();d.getCell(r1,1).value="แยกรายเดือน";d.getCell(r1,1).font={name:"Calibri",bold:true,size:13};
+  head(d,r1+1,["เดือน","รายการที่มีเป้า","ไม่ถึงเป้า","% ไม่ถึง","ยอดที่ขาดรวม","เฉลี่ย % เป้า","เหตุผลอันดับ 1"]);
+  MA2.forEach(function(o,i){body(d,r1+2+i,[maMonthLbl(o.m),o.n,o.miss,o.rate/100,Math.round(o.gap),o.avg/100,o.top?o.top+" ("+o.rs[o.top]+")":"–"],[null,"#,##0","#,##0","0.0%","#,##0","0%",null])});
+  if(MA2.length){bar(d,"C"+(r1+2)+":C"+(r1+1+MA2.length),"FFF59E0B");bar(d,"D"+(r1+2)+":D"+(r1+1+MA2.length),"FFEF4444")}
+  var r2=r1+3+MA2.length+1,EG=maGroup(function(r){return r.employee_id}).filter(function(o){return o.miss}).slice(0,15);
+  d.getCell(r2,1).value="พนักงานที่ไม่ถึงเป้าบ่อย (15 อันดับ)";d.getCell(r2,1).font={name:"Calibri",bold:true,size:13};
+  head(d,r2+1,["พนักงาน","รายการ","ไม่ถึงเป้า","% ไม่ถึง","ยอดที่ขาดรวม","เฉลี่ย % เป้า","เหตุผลหลัก"]);
+  EG.forEach(function(o,i){var e=empOf(o.k)||{};body(d,r2+2+i,[e.display_name||"-",o.n,o.miss,o.rate/100,Math.round(o.gap),o.avg/100,o.top||"–"],[null,"#,##0","#,##0","0.0%","#,##0","0%",null])});
+  if(EG.length)bar(d,"C"+(r2+2)+":C"+(r2+1+EG.length),"FF0EA5E9");
+  /* 2) รายเดือน × เหตุผล */
+  var keys=RA.map(function(o){return o.k}),pv=wb.addWorksheet("รายเดือน×เหตุผล",{views:[{state:"frozen",xSplit:1,ySplit:1}]});pv.getColumn(1).width=14;keys.forEach(function(k,i){pv.getColumn(i+2).width=18});pv.getColumn(keys.length+2).width=10;
+  head(pv,1,["เดือน"].concat(keys).concat(["รวม"]));MA2.forEach(function(o,i){body(pv,i+2,[maMonthLbl(o.m)].concat(keys.map(function(k){return o.rs[k]||0})).concat([o.miss]))});
+  if(MA2.length&&keys.length)try{pv.addConditionalFormatting({ref:"B2:"+pv.getColumn(keys.length+1).letter+(MA2.length+1),rules:[{type:"colorScale",cfvo:[{type:"min"},{type:"max"}],color:[{argb:"FFFFFFFF"},{argb:"FFF87171"}]}]})}catch(e){}
+  /* 3) ตามพนักงาน / 4) ตามหน้างาน */
+  [["ตามพนักงาน",function(r){return r.employee_id},function(k){var e=empOf(k)||{};return [e.employee_no||"",e.display_name||"-",deptName(e.department_id)]},["รหัส","ชื่อ","แผนก"]],
+   ["ตามหน้างาน",function(r){return r.kpi_name||"-"},function(k){return [k]},["หน้างาน"]]].forEach(function(G){
+    var ws=wb.addWorksheet(G[0],{views:[{state:"frozen",ySplit:1}]}),cols=G[3].concat(["รายการ","ไม่ถึงเป้า","% ไม่ถึง","ยอดที่ขาดรวม","เฉลี่ย % เป้า","เหตุผลหลัก"]);cols.forEach(function(c,i){ws.getColumn(i+1).width=i<G[3].length?(c==="ชื่อ"||c==="หน้างาน"?30:14):14});ws.getColumn(cols.length).width=28;
+    head(ws,1,cols);var L=maGroup(G[1]);L.forEach(function(o,i){body(ws,i+2,G[2](o.k).concat([o.n,o.miss,o.rate/100,Math.round(o.gap),o.avg/100,o.top||"–"]),G[3].map(function(){return null}).concat(["#,##0","#,##0","0.0%","#,##0","0%",null]))});
+    ws.autoFilter={from:{row:1,column:1},to:{row:1,column:cols.length}};if(L.length)bar(ws,ws.getColumn(G[3].length+2).letter+"2:"+ws.getColumn(G[3].length+2).letter+(L.length+1),"FFEF4444")});
+  /* 5) ข้อมูลดิบ — ทุกแถวที่มีเป้า (กรอง "ถึงเป้า?" ได้) */
+  var dr=wb.addWorksheet("ข้อมูลดิบ",{views:[{state:"frozen",ySplit:1}]}),C=["วันที่","เดือน","ปี","รหัส","ชื่อ","แผนก","กะ","หน้างาน","ยอดที่ทำได้","เป้า","% เป้า","ยอดที่ขาด","ถึงเป้า?","เหตุผล","หมายเหตุ"];
+  [12,10,8,12,28,20,6,24,12,10,9,10,9,28,30].forEach(function(w,i){dr.getColumn(i+1).width=w});head(dr,1,C);
+  all.slice().sort(function(a,b){return a.work_date<b.work_date?-1:a.work_date>b.work_date?1:0}).forEach(function(r,i){var e=empOf(r.employee_id)||{},ok=+r.output>=+r.target,p=+r.target?+r.output/+r.target:0;
+    var row=dr.getRow(i+2);row.values=[new Date(r.work_date+"T00:00:00Z"),r.work_date.slice(0,7),+r.work_date.slice(0,4),e.employee_no||"",e.display_name||"-",deptName(r.department_id),r.shift||"",r.kpi_name||"",+r.output,+r.target,p,ok?0:+r.target-+r.output,ok?"ถึง":"ไม่ถึง",ok?"":(r.miss_reason||"ไม่ระบุ (ก่อนเปิดระบบ)"),r.note||""];
+    row.getCell(1).numFmt="dd/mm/yyyy";row.getCell(9).numFmt="#,##0";row.getCell(10).numFmt="#,##0";row.getCell(11).numFmt="0.0%";row.getCell(12).numFmt="#,##0";if(!ok)row.getCell(13).font={name:"Calibri",bold:true,color:{argb:"FFDC2626"}}});
+  dr.autoFilter={from:{row:1,column:1},to:{row:1,column:C.length}};
+  var f=$("ma-from").value,t=$("ma-to").value;await xlSave(wb,"วิเคราะห์ยอดไม่ถึงเป้า_"+($("ma-mode").value==="month"?f.slice(0,7):$("ma-mode").value==="year"?f.slice(0,4):f+"_"+t)+".xlsx")}
+/* รายงานสรุปแบบหน้าเว็บ (สวย พิมพ์เป็น PDF ได้) */
+function maExportHtml(){var all=MA.all||[],miss=MA.rows||[];if(!all.length){toast("ช่วงนี้ไม่มีข้อมูล");return}
+  var gap=miss.reduce(function(a,r){return a+r.gap},0),avg=miss.length?Math.round(miss.reduce(function(a,r){return a+r.pct},0)/miss.length):0,RA=maReasonAgg(),MA2=maMonthAgg(),EG=maGroup(function(r){return r.employee_id}).filter(function(o){return o.miss}).slice(0,15),WG=maGroup(function(r){return r.kpi_name||"-"}).filter(function(o){return o.miss}).slice(0,10);
+  var css='body{font-family:"Sarabun","Noto Sans Thai",system-ui,sans-serif;margin:0;background:#f1f5f9;color:#0f172a}main{max-width:1000px;margin:0 auto;padding:28px 20px}h1{margin:0;font-size:26px;color:#1e3a8a}.sub{color:#64748b;margin:4px 0 18px}.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}.card{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}.card small{color:#64748b;font-size:12px}.card b{display:block;font-size:24px;margin-top:4px}.card.bad b{color:#dc2626}section{background:#fff;border-radius:16px;padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);break-inside:avoid}h2{font-size:17px;margin:0 0 10px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#eef2ff;color:#334155;text-align:left;padding:7px 8px}td{padding:6px 8px;border-top:1px solid #e2e8f0}td.n,th.n{text-align:right}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.bar{display:inline-block;height:8px;border-radius:4px;vertical-align:middle;margin-right:6px}svg{width:100%;height:auto}.magrid{stroke:#e2e8f0;stroke-width:1}.maax{font-size:11px;fill:#64748b}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media print{body{background:#fff}section,.card{box-shadow:none;border:1px solid #e2e8f0}.noprint{display:none}}@media(max-width:700px){.cards{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}';
+  var mxN=Math.max(1,Math.max.apply(null,RA.map(function(o){return o.n})));
+  var h='<!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>รายงานยอดไม่ถึงเป้า — '+esc(maPeriodTxt())+'</title><style>'+css+'</style></head><body><main>'+
+    '<h1>📉 รายงานวิเคราะห์ยอดไม่ถึงเป้า</h1><p class="sub">'+esc(maPeriodTxt())+' · '+esc(maScopeTxt())+' · สร้างเมื่อ '+esc(new Date().toLocaleString("th-TH"))+' <button class="noprint" onclick="print()">🖨️ พิมพ์ / บันทึก PDF</button></p>'+
+    '<div class="cards"><div class="card"><small>รายการที่มีเป้า</small><b>'+num(all.length)+'</b></div><div class="card bad"><small>ไม่ถึงเป้า</small><b>'+num(miss.length)+'</b></div><div class="card"><small>% ไม่ถึงเป้า</small><b>'+(all.length?Math.round(miss.length*1000/all.length)/10:0)+'%</b></div><div class="card"><small>เฉลี่ยทำได้ (ที่ไม่ถึง)</small><b>'+avg+'%</b></div><div class="card"><small>ยอดที่ขาดรวม</small><b>'+num(Math.round(gap))+'</b></div></div>'+
+    (MA2.length>1?'<section><h2>แยกรายเดือน</h2>'+maMonthSvg(MA2)+'<table><tr><th>เดือน</th><th class="n">รายการ</th><th class="n">ไม่ถึงเป้า</th><th class="n">% ไม่ถึง</th><th class="n">ยอดที่ขาด</th><th>เหตุผลอันดับ 1</th></tr>'+MA2.map(function(o){return '<tr><td>'+esc(maMonthLbl(o.m))+'</td><td class="n">'+num(o.n)+'</td><td class="n"><b>'+num(o.miss)+'</b></td><td class="n">'+o.rate+'%</td><td class="n">'+num(Math.round(o.gap))+'</td><td>'+(o.top?'<span class="dot" style="background:'+maCol(o.top)+'"></span>'+esc(o.top):'–')+'</td></tr>'}).join("")+'</table></section>':'')+
+    '<section><h2>สรุปตามเหตุผล (Pareto)</h2><table><tr><th>เหตุผล</th><th class="n">ครั้ง</th><th>สัดส่วน</th><th class="n">สะสม</th><th class="n">ยอดที่ขาด</th><th class="n">เฉลี่ย % เป้า</th></tr>'+RA.map(function(o){return '<tr><td><span class="dot" style="background:'+maCol(o.k)+'"></span>'+esc(o.k)+'</td><td class="n"><b>'+o.n+'</b></td><td><span class="bar" style="width:'+Math.round(o.n*120/mxN)+'px;background:'+maCol(o.k)+'"></span>'+o.share+'%</td><td class="n">'+o.cum+'%</td><td class="n">'+num(Math.round(o.gap))+'</td><td class="n">'+o.avg+'%</td></tr>'}).join("")+'</table></section>'+
+    '<section><h2>เหตุผล × % ของเป้า</h2>'+($("ma-scat2").innerHTML||"")+'</section>'+
+    '<section><h2>ไม่ถึงเป้ารายวัน</h2>'+($("ma-scat").innerHTML||"")+'</section>'+
+    '<div class="two"><section><h2>พนักงานที่ไม่ถึงเป้าบ่อย</h2><table><tr><th>พนักงาน</th><th class="n">ไม่ถึง/รายการ</th><th class="n">ยอดขาด</th><th>เหตุผลหลัก</th></tr>'+EG.map(function(o){var e=empOf(o.k)||{};return '<tr><td>'+esc(noTitle(e.display_name||"-"))+'</td><td class="n">'+o.miss+'/'+o.n+'</td><td class="n">'+num(Math.round(o.gap))+'</td><td>'+(o.top?'<span class="dot" style="background:'+maCol(o.top)+'"></span>'+esc(o.top):'–')+'</td></tr>'}).join("")+'</table></section>'+
+    '<section><h2>หน้างานที่ไม่ถึงเป้าบ่อย</h2><table><tr><th>หน้างาน</th><th class="n">ไม่ถึง/รายการ</th><th class="n">% ไม่ถึง</th><th>เหตุผลหลัก</th></tr>'+WG.map(function(o){return '<tr><td>'+esc(o.k)+'</td><td class="n">'+o.miss+'/'+o.n+'</td><td class="n">'+o.rate+'%</td><td>'+(o.top?'<span class="dot" style="background:'+maCol(o.top)+'"></span>'+esc(o.top):'–')+'</td></tr>'}).join("")+'</table></section></div>'+
+    '</main></body></html>';
+  var url=URL.createObjectURL(new Blob([h],{type:"text/html;charset=utf-8"})),a=document.createElement("a"),f=$("ma-from").value;
+  a.href=url;a.download="รายงานยอดไม่ถึงเป้า_"+($("ma-mode").value==="month"?f.slice(0,7):$("ma-mode").value==="year"?f.slice(0,4):f+"_"+$("ma-to").value)+".html";document.body.appendChild(a);a.click();a.remove();
+  try{window.open(url,"_blank")}catch(e){}setTimeout(function(){URL.revokeObjectURL(url)},60000);toast("สร้างรายงานแล้ว — เปิดในแท็บใหม่ กดพิมพ์เพื่อบันทึก PDF")}
 function maDraw(){
   var miss=MA.rows,cnt={};miss.forEach(function(r){cnt[r.rs]=(cnt[r.rs]||0)+1});
   var keys=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
@@ -2851,7 +2952,9 @@ document.addEventListener("click",function(ev){var t=ev.target.closest&&ev.targe
   if(t.dataset.maonly!=null){var k=t.dataset.maonly;MA.only=(k&&MA.only!==k)?k:null;maDraw();return}
   var r=MA.rows.filter(function(x){return x.id===t.dataset.mapt})[0],tp=$("ma-tip");if(!r)return;var e=empOf(r.employee_id)||{};
   tp.innerHTML='<b>'+esc(e.display_name||"-")+'</b> · '+esc(wdD(r.work_date))+' · กะ '+esc(r.shift||"")+'<br>'+esc(r.kpi_name||"")+' — ได้ '+num(+r.output)+' / เป้า '+num(+r.target)+' (<b>'+r.pct+'%</b>)<br><i class="madot" style="background:'+maCol(r.rs)+'"></i>'+esc(r.rs)+(r.note?' · '+esc(r.note):'');tp.classList.add("on")});
-["ma-from","ma-to","ma-dept","ma-ws"].forEach(function(id){$(id).addEventListener("change",refresh)});
+["ma-from","ma-to","ma-dept","ma-ws","ma-mode","ma-month","ma-year"].forEach(function(id){$(id).addEventListener("change",refresh)});
+$("ma-xlsx").addEventListener("click",async function(){var b=this;b.disabled=true;try{await maExportXlsx()}catch(e){toast(thErr(e))}b.disabled=false});
+$("ma-html").addEventListener("click",function(){try{maExportHtml()}catch(e){toast(thErr(e))}});
 
 /* ---------- หน้า: ภาพรวม ---------- */
 async function renderHome(){
