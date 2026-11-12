@@ -1393,6 +1393,9 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 
 /* อัปเดต 236 */
 .maexp{gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+
+/* อัปเดต 238 */
+.idlewarn{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;background:#0f172a;color:#fff;padding:14px 18px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:calc(100vw - 32px)}.idlewarn em{font-style:normal;font-weight:800;color:#fbbf24}.idlewarn button{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -9775,7 +9778,7 @@ $("authform").addEventListener("submit",async function(ev){
   try{
     if(full){var dup=await db.rpc("signup_duplicate",{p_name:$("au-name").value,p_phone:$("au-phone").value,p_no:no});
       if(dup.data){msg.textContent=dup.data;btn.disabled=false;return}}
-    var em=(PLAY?"g.":"")+no+DOMAIN;
+    var em=(PLAY?"g.":"")+no+DOMAIN;idleBump(true);
     var r=mode==="in"?await db.auth.signInWithPassword({email:em,password:pw}):await db.auth.signUp({email:em,password:pw});
     if(r.error)throw r.error;
     if(!r.data.session){msg.textContent="ระบบยังเปิดการยืนยันอีเมลอยู่ ให้ผู้ดูแลปิด Confirm email ใน Supabase ก่อน";btn.disabled=false;return}
@@ -9798,11 +9801,30 @@ function paintWho(){
   $("who").textContent=S.me.display_name;$("whorole").textContent=ROLE[S.me.role];
   var a=okAvatar(S.me.avatar);$("who-av").innerHTML=a?'<img alt="" src="'+a+'">':esc(String(S.me.display_name||"?").trim().charAt(0));
 }
+/* อัปเดต 238: คอมพิวเตอร์ (ไม่ใช่มือถือ) ไม่มีการใช้งานเกิน 10 นาที → ออกจากระบบอัตโนมัติ กันลืมออกจากระบบ
+   · เตือนล่วงหน้า 1 นาที กด "ใช้งานต่อ" ได้ · ใช้เวลาล่าสุดร่วมกันทุกแท็บ · ยกเว้นหน้าจอทีวี (DTV) และโหมดเต็มจอ */
+var IDLE={ms:10*60e3,warn:60e3,last:Date.now(),w:0,iv:0,out:0};
+function idleDesk(){return !fmMQ("(pointer:coarse)")&&!/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent||"")}
+function idleLast(){var v=0;try{v=+localStorage.getItem("aoi-last-act")||0}catch(e){}return Math.max(IDLE.last,v)}
+function idleStale(){var v=0;try{v=+localStorage.getItem("aoi-last-act")||0}catch(e){}return v>0&&Date.now()-v>IDLE.ms}
+function idleBump(force){var n=Date.now();IDLE.last=n;if(force||n-IDLE.w>5000){IDLE.w=n;try{localStorage.setItem("aoi-last-act",String(n))}catch(e){}}var b=$("idle-warn");if(b&&!b.hidden)b.hidden=true}
+function idleOut(){if(IDLE.out)return;IDLE.out=1;try{sessionStorage.setItem("aoi-idle-out","1");localStorage.removeItem("aoi-last-act")}catch(e){}
+  var go=function(){location.reload()};db.auth.signOut().then(go,go);setTimeout(go,4000)}
+function idleMsg(){try{if(sessionStorage.getItem("aoi-idle-out")){sessionStorage.removeItem("aoi-idle-out");$("a-msg").textContent="🔒 ออกจากระบบอัตโนมัติ เพราะไม่มีการใช้งานเกิน 10 นาที — เข้าสู่ระบบใหม่ได้เลย"}}catch(e){}}
+function idleTick(){if(!S.me||IDLE.out||!idleDesk())return;if(S.tab==="dtv"||document.fullscreenElement){idleBump();return}
+  var left=IDLE.ms-(Date.now()-idleLast()),b=$("idle-warn");if(left<=0){idleOut();return}
+  if(left<=IDLE.warn){if(!b){b=document.createElement("div");b.id="idle-warn";b.className="idlewarn";b.setAttribute("role","alertdialog");document.body.appendChild(b);b.addEventListener("click",function(ev){if(ev.target.closest("[data-idleok]"))idleBump(true)})}
+    b.hidden=false;b.innerHTML='<b>⏳ ไม่มีการใช้งานมาเกือบ 10 นาที</b><span>จะออกจากระบบอัตโนมัติใน <em>'+Math.ceil(left/1000)+'</em> วินาที</span><button type="button" class="primary" data-idleok>ใช้งานต่อ</button>'}
+  else if(b&&!b.hidden)b.hidden=true}
+function idleStart(){if(IDLE.iv||!idleDesk())return;idleBump(true);["mousemove","mousedown","keydown","wheel","touchstart","pointerdown"].forEach(function(t){document.addEventListener(t,function(){idleBump()},{passive:true,capture:true})});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)idleTick()});IDLE.iv=setInterval(idleTick,1000)}
 async function start(){
   var gu;try{gu=await Promise.race([db.auth.getUser(),new Promise(function(r){setTimeout(function(){r({data:{user:null},error:{message:"fetch timeout"}})},10000)})])}catch(e){gu={data:{user:null},error:e}}
   if(gu.error&&/fetch|network|timeout|Failed/i.test(String(gu.error.message||gu.error.name||""))&&dtvOfflineBoot())return;
   var u=gu.data.user;
-  if(!u){$("auth").hidden=false;$("app").hidden=true;return}
+  if(!u){try{localStorage.removeItem("aoi-last-act")}catch(e){}idleMsg();$("auth").hidden=false;$("app").hidden=true;return}
+  if(idleDesk()&&idleStale()){idleOut();return}
+  idleStart();
   var me=await q(db.from("employees").select("*").eq("user_id",u.id).maybeSingle());
   if(me&&!me.active){await db.auth.signOut();$("auth").hidden=false;$("app").hidden=true;$("setup").hidden=true;$("a-msg").textContent="บัญชีนี้ถูกปิดใช้งาน ติดต่อผู้ดูแล";return}
   if(!me&&/^g\./.test(u.email||"")){var nk=prompt("ตั้งชื่อในเกม (2–24 ตัวอักษร)",(function(){try{return localStorage.getItem("aoi-gnick")||""}catch(e){return ""}})());
