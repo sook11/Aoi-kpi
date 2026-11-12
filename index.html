@@ -8788,8 +8788,10 @@ function lkDraw(){var c=LV.lock||{},td=String(c.today||today()),y=+td.slice(0,4)
   for(var i=-2;i<=13;i++){var mm=m+i,yy=y;while(mm>12){mm-=12;yy++}while(mm<1){mm+=12;yy--}keys.push(yy+"-"+(mm<10?"0":"")+mm)}ms.forEach(function(k){if(keys.indexOf(k)<0)keys.push(k)});keys.sort();
   $("lk-on").checked=!!c.on;$("lk-past").checked=c.no_past!==false;$("lk-msg").value=c.msg||"";
   $("lk-months").innerHTML=keys.map(function(k){var on=ms.indexOf(k)>=0;return '<label class="lkm'+(on?" on":"")+'"><input type="checkbox" value="'+k+'"'+(on?" checked":"")+'>'+(on?"🔒 ":"")+esc(lkName(k))+'</label>'}).join("")}
-$("lk-months").addEventListener("change",function(e){var l=e.target.closest(".lkm");if(l){l.classList.toggle("on",e.target.checked);l.lastChild.textContent=(e.target.checked?"🔒 ":"")+lkName(e.target.value)}});
+$("lk-months").addEventListener("change",function(e){var l=e.target.closest(".lkm");if(l){l.classList.toggle("on",e.target.checked);l.lastChild.textContent=(e.target.checked?"🔒 ":"")+lkName(e.target.value);if(e.target.checked)$("lk-on").checked=true}});
 $("lk-form").addEventListener("submit",async function(ev){ev.preventDefault();var ms=[].map.call(document.querySelectorAll("#lk-months input:checked"),function(x){return x.value});
+  /* อัปเดต 237: เลือกเดือนที่จะปิดแล้ว แต่ลืมติ๊ก "เปิดระบบล็อก" → ล็อกไม่ทำงาน · ตอนนี้มีเดือนที่เลือกไว้ = เปิดล็อกให้อัตโนมัติ */
+  if(ms.length&&!$("lk-on").checked){if(!confirm("มีเดือนที่เลือกปิดไว้ "+ms.length+" เดือน แต่ยังไม่ได้ติ๊ก “เปิดระบบล็อกการจองลา”\n\nกด OK = เปิดล็อกตามเดือนที่เลือก\nกด Cancel = ปิดระบบล็อกทั้งหมด (จองได้ทุกเดือน)"))ms=[];else $("lk-on").checked=true}
   try{LV.lock=await q(db.rpc("leave_lock_set",{p:{on:$("lk-on").checked,no_past:$("lk-past").checked,months:ms,msg:$("lk-msg").value.trim()}}));lkDraw();toast(LV.lock.on?"🔒 บันทึกแล้ว — ล็อก "+(LV.lock.months.length?LV.lock.months.map(lkName).join(", "):"เฉพาะลาย้อนหลัง"):"🔓 ปิดระบบล็อกแล้ว — จองลาได้ตามปกติ")}catch(e){toast(thErr(e))}});
 function lvEmpChanged(keepShift){
   var e=lvTarget();LV.emp=e;
