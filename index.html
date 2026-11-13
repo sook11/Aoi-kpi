@@ -6862,8 +6862,7 @@ function fk3Build(){var cv=$("fk3-cv");if(!cv)return;var R;R=glMake({canvas:cv,a
   /* กล้อง: มองจากหลังท่าเรือ หมุน/ซูมได้นิดหน่อย */
   var cam=FK3.cam=new THREE.PerspectiveCamera(46,1,.1,320);var d0=fk3Dir(FK3.spot.x,FK3.spot.z),s0=FK3.spot,dk=fk3OnDock(s0.x,s0.z);cam.position.set(s0.x-d0[0]*(dk?12.6:10),6.8,s0.z-d0[1]*(dk?12.6:10));var ctl=FK3.ctl=new THREE.OrbitControls(cam,cv);ctl.target.set(s0.x+d0[0]*(dk?6.4:6),2.2,s0.z+d0[1]*(dk?6.4:6));ctl.enablePan=false;ctl.enableDamping=true;ctl.dampingFactor=.1;
   ctl.minDistance=9.5;ctl.maxDistance=46;ctl.minPolarAngle=.25;ctl.maxPolarAngle=1.48;ctl.zoomSpeed=1.2;FK3.zd=FK3.zd||1;ctl.rotateSpeed=.6;ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_ROTATE};ctl.update();
-  var pd=null;cv.addEventListener("pointerdown",function(e){pd=[e.clientX,e.clientY,performance.now()]});cv.addEventListener("pointerup",function(e){if(!pd)return;var mv=Math.hypot(e.clientX-pd[0],e.clientY-pd[1]),dt=performance.now()-pd[2];pd=null;if(mv>8||dt>450)return;
-    if($("fk-sheet")&&!$("fk-sheet").hidden||FK3.walk)return;if(FK.st==="idle")fkCast();else if(FK.st==="wait"||FK.st==="bite")fkHook()});
+  /* อัปเดต 242: เลิกแตะจอแล้วตกปลา — เหวี่ยง/ตวัดเบ็ดได้จากปุ่มเท่านั้น (แตะ/ลากจอใช้หมุนกล้องอย่างเดียว) */
   cv.addEventListener("wheel",function(e){if(FK3.walk){e.preventDefault();fk3Zoom(e.deltaY>0?1.1:.9)}},{passive:false});
   var pz=null;cv.addEventListener("touchstart",function(e){if(e.touches.length===2)pz=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)},{passive:true});
   cv.addEventListener("touchmove",function(e){if(!FK3.walk||e.touches.length!==2||!pz)return;var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(d>0){fk3Zoom(pz/d);pz=d}},{passive:true});
