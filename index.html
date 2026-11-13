@@ -1402,6 +1402,12 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 
 /* อัปเดต 240 */
 .dkline.editing{display:block}.dkedit{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%;padding:6px 0}.dkedit .inline{grid-column:1/-1}
+
+/* อัปเดต 241: แชทในบึง */
+.fk-chat{left:calc(62px + env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}.fk-chatbar{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);z-index:30;display:flex;gap:6px;width:min(560px,calc(100% - 24px));background:rgba(15,23,42,.82);padding:8px;border-radius:16px;backdrop-filter:blur(6px)}
+.fk-chatbar input{flex:1;min-width:0;border-radius:12px;border:0;padding:10px 12px;font-size:16px}.fk-chatbar button{white-space:nowrap}
+.fk-chatlog{position:absolute;left:12px;bottom:190px;z-index:25;max-width:min(420px,70%);display:grid;gap:4px;pointer-events:none}
+.fk-chatlog div{background:rgba(15,23,42,.72);color:#fff;border-radius:12px;padding:5px 10px;font-size:14px;line-height:1.35;width:fit-content}.fk-chatlog div.me{background:rgba(22,101,52,.8)}.fk-chatlog b{color:#fde68a}
 </style>
 </head>
 <body>
@@ -6756,7 +6762,26 @@ function fk3WalkStep(dt){var J=FK3.joy||{x:0,y:0},K=FK3.keys||{},jx=J.x+((K.d||K
   FK3.moving=m>.08;if(FK3.moving){FK3.stT=(FK3.stT||0)+dt*m;if(FK3.stT>.36){FK3.stT=0;sfx(fk3OnDock(P.x,P.z)?"stepwood":"step")}}if(V){V.g.position.set(P.x,fk3OnDock(P.x,P.z)?.5:0,P.z);V.g.rotation.y=FK3.hd-Math.PI/2}
   var zd=FK3.zd||1,cx=P.x-Math.sin(FK3.cyaw)*10.5*zd,cz=P.z-Math.cos(FK3.cyaw)*10.5*zd;FK3.cam.position.lerp(new THREE.Vector3(cx,Math.max(1.6,5.6*zd),cz),Math.min(1,dt*5));FK3.cam.lookAt(P.x+Math.sin(FK3.cyaw)*7,.2,P.z+Math.cos(FK3.cyaw)*7);
   var now=performance.now();if(FK.rt&&S.me&&now-(FK3.lastTx||0)>(FK3.moving?220:1500)){FK3.lastTx=now;try{FK.rt.send({type:"broadcast",event:"pos",payload:{id:S.me.id,x:+P.x.toFixed(2),z:+P.z.toFixed(2),hd:+FK3.hd.toFixed(2),mv:!!FK3.moving}})}catch(e){}}}
-function fkRtOpen(){if(FK.rt||!db.channel)return;try{FK.rt=db.channel("aoi-lake",{config:{broadcast:{self:false}}}).on("broadcast",{event:"mermaid"},function(m){var d=m&&m.payload;if(!d)return;FK.gold=Object.assign({},FK.gold||{},{mermaid:{caught:true,by:d.by,by_id:d.by_id,weight:d.weight,week:((FK.gold||{}).mermaid||{}).week,secs:0}});fkMerFx(60,d.by,d.weight);fkHud()}).on("broadcast",{event:"gold"},function(m){var d=m&&m.payload;if(!d)return;FK.gold=Object.assign({},FK.gold||{},{caught:true,by:d.by,by_id:d.by_id,weight:d.weight});toast("🏆 "+(nick(d.by)||d.by)+" ตกปลาทองประจำวันได้แล้ว!");sfx("level");fkHud()}).on("broadcast",{event:"pos"},function(m){var d=m&&m.payload;if(!d||!d.id||!FK3.on)return;var C=FK3.chars[d.id];if(!C)return;C.live={x:+d.x,z:+d.z,hd:+d.hd||0,mv:!!d.mv,stop:!!d.stop,at:Date.now()}}).subscribe()}catch(e){FK.rt=null}}
+function fkRtOpen(){if(FK.rt||!db.channel)return;try{FK.rt=db.channel("aoi-lake",{config:{broadcast:{self:false}}}).on("broadcast",{event:"mermaid"},function(m){var d=m&&m.payload;if(!d)return;FK.gold=Object.assign({},FK.gold||{},{mermaid:{caught:true,by:d.by,by_id:d.by_id,weight:d.weight,week:((FK.gold||{}).mermaid||{}).week,secs:0}});fkMerFx(60,d.by,d.weight);fkHud()}).on("broadcast",{event:"gold"},function(m){var d=m&&m.payload;if(!d)return;FK.gold=Object.assign({},FK.gold||{},{caught:true,by:d.by,by_id:d.by_id,weight:d.weight});toast("🏆 "+(nick(d.by)||d.by)+" ตกปลาทองประจำวันได้แล้ว!");sfx("level");fkHud()}).on("broadcast",{event:"say"},function(m){fkSayRecv(m&&m.payload)}).on("broadcast",{event:"pos"},function(m){var d=m&&m.payload;if(!d||!d.id||!FK3.on)return;var C=FK3.chars[d.id];if(!C)return;C.live={x:+d.x,z:+d.z,hd:+d.hd||0,mv:!!d.mv,stop:!!d.stop,at:Date.now()}}).subscribe()}catch(e){FK.rt=null}}
+/* อัปเดต 241: คุยแชทในบึงตกปลา — พิมพ์แล้วขึ้นเป็นบอลลูนคำพูดบนหัวตัวละคร ให้คนอื่นเห็นทันที (ส่งผ่าน realtime ไม่เก็บลงฐานข้อมูล)
+   · ชื่อผู้พูดอ่านจากรายชื่อคนในบึงของเครื่องผู้รับเอง (คนนอกเห็นพนักงานเป็นชื่อปิดบังเหมือนเดิม) */
+var FKC={last:0,log:[]};
+function fkSayClean(t){return String(t||"").replace(/[\u0000-\u001f]/g," ").replace(/\s+/g," ").trim().slice(0,60)}
+function fkSay3D(C,t){if(!C||!C.g||!window.THREE)return;if(C.st){C.g.remove(C.st);try{C.st.material.map.dispose();C.st.material.dispose()}catch(e){}C.st=null}clearTimeout(C.stT);
+  C.st=fk3Tag("💬 "+t,"#0f172a","rgba(255,255,255,.96)");C.st.position.set(0,(C.tag?C.tag.position.y:2)+(C.bt?1.1:.58),0);C.g.add(C.st);
+  C.stT=setTimeout(function(){if(C.st){C.g.remove(C.st);try{C.st.material.map.dispose();C.st.material.dispose()}catch(e){}C.st=null}},7000)}
+function fkChatLog(name,t,me){FKC.log.push({n:name,t:t,me:me,at:Date.now()});if(FKC.log.length>6)FKC.log.shift();fkChatDraw()}
+function fkChatDraw(){var el=$("fk-chatlog");if(!el)return;var now=Date.now();FKC.log=FKC.log.filter(function(x){return now-x.at<20000});
+  el.innerHTML=FKC.log.map(function(x){return '<div'+(x.me?' class="me"':'')+'><b>'+esc(x.n)+':</b> '+esc(x.t)+'</div>'}).join("");el.hidden=!FKC.log.length;clearTimeout(FKC.dt);if(FKC.log.length)FKC.dt=setTimeout(fkChatDraw,4000)}
+function fkSayRecv(d){if(!d||!d.id||(S.me&&d.id===S.me.id))return;var t=fkSayClean(d.t);if(!t)return;var p=(FK.pres||[]).filter(function(x){return x.id===d.id})[0],nm=p?(nick(p.name)||p.name):"ชาวบึง";
+  if(FK3.on)fkSay3D(FK3.chars[d.id],t);fkChatLog(nm,t,false);sfx("tap")}
+function fkSaySend(){var i=$("fk-chatin");if(!i)return;var t=fkSayClean(i.value);if(!t)return;if(Date.now()-FKC.last<1500){toast("พิมพ์ช้าลงหน่อยนะ 😊");return}FKC.last=Date.now();i.value="";
+  if(FK3.on)fkSay3D(FK3.me,t);fkChatLog("คุณ",t,true);if(!FK.rt)fkRtOpen();try{FK.rt.send({type:"broadcast",event:"say",payload:{id:S.me.id,t:t}})}catch(e){}}
+function fkChatToggle(){var lk=$("fm-lake");if(!lk)return;var b=$("fk-chatbar");if(b){b.remove();return}
+  b=document.createElement("form");b.id="fk-chatbar";b.className="fk-chatbar";b.innerHTML='<input id="fk-chatin" type="text" maxlength="60" placeholder="พิมพ์ข้อความ… (ขึ้นบนหัวตัวละคร)" autocomplete="off" enterkeyhint="send"><button type="submit" class="primary">ส่ง</button><button type="button" class="ghost" data-fkcx aria-label="ปิด">✕</button>';
+  b.addEventListener("submit",function(ev){ev.preventDefault();fkSaySend()});b.addEventListener("click",function(ev){if(ev.target.closest("[data-fkcx]"))b.remove()});
+  b.addEventListener("keydown",function(ev){ev.stopPropagation()});b.addEventListener("keyup",function(ev){ev.stopPropagation()});lk.appendChild(b);setTimeout(function(){var i=$("fk-chatin");if(i)i.focus()},30);
+  if(!$("fk-chatlog")){var lg=document.createElement("div");lg.id="fk-chatlog";lg.className="fk-chatlog";lg.hidden=true;lk.appendChild(lg)}}
 function fkRtClose(){if(FK.rt){try{db.removeChannel(FK.rt)}catch(e){}FK.rt=null}}
 function fk3Joy(){var j=$("fk-joy");if(!j||j.dataset.on)return;j.dataset.on=1;var kn=j.querySelector("i"),id=null,c=null;
   var mv=function(e){if(e.pointerId!==id)return;var dx=e.clientX-c[0],dy=e.clientY-c[1];if(FM.rot){var tt=dx;dx=dy;dy=-tt}var r=Math.hypot(dx,dy),R=48;if(r>R){dx*=R/r;dy*=R/r}kn.style.transform="translate("+dx+"px,"+dy+"px)";FK3.joy={x:dx/R,y:-dy/R}};
@@ -7142,7 +7167,7 @@ function fkDraw(){var el=$("fm-lake");if(!el)return;if(FK3.on||FK3.tok)fk3Stop()
 function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},rod=(c.rods||{})[I.rod||1]||{n:"เบ็ด",e:"🎣"},B=I.bait||{};
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+(FK.pray&&FK.pray.kind==='big'&&FK.pray.casts_left>0?' · 🙏 พรปลาใหญ่ ×'+FK.pray.casts_left:'')+'</div>'+
-    '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button>'+(FK3.on?'<div class="fk-zm"><button type="button" data-fk="zin" aria-label="ซูมเข้า">＋</button><button type="button" data-fk="zout" aria-label="ซูมออก">－</button></div>':'')+'<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
+    '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button><button type="button" class="fk-pill fk-chat" data-fk="chat" title="คุยแชท">💬</button>'+(FK3.on?'<div class="fk-zm"><button type="button" data-fk="zin" aria-label="ซูมเข้า">＋</button><button type="button" data-fk="zout" aria-label="ซูมออก">－</button></div>':'')+'<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
     '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button><button type="button" data-fk="pet">🐾<small>สัตว์เลี้ยง</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'</div>'+
     '<div class="fk-baits"><small class="fk-bt">เหยื่อ</small>'+
     Object.keys(c.baits||{}).sort(function(a,b){return (c.baits[a].cost||0)-(c.baits[b].cost||0)}).filter(function(k){return (B[k]||0)>0||FK.bait===k}).map(function(k){var o=c.baits[k],n=B[k]||0;return '<button type="button" data-fkbait="'+k+'"'+(FK.bait===k?' class="on"':'')+(n?'':' disabled')+' title="'+esc(o.n)+'">'+o.e+' <b>'+n+'</b></button>'}).join("")+'</div>';fkTickUpd()}
@@ -7249,6 +7274,7 @@ document.addEventListener("click",function(ev){if(!FK.on)return;var t=ev.target.
    if(D.fk==="pray"){sfx("open");fkSheet("pray");return}
    if(D.fk==="shop"||D.fk==="book"||D.fk==="ava"){sfx("open");fkSheet(D.fk);if(D.fk!=="ava")fkLoad().then(function(){if(!$("fk-sheet").hidden)fkSheet(D.fk)});return}
   if(D.fk==="board"){sfx("open");fkBoardLoad();return}
+  if(D.fk==="chat"){sfx("tap");fkChatToggle();return}
   if(D.fk==="mus"){FA.mus=!FA.mus;faMusic(FA.mus);faSave();fkHud();toast(FA.mus?"🎵 เปิดเพลง":"🔇 ปิดเพลง");return}
   if(D.fk==="sell"){sfx("open");fkItemsLoad();return}
   if(D.fksell){if(D.fksell!=="*"&&!FK.items){FK.items={};FK.items[D.fksell.split(":")[0]]=+D.fksell.split(":")[1]||1}fkSell(D.fksell,t);return}
