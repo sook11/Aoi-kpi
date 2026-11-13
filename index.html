@@ -1404,10 +1404,10 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .dkline.editing{display:block}.dkedit{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%;padding:6px 0}.dkedit .inline{grid-column:1/-1}
 
 /* อัปเดต 241: แชทในบึง */
-.fk-chat{left:calc(62px + env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}.fk-chatbar{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);z-index:30;display:flex;gap:6px;width:min(560px,calc(100% - 24px));background:rgba(15,23,42,.82);padding:8px;border-radius:16px;backdrop-filter:blur(6px)}
-.fk-chatbar input{flex:1;min-width:0;border-radius:12px;border:0;padding:10px 12px;font-size:16px}.fk-chatbar button{white-space:nowrap}
-.fk-chatlog{position:absolute;left:12px;bottom:190px;z-index:25;max-width:min(420px,70%);display:grid;gap:4px;pointer-events:none}
-.fk-chatlog div{background:rgba(15,23,42,.72);color:#fff;border-radius:12px;padding:5px 10px;font-size:14px;line-height:1.35;width:fit-content}.fk-chatlog div.me{background:rgba(22,101,52,.8)}.fk-chatlog b{color:#fde68a}
+.fk-chat{left:calc(62px + env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}.fk-chatbar{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;display:flex;flex-direction:row;align-items:center;gap:6px;width:min(460px,calc(100% - 220px));min-width:260px;background:rgba(15,23,42,.8);padding:5px;border-radius:14px}
+#fm-lake .fk-chatbar input{flex:1 1 auto;min-width:0;width:auto;border-radius:10px;border:0;padding:7px 10px;font-size:16px;line-height:1.2;margin:0}#fm-lake .fk-chatbar button{flex:0 0 auto;width:auto;white-space:nowrap;padding:7px 12px;font-size:14px;margin:0}
+.fk-chatlog{position:absolute;right:calc(86px + env(safe-area-inset-right,0px));top:132px;z-index:25;max-width:min(380px,42%);display:grid;justify-items:end;gap:4px;pointer-events:none}
+.fk-chatlog div{background:rgba(15,23,42,.72);color:#fff;border-radius:12px;padding:4px 10px;font-size:13px;line-height:1.35;width:fit-content}.fk-chatlog div.me{background:rgba(22,101,52,.8)}.fk-chatlog b{color:#fde68a}
 </style>
 </head>
 <body>
@@ -6775,7 +6775,7 @@ function fkChatDraw(){var el=$("fk-chatlog");if(!el)return;var now=Date.now();FK
   el.innerHTML=FKC.log.map(function(x){return '<div'+(x.me?' class="me"':'')+'><b>'+esc(x.n)+':</b> '+esc(x.t)+'</div>'}).join("");el.hidden=!FKC.log.length;clearTimeout(FKC.dt);if(FKC.log.length)FKC.dt=setTimeout(fkChatDraw,4000)}
 function fkSayRecv(d){if(!d||!d.id||(S.me&&d.id===S.me.id))return;var t=fkSayClean(d.t);if(!t)return;var p=(FK.pres||[]).filter(function(x){return x.id===d.id})[0],nm=p?(nick(p.name)||p.name):"ชาวบึง";
   if(FK3.on)fkSay3D(FK3.chars[d.id],t);fkChatLog(nm,t,false);sfx("tap")}
-function fkSaySend(){var i=$("fk-chatin");if(!i)return;var t=fkSayClean(i.value);if(!t)return;if(Date.now()-FKC.last<1500){toast("พิมพ์ช้าลงหน่อยนะ 😊");return}FKC.last=Date.now();i.value="";
+function fkSaySend(){var i=$("fk-chatin");if(!i)return;var t=fkSayClean(i.value);if(!t)return;if(Date.now()-FKC.last<1500){toast("พิมพ์ช้าลงหน่อยนะ 😊");return}FKC.last=Date.now();i.value="";try{i.blur()}catch(e){}var cb=$("fk-chatbar");if(cb)cb.remove();
   if(FK3.on)fkSay3D(FK3.me,t);fkChatLog("คุณ",t,true);if(!FK.rt)fkRtOpen();try{FK.rt.send({type:"broadcast",event:"say",payload:{id:S.me.id,t:t}})}catch(e){}}
 function fkChatToggle(){var lk=$("fm-lake");if(!lk)return;var b=$("fk-chatbar");if(b){b.remove();return}
   b=document.createElement("form");b.id="fk-chatbar";b.className="fk-chatbar";b.innerHTML='<input id="fk-chatin" type="text" maxlength="60" placeholder="พิมพ์ข้อความ… (ขึ้นบนหัวตัวละคร)" autocomplete="off" enterkeyhint="send"><button type="submit" class="primary">ส่ง</button><button type="button" class="ghost" data-fkcx aria-label="ปิด">✕</button>';
