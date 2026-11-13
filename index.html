@@ -1399,6 +1399,9 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 
 /* อัปเดต 239 */
 .skind{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}.skind .chipsel{font-size:15px;padding:8px 14px}
+
+/* อัปเดต 240 */
+.dkline.editing{display:block}.dkedit{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%;padding:6px 0}.dkedit .inline{grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -1709,14 +1712,14 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <label>แผนก<select id="dr-dept"></select></label>
       <label>ค้นหา<input type="search" id="dr-q" placeholder="ชื่อหรือรหัส" autocomplete="off"></label>
     </div>
-    <div class="inline"><button type="button" id="dr-export" data-ico="download">Export Excel</button></div>
+    <div class="inline" style="gap:8px;flex-wrap:wrap"><button type="button" id="dr-export" data-ico="download">Export Excel</button><button type="button" class="primary" data-tab="deduct">＋ เพิ่มรายการหัก</button></div>
     <div class="stats st4">
       <div class="stat"><small>ยอดหักรวม</small><b id="dr-sum">–</b></div>
       <div class="stat"><small>พนักงานที่ถูกหัก</small><b id="dr-n">–</b></div>
       <div class="stat"><small>เฉลี่ยต่อคน</small><b id="dr-avg">–</b></div>
       <div class="stat bad"><small>หักสูงสุด</small><b id="dr-max">–</b></div>
     </div>
-    <div class="panel"><div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>พนักงาน</th><th>แผนก</th><th class="n">ครั้ง</th><th>ล่าสุด</th><th class="n">ยอดหักสะสม</th></tr></thead><tbody id="dr-rows"></tbody></table></div></div>
+    <div class="panel"><div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>พนักงาน</th><th>แผนก</th><th class="n">ครั้ง</th><th>ล่าสุด</th><th class="n">ยอดหักสะสม</th><th></th></tr></thead><tbody id="dr-rows"></tbody></table></div></div>
   </section>
 
   <!-- ATTENDANCE: หน้าจอ TV -->
@@ -2551,7 +2554,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
     <label>หมวด<select id="dk-cat"></select></label>
     <label>หมายเหตุ<input type="text" id="dk-remark" maxlength="300" placeholder="(ไม่บังคับ)"></label>
     <div class="inline" style="justify-content:flex-end"><button type="button" data-close="m-deduct">ยกเลิก</button><button type="button" class="primary slim" id="dk-save">บันทึกหัก</button></div>
-    <h3>ประวัติการหักของคนนี้</h3><div class="rows" id="dk-hist"></div>
+    <h3 id="dk-histh">ประวัติการหักของคนนี้</h3><div class="rows" id="dk-hist"></div>
   </div>
 </div>
 <div class="modal" id="m-ttcom" hidden>
@@ -8587,17 +8590,25 @@ async function renderDeduct(){
   var rec=await q(db.from("kpi_deductions").select("*").order("created_at",{ascending:false}).limit(10));
   $("dd-recent").innerHTML=rec.length?rec.map(dedRow).join(""):emptyRow("ยังไม่มีรายการหัก");
 }
-function dedRow(x){var e=empOf(x.employee_id)||{};return '<div class="row"><div class="l"><b>'+esc(e.display_name||"-")+' · '+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark,x.auto?"อัตโนมัติ":""].filter(Boolean).join(" · "))+'</small></div><div class="r bad">−'+baht(x.amount)+'</div><button type="button" class="sm danger" data-dkdel="'+x.id+'" aria-label="ลบรายการหัก">'+ico("trash")+'</button></div>'}
+function dedRow(x){var e=empOf(x.employee_id)||{};(DK.byId=DK.byId||{})[x.id]=x;return '<div class="row dkline" data-dkid="'+x.id+'"><div class="l"><b>'+esc(e.display_name||"-")+' · '+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark,x.auto?"อัตโนมัติ":""].filter(Boolean).join(" · "))+'</small></div><div class="r bad">−'+baht(x.amount)+'</div><button type="button" class="sm" data-dkedit="'+x.id+'" aria-label="แก้ไขรายการหัก">'+ico("edit")+'แก้ไข</button><button type="button" class="sm danger" data-dkdel="'+x.id+'" aria-label="ลบรายการหัก">'+ico("trash")+'</button></div>'}
+/* อัปเดต 240: แก้ไขรายการหัก KPI ในที่ (วันที่ / ยอด / หมวด / หมายเหตุ) */
+function dedEditHtml(x){var cats=DED_CATS.indexOf(x.category)<0?[x.category].concat(DED_CATS):DED_CATS;
+  return '<div class="dkedit"><label>วันที่<input type="date" class="dke-date" value="'+esc(x.work_date)+'"></label><label>ยอดหัก (บาท)<input type="number" class="dke-amt" min="1" step="1" inputmode="numeric" value="'+esc(String(+x.amount))+'"></label>'+
+    '<label>หมวด<select class="dke-cat">'+cats.map(function(c){return '<option'+(c===x.category?" selected":"")+'>'+esc(c)+'</option>'}).join("")+'</select></label><label>หมายเหตุ<input type="text" class="dke-rem" maxlength="300" value="'+esc(x.remark||"")+'"></label>'+
+    '<div class="inline" style="justify-content:flex-end;gap:8px"><button type="button" class="sm" data-dkcancel="'+x.id+'">ยกเลิก</button><button type="button" class="sm good" data-dksave="'+x.id+'">'+ico("check")+'บันทึกการแก้ไข</button></div></div>'}
 ["dd-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("dd-q").addEventListener("input",function(){clearTimeout(DK.t);DK.t=setTimeout(refresh,200)});
-async function openDeduct(id){
-  var e=empOf(id);if(!e)return;DK.emp=e;DK.amt=0;
+async function openDeduct(id,m){
+  var e=empOf(id);if(!e)return;DK.emp=e;DK.amt=0;DK.m=m||null;
   $("dk-who").innerHTML=avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div>';
   $("dk-amts").innerHTML=DED_AMTS.map(function(a){return '<button type="button" data-dkamt="'+a+'">฿'+a+'</button>'}).join("");
   $("dk-amt").value="";$("dk-date").value=today();$("dk-remark").value="";
   $("dk-cat").innerHTML=DED_CATS.map(function(c){return '<option'+(c==="ผิดกฎระเบียบ"?" selected":"")+'>'+esc(c)+'</option>'}).join("");
   $("dk-hist").innerHTML=emptyRow("กำลังโหลด...");openModal("m-deduct");
-  try{var h=await q(db.from("kpi_deductions").select("*").eq("employee_id",id).order("work_date",{ascending:false}).limit(20));var s=0;h.forEach(function(x){s+=+x.amount});
-    $("dk-hist").innerHTML=h.length?h.map(dedRow).join("")+'<div class="row"><div class="l"><b>รวม (20 รายการล่าสุด)</b></div><div class="r bad">−'+baht(s)+'</div></div>':emptyRow("ยังไม่เคยถูกหัก")}catch(e){$("dk-hist").innerHTML=emptyRow(thErr(e))}
+  if(m)$("dk-date").value=m===today().slice(0,7)?today():m+"-01";
+  $("dk-histh").textContent=m?"รายการหักเดือน "+MONTHS[+m.slice(5,7)-1]+" "+(+m.slice(0,4)+543)+" — กดแก้ไข / ลบได้":"ประวัติการหักของคนนี้ — กดแก้ไข / ลบได้";
+  try{var hq=db.from("kpi_deductions").select("*").eq("employee_id",id).order("work_date",{ascending:false});if(m)hq=hq.gte("work_date",m+"-01").lte("work_date",mEnd(m));else hq=hq.limit(20);
+    var h=await q(hq);var s=0;h.forEach(function(x){s+=+x.amount});
+    $("dk-hist").innerHTML=h.length?h.map(dedRow).join("")+'<div class="row"><div class="l"><b>รวม'+(m?"ทั้งเดือน":" (20 รายการล่าสุด)")+'</b></div><div class="r bad">−'+baht(s)+'</div></div>':emptyRow(m?"เดือนนี้ไม่มีรายการหัก":"ยังไม่เคยถูกหัก")}catch(e){$("dk-hist").innerHTML=emptyRow(thErr(e))}
 }
 $("dk-amts").addEventListener("click",function(ev){var b=ev.target.closest("[data-dkamt]");if(!b)return;DK.amt=+b.dataset.dkamt;$("dk-amt").value="";$("dk-amts").querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b)})});
 $("dk-amt").addEventListener("input",function(){DK.amt=+this.value||0;$("dk-amts").querySelectorAll("button").forEach(function(x){x.classList.remove("on")})});
@@ -8618,7 +8629,7 @@ async function renderDedRep(){
   var list=Object.keys(by).map(function(k){return by[k]}).filter(function(a){var e=empOf(a.id);return e?matchQ(e,qq):!qq}).sort(function(a,b){return b.sum-a.sum});
   var sum=list.reduce(function(s,a){return s+a.sum},0);
   $("dr-sum").textContent=baht(sum);$("dr-n").textContent=list.length+" คน";$("dr-avg").textContent=baht(list.length?Math.round(sum/list.length):0);$("dr-max").textContent=baht(list[0]?list[0].sum:0);
-  $("dr-rows").innerHTML=list.length?list.map(function(a,i){var e=empOf(a.id)||{};return '<tr><td>'+(i+1)+'</td><td class="nm"><b>'+esc(e.display_name||"-")+'</b><br><small class="sub">'+esc(e.employee_no||"")+'</small></td><td>'+esc(deptName(a.dept||e.department_id))+'</td><td class="n">'+a.n+'</td><td>'+esc(a.last?a.last.split("-").reverse().join("/"):"")+'</td><td class="n bad"><b>'+baht(a.sum)+'</b></td></tr>'}).join(""):'<tr><td colspan="6">'+emptyRow("ไม่มีรายการหัก")+'</td></tr>';
+  $("dr-rows").innerHTML=list.length?list.map(function(a,i){var e=empOf(a.id)||{};return '<tr><td>'+(i+1)+'</td><td class="nm"><b>'+esc(e.display_name||"-")+'</b><br><small class="sub">'+esc(e.employee_no||"")+'</small></td><td>'+esc(deptName(a.dept||e.department_id))+'</td><td class="n">'+a.n+'</td><td>'+esc(a.last?a.last.split("-").reverse().join("/"):"")+'</td><td class="n bad"><b>'+baht(a.sum)+'</b></td><td><button type="button" class="sm" data-drman="'+a.id+'">'+ico("edit")+'แก้ไข / เพิ่ม</button></td></tr>'}).join(""):'<tr><td colspan="7">'+emptyRow("ไม่มีรายการหัก")+'</td></tr>';
   DK.rep={rows:rows,list:list,m:m};
 }
 ["dr-month","dr-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("dr-q").addEventListener("input",function(){clearTimeout(DK.rt);DK.rt=setTimeout(refresh,200)});
@@ -9707,7 +9718,12 @@ document.addEventListener("click",function(ev){
   if(d.tcdel){if(!armed(b,"แตะอีกครั้ง"))return;act(function(){return q(db.from("post_comments").delete().eq("id",d.tcdel))},"ลบความคิดเห็นแล้ว").then(function(ok){if(ok)ttComments(TT.cur)});return}
   if(d.dk){openDeduct(d.dk);return}
   if(d.editemp){var ee=empOf(d.editemp);if(ee)empModal(ee);return}
-  if(d.dkdel){if(!armed(b,"ลบ?"))return;act(function(){return q(db.from("kpi_deductions").delete().eq("id",d.dkdel))},"ลบรายการหักแล้ว").then(function(ok){if(ok){if(!$("m-deduct").hidden&&DK.emp)openDeduct(DK.emp.id);refresh()}});return}
+  if(d.dkdel){if(!armed(b,"ลบ?"))return;act(function(){return q(db.from("kpi_deductions").delete().eq("id",d.dkdel))},"ลบรายการหักแล้ว").then(function(ok){if(ok){if(!$("m-deduct").hidden&&DK.emp)openDeduct(DK.emp.id,DK.m);refresh()}});return}
+  if(d.drman){openDeduct(d.drman,DK.rep&&DK.rep.m||null);return}
+  if(d.dkedit){var dx=(DK.byId||{})[d.dkedit],ln=b.closest(".dkline");if(dx&&ln){ln.classList.add("editing");ln.innerHTML=dedEditHtml(dx);var fi=ln.querySelector(".dke-amt");if(fi)fi.focus()}return}
+  if(d.dkcancel){var cx=(DK.byId||{})[d.dkcancel],cl=b.closest(".dkline");if(cx&&cl){cl.outerHTML=dedRow(cx)}return}
+  if(d.dksave){var sl=b.closest(".dkline"),am=+sl.querySelector(".dke-amt").value,dt=sl.querySelector(".dke-date").value;if(!(am>0)){toast("กรอกยอดหักให้ถูกต้อง");return}if(!dt){toast("เลือกวันที่");return}
+    b.disabled=true;act(function(){return q(db.from("kpi_deductions").update({work_date:dt,amount:am,category:sl.querySelector(".dke-cat").value,remark:sl.querySelector(".dke-rem").value.trim()}).eq("id",d.dksave).select())},"แก้ไขรายการหักแล้ว").then(function(ok){b.disabled=false;if(ok){if(!$("m-deduct").hidden&&DK.emp)openDeduct(DK.emp.id,DK.m);refresh()}});return}
   if(d.prod&&b.closest("#tt-feed")){var pv=ttVisible();if(pv)pv.pause()}
   if(d.prod){openProduct(d.prod).catch(function(e){toast(thErr(e))});return}
   if(d.revprod){openProduct(d.revprod).then(function(){setTimeout(function(){var f=$("pd-rev");if(f)f.scrollIntoView({behavior:"smooth",block:"start"})},500)}).catch(function(e){toast(thErr(e))});return}
