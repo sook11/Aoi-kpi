@@ -1408,6 +1408,14 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 #fm-lake .fk-chatbar input{flex:1 1 auto;min-width:0;width:auto;border-radius:10px;border:0;padding:7px 10px;font-size:16px;line-height:1.2;margin:0}#fm-lake .fk-chatbar button{flex:0 0 auto;width:auto;white-space:nowrap;padding:7px 12px;font-size:14px;margin:0}
 .fk-chatlog{position:absolute;right:calc(86px + env(safe-area-inset-right,0px));top:132px;z-index:25;max-width:min(380px,42%);display:grid;justify-items:end;gap:4px;pointer-events:none}
 .fk-chatlog div{background:rgba(15,23,42,.72);color:#fff;border-radius:12px;padding:4px 10px;font-size:13px;line-height:1.35;width:fit-content}.fk-chatlog div.me{background:rgba(22,101,52,.8)}.fk-chatlog b{color:#fde68a}
+
+/* อัปเดต 246: ตัวเลือกช่วง Top 5 */
+.seg.seg3{grid-template-columns:repeat(3,1fr);min-width:180px}.ad2-perbar .depthead{align-items:center;gap:10px;flex-wrap:wrap}.ad2-perbar h3{margin:0}.ad2-pl{font-weight:inherit}
+
+/* อัปเดต 247: ช่องวันที่ลา/ขาด/หยุด + แก้หัวข้อเหตุผล */
+.days i.off{font-size:10px;font-weight:600}.days i.off.lv{background:#e0e7ff;color:#3730a3}.days i.off.abs{background:#fee2e2;color:#b91c1c}.days i.off.hol{background:#f1f5f9;color:#64748b}.days i.off[data-dayadd]:hover{outline:2px solid #6366f1}
+.offline{display:block;color:#4338ca!important}
+.missedit{display:grid;gap:6px;width:100%}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
 </style>
 </head>
 <body>
@@ -1640,9 +1648,12 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
     <div class="panel"><h3>สรุปตามกะ</h3><div class="shiftgrid" id="ad2-shift"></div></div>
     <div class="panel"><h3>สรุปตามแผนก × กะ (วันที่เลือก)</h3><div class="scroll"><table class="tbl"><thead><tr><th>แผนก</th><th>กะ</th><th class="n">ทั้งหมด</th><th class="n">มาทำงาน</th><th class="n">ไม่มา (ลา+ขาด)</th><th class="n">ยังไม่เช็ค</th><th>สถานะ</th></tr></thead><tbody id="ad2-ds"></tbody></table></div></div>
     <div class="panel"><h3>สรุปสถานะรายแผนก (ทั้งเดือน)</h3><div class="scroll"><table class="tbl"><thead><tr><th>แผนก</th><th class="n">มาทำงาน</th><th class="n">สาย/ต่อกะสาย</th><th class="n">ลา</th><th class="n">ขาดงาน</th><th class="n">อื่นๆ</th><th class="n">รวม</th></tr></thead><tbody id="ad2-dm"></tbody></table></div></div>
+    <div class="panel ad2-perbar"><div class="depthead"><div><h3>อันดับ Top 5</h3><small class="sub" id="ad2-perlbl"></small></div><div class="seg seg3" role="group" aria-label="ช่วงเวลา" id="ad2-per"><button type="button" data-per="d" aria-pressed="false">วัน</button><button type="button" data-per="m" aria-pressed="true">เดือน</button><button type="button" data-per="y" aria-pressed="false">ปี</button></div></div></div>
     <div class="g2c">
-      <div class="panel"><h3>Top 5 มาทำงานเดือนนี้</h3><div class="rows" id="ad2-top"></div></div>
-      <div class="panel"><h3>Top 5 ขาดงานเดือนนี้</h3><div class="rows" id="ad2-abs"></div></div>
+      <div class="panel"><h3>Top 5 มาทำงาน<span class="ad2-pl"></span></h3><div class="rows" id="ad2-top"></div></div>
+      <div class="panel"><h3>Top 5 ขาดงาน<span class="ad2-pl"></span></h3><div class="rows" id="ad2-abs"></div></div>
+      <div class="panel"><h3>Top 5 เข้างานสาย<span class="ad2-pl"></span></h3><div class="rows" id="ad2-latein"></div></div>
+      <div class="panel"><h3>Top 5 ต่อกะสาย<span class="ad2-pl"></span></h3><div class="rows" id="ad2-lateot"></div></div>
     </div>
     <div class="panel"><div class="depthead"><h3>หัก KPI เดือนนี้</h3><button type="button" class="sm" data-tab="dedrep">ดูรายงาน</button></div><div class="stats" id="ad2-ded"></div></div>
   </section>
@@ -2827,7 +2838,7 @@ async function showTarget(){var kid=$("f-kpi").value,k=S.kpis.filter(function(x)
 /* ---------- อัปเดต 204: วิเคราะห์ยอดไม่ถึงเป้า ---------- */
 var MA={rows:[],only:null};
 var MA_COL=["#ef4444","#f59e0b","#8b5cf6","#0ea5e9","#14b8a6","#ec4899","#6366f1","#84cc16","#f97316","#64748b","#94a3b8"];
-function maCol(r){var i=MISS_R.map(function(x){return x[1]}).indexOf(r);return MA_COL[i<0?10:i]}
+function maCol(r){var i=missR().map(function(x){return x[1]}).indexOf(r);return MA_COL[i<0?10:i]}
 async function renderMissAn(){
   if(!S.mgr)return;
   var dsel=$("ma-dept");if(dsel.options.length<1)setOptions(dsel,S.myDepts.map(function(x){return {v:x.id,t:x.name}}),S.admin?"ทุกแผนก":S.myDepts.length>1?"ทุกแผนกที่ดูแล":null);
@@ -3071,7 +3082,9 @@ async function renderStaff(){
   renderDeptNav();
   var dept=$("s-dept").value,qq=$("s-q").value.trim().toLowerCase(),sm=$("s-month").value||today().slice(0,7),tm=today().slice(0,7);if(sm>tm){sm=tm;$("s-month").value=tm}
   var y=+sm.slice(0,4),mo=+sm.slice(5,7)-1,n=new Date(y,mo+1,0).getDate(),td=sm===tm?+today().slice(8):n;
-  var logs=prodRows(await month(sm)),sum={};
+  var logs=prodRows(await month(sm)),sum={},att={};
+  /* อัปเดต 247: วันที่ไม่ได้ลงยอด → ดูสถานะเช็คชื่อวันนั้น (ลา/ขาด/หยุด) มาแสดงแทนช่องแดงเฉยๆ */
+  try{(await attRange(sm+"-01",mEnd(sm))).forEach(function(r){(att[r.employee_id]||(att[r.employee_id]={}))[r.work_date]=r.status})}catch(e){}
   logs.forEach(function(r){var h=sum[r.employee_id]||(sum[r.employee_id]={});h[r.work_date]=(h[r.work_date]||0)+(+r.output||0)});
   var list0=S.emps.filter(function(e){return (!dept||e.department_id===dept)&&(!qq||String(e.display_name).toLowerCase().indexOf(qq)>=0||String(e.employee_no).toLowerCase().indexOf(qq)>=0)});
   /* อัปเดต 239: แยกแท็บ พนักงาน / หัวหน้างาน & Admin / ผู้เล่นภายนอก */
@@ -3081,11 +3094,14 @@ async function renderStaff(){
   var list=list0.filter(function(e){return kindOf(e)===sk});
   $("s-sum").textContent=KN[sk].replace(/^\S+\s/,"")+" แยกตามแผนก · "+list.length+" คน · ยอดผลิตเดือน "+MONTHS[mo]+" "+(y+543);
   function card(e){
-    var h=sum[e.id]||{},cells="",logged=0,miss=[],cm=S.admin||(S.mgr&&(S.me.allowed_departments||[]).indexOf(e.department_id)>=0);
+    var h=sum[e.id]||{},cells="",logged=0,miss=[],missIn=[],missNo=[],off=[],ea=att[e.id]||{},cm=S.admin||(S.mgr&&(S.me.allowed_departments||[]).indexOf(e.department_id)>=0);
     for(var d=1;d<=n;d++){
       var key=y+"-"+pad(mo+1)+"-"+pad(d);
       if(key in h){logged++;cells+='<i class="ok" role="button" tabindex="0" data-daylog="'+e.id+'" data-d="'+key+'" title="วันที่ '+d+' · แตะเพื่อแก้ไขยอด">'+num(h[key])+'</i>'}
-      else if(d<=td){miss.push(d);cells+=cm?'<i class="miss" role="button" tabindex="0" data-dayadd="'+e.id+'" data-d="'+key+'" title="วันที่ '+d+' · แตะเพื่อเพิ่มยอด">'+d+'</i>':'<i class="miss">'+d+'</i>'}
+      else if(d<=td){var st=ea[key],g=stGroup(st);
+        if(g==="leave"||g==="absent"||g==="holi"){var sl=(AST[stIdx(st)]||{}).s||st;off.push(d+" "+st);cells+='<i class="off '+(g==="absent"?"abs":g==="holi"?"hol":"lv")+'"'+(cm?' role="button" tabindex="0" data-dayadd="'+e.id+'" data-d="'+key+'"':'')+' title="วันที่ '+d+' · '+esc(st)+(cm?' · แตะเพื่อเพิ่มยอด':'')+'">'+esc(sl)+'</i>';continue}
+        miss.push(d);(g==="none"?missNo:missIn).push(d);var tt='วันที่ '+d+' · '+(g==="none"?"ไม่ได้ลงยอด และไม่มีข้อมูลเช็คชื่อ":"มาทำงาน"+(g==="late"?" ("+st+")":"")+" แต่ไม่ได้ลงยอด");
+        cells+=cm?'<i class="miss" role="button" tabindex="0" data-dayadd="'+e.id+'" data-d="'+key+'" title="'+tt+' · แตะเพื่อเพิ่มยอด">'+d+'</i>':'<i class="miss" title="'+tt+'">'+d+'</i>'}
       else cells+='<i>'+d+'</i>';
     }
     var canEdit=S.admin||e.role==="employee",b="";
@@ -3103,7 +3119,10 @@ async function renderStaff(){
     return '<div class="emp"><div class="emphead" data-open="'+e.id+'" title="ดูรายละเอียด"><span class="avatar">'+(okAvatar(e.avatar)?'<img alt="" src="'+okAvatar(e.avatar)+'">':esc(String(e.display_name).trim().charAt(0)))+'</span><div><b>'+esc(e.display_name)+(e.active?"":" (ปิดใช้งาน)")+'</b><small>'+esc([e.employee_no,SHIFT[e.shift],kpiName(e.workstation_id),e.phone,e.role!=="employee"?ROLE[e.role]:null,e.user_id?null:"ยังไม่สมัครใช้งาน"].filter(Boolean).join(" · "))+'</small></div></div>'+
       (e.kpi_required===false?'<small class="okline">ไม่ต้องลงยอดผลิต (ใช้สินค้า / ติ่งต๊อง / แชต)</small>':
       '<small>บันทึกยอดผลิต '+(sm===tm?'— ถึงวันที่ '+td:'เดือน '+MONTHS[mo]+' '+(y+543))+' ('+logged+' วัน)</small><div class="days">'+cells+'</div>'+
-      '<small class="'+(miss.length?"missline":"okline")+'">'+(miss.length?"ไม่ได้บันทึก: วันที่ "+miss.join(", "):"บันทึกครบทุกวัน")+'</small>')+
+      (missIn.length?'<small class="missline">มาทำงานแต่ไม่ได้ลงยอด: วันที่ '+missIn.join(", ")+'</small>':'')+
+      (missNo.length?'<small class="missline">ไม่ได้ลงยอด (ไม่มีข้อมูลเช็คชื่อ): วันที่ '+missNo.join(", ")+'</small>':'')+
+      (off.length?'<small class="offline">ไม่ต้องลงยอด (ลา/ขาด/หยุด): '+esc(off.join(" · "))+'</small>':'')+
+      (miss.length||off.length?'':'<small class="okline">บันทึกครบทุกวัน</small>'))+
       (b?'<div class="acts">'+b+'</div>':'')+ed+'</div>';
   }
   var groups=S.depts.map(function(d){return {name:d.name,list:list.filter(function(e){return e.department_id===d.id})}});
@@ -4591,12 +4610,33 @@ async function renderAttDash(){
   (dept?S.depts.filter(function(d){return d.id===dept}):S.myDepts).forEach(function(d){var g={in:0,late:0,leave:0,absent:0,holi:0,n:0};D.month.forEach(function(r){if(r.department_id===d.id){g[stGroup(r.status)]++;g.n++}});if(g.n){dm.push({d:d.name,g:g});Object.keys(tot).forEach(function(k){tot[k]+=g[k]})}});
   var trow=function(name,g,b){return '<tr'+(b?' class="tot"':'')+'><td class="nm">'+esc(name)+'</td><td class="n">'+g.in+'</td><td class="n">'+g.late+'</td><td class="n">'+g.leave+'</td><td class="n">'+g.absent+'</td><td class="n">'+g.holi+'</td><td class="n"><b>'+g.n+'</b></td></tr>'};
   $("ad2-dm").innerHTML=dm.length?dm.map(function(x){return trow(x.d,x.g)}).join("")+trow("รวมทุกแผนก",tot,true):'<tr><td colspan="7">'+emptyRow("ยังไม่มีข้อมูลเดือนนี้")+'</td></tr>';
-  $("ad2-top").innerHTML=topRows(topCount(D.month,"มาทำงาน"),"วัน","ยังไม่มีข้อมูล");
-  $("ad2-abs").innerHTML=topRows(topCount(D.month,"ขาดงาน"),"วัน","ไม่มีคนขาดงาน 🎉");
+  ad2TopDraw(date,dept,D);
   var sum=0,pp={},mx=0;D.ded.forEach(function(x){sum+=+x.amount;pp[x.employee_id]=(pp[x.employee_id]||0)+(+x.amount)});Object.keys(pp).forEach(function(k){mx=Math.max(mx,pp[k])});
   $("ad2-ded").innerHTML='<div class="stat bad"><small>ยอดหักรวม</small><b>'+baht(sum)+'</b></div><div class="stat"><small>คนถูกหัก</small><b>'+Object.keys(pp).length+'</b></div><div class="stat"><small>หักสูงสุด/คน</small><b>'+baht(mx)+'</b></div>';
 }
 ["ad2-date","ad2-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});
+/* อัปเดต 246: Top 5 เลือกช่วงได้ วัน/เดือน/ปี + เพิ่ม Top 5 เข้างานสาย และ Top 5 ต่อกะสาย */
+var AD2P={per:"m",yc:{}};try{AD2P.per=localStorage.getItem("aoi-ad2per")||"m"}catch(e){}
+async function ad2TopDraw(date,dept,D){var per=AD2P.per,rows,lbl,inDept=function(x){return !dept||x.department_id===dept};
+  document.querySelectorAll("#ad2-per [data-per]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.per===per))});
+  var y=date.slice(0,4),ids={};D.emps.forEach(function(e){ids[e.id]=1});
+  if(per==="d"){rows=D.day;lbl="วันที่ "+thLong(date)}
+  else if(per==="y"){lbl="ปี "+(+y+543)+" (ม.ค. – ธ.ค.)";
+    ["ad2-top","ad2-abs","ad2-latein","ad2-lateot"].forEach(function(id){$(id).innerHTML=emptyRow("กำลังโหลดทั้งปี…")});
+    var key=y;if(!AD2P.yc[key]||Date.now()-AD2P.yc[key].at>120000){AD2P.yc[key]={at:Date.now(),p:attRange(y+"-01-01",y+"-12-31")}}
+    try{rows=(await AD2P.yc[key].p).filter(inDept)}catch(e){AD2P.yc[key]=null;rows=[]}
+    if(AD2P.per!=="y")return}
+  else{rows=D.month;lbl="เดือน"+parseYmd(date).toLocaleDateString("th-TH",{month:"long",year:"numeric"})}
+  rows=rows.filter(function(r){return ids[r.employee_id]||per!=="d"});
+  $("ad2-perlbl").textContent=lbl;var pl=per==="d"?" วันนี้":per==="y"?" ปีนี้":" เดือนนี้";if(date!==today())pl=per==="d"?" วันที่เลือก":per==="y"?" ปี "+(+y+543):" "+parseYmd(date).toLocaleDateString("th-TH",{month:"short",year:"2-digit"});
+  document.querySelectorAll(".ad2-pl").forEach(function(x){x.textContent=pl});
+  var u=per==="d"?"ครั้ง":"วัน";
+  $("ad2-top").innerHTML=topRows(topCount(rows,"มาทำงาน"),u,"ยังไม่มีข้อมูล");
+  $("ad2-abs").innerHTML=topRows(topCount(rows,"ขาดงาน"),u,"ไม่มีคนขาดงาน 🎉");
+  $("ad2-latein").innerHTML=topRows(topCount(rows,"เข้างานสาย"),u,"ไม่มีคนเข้างานสาย 🎉");
+  $("ad2-lateot").innerHTML=topRows(topCount(rows,"ต่อกะสาย"),u,"ไม่มีคนต่อกะสาย 🎉")}
+$("ad2-per").addEventListener("click",function(ev){var b=ev.target.closest("[data-per]");if(!b||b.dataset.per===AD2P.per)return;AD2P.per=b.dataset.per;try{localStorage.setItem("aoi-ad2per",AD2P.per)}catch(e){}
+  var date=$("ad2-date").value||today(),dept=$("ad2-dept").value;attSnapshot(date,dept).then(function(D){ad2TopDraw(date,dept,D)},function(e){toast(thErr(e))})});
 
 /* ===================== อัปเดต 197: จอทีวีแผนก (ย้ายจาก PulseCast / Base44) ===================== */
 var DT={ch:null,data:null,view:"table",mi:0,page:0,raf:0,tm:0,tick:0,load:0,ann:0,unlocked:false,played:{},sig:"",annBusy:false,audio:null,admSec:"ch",admCh:"",edit:null};
@@ -9444,11 +9484,25 @@ $("f-kpi").addEventListener("change",showTarget);$("f-date").addEventListener("c
 /* อัปเดต 204: ยอดไม่ถึงเป้า → บังคับเลือกเหตุผล */
 var MISS_R=[["🔧","เครื่องจักรเสีย/รอซ่อม"],["📦","งานไม่พอ/รองานเข้า"],["🧩","งานยาก/Defect เยอะ"],["💻","โปรแกรม/ระบบมีปัญหา"],["🔄","เปลี่ยนรุ่นงาน/ตั้งค่าเครื่อง"],["🤝","ถูกยืมไปช่วยงานอื่น"],["📚","ประชุม/อบรม"],["⏰","ลาครึ่งวัน/มาสาย/ออกก่อน"],["🙋","ยังไม่ชำนาญ/พนักงานใหม่"],["📝","อื่นๆ"]];
 var MISS={sel:null};
+/* อัปเดต 247: Admin เพิ่ม/ลบ หัวข้อเหตุผลไม่ถึงเป้าได้ (เก็บใน app_settings: miss_reasons) · "อื่นๆ" อยู่ท้ายเสมอ */
+function missR(){var L=S.settings&&S.settings.miss_reasons&&S.settings.miss_reasons.list,b=(Array.isArray(L)&&L.length?L:MISS_R).filter(function(r){return r&&r[1]&&r[1]!=="อื่นๆ"});return b.concat([["📝","อื่นๆ"]])}
+function missEditHtml(){var D=MISS.draft;return '<div class="missedit">'+D.map(function(r,i){return '<span class="mrow">'+esc(r[0])+' '+esc(r[1])+' <button type="button" class="sm danger" data-missdel="'+i+'" aria-label="ลบ">✕</button></span>'}).join("")+
+  '<div class="mrow add"><input id="me-emo" maxlength="4" placeholder="😀" style="width:52px"><input id="me-txt" maxlength="40" placeholder="หัวข้อใหม่ เช่น ไฟดับ"><button type="button" class="sm" data-missadd>＋ เพิ่ม</button></div>'+
+  '<small class="sub">"📝 อื่นๆ" อยู่ท้ายสุดเสมอ (ลบไม่ได้) · หัวข้อที่ลบแล้ว รายการเก่ายังเก็บชื่อเดิมไว้ในรายงาน</small>'+
+  '<div class="mrow"><button type="button" class="sm good" data-missave>บันทึกหัวข้อ</button><button type="button" class="sm" data-misscancel>ยกเลิก</button></div></div>'}
 function missCheck(){var bx=$("f-miss");if(!bx)return;var t=parseFloat($("f-target").dataset.v),o=parseFloat($("f-out").value),show=t>0&&!isNaN(o)&&o<t;bx.hidden=!show;
   if(!show)return;$("f-mgap").textContent="ได้ "+num(o)+" จากเป้า "+num(t)+" · ขาดอีก "+num(Math.round((t-o)*100)/100)+" ("+Math.round(o*100/t)+"% ของเป้า)";
-  $("f-mreason").innerHTML=MISS_R.map(function(r){return '<button type="button" class="chipsel'+(MISS.sel===r[1]?" on":"")+'" data-missr="'+esc(r[1])+'">'+r[0]+" "+esc(r[1])+'</button>'}).join("");
+  $("f-mreason").innerHTML=MISS.draft?missEditHtml():missR().map(function(r){return '<button type="button" class="chipsel'+(MISS.sel===r[1]?" on":"")+'" data-missr="'+esc(r[1])+'">'+esc(r[0])+" "+esc(r[1])+'</button>'}).join("")+(S.admin?'<button type="button" class="sm ghost" data-missedit>⚙️ แก้ไขหัวข้อ</button>':'');
   $("f-note").placeholder=MISS.sel==="อื่นๆ"?"พิมพ์เหตุผลที่ไม่ได้ตามเป้า (บังคับ)":"รายละเอียดเพิ่มเติม (ไม่บังคับ)"}
 $("f-out").addEventListener("input",missCheck);
+document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-missedit],[data-missdel],[data-missadd],[data-missave],[data-misscancel]");if(!t||!S.admin)return;var dd=t.dataset;
+  if("missedit" in dd)MISS.draft=missR().filter(function(r){return r[1]!=="อื่นๆ"}).map(function(r){return [r[0],r[1]]});
+  else if("missdel" in dd)MISS.draft.splice(+dd.missdel,1);
+  else if("missadd" in dd){var tx=$("me-txt").value.trim(),em=$("me-emo").value.trim()||"•";if(!tx){toast("พิมพ์ชื่อหัวข้อก่อน");return}if(tx==="อื่นๆ"||MISS.draft.some(function(r){return r[1]===tx})){toast("มีหัวข้อนี้แล้ว");return}MISS.draft.push([em,tx])}
+  else if("misscancel" in dd)MISS.draft=null;
+  else if("missave" in dd){if(!MISS.draft.length){toast("ต้องมีอย่างน้อย 1 หัวข้อ");return}var v={list:MISS.draft.concat([["📝","อื่นๆ"]])};t.disabled=true;
+    try{await q(db.from("app_settings").upsert({key:"miss_reasons",value:v}));S.settings.miss_reasons=v;MISS.draft=null;toast("บันทึกหัวข้อแล้ว")}catch(e){toast(thErr(e));t.disabled=false;return}}
+  missCheck()});
 document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-missr]");if(!b)return;MISS.sel=b.dataset.missr;missCheck();if(MISS.sel==="อื่นๆ")$("f-note").focus()});
 
 /* ---------- ป๊อปอัป ---------- */
