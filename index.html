@@ -1416,6 +1416,10 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .days i.off{font-size:10px;font-weight:600}.days i.off.lv{background:#e0e7ff;color:#3730a3}.days i.off.abs{background:#fee2e2;color:#b91c1c}.days i.off.hol{background:#f1f5f9;color:#64748b}.days i.off[data-dayadd]:hover{outline:2px solid #6366f1}
 .offline{display:block;color:#4338ca!important}
 .missedit{display:grid;gap:6px;width:100%}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
+
+/* อัปเดต 250: ลิงก์คีย์ลาในระบบ Apex */
+.menugrid a.menuext{display:flex;flex-direction:column;justify-content:center;gap:2px;text-decoration:none;color:inherit;font:inherit;font-weight:500;background:var(--surface,#fff);border:1px solid var(--line);border-radius:14px;padding:16px 14px;min-height:56px;box-shadow:var(--shadow)}.menugrid a.menuext small{font-weight:400;color:#2563eb;font-size:12px}
+.apexlv{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;background:linear-gradient(90deg,#e0f2fe,#f0f9ff);border:1px solid #7dd3fc;border-radius:14px;padding:12px 14px}.apexlv>span{font-size:26px}.apexlv div{flex:1;display:grid;gap:2px}.apexlv small{color:#475569}.apexlv i{font-style:normal;font-weight:700;color:#fff;background:#0ea5e9;border-radius:10px;padding:6px 12px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1760,6 +1764,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <!-- LEAVE: ขอลา -->
   <section class="view" id="v-leave" hidden>
     <div><h2>ขอลางาน</h2><p class="sub">กรอกข้อมูลเพื่อยื่นคำขอลา · วันอาทิตย์และวันหยุดโรงงานไม่นับเป็นวันลา</p></div>
+    <a class="apexlv" href="https://poll.apexcircuit.com/ESS/Leave" target="_blank" rel="noopener"><span>📝</span><div><b>คีย์ลาในระบบ Apex (ERP ลาออนไลน์)</b><small>จองลาในแอปนี้แล้ว อย่าลืมคีย์ลาในระบบบริษัทด้วย — ใช้รหัสพนักงานและรหัสผ่าน ESS</small></div><i>เปิด ↗</i></a>
     <div class="panel">
       <form id="lvform" class="lvform">
         <label data-perm="leave_appr">คีย์ลาให้ (หัวหน้า)<select id="lv-emp"></select></label>
@@ -1922,6 +1927,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <button data-tab="allowance">KPI / Allowance</button>
       <button data-tab="install">ติดตั้งแอปลงมือถือ</button>
       <button data-tab="leave">ขอลางาน</button>
+      <a class="menuext" href="https://poll.apexcircuit.com/ESS/Leave" target="_blank" rel="noopener">📝 คีย์ลาในระบบ Apex<small>ERP ลาออนไลน์ ↗</small></a>
       <button data-tab="myleave">วันลาของฉัน</button>
       <button data-tab="leavecal">ปฏิทินลา</button>
       <button data-tab="leaveappr" data-perm="leave_view">อนุมัติการลา<i class="navdot num" id="lv-dot2" hidden></i></button>
