@@ -1716,7 +1716,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <!-- ATTENDANCE: หัก KPI -->
   <section class="view" id="v-deduct" hidden>
     <div><h2>บันทึกหัก KPI</h2><p class="sub">หักเงินพนักงานที่ทำผิดกฎระเบียบ — กดชื่อพนักงานเพื่อบันทึกยอดหัก</p></div>
-    <div class="filters"><label>แผนก<select id="dd-dept"></select></label><label>ค้นหา<input type="search" id="dd-q" placeholder="ชื่อหรือรหัสพนักงาน" autocomplete="off"></label></div>
+    <div class="filters"><label>แผนก<select id="dd-dept"></select></label><label>กะ<select id="dd-shift"><option value="">ทุกกะ</option><option value="A">กะ A</option><option value="B">กะ B</option><option value="D">กะเช้าตลอด</option></select></label><label>ค้นหา<input type="search" id="dd-q" placeholder="ชื่อหรือรหัสพนักงาน" autocomplete="off"></label></div>
     <div class="panel"><div class="rows" id="dd-rows"></div></div>
     <div class="panel"><h3>รายการหักล่าสุด</h3><div class="rows" id="dd-recent"></div></div>
   </section>
@@ -8653,7 +8653,7 @@ document.querySelectorAll("[data-gmode]").forEach(function(b){b.addEventListener
 var DK={emp:null,amt:0};
 async function renderDeduct(){
   if(!can("deduct"))return;
-  var ddq=$("dd-q").value,list=mgrEmps($("dd-dept").value).map(function(e){return [matchScore(e,ddq),e]}).filter(function(x){return x[0]>0}).sort(function(a,b){return b[0]-a[0]}).map(function(x){return x[1]});
+  var ddq=$("dd-q").value,dsh=$("dd-shift").value,list=mgrEmps($("dd-dept").value).filter(function(e){return !dsh||e.shift===dsh}).map(function(e){return [matchScore(e,ddq),e]}).filter(function(x){return x[0]>0}).sort(function(a,b){return b[0]-a[0]}).map(function(x){return x[1]});
   $("dd-rows").innerHTML=list.length?list.map(function(e){return '<div class="row dkrow" data-dkrow="'+e.id+'"><div class="atwho">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div></div><button type="button" class="sm danger" data-dk="'+e.id+'">'+ico("minus")+'บันทึกหัก</button></div>'}).join(""):emptyRow("ไม่พบพนักงาน — ลองพิมพ์แค่บางส่วนของชื่อ หรือรหัสพนักงาน");
   var rec=await q(db.from("kpi_deductions").select("*").order("created_at",{ascending:false}).limit(10));
   $("dd-recent").innerHTML=rec.length?rec.map(dedRow).join(""):emptyRow("ยังไม่มีรายการหัก");
@@ -8664,7 +8664,7 @@ function dedEditHtml(x){var cats=DED_CATS.indexOf(x.category)<0?[x.category].con
   return '<div class="dkedit"><label>วันที่<input type="date" class="dke-date" value="'+esc(x.work_date)+'"></label><label>ยอดหัก (บาท)<input type="number" class="dke-amt" min="1" step="1" inputmode="numeric" value="'+esc(String(+x.amount))+'"></label>'+
     '<label>หมวด<select class="dke-cat">'+cats.map(function(c){return '<option'+(c===x.category?" selected":"")+'>'+esc(c)+'</option>'}).join("")+'</select></label><label>หมายเหตุ<input type="text" class="dke-rem" maxlength="300" value="'+esc(x.remark||"")+'"></label>'+
     '<div class="inline" style="justify-content:flex-end;gap:8px"><button type="button" class="sm" data-dkcancel="'+x.id+'">ยกเลิก</button><button type="button" class="sm good" data-dksave="'+x.id+'">'+ico("check")+'บันทึกการแก้ไข</button></div></div>'}
-["dd-dept"].forEach(function(id){$(id).addEventListener("change",refresh)});$("dd-q").addEventListener("input",function(){clearTimeout(DK.t);DK.t=setTimeout(refresh,200)});
+["dd-dept","dd-shift"].forEach(function(id){$(id).addEventListener("change",refresh)});$("dd-q").addEventListener("input",function(){clearTimeout(DK.t);DK.t=setTimeout(refresh,200)});
 async function openDeduct(id,m){
   var e=empOf(id);if(!e)return;DK.emp=e;DK.amt=0;DK.m=m||null;
   $("dk-who").innerHTML=avatarHtml(e)+'<div><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id),shiftTxt(e.shift)].join(" · "))+'</small></div>';
