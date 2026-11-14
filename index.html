@@ -1418,8 +1418,6 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .missedit{display:grid;gap:6px;width:100%}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
 
 /* อัปเดต 250: ลิงก์คีย์ลาในระบบ Apex */
-.menugrid a.menuext{display:flex;flex-direction:column;justify-content:center;gap:2px;text-decoration:none;color:inherit;font:inherit;font-weight:500;background:var(--surface,#fff);border:1px solid var(--line);border-radius:14px;padding:16px 14px;min-height:56px;box-shadow:var(--shadow)}.menugrid a.menuext small{font-weight:400;color:#2563eb;font-size:12px}
-.apexlv{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;background:linear-gradient(90deg,#e0f2fe,#f0f9ff);border:1px solid #7dd3fc;border-radius:14px;padding:12px 14px}.apexlv>span{font-size:26px}.apexlv div{flex:1;display:grid;gap:2px}.apexlv small{color:#475569}.apexlv i{font-style:normal;font-weight:700;color:#fff;background:#0ea5e9;border-radius:10px;padding:6px 12px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1764,7 +1762,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <!-- LEAVE: ขอลา -->
   <section class="view" id="v-leave" hidden>
     <div><h2>ขอลางาน</h2><p class="sub">กรอกข้อมูลเพื่อยื่นคำขอลา · วันอาทิตย์และวันหยุดโรงงานไม่นับเป็นวันลา</p></div>
-    <a class="apexlv" href="https://poll.apexcircuit.com/ESS/Leave" target="_blank" rel="noopener"><span>📝</span><div><b>คีย์ลาในระบบ Apex (ERP ลาออนไลน์)</b><small>จองลาในแอปนี้แล้ว อย่าลืมคีย์ลาในระบบบริษัทด้วย — ใช้รหัสพนักงานและรหัสผ่าน ESS</small></div><i>เปิด ↗</i></a>
+    <div><button type="button" class="sm" data-tab="apexlv">📝 คีย์ลาในระบบ Apex (ERP ลาออนไลน์) ↗</button></div>
     <div class="panel">
       <form id="lvform" class="lvform">
         <label data-perm="leave_appr">คีย์ลาให้ (หัวหน้า)<select id="lv-emp"></select></label>
@@ -1927,7 +1925,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <button data-tab="allowance">KPI / Allowance</button>
       <button data-tab="install">ติดตั้งแอปลงมือถือ</button>
       <button data-tab="leave">ขอลางาน</button>
-      <a class="menuext" href="https://poll.apexcircuit.com/ESS/Leave" target="_blank" rel="noopener">📝 คีย์ลาในระบบ Apex<small>ERP ลาออนไลน์ ↗</small></a>
+      <button data-tab="apexlv">คีย์ลาในระบบ Apex ↗</button>
       <button data-tab="myleave">วันลาของฉัน</button>
       <button data-tab="leavecal">ปฏิทินลา</button>
       <button data-tab="leaveappr" data-perm="leave_view">อนุมัติการลา<i class="navdot num" id="lv-dot2" hidden></i></button>
@@ -2354,6 +2352,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <button data-tab="install" class="navx">ติดตั้งแอปลงมือถือ</button>
   <span class="navlabel" data-g="lv">🌴 การลา</span>
   <button data-tab="leave" class="navx">ขอลางาน</button>
+  <button data-tab="apexlv" class="navx">คีย์ลาในระบบ Apex ↗</button>
   <button data-tab="myleave" class="navx">วันลาของฉัน</button>
   <button data-tab="leavecal" class="navx">ปฏิทินลา</button>
   <button data-tab="leaveappr" data-perm="leave_view" class="navx">อนุมัติการลา<i class="navdot num" id="lv-dot" hidden></i></button>
@@ -2700,6 +2699,7 @@ var ICON={
   perms:'<path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/>'
 };
 function ico(n){return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICON[n]||"")+'</svg>'}
+ICON.apexlv=ICON.leave;var APEX_LV="https://poll.apexcircuit.com/ESS/Leave";
 document.querySelectorAll("nav.tabs button[data-tab],.menugrid button[data-tab]").forEach(function(b){if(ICON[b.dataset.tab])b.innerHTML=ico(b.dataset.tab)+'<span>'+b.innerHTML+'</span>'});
 document.querySelectorAll("[data-ico]").forEach(function(b){b.insertAdjacentHTML("afterbegin",ico(b.dataset.ico))});
 var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -9075,7 +9075,7 @@ $("lx-go").addEventListener("click",async function(){
 
 /* ---------- สีหมวดเมนู (จำง่าย) ---------- */
 var NAVG={quiz:"soc",home:"kpi",log:"kpi",daily:"kpi",monthly:"kpi",staff:"kpi",top:"kpi",allowance:"kpi",shop:"soc",tt:"soc",chat:"soc",install:"soc",
-  leave:"lv",myleave:"lv",leavecal:"lv",leaveappr:"lv",leaveadmin:"lv",empmgr:"att",myatt:"att",game:"att",att:"att",attdash:"att",atthist:"att",attqr:"att",deduct:"att",dedrep:"att",tv:"att",
+  leave:"lv",apexlv:"lv",myleave:"lv",leavecal:"lv",leaveappr:"lv",leaveadmin:"lv",empmgr:"att",myatt:"att",game:"att",att:"att",attdash:"att",atthist:"att",attqr:"att",deduct:"att",dedrep:"att",tv:"att",
   admin:"adm",perms:"adm",rewardadm:"adm",usage:"adm",rewards:"att",ideas:"soc",farm:"soc",targets:"adm",kpis:"adm",allowmgr:"adm",telegram:"adm",announce:"adm",settings:"adm"};
 var NAVGT={kpi:"📊 งานผลิต · KPI",soc:"🛍️ ร้านค้า · ติ่งต๊อง · แชต",lv:"🌴 การลา",att:"✅ เช็คชื่อ",adm:"⚙️ Admin · ตั้งค่า"};
 document.querySelectorAll("nav.tabs button[data-tab],.menugrid button[data-tab]").forEach(function(b){var g=NAVG[b.dataset.tab];if(g)b.dataset.g=g});
@@ -9827,6 +9827,7 @@ document.addEventListener("click",function(ev){
   if(d.newemp){empModal(null);return}
   if(d.open){S.empId=d.open;if(S.tab==="staff"&&$("s-month").value)$("ed-month").value=$("s-month").value;show("emp");return}
   if(d.editlog){logModal(d.editlog,d.d).catch(function(e){toast(thErr(e))});return}
+  if(d.tab==="apexlv"){window.open(APEX_LV,"_blank","noopener");return}
   if(d.tab){show(d.tab);return}
   if(d.pick){$("f-date").value=d.pick;$("f-out").focus();return}
   if(d.st){act(function(){return q(db.from("work_logs").update({status:d.st}).eq("id",d.id))},d.st==="approved"?"อนุมัติแล้ว":"บันทึกว่าไม่ผ่านแล้ว").then(function(ok){if(ok)dirty(d.d)});return}
