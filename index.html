@@ -6304,27 +6304,36 @@ function fm3DN(){if(!FM3.sun)return;var n=fmIsNight();FM3.sun.intensity=n?.3:1.0
 /* ===================== อัปเดต 125: ฉากรอบฟาร์ม 3D — เนินเขา ภูเขา ท้องฟ้า เมฆ นก บอลลูน หมู่บ้าน ถนน ===================== */
 function fm3SqR(x,z){var ax=Math.abs(x),az=Math.abs(z);return Math.pow(Math.pow(ax,8)+Math.pow(az,8),1/8)}
 function fm3TerrH(x,z){var F=FM3.F||58,r=fm3SqR(x,z);if(r<F)return 0;var e=(r-F)/10;return Math.pow(e,1.35)*1.7*(1+fk3Noise(x*.03,0,z*.03)*.5)+e*fk3Noise(x*.08,1,z*.08)*1.2}
+var FJUN=["lt_oak","lt_oak2","lt_oak","lt_oak2","lt_apple","lt_oak","lt_oak2","lt_apple","d_banana","d_banana","lt_autumn","lt_cherry"];
+function fm3Jungle(g,F,RG){var lite=typeof LITE!=="undefined"&&LITE.on,N=lite?650:1700,by={},n=0,rn=function(x){return frand(x)};
+  for(var i=0;i<N*1.5&&n<N;i++){var a=rn(i*1.37+.11)*Math.PI*2,d=1.5+Math.pow(rn(i*2.11+.3),1.7)*80,R=RG(a,d),x=Math.cos(a)*R,z=Math.sin(a)*R;
+    if(Math.abs(x-1)<5&&z>F-20)continue;var v=FJUN[Math.floor(rn(i*4.7)*FJUN.length)%FJUN.length];if(d>45&&rn(i*9.1)<.35)v="fk_pine";
+    var s=(v==="d_banana"?4.6:v==="fk_pine"?4.6:1.6)*(1+rn(i*3.3)*.8)*(d<6?.85:1);(by[v]=by[v]||[]).push([x,fm3TerrH(x,z),z,s,rn(i*6.1)*6.28]);n++}
+  var M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),V=new THREE.Vector3(),S3=new THREE.Vector3();
+  Object.keys(by).forEach(function(v){var L=by[v],f=v==="fk_pine"||v==="d_banana"?v:"j_"+v;fm3File(f).then(function(G){var n=G.scene.getObjectByName("K_"+v)||G.scene;n.updateMatrixWorld(true);var inv=new THREE.Matrix4().copy(n.parent?n.parent.matrixWorld:new THREE.Matrix4()).invert();
+    n.traverse(function(o){if(!o.isMesh)return;var base=new THREE.Matrix4().multiplyMatrices(inv,o.matrixWorld),im=new THREE.InstancedMesh(o.geometry,o.material,L.length);im.userData.shared=1;
+      L.forEach(function(p,k){Q.setFromAxisAngle(Y,p[4]);V.set(p[0],p[1]-.05,p[2]);S3.set(p[3],p[3]*(.9+frand(k*1.3)*.25),p[3]);M.compose(V,Q,S3).multiply(base);im.setMatrixAt(k,M)});im.castShadow=false;im.receiveShadow=false;im.frustumCulled=false;g.add(im)})},function(){})});
+}
+/* แกะ: สลับเดินช้า ๆ กับก้มเล็มหญ้า อยู่ริมป่า */
+function fm3SheepStep(s,t,dt){var D=s.userData.sp;if(!D)return;D.tt-=dt;var U=s.userData.legU;
+  if(D.tt<=0){D.st=D.st?0:1;D.tt=D.st?3+frand(t+D.k)*4:4+frand(t*1.3+D.k)*6;if(D.st)D.dir=s.rotation.y+(frand(t*2.1+D.k)-.5)*2.2}
+  if(D.st){var r0=Math.atan2(Math.sin(D.dir-s.rotation.y),Math.cos(D.dir-s.rotation.y));s.rotation.y+=r0*Math.min(1,dt*2);var sp=.55*dt,nx=s.position.x+Math.cos(s.rotation.y)*sp,nz=s.position.z-Math.sin(s.rotation.y)*sp,F=FM3.F||58,r=fm3SqR(nx,nz);
+    if(r>F-2||r<F-12){D.dir=Math.atan2(nz,-nx)+(r<F-12?Math.PI:0);D.tt=Math.min(D.tt,1.2)}else{s.position.x=nx;s.position.z=nz}
+    if(U){U.uPh.value+=dt*7;U.uK.value=Math.min(1,U.uK.value+dt*3)}s.rotation.z*=Math.max(0,1-dt*4)}
+  else{if(U)U.uK.value=Math.max(0,U.uK.value-dt*3);var gz=.5+.5*Math.sin(t*1.1+D.k*2);s.rotation.z+=(-.16*gz-s.rotation.z)*Math.min(1,dt*3)}}
 function fm3Scenery(st){var F=FM3.F||58,PS=Math.max(520,Math.ceil((F*2+300)/4)*4),RG=function(a,d){var c=Math.cos(a),s2=Math.sin(a);return (F+d)/fm3SqR(c,s2)};var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:[],birds:[],sheep:[]};try{A.fly=fm3FlyMk(g,FFLY,3,{r0:13,r1:22,h0:13,h1:17,sc:2.2,ex:1.15})}catch(e){}
   /* พื้นดินเป็นเนินคลื่นรอบฟาร์ม */
   var tg=new THREE.PlaneGeometry(PS,PS,130,130);tg.rotateX(-Math.PI/2);var P=tg.attributes.position,C=new Float32Array(P.count*3);
   for(var i=0;i<P.count;i++){var x=P.getX(i),z=P.getZ(i),r=fm3SqR(x,z),h=r<F-1?-.35:fm3TerrH(x,z);if(Math.abs(x-1)<3.2&&z>F-8)h=Math.min(h,fm3TerrH(1,z));P.setY(i,h);
-    var w=fk3Noise(x*.05,2,z*.05)*.07,d=Math.min(1,Math.max(0,(r-F)/90)),fl=fk3Noise(x*.2,3,z*.2)>.55?.06:0;C[i*3]=.78+w-d*.12+fl;C[i*3+1]=.9+w-d*.05;C[i*3+2]=.66+w-d*.14+fl*.6}
+    var w=fk3Noise(x*.05,2,z*.05)*.07,d=Math.min(1,Math.max(0,(r-F)/90)),fl=fk3Noise(x*.2,3,z*.2)>.55?.06:0;var jf=r>F+.5?Math.min(1,(r-F)/6)*Math.max(0,1-Math.max(0,r-F-70)/25)*.32:0;C[i*3]=.78+w-d*.12+fl-jf*1.1;C[i*3+1]=.9+w-d*.05-jf*.55;C[i*3+2]=.66+w-d*.14+fl*.6-jf*1.1}
   tg.setAttribute("color",new THREE.BufferAttribute(C,3));tg.computeVertexNormals();var gt=fm3Tex("grass").clone();gt.needsUpdate=true;gt.wrapS=gt.wrapT=THREE.RepeatWrapping;gt.repeat.set(70*PS/520,70*PS/520);
   var gr=new THREE.Mesh(tg,new THREE.MeshLambertMaterial({map:gt,vertexColors:true}));gr.receiveShadow=true;g.add(gr);
   /* ภูเขา: วงนอกยอดหิมะ + ภูเขาเขียวด้านหน้า */
   for(i=0;i<16;i++){var a=i/16*Math.PI*2+frand(i*3)*.25,rr=RG(a,92+frand(i*7)*35),mx=Math.cos(a)*rr,mz=Math.sin(a)*rr,big=i%3!==1,mr=big?44+frand(i)*14:30+frand(i)*8,mh=big?40+frand(i*5)*18:24+frand(i*5)*8;
     var m=fk3Mountain(g,mx,mz,mr,mh,i+1.7,big);m.position.y+=fm3TerrH(mx*.8,mz*.8)-1}
   for(i=0;i<12;i++){var a2=(i+.5)/12*Math.PI*2,r2=RG(a2,50+frand(i*11)*16),hx=Math.cos(a2)*r2,hz=Math.sin(a2)*r2,m2=fk3Mountain(g,hx,hz,24+frand(i*2)*8,16+frand(i*4)*8,i*3.1,false);m2.position.y+=fm3TerrH(hx*.85,hz*.85)-1.5}
-  /* ป่าบนเนินไกล (instanced) */
-  var tP=[];for(i=0;i<420;i++){var ta=frand(i*1.37)*Math.PI*2,tr=RG(ta,4+Math.pow(frand(i*2.11),.7)*48),tx=Math.cos(ta)*tr,tz=Math.sin(ta)*tr;if(Math.abs(tx-1)<6&&tz>F-18)continue;if(fk3Noise(tx*.04,5,tz*.04)<-.15)continue;tP.push([tx,fm3TerrH(tx,tz),tz,.9+frand(i*3.3)*.9,frand(i*4.1)])}
-  var trk=new THREE.InstancedMesh(new THREE.CylinderGeometry(.22,.3,1.6,6),fm3Mat(0x7a4f2a),tP.length),cro=new THREE.InstancedMesh(fk3Facet(new THREE.IcosahedronGeometry(1.4,0),function(c,cx,cy,cz,j){var v=frand(j*.7)*.08;c.setRGB(.2+v,.48+v,.2)}),new THREE.MeshLambertMaterial({vertexColors:true}),tP.length),
-      pin=new THREE.InstancedMesh(fk3Facet(new THREE.ConeGeometry(1.3,3.4,7),function(c,cx,cy,cz,j){var v=frand(j*.9)*.06;c.setRGB(.15+v,.4+v,.22)}),new THREE.MeshLambertMaterial({vertexColors:true}),tP.length),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Z=new THREE.Matrix4().makeScale(0,0,0);
-  tP.forEach(function(p,j){var s=p[3];M.compose(new THREE.Vector3(p[0],p[1]+.8*s,p[2]),Q,new THREE.Vector3(s,s,s));trk.setMatrixAt(j,M);if(p[4]<.45){M.compose(new THREE.Vector3(p[0],p[1]+2.8*s,p[2]),Q,new THREE.Vector3(s,s,s));pin.setMatrixAt(j,M);cro.setMatrixAt(j,Z)}else{M.compose(new THREE.Vector3(p[0],p[1]+2.3*s,p[2]),Q,new THREE.Vector3(s,s*.9,s));cro.setMatrixAt(j,M);pin.setMatrixAt(j,Z)}});
-  [trk,cro,pin].forEach(function(m3){m3.frustumCulled=false;g.add(m3)});
-  /* ต้นสนบนเนิน → โมเดลต้นสนใหม่ */
-  fm3File("fk_pine").then(function(G3){var mm=null;G3.scene.traverse(function(o){if(o.isMesh&&!mm)mm=o});if(!mm)return;var L=tP.filter(function(p){return p[4]<.45});if(!L.length)return;var im=new THREE.InstancedMesh(mm.geometry,mm.material,L.length),M3=new THREE.Matrix4(),Q3=new THREE.Quaternion(),Y3=new THREE.Vector3(0,1,0);im.userData.shared=1;
-    L.forEach(function(p,i){var sc=p[3]*4.8;Q3.setFromAxisAngle(Y3,p[4]*40);M3.compose(new THREE.Vector3(p[0],p[1]-.1,p[2]),Q3,new THREE.Vector3(sc,sc,sc));im.setMatrixAt(i,M3)});im.frustumCulled=false;g.add(im);
-    tP.forEach(function(p,j){if(p[4]<.45)trk.setMatrixAt(j,Z)});trk.instanceMatrix.needsUpdate=true;pin.visible=false},function(){});
+  /* อัปเดต 263: ป่าดงดิบรอบนอกด้วยต้นไม้ชุดเดียวกับในฟาร์ม (ย่อโพลีให้เบา) */
+  try{fm3Jungle(g,F,RG)}catch(e){console.warn("jungle",e)}
   /* ถนนลูกรังออกจากฟาร์ม + เสาไฟ */
   for(var zz=30;zz<F+150;zz+=4){var y0=fm3TerrH(1,zz),y1=fm3TerrH(1,zz+4),seg=new THREE.Mesh(new THREE.PlaneGeometry(4,4.3),fm3Mat(0xd9be8a));seg.rotation.x=-Math.PI/2+Math.atan2(y1-y0,4)*-1;seg.position.set(1,(y0+y1)/2+.06,zz+2);seg.receiveShadow=true;g.add(seg);
     if(zz%16===2){var py=fm3TerrH(4.2,zz);fm3Mesh(new THREE.CylinderGeometry(.09,.12,4.2,6),0x6b4a2b,4.2,py+2.1,zz,g,false);fm3Mesh(new THREE.BoxGeometry(1.2,.1,.1),0x6b4a2b,4.2,py+3.9,zz,g,false)}}
@@ -6332,9 +6341,9 @@ function fm3Scenery(st){var F=FM3.F||58,PS=Math.max(520,Math.ceil((F*2+300)/4)*4
   [[0.6,80],[1.4,86],[2.3,74],[3.0,92],[3.9,78],[4.7,84],[5.5,76]].forEach(function(h,j){var hR=RG(h[0],h[1]-58),hx=Math.cos(h[0])*hR,hz=Math.sin(h[0])*hR,hy=fm3TerrH(hx,hz),hs=new THREE.Group();hs.position.set(hx,hy,hz);hs.rotation.y=h[0]+1.2;hs.scale.setScalar(1.6);g.add(hs);
     var wc=[0xf5f0e6,0xfde68a,0xe7e5e4,0xfecaca][j%4],rc=[0xb91c1c,0x7c2d12,0x1e3a8a,0x166534][j%4];fm3Box(hs,2.4,1.6,2,wc,0,.8,0);fm3Roof(hs,2.4,2,1.2,rc,0,1.6,0);fm3Box(hs,.5,.9,.06,0x5b3416,.5,.45,1.02);fm3Box(hs,.5,.4,.06,0x93c5fd,-.6,1,1.02);
     if(j%2===0){fm3Box(hs,1.6,1.2,1.4,0xb91c1c,3,.6,.6);fm3Roof(hs,1.6,1.4,.8,0xf5f5f4,3,1.2,.6)}});
-  /* แกะกินหญ้าบนเนิน */
-  for(i=0;i<14;i++){var sa=1.9+frand(i*5.3)*1.4,sr=RG(sa,8+frand(i*2.7)*18),sx=Math.cos(sa)*sr,sz=Math.sin(sa)*sr,sh=new THREE.Group();sh.position.set(sx,fm3TerrH(sx,sz),sz);sh.rotation.y=frand(i)*6;g.add(sh);
-    fm3Mesh(new THREE.SphereGeometry(.55,10,8),0xfafaf9,0,.6,0,sh,false).scale.set(1.3,.9,1);fm3Mesh(new THREE.SphereGeometry(.24,8,6),0x292524,.7,.75,0,sh,false);A.sheep.push(sh)}
+  /* แกะกินหญ้าริมป่า → โมเดลแกะจริง เดินเล็มหญ้า */
+  for(i=0;i<12;i++){var sa=frand(i*5.3)*Math.PI*2,sx0=Math.cos(sa)*RG(sa,-5-frand(i*2.7)*4),sz0=Math.sin(sa)*RG(sa,-5-frand(i*2.7)*4);if(Math.abs(sx0-1)<6&&sz0>0)continue;var sh=new THREE.Group();sh.position.set(sx0,0,sz0);sh.rotation.y=frand(i)*6;sh.scale.setScalar(1.05+frand(i*8)*.25);g.add(sh);
+    sh.userData.sp={a:sa,st:0,tt:frand(i*3)*6,ph:0,k:i};fm3UAttach(sh,i%3===2?"sheep2":"sheep");A.sheep.push(sh)}
   /* ท้องฟ้า: ดวงอาทิตย์ / พระจันทร์ + ดาว + เมฆ */
   var sun=new THREE.Sprite(new THREE.SpriteMaterial({map:fk3SoftTex(1),transparent:true,depthWrite:false,fog:false,color:0xfff3c4}));sun.position.set(120,110,-160);sun.scale.set(70,70,1);g.add(sun);A.sun=sun;
   var mn=new THREE.Sprite(new THREE.SpriteMaterial({map:fk3SoftTex(1),transparent:true,depthWrite:false,fog:false,color:0xdbeafe}));mn.position.set(-110,100,-150);mn.scale.set(34,34,1);mn.visible=false;g.add(mn);A.moon=mn;
@@ -6353,7 +6362,7 @@ function fm3Scenery(st){var F=FM3.F||58,PS=Math.max(520,Math.ceil((F*2+300)/4)*4
 function fm3AmbStep(t,dt){var A=FM3.amb;if(!A)return;fm3FlyStep(A.fly,t,dt);A.clouds.forEach(function(c){c.position.x+=dt*c.userData.v*1.2;if(c.position.x>230)c.position.x=-230});
   A.birds.forEach(function(b){var D=b.userData,a=t*.05+D.o;b.position.set(Math.cos(a)*D.r+D.dx,D.h+Math.sin(t*.6+D.k)*.8,Math.sin(a)*D.r*.7+D.dx);b.rotation.y=-a;b.children[0].scale.y=Math.sin(t*8+D.k)});
   if(A.balloon){var ba=t*.012;A.balloon.position.set(Math.cos(ba)*80,38+Math.sin(t*.25)*2.5,Math.sin(ba)*60-20);A.balloon.rotation.y=t*.05}
-  A.sheep.forEach(function(s,i){s.children[1].position.y=.75+Math.max(0,Math.sin(t*.7+i*2))*-.25})}
+  A.sheep.forEach(function(s){fm3SheepStep(s,t,dt)})}
 function fm3AmbNight(n){var A=FM3.amb;if(!A)return;A.sun.visible=!n;A.moon.visible=!!n;A.stars.visible=!!n;A.clouds.forEach(function(c){c.material.color.set(n?0x3b4a6b:0xffffff);c.material.opacity=n?.55:.92});if(A.balloon)A.balloon.visible=!n;A.birds.forEach(function(b){b.visible=!n})}
 /* ---------- สร้าง/เปิด ฉาก 3D ---------- */
 /* อัปเดต 233: iPhone จอเขียวว่าง ("getShaderPrecisionFormat … null") — เดิมสร้าง WebGL ใหม่ทุกครั้งที่ฉากถูกวาดใหม่แต่ไม่คืน context เก่า
@@ -7696,7 +7705,7 @@ var FM3M={},FM3MK={pet_bee:"bee",cow:"cow",husky:"husky",dog:"shiba",horse:"hors
 function fm3LoadExtra(){if(THREE.GLTFLoader&&THREE.SkeletonUtils&&window.fflate)return Promise.resolve();if(FM3.ex)return FM3.ex;
   var add=function(src){return new Promise(function(ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})},B="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/";
   FM3.ex=Promise.all([add(B+"loaders/GLTFLoader.js"),add(B+"utils/SkeletonUtils.js"),add(B+"libs/fflate.min.js")]);FM3.ex.catch(function(){FM3.ex=null});return FM3.ex}
-var FM3F={},FMV={x_clift:1,x_kubo:2,x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_watermelon:2,fk_naga:1,fk_mermaid2:1,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
+var FM3F={},FMV={x_clift:1,x_kubo:2,x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_watermelon:2,fk_naga:1,fk_mermaid2:1,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,j_lt_oak:1,j_lt_oak2:1,j_lt_autumn:1,j_lt_apple:1,j_lt_cherry:1,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
 function fm3File(n){if(!window.fetch)return Promise.reject(new Error("fetch"));if(FM3F[n])return FM3F[n];var base=window.FM3_MODEL_BASE||"models/";
   FM3F[n]=fm3LoadExtra().then(function(){return fetch(base+"fm-"+n+".bin"+(FMV[n]?"?v="+FMV[n]:""))}).then(function(r){if(!r.ok)throw new Error("model");return r.arrayBuffer()}).then(function(ab){var u=new Uint8Array(ab);if(u[0]===0x1f&&u[1]===0x8b)u=fflate.gunzipSync(u);
     return new Promise(function(ok,bad){new THREE.GLTFLoader().parse(u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength),"",ok,bad)})}).then(function(g){g.scene.traverse(function(o){o.userData.shared=1;if(o.isMesh){o.castShadow=true;[].concat(o.material).forEach(function(m){if(m.__c)return;m.__c=1;if(/^d_/.test(n)){m.flatShading=true;m.side=THREE.DoubleSide}if("metalness" in m){m.metalness=0;m.roughness=.9}if(m.color)m.color.convertLinearToSRGB();if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}if(/Leaves/.test(m.name||"")){m.alphaTest=.5;m.transparent=false;m.side=THREE.DoubleSide}})}});return g});
