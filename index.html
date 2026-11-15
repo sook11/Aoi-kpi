@@ -1418,6 +1418,11 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .missedit{display:grid;gap:6px;width:100%}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
 
 /* อัปเดต 250: ลิงก์คีย์ลาในระบบ Apex */
+
+/* อัปเดต 256: สภาพอากาศ */
+.wx-ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+[data-wx]{position:relative}[data-wx] .wxa{position:absolute;right:-2px;bottom:-3px;font-size:9px;font-weight:800;background:#0ea5e9;color:#fff;border-radius:6px;padding:0 3px;line-height:13px}
+.fk-wx{overflow:visible;left:calc(112px + env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));transform:none;border:0;cursor:pointer;font-size:16px;padding:4px 10px}
 </style>
 </head>
 <body>
@@ -5661,7 +5666,7 @@ async function renderFarm(){
   try{if(!FM.cat)FM.cat=fmCatFix(await q(db.rpc("farm_cat")));FM.d=await fmLoad();if(FM.v)FM.v=await fmLoad(FM.v.emp);if(FM.t==="friends")FM.board=await q(db.rpc("farm_board"));FM.keep=!!FM.sx;drawFarm();fmTheftNotify()}
   catch(e){$("fm-world").innerHTML='<div class="panel" style="margin:80px 16px">'+emptyRow(thErr(e))+'</div>'}
   if(!FM.tick)FM.tick=setInterval(fmTick,1000)}
-function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmaud="sfx" aria-label="เสียงเอฟเฟกต์" class="'+(FA.sfx?'':'off')+'">'+(FA.sfx?'🔊':'🔇')+'</button><button type="button" data-fmaud="mus" aria-label="เพลง" class="'+(FA.mus?'':'off')+'">🎵</button><button type="button" data-fmdn="1" aria-label="กลางวัน/กลางคืน" title="กลางวัน/กลางคืน">'+(fmIsNight()?'🌙':'☀️')+'</button>'+(FM3.on?'<button type="button" data-fmtp="1" class="f3btn'+(FM3.tp?' on':'')+'" aria-label="โหมดเดินเที่ยว" title="เดินเที่ยว (กล้องบุคคลที่ 3)">🚶</button>':'')+'<button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
+function fmHud(){var d=FM.d,v=FM.v,now=fmNow(),h='<div class="fzoom"><button type="button" data-fmaud="sfx" aria-label="เสียงเอฟเฟกต์" class="'+(FA.sfx?'':'off')+'">'+(FA.sfx?'🔊':'🔇')+'</button><button type="button" data-fmaud="mus" aria-label="เพลง" class="'+(FA.mus?'':'off')+'">🎵</button><button type="button" data-fmdn="1" aria-label="กลางวัน/กลางคืน" title="กลางวัน/กลางคืน">'+(fmIsNight()?'🌙':'☀️')+'</button><button type="button" data-wx="1" aria-label="สภาพอากาศ" title="สภาพอากาศ">'+wxIcon()+'</button>'+(FM3.on?'<button type="button" data-fmtp="1" class="f3btn'+(FM3.tp?' on':'')+'" aria-label="โหมดเดินเที่ยว" title="เดินเที่ยว (กล้องบุคคลที่ 3)">🚶</button>':'')+'<button type="button" data-fmz="in" aria-label="ซูมเข้า">＋</button><button type="button" data-fmz="out" aria-label="ซูมออก">－</button></div><div class="ftop"><button type="button" class="fround" data-fmexit="1" aria-label="ออกจากฟาร์ม">✕</button>';
   if(v){h+='<div class="fpill fwho">'+avatarHtml({display_name:v.name,avatar:v.avatar})+'<div><b>ฟาร์มของ'+esc(nick(v.name)||v.name)+'</b><small>เลเวล '+v.level+' · ❤️ '+num(v.likes)+(fmPI(v).debt?' · <span class="frep" data-fmrep="1">😈 ชื่อเสียง -'+fmPI(v).debt+'</span>':'')+'</small></div></div><span class="fsp"></span>'+
     '<button type="button" class="fpill flike'+(v.liked?' on':'')+'" data-fmlike="'+v.emp+'"'+(v.liked?' disabled':'')+'>'+(v.liked?'❤️ ถูกใจแล้ว':'🤍 ถูกใจ')+'</button></div>'+
     '<div class="fdock"><button type="button" class="fbig" data-fmt="stall"><span>🧺</span><small>ร้านริมทาง</small>'+((v.stall||[]).length?'<i>'+(v.stall||[]).length+'</i>':'')+'</button>'+(S.admin?'<button type="button" class="fbig fgift-btn" data-fmgto="'+v.emp+'"><span>🎁</span><small>มอบให้</small></button>':'')+'<button type="button" class="fbig" data-fmback="1"><span>🏡</span><small>ฟาร์มฉัน</small></button></div>';return h}
@@ -7091,27 +7096,115 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[],lotus
     var p2=new THREE.Group(),b2=mk();b2.scale.setScalar(1.2);p2.add(b2);p2.position.set(-8.1,-1.05,-3.6);p2.rotation.y=.9;g.add(p2);var m2=new THREE.AnimationMixer(b2),a2=m2.clipAction(A[2]||A[0]);a2.play();
     FK3.X.mer.push({g:p2,b:b2,mx:m2,swim:0,ph:2})},function(){})}
 /* อัปเดต 252: พญานาค + นางเงือกตัวใหม่ ว่ายวนในบึงตกปลา (โมเดลจากผู้ใช้ มีท่าว่ายในตัว · เส้นทางคุมด้วยโค้ด) */
+
+/* ===== อัปเดต 256: สภาพอากาศตามฤดู (ฟาร์ม + บึงตกปลา) =====
+   อัตโนมัติ: สุ่มรายชั่วโมงแบบเดียวกันทุกเครื่อง ตามฤดูไทย — ฝน พ.ค.–ต.ค. (มีพายุฟ้าคะนอง) · หนาว พ.ย.–ก.พ. (หิมะตกบ้าง) · ร้อน มี.ค.–เม.ย. (ฝนนานๆ ที)
+   เลือกเองได้จากปุ่ม (จำต่อเครื่อง) · ฝน/หิมะวาดบนชั้นโปร่งทับฉาก · พายุ: ฟ้าแลบ ฟ้าร้อง และอาจผ่าโดนคนตกปลา (ท่าสุ่ม 3 แบบ ไม่เสียอะไร) */
+var WX={mode:"auto",ord:["auto","clear","rain","storm","snow"],ic:{clear:"☀️",rain:"🌧️",storm:"⛈️",snow:"❄️"},nm:{auto:"อัตโนมัติตามฤดู",clear:"ฟ้าใส",rain:"ฝนตก",storm:"พายุฝนฟ้าคะนอง",snow:"หิมะตก"},P:[],fl:0,nf:0,nh:0,bolt:null};
+try{WX.mode=localStorage.getItem("aoi-wx")||"auto"}catch(e){}
+function wxAuto(){var d=new Date(Date.now()+7*3600000),m=d.getUTCMonth()+1,k=Math.floor(Date.now()/3600000),x=Math.sin(k*12.9898+78.233)*43758.5453,r=x-Math.floor(x);
+  if(m>=5&&m<=10)return r<.3?"rain":r<.5?"storm":"clear";if(m>=11||m<=2)return r<.3?"snow":r<.38?"rain":"clear";return r<.07?"rain":r<.12?"storm":"clear"}
+function wxNow(){return WX.mode==="auto"?wxAuto():WX.mode}
+function wxIcon(){return WX.ic[wxNow()]+(WX.mode==="auto"?'<small class="wxa">A</small>':'')}
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-wx]");if(!b)return;ev.stopPropagation();var i=WX.ord.indexOf(WX.mode);WX.mode=WX.ord[(i+1)%WX.ord.length];try{localStorage.setItem("aoi-wx",WX.mode)}catch(e){}
+  try{sfx("tap")}catch(e){}toast("สภาพอากาศ: "+WX.nm[WX.mode]+(WX.mode==="auto"?" (ตอนนี้ "+WX.nm[wxAuto()]+")":""));document.querySelectorAll("[data-wx]").forEach(function(x){x.innerHTML=wxIcon()})},true);
+function wxHost(){var c=$("fk3-cv");if(c&&FK3&&FK3.on&&c.offsetParent)return c;c=$("fm3-cv");if(c&&c.offsetParent)return c;var w=$("fm-win"),sv=w&&w.querySelector("svg");if(sv&&sv.offsetParent)return sv;var lk=$("fm-lake");if(lk&&lk.offsetParent)return lk.querySelector("canvas,svg");return null}
+function wxThunder(big){try{if(!FA.sfx||!faCtx())return;var C=FA.ctx,n=C.sampleRate*2.4,b=C.createBuffer(1,n,C.sampleRate),d=b.getChannelData(0);for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
+  var s=C.createBufferSource(),f=C.createBiquadFilter(),g=C.createGain();s.buffer=b;f.type="lowpass";f.frequency.value=big?420:260;g.gain.value=big?.9:.55;s.connect(f);f.connect(g);g.connect(C.destination);s.start()}catch(e){}}
+function wxLoop(){requestAnimationFrame(wxLoop);var h=wxHost(),w=wxNow(),ov=$("wx-ov");
+  if(!h||w==="clear"||document.hidden){if(ov)ov.hidden=true;return}
+  if(!ov||ov.parentNode!==h.parentNode){if(ov)ov.remove();ov=document.createElement("canvas");ov.id="wx-ov";ov.className="wx-ov";h.parentNode.insertBefore(ov,h.nextSibling);WX.P=[]}
+  ov.hidden=false;var dpr=Math.min(1.5,window.devicePixelRatio||1),W=Math.round(h.parentNode.clientWidth*dpr),H=Math.round(h.parentNode.clientHeight*dpr);if(ov.width!==W||ov.height!==H){ov.width=W;ov.height=H;WX.P=[]}
+  var now=performance.now()/1000,dt=Math.min(.05,now-(WX.lt||now));WX.lt=now;var c=ov.getContext("2d"),snow=w==="snow",storm=w==="storm",want=Math.round(W*H/(snow?5200:storm?4200:6500)*(dpr>1?.8:1));
+  if(WX.kind!==w){WX.P=[];WX.kind=w}while(WX.P.length<want)WX.P.push({x:Math.random()*W,y:Math.random()*H,v:snow?(30+Math.random()*60)*dpr:(900+Math.random()*500)*dpr,l:(10+Math.random()*14)*dpr,r:(1.2+Math.random()*2.4)*dpr,o:Math.random()*6.28});if(WX.P.length>want)WX.P.length=want;
+  c.clearRect(0,0,W,H);c.fillStyle=snow?"rgba(225,238,255,.17)":storm?"rgba(18,26,44,.36)":"rgba(28,38,58,.27)";c.fillRect(0,0,W,H);
+  if(snow){c.fillStyle="rgba(255,255,255,.92)";c.beginPath();WX.P.forEach(function(p){p.y+=p.v*dt;p.x+=Math.sin(now*1.3+p.o)*18*dpr*dt;if(p.y>H){p.y=-5;p.x=Math.random()*W}c.moveTo(p.x+p.r,p.y);c.arc(p.x,p.y,p.r,0,6.283)});c.fill()}
+  else{c.strokeStyle=storm?"rgba(205,220,245,.7)":"rgba(215,230,252,.66)";c.lineWidth=1.4*dpr;c.beginPath();var sl=.2;WX.P.forEach(function(p){p.y+=p.v*dt;p.x+=p.v*sl*dt;if(p.y>H){p.y=-p.l;p.x=Math.random()*W*1.2-W*.2}c.moveTo(p.x,p.y);c.lineTo(p.x-p.l*sl,p.y-p.l)});c.stroke()}
+  if(storm){if(!WX.nf)WX.nf=now+4+Math.random()*6;if(now>WX.nf){WX.nf=now+6+Math.random()*12;WX.fl=now;var tgt=null;
+      if(FK3&&FK3.on&&FK3.cam&&now>WX.nh&&Math.random()<.4){var L=[];if(FK3.me&&FK3.me.g)L.push(FK3.me,FK3.me,FK3.me);Object.keys(FK3.chars||{}).forEach(function(k){if(FK3.chars[k]&&FK3.chars[k].g)L.push(FK3.chars[k])});tgt=L.length?L[(Math.random()*L.length)|0]:null;if(tgt)WX.nh=now+45+Math.random()*60}
+      var x1=Math.random()*W,y1=H*(.35+Math.random()*.25);if(tgt){var v=new THREE.Vector3();tgt.g.getWorldPosition(v);v.y+=1.2;v.project(FK3.cam);x1=(v.x+1)/2*W;y1=(1-v.y)/2*H}
+      var pts=[[x1+(Math.random()-.5)*W*.25,-10]];var n=9;for(var i=1;i<=n;i++){var u=i/n;pts.push([pts[0][0]+(x1-pts[0][0])*u+(i<n?(Math.random()-.5)*60*dpr:0),-10+(y1+10)*u])}WX.bolt={p:pts,t:now};
+      setTimeout(function(){wxThunder(!!tgt)},tgt?120:400+Math.random()*900);if(tgt)fk3Zap(tgt,now)}
+    var fe=now-WX.fl;if(fe<.55){c.fillStyle="rgba(255,255,255,"+(fe<.08?.55:.55*(1-(fe-.08)/.47))+")";c.fillRect(0,0,W,H)}
+    if(WX.bolt&&now-WX.bolt.t<.35){var B=WX.bolt.p;c.save();c.strokeStyle="rgba(255,250,210,.95)";c.shadowColor="#fff7b0";c.shadowBlur=18*dpr;c.lineWidth=3.2*dpr;c.beginPath();c.moveTo(B[0][0],B[0][1]);B.forEach(function(q){c.lineTo(q[0],q[1])});c.stroke();c.lineWidth=1.2*dpr;c.strokeStyle="#fff";c.stroke();c.restore()}}}
+requestAnimationFrame(wxLoop);
+/* โดนฟ้าผ่า: สุ่มท่า — กระเด้งหมุนกลางอากาศ / ล้มหงายแล้วลุก / ช็อตสั่นตัวมีควัน */
+function fk3Zap(V,t){if(!V||!V.g)return;var k=["spin","fall","shake"][(Math.random()*3)|0];V.zap={t0:t,k:k,ry:V.g.rotation.y,y0:V.g.position.y};
+  var b=V.g.position,N=36,geo=new THREE.BufferGeometry();geo.setAttribute("position",new THREE.BufferAttribute(new Float32Array(N*3),3));var P=new THREE.Points(geo,new THREE.PointsMaterial({color:0x6b7280,size:.5,transparent:true,opacity:.7,depthWrite:false}));P.frustumCulled=false;FK3.g.add(P);
+  var D=[];for(var i=0;i<N;i++)D.push({x:(Math.random()-.5)*.6,z:(Math.random()-.5)*.6,v:.6+Math.random()*1.2,d:Math.random()*1.2});V.zap.smoke={P:P,D:D,b:{x:b.x,y:b.y+1.4,z:b.z}};
+  if(V===FK3.me){toast(["⚡ ฟ้าผ่าโดนคุณ! ผมตั้งเลย 😵","⚡ เปรี้ยง! โดนฟ้าผ่าเต็มๆ (ไม่เสียอะไร)","⚡ ฟ้าผ่า! หาที่หลบฝนก่อนไหม~"][(Math.random()*3)|0]);try{navigator.vibrate&&navigator.vibrate([200,60,120])}catch(e){}}}
+function fk3ZapUpd(t){[FK3.me].concat(Object.keys(FK3.chars||{}).map(function(k){return FK3.chars[k]})).forEach(function(V){if(!V||!V.zap)return;var Z=V.zap,e=t-Z.t0,g=V.g,end=Z.k==="fall"?3:2.2;
+    if(Z.smoke){var S2=Z.smoke,pa=S2.P.geometry.attributes.position.array;S2.D.forEach(function(q,i){var u=Math.max(0,e-q.d*.4);pa[i*3]=S2.b.x+q.x*(1+u);pa[i*3+1]=S2.b.y+q.v*u;pa[i*3+2]=S2.b.z+q.z*(1+u)});S2.P.geometry.attributes.position.needsUpdate=true;S2.P.material.opacity=Math.max(0,.7-e*.25)}
+    if(e>end){g.rotation.x=0;g.rotation.z=0;g.rotation.y=Z.ry;g.position.y=Z.y0;if(Z.smoke){FK3.g.remove(Z.smoke.P);Z.smoke.P.geometry.dispose();Z.smoke.P.material.dispose()}V.zap=null;return}
+    if(Z.k==="spin"){var u2=Math.min(1,e/1.1);g.position.y=Z.y0+Math.sin(u2*Math.PI)*1.1;g.rotation.y=Z.ry+(1-Math.pow(1-u2,2))*Math.PI*4;g.rotation.z=Math.sin(e*30)*.12*(1-u2)}
+    else if(Z.k==="fall"){var r=e<.35?-1.45*(e/.35):e<2.2?-1.45:-1.45*(1-(e-2.2)/.8);g.rotation.x=r;g.position.y=Z.y0+(r<0?-r*.18:0)+(e>2.2&&e<3?Math.sin((e-2.2)/.8*Math.PI)*.15:0);g.rotation.z=e<2.2&&e>.35?Math.sin(e*45)*.05:0}
+    else{var kk=Math.max(0,1-e/end);g.rotation.z=(Math.random()-.5)*.4*kk;g.rotation.x=(Math.random()-.5)*.25*kk;g.position.y=Z.y0+Math.random()*.08*kk}})}
+/* อัปเดต 252–255: พญานาค + นางเงือกตัวใหม่ในบึงตกปลา (โมเดลจากผู้ใช้ มีท่าในตัว)
+   · 255: ว่ายแบบสุ่มทิศ (สุ่มจุดหมายในเขตน้ำที่ปลอดภัย เลี่ยงท่าเรือ/เกาะ) ความเร็วแต่ละช่วงต่างกัน
+   · พญานาคสุ่มหยุด หันหัวหาคนตกปลา แล้วพ่นน้ำโค้งใส่ → ตัวละครที่โดนสะบัดตัวไล่น้ำ มีหยดน้ำกระเด็น
+   · นางเงือกสุ่มท่าตอนโผล่: โบกมือ (บางครั้งหันมาหาผู้เล่น) / โผล่มองนิ่งๆ แล้วดำ / ไม่โผล่ ดำเปลี่ยนทิศเลย */
+function fk3SwimOk(x,z,big){var n=(x/FK3RX)*(x/FK3RX)+(z/FK3RZ)*(z/FK3RZ);if(n>(big?.3:.5))return false;if(Math.abs(x)<(big?5:3.4)&&z>(big?-1:.8))return false;if(Math.hypot(x+10,z+5)<(big?6.5:4.6))return false;return true}
+function fk3SwimPick(m){for(var i=0;i<40;i++){var x=(Math.random()*2-1)*FK3RX*.75,z=(Math.random()*2-1)*FK3RZ*.75;if(fk3SwimOk(x,z,m.big)&&Math.hypot(x-m.x,z-m.z)>4.5){m.tx=x;m.tz=z;m.tt=performance.now()/1000+25;m.vs=.7+Math.random()*.5;return}}m.tx=m.big?2:3;m.tz=m.big?-3:-1.5;m.tt=performance.now()/1000+25}
 function fk3SwimAdd(g,ok){FK3.X.sw=[];
-  [["fk_naga",{s:.78,rot:Math.PI/2,cx:1.2,cz:-1.6,rx:7,rz:3.5,sp:.045,y:-.42,bob:.06,bf:.9,rip:1.1}],
-   ["fk_mermaid2",{s:1.7,rot:-Math.PI/2,cx:2,cz:-1.8,rx:9.4,rz:4.4,sp:-.085,y:1.15*1.7-.12,bob:.05,bf:2,rip:.55,stand:1}]].forEach(function(K){
+  [["fk_naga",{s:.78,rot:Math.PI/2,y:-.42,bob:.06,bf:.9,rip:1.1,big:1,spd:.4,tr:.45,naga:1}],
+   ["fk_mermaid2",{s:1.7,rot:-Math.PI/2,y:1.15*1.7-.12,bob:.05,bf:2,rip:.55,spd:.85,tr:.9,stand:1}]].forEach(function(K){
     fm3File(K[0]).then(function(G){if(!ok()||!THREE.SkeletonUtils||!G.animations||!G.animations.length)return;var c=K[1],o=THREE.SkeletonUtils.clone(G.scene);
       o.traverse(function(m){m.userData.shared=1;if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});o.rotation.y=c.rot;var w=new THREE.Group(),b=new THREE.Group();b.scale.setScalar(c.s);b.add(o);w.add(b);g.add(w);
-      var mx=new THREE.AnimationMixer(o),act=mx.clipAction(G.animations[0]);act.play();mx.update(Math.random()*5);c.act=act;
-      FK3.X.sw.push(Object.assign({g:w,b:b,mx:mx,a:Math.random()*6.28,nextDive:performance.now()/1000+8+Math.random()*8},c))},function(){})})}
-function fk3SwimUpd(m,t,dt){if(m.stand)return fk3StandUpd(m,t,dt);m.mx.update(Math.min(dt,.1));m.a+=dt*m.sp;var sg=Math.sign(m.sp),x=m.cx+Math.cos(m.a)*m.rx,z=m.cz+Math.sin(m.a)*m.rz,dx=-Math.sin(m.a)*m.rx*sg,dz=Math.cos(m.a)*m.rz*sg;
-  var dv=0;if(m.dive&&t>m.nextDive){if(!m.d0){m.d0=t;fk3Ripple(x,z,1.2,1.4)}var e=(t-m.d0)/4.5;if(e>=1){m.d0=0;m.nextDive=t+12+Math.random()*10;fk3Ripple(x,z,1.3,1.6)}else dv=Math.sin(e*Math.PI)}
-  m.g.position.set(x,m.y-dv*1.2+Math.sin(t*m.bf)*m.bob,z);var ry=Math.atan2(dx,dz),cr=m.g.rotation.y,d=Math.atan2(Math.sin(ry-cr),Math.cos(ry-cr));m.g.rotation.y=cr+d*Math.min(1,dt*3);m.b.rotation.x=dv*.35;
-  if(!dv&&t>(m.nr||0)){m.nr=t+.6;fk3Ripple(x-dx*.02,z-dz*.02,m.rip,1.2)}}
-/* อัปเดต 253: นางเงือกตัวใหม่ — ท่าในโมเดล 0–6 วิ ว่าย, 6–6.9 วิ ตั้งตัวโผล่ → โผล่แค่หัวถึงไหล่ อยู่กับที่แล้วโบกมือ (ท่าในโมเดลถึงจบ) จึงดำลงแล้วว่ายต่อ · อัปเดต 254: เส้นทางพญานาค/นางเงือกเลี่ยงท่าเรือ */
+      var mx=new THREE.AnimationMixer(o),act=mx.clipAction(G.animations[0]);act.play();mx.update(c.stand?Math.random()*5:Math.random()*8);c.act=act;c.head=o.getObjectByName("Naga_Head")||o.getObjectByName("head");
+      var m=Object.assign({g:w,b:b,mx:mx,x:0,z:0,h:Math.random()*6.28,vs:1},c);for(var i=0;i<60;i++){var x=(Math.random()*2-1)*9,z=(Math.random()*2-1)*6;if(fk3SwimOk(x,z,c.big)){m.x=x;m.z=z;break}}
+      if(!m.x&&!m.z){m.x=c.big?3:5;m.z=-3}fk3SwimPick(m);var t0=performance.now()/1000;m.nextSpray=t0+12+Math.random()*15;w.position.set(m.x,m.y,m.z);w.rotation.y=m.h;FK3.X.sw.push(m)},function(){})})}
+/* เดินหน้าไปจุดหมาย: หันทีละน้อย · mv = ตัวคูณความเร็ว (0 = หยุด) */
+function fk3SwimStep(m,dt,mv){var t=performance.now()/1000;if(Math.hypot(m.tx-m.x,m.tz-m.z)<1.6||t>m.tt)fk3SwimPick(m);
+  var want=Math.atan2(m.tx-m.x,m.tz-m.z),d=Math.atan2(Math.sin(want-m.h),Math.cos(want-m.h)),tr=m.tr*dt*(mv>.05?1:0);m.h+=Math.max(-tr,Math.min(tr,d));
+  var sp=m.spd*m.vs*mv*(Math.abs(d)>1.4?.35:1),nx=m.x+Math.sin(m.h)*sp*dt,nz=m.z+Math.cos(m.h)*sp*dt;if(fk3SwimOk(nx,nz,m.big)){m.x=nx;m.z=nz}else fk3SwimPick(m);m.g.rotation.y=m.h}
+function fk3SwimUpd(m,t,dt){if(m.stand)return fk3StandUpd(m,t,dt);dt=Math.min(dt,.1);m.mx.update(dt);var mv=1,lift=0;
+  if(m.naga){if(!m.sp2&&t>m.nextSpray){var T=fk3SprayTarget(m);if(T){m.sp2={ph:"aim",t0:t,T:T}}else m.nextSpray=t+8}
+    if(m.sp2){var S2=m.sp2,e=t-S2.t0,tp=S2.T.g.position;mv=0;lift=Math.min(1,e/1)*.35;var want=Math.atan2(tp.x-m.x,tp.z-m.z),dd=Math.atan2(Math.sin(want-m.h),Math.cos(want-m.h));m.h+=dd*Math.min(1,dt*2.2);m.g.rotation.y=m.h;
+      if(S2.ph==="aim"&&e>1.3){S2.ph="spray";S2.t1=t;fk3SprayFire(m,S2.T)}
+      else if(S2.ph==="spray"&&t-S2.t1>2.2){m.sp2=null;m.nextSpray=t+28+Math.random()*40}}}
+  if(mv)fk3SwimStep(m,dt,mv);m.g.position.set(m.x,m.y+lift+Math.sin(t*m.bf)*m.bob,m.z);
+  if(t>(m.nr||0)){m.nr=t+(mv?.6:1.4);fk3Ripple(m.x,m.z,m.rip,1.2)}}
+/* พ่นน้ำ: เลือกเป้า (ตัวเราบ่อยสุด หรือคนอื่นที่อยู่ในบึง) ภายในระยะ 22 */
+function fk3SprayTarget(m){var L=[];if(FK3.me&&FK3.me.g)L.push(FK3.me,FK3.me);Object.keys(FK3.chars||{}).forEach(function(k){var C=FK3.chars[k];if(C&&C.g&&C.g.visible!==false)L.push(C)});
+  L=L.filter(function(C){return Math.hypot(C.g.position.x-m.x,C.g.position.z-m.z)<22});return L.length?L[(Math.random()*L.length)|0]:null}
+function fk3SprayFire(m,C){var hp=new THREE.Vector3();(m.head||m.g).getWorldPosition(hp);var fw=new THREE.Vector3(Math.sin(m.h),0,Math.cos(m.h));hp.addScaledVector(fw,.45);hp.y-=.25;
+  var N=140,geo=new THREE.BufferGeometry(),pos=new Float32Array(N*3);geo.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  var mat=new THREE.PointsMaterial({color:0xd6f1ff,size:.42,transparent:true,opacity:.92,depthWrite:false}),P=new THREE.Points(geo,mat);P.frustumCulled=false;FK3.g.add(P);
+  var D=[];for(var i=0;i<N;i++)D.push({d:i/N*.75+Math.random()*.05,jx:(Math.random()-.5)*.5,jy:(Math.random()-.5)*.4,jz:(Math.random()-.5)*.5});
+  (FK3.X.jet=FK3.X.jet||[]).push({P:P,D:D,a:hp,C:C,t0:FK3.t||performance.now()/1000,hit:0});try{sfx("swish")}catch(e){}}
+function fk3JetUpd(t,dt){var X=FK3.X;if(X.jet)X.jet=X.jet.filter(function(J){var e=t-J.t0,b=J.C.g.position,ex=b.x,ey=b.y+1.3,ez=b.z,ar=J.P.geometry.attributes.position,pa=ar.array,H=2.2+Math.hypot(ex-J.a.x,ez-J.a.z)*.12;
+    for(var i=0;i<J.D.length;i++){var q=J.D[i],u=Math.max(0,Math.min(1.25,(e-q.d)/.85)),k=i*3;
+      if(u<=0){pa[k]=J.a.x;pa[k+1]=-50;pa[k+2]=J.a.z;continue}
+      if(u<=1){pa[k]=J.a.x+(ex-J.a.x)*u+q.jx*u;pa[k+1]=J.a.y+(ey-J.a.y)*u+4*H*u*(1-u)*.5+q.jy*u;pa[k+2]=J.a.z+(ez-J.a.z)*u+q.jz*u}
+      else{var f=u-1;pa[k]=ex+q.jx*(1+f*6);pa[k+1]=ey+q.jy-f*f*30;pa[k+2]=ez+q.jz*(1+f*6)}}
+    ar.needsUpdate=true;if(!J.hit&&e>.85){J.hit=1;fk3Wet(J.C,t)}J.P.material.opacity=e>1.6?Math.max(0,.92-(e-1.6)*1.6):.92;
+    if(e>2.3){FK3.g.remove(J.P);J.P.geometry.dispose();J.P.material.dispose();return false}return true});
+  /* ตัวละครที่โดนน้ำ: สะบัดตัวไล่น้ำ */
+  [FK3.me].concat(Object.keys(FK3.chars||{}).map(function(k){return FK3.chars[k]})).forEach(function(V){if(!V||!V.wet)return;var e=t-V.wet.t0;
+    if(e>2.4||V.castOn){V.g.rotation.x=0;if(!V.castOn)V.g.rotation.z=0;if(V.wet.ry!=null&&!V.castOn)V.g.rotation.y=V.wet.ry;V.wet=null;return}
+    var k=Math.max(0,1-e/2.4),sh=e<.25?0:k;V.g.rotation.z=Math.sin(e*36)*.24*sh;V.g.rotation.x=Math.sin(e*29+1)*.07*sh;if(V.wet.ry!=null)V.g.rotation.y=V.wet.ry+Math.sin(e*24)*.35*sh})}
+function fk3Wet(V,t){if(!V||!V.g)return;V.wet={t0:t,ry:V.g.rotation.y};var b=V.g.position;fk3Ripple(b.x,b.z,.9,1);
+  var N=40,geo=new THREE.BufferGeometry(),pos=new Float32Array(N*3);geo.setAttribute("position",new THREE.BufferAttribute(pos,3));var P=new THREE.Points(geo,new THREE.PointsMaterial({color:0xdff4ff,size:.16,transparent:true,opacity:.9,depthWrite:false}));P.frustumCulled=false;FK3.g.add(P);
+  var D=[];for(var i=0;i<N;i++){var a=Math.random()*6.28,v=1.2+Math.random()*1.6;D.push({vx:Math.cos(a)*v,vz:Math.sin(a)*v,vy:1+Math.random()*2.2,d:.25+Math.random()*1.4})}
+  (FK3.X.drip=FK3.X.drip||[]).push({P:P,D:D,t0:t,b:{x:b.x,y:b.y+1.2,z:b.z}});
+  if(V===FK3.me){toast("💦 พญานาคพ่นน้ำใส่คุณ! สะบัดน้ำออกก่อน~");try{sfx("splash")}catch(e){}try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(e){}}}
+function fk3DripUpd(t){var X=FK3.X;if(X.drip)X.drip=X.drip.filter(function(J){var pa=J.P.geometry.attributes.position.array;
+  for(var i=0;i<J.D.length;i++){var q=J.D[i],e=Math.max(0,t-J.t0-q.d*.0)-q.d*.5;if(e<0){pa[i*3+1]=-50;continue}pa[i*3]=J.b.x+q.vx*e*.6;pa[i*3+1]=J.b.y+q.vy*e-4.9*e*e;pa[i*3+2]=J.b.z+q.vz*e*.6}
+  J.P.geometry.attributes.position.needsUpdate=true;var e2=t-J.t0;J.P.material.opacity=Math.max(0,.9-e2*.4);if(e2>2.4){FK3.g.remove(J.P);J.P.geometry.dispose();J.P.material.dispose();return false}return true})}
+/* นางเงือก: ท่าในโมเดล 0–6 วิ ว่าย, 6–6.9 วิ ตั้งตัวโผล่, 6.9–จบ ยืนโบกมือ → สุ่ม 3 แบบตอนจะโผล่ */
 function fk3StandUpd(m,t,dt){dt=Math.min(dt,.1);var A=m.act,ct=A.time,up=0,mv=1,sink=0;
-  if(m.ph2==="hold"){up=1;mv=0;m.mx.update(dt);var du=A.getClip().duration;if(A.time>=du-.15||A.time<m.lt){A.paused=true;m.ph2="sink";m.h0=t;fk3Ripple(m.g.position.x,m.g.position.z,1.1,1.4)}m.lt=A.time}
-  else if(m.ph2==="sink"){var e=(t-m.h0)/1.1;up=1;mv=0;sink=Math.min(1,e);if(e>=1){m.ph2="rise";m.h0=t;A.paused=false;A.time=0;m.mx.update(0)}}
-  else if(m.ph2==="rise"){var e2=(t-m.h0)/1.2;sink=1-Math.min(1,e2);if(e2>=1)m.ph2=null}
-  else{m.mx.update(dt);ct=A.time;if(ct>=6.1){up=Math.min(1,(ct-6.1)/.8);mv=1-up}if(ct>=6.9){m.ph2="hold";m.h0=t;m.lt=ct;up=1;mv=0;fk3Ripple(m.g.position.x,m.g.position.z,1.2,1.6)}}
-  m.a+=dt*m.sp*mv;var sg=Math.sign(m.sp),x=m.cx+Math.cos(m.a)*m.rx,z=m.cz+Math.sin(m.a)*m.rz,dx=-Math.sin(m.a)*m.rx*sg,dz=Math.cos(m.a)*m.rz*sg;
-  m.g.position.set(x,m.y-up*.6*m.s-sink*1.3+(up?0:Math.sin(t*m.bf)*m.bob),z);
-  if(mv>.05){var ry=Math.atan2(dx,dz),cr=m.g.rotation.y,d=Math.atan2(Math.sin(ry-cr),Math.cos(ry-cr));m.g.rotation.y=cr+d*Math.min(1,dt*3)}
-  if(t>(m.nr||0)){m.nr=t+(mv>.5?.6:1.8);if(!sink||sink<.3)fk3Ripple(x,z,mv>.5?m.rip:.8,1.2)}}
+  if(m.ph2==="hold"){up=1;mv=0;if(m.mode==="peek"){if(t-m.h0>2.5+Math.random()*.02){m.ph2="sink";m.h0=t;A.paused=true;fk3Ripple(m.x,m.z,1.1,1.4)}}
+    else{m.mx.update(dt);var du=A.getClip().duration;if(A.time>=du-.15||A.time<m.lt){A.paused=true;m.ph2="sink";m.h0=t;fk3Ripple(m.x,m.z,1.1,1.4)}m.lt=A.time}
+    if(m.face&&FK3.me&&FK3.me.g){var p=FK3.me.g.position,w2=Math.atan2(p.x-m.x,p.z-m.z),d2=Math.atan2(Math.sin(w2-m.h),Math.cos(w2-m.h));m.h+=d2*Math.min(1,dt*1.5);m.g.rotation.y=m.h}}
+  else if(m.ph2==="sink"){var e=(t-m.h0)/1.1;up=m.mode==="skip"?0:1;mv=0;sink=Math.min(1,e);if(e>=1){m.ph2="rise";m.h0=t;A.paused=false;A.time=Math.random()*1.5;m.mx.update(0);fk3SwimPick(m);m.h+=(Math.random()-.5)*2.4}}
+  else if(m.ph2==="rise"){var e2=(t-m.h0)/1.2;sink=1-Math.min(1,e2);mv=.4;if(e2>=1)m.ph2=null}
+  else{m.mx.update(dt);ct=A.time;if(ct<1)m.mode=null;
+    if(ct>=5.6&&!m.mode){var r=Math.random();m.mode=r<.5?"wave":r<.78?"peek":"skip";m.face=Math.random()<.55}
+    if(m.mode==="skip"&&ct>=5.9){m.ph2="sink";m.h0=t;A.paused=true;fk3Ripple(m.x,m.z,1.1,1.4)}
+    else{if(ct>=6.1){up=Math.min(1,(ct-6.1)/.8);mv=1-up}if(ct>=6.9){m.ph2="hold";m.h0=t;m.lt=ct;up=1;mv=0;fk3Ripple(m.x,m.z,1.2,1.6)}}}
+  if(mv>.02)fk3SwimStep(m,dt,mv);
+  m.g.position.set(m.x,m.y-up*.6*m.s-sink*1.3+(up?0:Math.sin(t*m.bf)*m.bob),m.z);
+  if(t>(m.nr||0)){m.nr=t+(mv>.5?.6:1.8);if(!sink||sink<.3)fk3Ripple(m.x,m.z,mv>.5?m.rip:.8,1.2)}}
 var FKFISH=["fk_fish","fk_tide","fk_koi","fk_bluefin","fk_tuna","fk_shad","fk_belida","fk_illus","fk_aris"];
 /* อัปเดต 206: นางฟ้า/เทวดาบินในแผนที่ (ฟาร์ม + บึงตกปลา) */
 var FFLY=["fairy","dawn","seraphina","sylvana","guardian"];
@@ -7130,7 +7223,7 @@ function fk3ExtraStep(t,dt){var X=FK3.X;if(!X)return;if(X.siamAura){var pt=FK.pr
     o.rotation.y=Math.atan2(-Math.sin(U.a)*FK3RX*U.sp,Math.cos(U.a)*FK3RZ*U.sp)+Math.sin(t*9+U.k)*.12;o.rotation.z=Math.sin(t*3+U.k)*.08});
   X.fj=X.fj.filter(function(J){var e=(t-J.t0)/J.life;if(e>=1){FK3.g.remove(J.o);fk3Ripple(J.b[0],J.b[1],.6,1);return false}var x=J.a[0]+(J.b[0]-J.a[0])*e,z=J.a[1]+(J.b[1]-J.a[1])*e,h=Math.sin(e*Math.PI)*1.7;
     J.o.position.set(x,.05+h,z);J.o.rotation.set(-Math.cos(e*Math.PI)*1.1,J.yaw,Math.sin(t*20)*.15);return true});
-  (X.sw||[]).forEach(function(m){fk3SwimUpd(m,t,dt)});X.mer.forEach(function(m){m.mx.update(Math.min(dt,.1));if(!m.swim){m.g.position.y=-1.05+Math.sin(t*1.2+m.ph)*.05;if(Math.random()<dt*.35)fk3Ripple(m.g.position.x+(Math.random()-.5),m.g.position.z+(Math.random()-.5),.7,1.4);return}
+  (X.sw||[]).forEach(function(m){fk3SwimUpd(m,t,dt)});try{fk3JetUpd(t,dt);fk3DripUpd(t);fk3ZapUpd(t)}catch(e){}X.mer.forEach(function(m){m.mx.update(Math.min(dt,.1));if(!m.swim){m.g.position.y=-1.05+Math.sin(t*1.2+m.ph)*.05;if(Math.random()<dt*.35)fk3Ripple(m.g.position.x+(Math.random()-.5),m.g.position.z+(Math.random()-.5),.7,1.4);return}
     var sp=m.sp||.075;m.a+=dt*sp;var rx=m.rx||FK3RX*.6,rz=m.rz||FK3RZ*.55,x=Math.cos(m.a)*rx+(m.cx!=null?m.cx:2),z=Math.sin(m.a)*rz+(m.cz!=null?m.cz:-1.2),dx=-Math.sin(m.a)*rx*Math.sign(sp),dz=Math.cos(m.a)*rz*Math.sign(sp);
     /* ดำน้ำเป็นระยะ */
     var dv=0;if(t>m.nextDive){if(!m.d0){m.d0=t;fk3Ripple(x,z,1.2,1.4)}var e=(t-m.d0)/5;if(e>=1){m.d0=0;m.nextDive=t+10+Math.random()*10;fk3Ripple(x,z,1.3,1.6)}else dv=Math.sin(e*Math.PI)}
@@ -7238,7 +7331,7 @@ function fkDraw(){var el=$("fm-lake");if(!el)return;if(FK3.on||FK3.tok)fk3Stop()
 function fkHud(){var h=$("fk-hud");if(!h)return;var I=FK.info||{},c=FM.cat||{},rod=(c.rods||{})[I.rod||1]||{n:"เบ็ด",e:"🎣"},B=I.bait||{};
   h.innerHTML='<button type="button" class="fk-back" data-fk="close">⬅ กลับฟาร์ม</button>'+
     '<div class="fk-pill">'+rod.e+' '+esc(rod.n)+' · 🏅 สัปดาห์นี้ '+num(I.week_points||0)+' คะแนน'+(I.week_rank?' (อันดับ '+I.week_rank+')':'')+(FK.pray&&FK.pray.kind==='big'&&FK.pray.casts_left>0?' · 🙏 พรปลาใหญ่ ×'+FK.pray.casts_left:'')+'</div>'+
-    '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button><button type="button" class="fk-pill fk-chat" data-fk="chat" title="คุยแชท">💬</button>'+(FK3.on?'<div class="fk-zm"><button type="button" data-fk="zin" aria-label="ซูมเข้า">＋</button><button type="button" data-fk="zout" aria-label="ซูมออก">－</button></div>':'')+'<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
+    '<button type="button" class="fk-pill fk-mus" data-fk="mus" title="เพลง/เสียง">'+(FA.mus?'🎵':'🔇')+'</button><button type="button" class="fk-pill fk-chat" data-fk="chat" title="คุยแชท">💬</button><button type="button" class="fk-pill fk-wx" data-wx="1" title="สภาพอากาศ">'+wxIcon()+'</button>'+(FK3.on?'<div class="fk-zm"><button type="button" data-fk="zin" aria-label="ซูมเข้า">＋</button><button type="button" data-fk="zout" aria-label="ซูมออก">－</button></div>':'')+'<div class="fk-pill fk-coin">'+fmc()+' '+fmCoinTxt(I.coins!=null?I.coins:(FM.d||{}).coins||0)+'</div>'+
     '<div class="fk-side"><button type="button" data-fk="shop">🛒<small>อุปกรณ์</small></button><button type="button" data-fk="board">🏆<small>อันดับ</small></button><button type="button" data-fk="book">📖<small>สมุดปลา</small></button><button type="button" data-fk="sell">💰<small>ขายปลา</small></button><button type="button" data-fk="pet">🐾<small>สัตว์เลี้ยง</small></button>'+(S.admin?'<button type="button" data-fk="ava">🧍<small>ร่าง</small></button>':'')+''+(FK3.on?'<button type="button" data-fk="walk"'+(FK3.walk?' class="on"':'')+'>🚶<small>เดิน</small></button>':'')+'</div>'+
     '<div class="fk-baits"><small class="fk-bt">เหยื่อ</small>'+
     Object.keys(c.baits||{}).sort(function(a,b){return (c.baits[a].cost||0)-(c.baits[b].cost||0)}).filter(function(k){return (B[k]||0)>0||FK.bait===k}).map(function(k){var o=c.baits[k],n=B[k]||0;return '<button type="button" data-fkbait="'+k+'"'+(FK.bait===k?' class="on"':'')+(n?'':' disabled')+' title="'+esc(o.n)+'">'+o.e+' <b>'+n+'</b></button>'}).join("")+'</div>';fkTickUpd()}
