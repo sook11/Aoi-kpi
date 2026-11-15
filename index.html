@@ -7111,7 +7111,7 @@ document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.targe
 function wxHost(){var c=$("fk3-cv");if(c&&FK3&&FK3.on&&c.offsetParent)return c;c=$("fm3-cv");if(c&&c.offsetParent)return c;var w=$("fm-win"),sv=w&&w.querySelector("svg");if(sv&&sv.offsetParent)return sv;var lk=$("fm-lake");if(lk&&lk.offsetParent)return lk.querySelector("canvas,svg");return null}
 function wxThunder(big){try{if(!FA.sfx||!faCtx())return;var C=FA.ctx,n=C.sampleRate*2.4,b=C.createBuffer(1,n,C.sampleRate),d=b.getChannelData(0);for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
   var s=C.createBufferSource(),f=C.createBiquadFilter(),g=C.createGain();s.buffer=b;f.type="lowpass";f.frequency.value=big?420:260;g.gain.value=big?.9:.55;s.connect(f);f.connect(g);g.connect(C.destination);s.start()}catch(e){}}
-function wxLoop(){requestAnimationFrame(wxLoop);var h=wxHost(),w=wxNow(),ov=$("wx-ov");
+function wxLoop(){requestAnimationFrame(wxLoop);try{if(window.THREE)wxUmb(performance.now()/1000)}catch(e){}var h=wxHost(),w=wxNow(),ov=$("wx-ov");
   if(!h||w==="clear"||document.hidden){if(ov)ov.hidden=true;return}
   if(!ov||ov.parentNode!==h.parentNode){if(ov)ov.remove();ov=document.createElement("canvas");ov.id="wx-ov";ov.className="wx-ov";h.parentNode.insertBefore(ov,h.nextSibling);WX.P=[]}
   ov.hidden=false;var dpr=Math.min(1.5,window.devicePixelRatio||1),W=Math.round(h.parentNode.clientWidth*dpr),H=Math.round(h.parentNode.clientHeight*dpr);if(ov.width!==W||ov.height!==H){ov.width=W;ov.height=H;WX.P=[]}
@@ -7127,6 +7127,24 @@ function wxLoop(){requestAnimationFrame(wxLoop);var h=wxHost(),w=wxNow(),ov=$("w
       setTimeout(function(){wxThunder(!!tgt)},tgt?120:400+Math.random()*900);if(tgt)fk3Zap(tgt,now)}
     var fe=now-WX.fl;if(fe<.55){c.fillStyle="rgba(255,255,255,"+(fe<.08?.55:.55*(1-(fe-.08)/.47))+")";c.fillRect(0,0,W,H)}
     if(WX.bolt&&now-WX.bolt.t<.35){var B=WX.bolt.p;c.save();c.strokeStyle="rgba(255,250,210,.95)";c.shadowColor="#fff7b0";c.shadowBlur=18*dpr;c.lineWidth=3.2*dpr;c.beginPath();c.moveTo(B[0][0],B[0][1]);B.forEach(function(q){c.lineTo(q[0],q[1])});c.stroke();c.lineWidth=1.2*dpr;c.strokeStyle="#fff";c.stroke();c.restore()}}}
+
+/* อัปเดต 257: ฝนตก/พายุ → ลูกค้าที่รอซื้อ คนมาเยี่ยมฟาร์ม และผู้เล่นในบึง กางร่ม (สีสุ่มต่อคน) · ฝนหยุดก็หุบร่ม */
+var WXU={C:[0xef4444,0x3b82f6,0xf59e0b,0x10b981,0x8b5cf6,0xec4899,0x14b8a6,0xf97316]};
+function wxUmbMake(sd){var u=new THREE.Group(),col=WXU.C[Math.abs(sd|0)%WXU.C.length],M=function(c,o){return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.65,metalness:0,flatShading:true},o||{}))};
+  var cn=new THREE.Mesh(new THREE.ConeGeometry(.8,.36,10,1,true),M(col,{side:THREE.DoubleSide}));cn.position.y=.17;u.add(cn);
+  var st=new THREE.Mesh(new THREE.ConeGeometry(.815,.37,10,1,true,0,Math.PI/5),M(0xffffff,{side:THREE.DoubleSide}));st.position.y=.17;u.add(st);var st2=st.clone();st2.rotation.y=Math.PI*.8;u.add(st2);var st3=st.clone();st3.rotation.y=Math.PI*1.6;u.add(st3);
+  var tp=new THREE.Mesh(new THREE.SphereGeometry(.045,8,6),M(0x374151));tp.position.y=.37;u.add(tp);
+  var hd=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,1.05,6),M(0x374151));hd.position.y=-.33;u.add(hd);
+  var hk=new THREE.Mesh(new THREE.TorusGeometry(.07,.018,6,10,Math.PI),M(0x7c2d12));hk.position.set(.07,-.86,0);hk.rotation.z=Math.PI;u.add(hk);
+  u.traverse(function(m){if(m.isMesh){m.castShadow=true;m.userData.umb=1}});u.userData.umb=1;return u}
+function wxUmbTop(E){var g=E.g,bx=new THREE.Box3(),tmp=new THREE.Box3(),gy=new THREE.Vector3();g.updateMatrixWorld(true);g.getWorldPosition(gy);
+  g.traverse(function(o){if(!o.isMesh||o.isSprite||!o.visible)return;for(var q=o;q&&q!==g;q=q.parent){if(q.userData&&q.userData.umb)return;if(E.rod&&q===E.rod)return;if(E.tag&&q===E.tag)return}tmp.setFromObject(o);if(isFinite(tmp.max.y))bx.union(tmp)});
+  var h=isFinite(bx.max.y)?bx.max.y-gy.y:1.7;return Math.max(1.2,Math.min(3.2,h))/((g.scale&&g.scale.y)||1)}
+function wxUmb(now){var rain=wxNow()==="rain"||wxNow()==="storm",L=[];
+  if(FM3&&FM3.on)L=L.concat(FM3.vill||[],FM3.walk||[]);if(FK3&&FK3.on){if(FK3.me)L.push(FK3.me);Object.keys(FK3.chars||{}).forEach(function(k){L.push(FK3.chars[k])})}
+  if(!rain){[].concat(WXU.on||[]).forEach(function(E){if(E.umb&&E.umb.parent)E.umb.parent.remove(E.umb);E.umb=null});WXU.on=[];return}
+  WXU.on=L;L.forEach(function(E,i){if(!E||!E.g)return;if(!E.umb){E.umb=wxUmbMake(Math.floor(Math.random()*8));E.g.add(E.umb);E.umbT=0;E.umbP=Math.random()*6}
+    if(now>E.umbT){E.umbT=now+3;E.umbH=wxUmbTop(E)}var lake=!!E.rod;E.umb.position.set(lake?-.32:.26,E.umbH+.08,lake?.05:.06);E.umb.rotation.z=(lake?-.12:.12)+Math.sin(now*1.7+E.umbP)*.05;E.umb.rotation.x=Math.sin(now*1.3+E.umbP)*.04})}
 requestAnimationFrame(wxLoop);
 /* โดนฟ้าผ่า: สุ่มท่า — กระเด้งหมุนกลางอากาศ / ล้มหงายแล้วลุก / ช็อตสั่นตัวมีควัน */
 function fk3Zap(V,t){if(!V||!V.g)return;var k=["spin","fall","shake"][(Math.random()*3)|0];V.zap={t0:t,k:k,ry:V.g.rotation.y,y0:V.g.position.y};
