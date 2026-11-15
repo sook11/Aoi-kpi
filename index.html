@@ -7093,15 +7093,25 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[],lotus
 /* อัปเดต 252: พญานาค + นางเงือกตัวใหม่ ว่ายวนในบึงตกปลา (โมเดลจากผู้ใช้ มีท่าว่ายในตัว · เส้นทางคุมด้วยโค้ด) */
 function fk3SwimAdd(g,ok){FK3.X.sw=[];
   [["fk_naga",{s:.78,rot:Math.PI/2,cx:1.2,cz:-.6,rx:7.2,rz:4.3,sp:.045,y:-.42,bob:.06,bf:.9,rip:1.1}],
-   ["fk_mermaid2",{s:1.7,rot:-Math.PI/2,cx:2,cz:-1.2,rx:9.6,rz:5.6,sp:-.085,y:1.15*1.7-.12,bob:.05,bf:2,rip:.55,dive:1}]].forEach(function(K){
+   ["fk_mermaid2",{s:1.7,rot:-Math.PI/2,cx:2,cz:-1.2,rx:9.6,rz:5.6,sp:-.085,y:1.15*1.7-.12,bob:.05,bf:2,rip:.55,stand:1}]].forEach(function(K){
     fm3File(K[0]).then(function(G){if(!ok()||!THREE.SkeletonUtils||!G.animations||!G.animations.length)return;var c=K[1],o=THREE.SkeletonUtils.clone(G.scene);
       o.traverse(function(m){m.userData.shared=1;if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});o.rotation.y=c.rot;var w=new THREE.Group(),b=new THREE.Group();b.scale.setScalar(c.s);b.add(o);w.add(b);g.add(w);
-      var mx=new THREE.AnimationMixer(o);mx.clipAction(G.animations[0]).play();mx.update(Math.random()*5);
+      var mx=new THREE.AnimationMixer(o),act=mx.clipAction(G.animations[0]);act.play();mx.update(Math.random()*5);c.act=act;
       FK3.X.sw.push(Object.assign({g:w,b:b,mx:mx,a:Math.random()*6.28,nextDive:performance.now()/1000+8+Math.random()*8},c))},function(){})})}
-function fk3SwimUpd(m,t,dt){m.mx.update(Math.min(dt,.1));m.a+=dt*m.sp;var sg=Math.sign(m.sp),x=m.cx+Math.cos(m.a)*m.rx,z=m.cz+Math.sin(m.a)*m.rz,dx=-Math.sin(m.a)*m.rx*sg,dz=Math.cos(m.a)*m.rz*sg;
+function fk3SwimUpd(m,t,dt){if(m.stand)return fk3StandUpd(m,t,dt);m.mx.update(Math.min(dt,.1));m.a+=dt*m.sp;var sg=Math.sign(m.sp),x=m.cx+Math.cos(m.a)*m.rx,z=m.cz+Math.sin(m.a)*m.rz,dx=-Math.sin(m.a)*m.rx*sg,dz=Math.cos(m.a)*m.rz*sg;
   var dv=0;if(m.dive&&t>m.nextDive){if(!m.d0){m.d0=t;fk3Ripple(x,z,1.2,1.4)}var e=(t-m.d0)/4.5;if(e>=1){m.d0=0;m.nextDive=t+12+Math.random()*10;fk3Ripple(x,z,1.3,1.6)}else dv=Math.sin(e*Math.PI)}
   m.g.position.set(x,m.y-dv*1.2+Math.sin(t*m.bf)*m.bob,z);var ry=Math.atan2(dx,dz),cr=m.g.rotation.y,d=Math.atan2(Math.sin(ry-cr),Math.cos(ry-cr));m.g.rotation.y=cr+d*Math.min(1,dt*3);m.b.rotation.x=dv*.35;
   if(!dv&&t>(m.nr||0)){m.nr=t+.6;fk3Ripple(x-dx*.02,z-dz*.02,m.rip,1.2)}}
+/* อัปเดต 253: นางเงือกตัวใหม่ — ท่าในโมเดล 0–6 วิ ว่าย, 6–6.9 วิ ตั้งตัวโผล่ → โผล่แค่หัวถึงไหล่แล้วหยุดนิ่ง 5 วิ จึงดำลงแล้วว่ายต่อ */
+function fk3StandUpd(m,t,dt){dt=Math.min(dt,.1);var A=m.act,ct=A.time,up=0,mv=1,sink=0;
+  if(m.ph2==="hold"){up=1;mv=0;if(t-m.h0>5){m.ph2="sink";m.h0=t;fk3Ripple(m.g.position.x,m.g.position.z,1.1,1.4)}}
+  else if(m.ph2==="sink"){var e=(t-m.h0)/1.1;up=1;mv=0;sink=Math.min(1,e);if(e>=1){m.ph2="rise";m.h0=t;A.paused=false;A.time=0;m.mx.update(0)}}
+  else if(m.ph2==="rise"){var e2=(t-m.h0)/1.2;sink=1-Math.min(1,e2);if(e2>=1)m.ph2=null}
+  else{m.mx.update(dt);ct=A.time;if(ct>=6.1){up=Math.min(1,(ct-6.1)/.8);mv=1-up}if(ct>=6.9){A.paused=true;m.ph2="hold";m.h0=t;up=1;mv=0;fk3Ripple(m.g.position.x,m.g.position.z,1.2,1.6)}}
+  m.a+=dt*m.sp*mv;var sg=Math.sign(m.sp),x=m.cx+Math.cos(m.a)*m.rx,z=m.cz+Math.sin(m.a)*m.rz,dx=-Math.sin(m.a)*m.rx*sg,dz=Math.cos(m.a)*m.rz*sg;
+  m.g.position.set(x,m.y-up*.6*m.s-sink*1.3+(up?0:Math.sin(t*m.bf)*m.bob),z);
+  if(mv>.05){var ry=Math.atan2(dx,dz),cr=m.g.rotation.y,d=Math.atan2(Math.sin(ry-cr),Math.cos(ry-cr));m.g.rotation.y=cr+d*Math.min(1,dt*3)}
+  if(t>(m.nr||0)){m.nr=t+(mv>.5?.6:1.8);if(!sink||sink<.3)fk3Ripple(x,z,mv>.5?m.rip:.8,1.2)}}
 var FKFISH=["fk_fish","fk_tide","fk_koi","fk_bluefin","fk_tuna","fk_shad","fk_belida","fk_illus","fk_aris"];
 /* อัปเดต 206: นางฟ้า/เทวดาบินในแผนที่ (ฟาร์ม + บึงตกปลา) */
 var FFLY=["fairy","dawn","seraphina","sylvana","guardian"];
