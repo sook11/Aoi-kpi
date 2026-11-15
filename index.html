@@ -7084,11 +7084,24 @@ function fk3Extra(g){var tok=FK3.tok,sc=FK3.sc;FK3.X={fish:[],mer:[],fj:[],lotus
   FK3.X.fly=[];
   if(0)fm3File("c_siam").then(function(G){if(!ok())return;var nd=G.scene.getObjectByName("K_c_siam");if(!nd)return;var o=nd.clone();o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.userData.shared=1}});var w=new THREE.Group();w.add(o);w.scale.setScalar(1.35);w.position.set(-10.3,.1,-3.7);w.rotation.y=.75;g.add(w);FK3.X.siam=w;var au=fk3Glow(0xffd76a,3.4);au.position.set(-10.3,1.5,-3.7);au.material.opacity=.45;g.add(au);FK3.X.siamAura=au;var pm=fm3Emoji("🙏",.9);pm.position.set(-10.3,3.6,-3.7);g.add(pm);FK3.X.siamMark=pm},function(){});
   /* นางเงือก 2 ตัว: ตัวหนึ่งว่ายวนรอบทะเลสาบ · อีกตัวพักที่เกาะกลางน้ำ */
+  fk3SwimAdd(g,ok);
   fm3File("fk_mermaid").then(function(G){if(!ok()||!THREE.SkeletonUtils)return;var A={};G.animations.forEach(function(c,i){A[i]=c});
     function mk(){var o=THREE.SkeletonUtils.clone(G.scene);o.traverse(function(m){m.userData.shared=1;if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});return o}
     /* นางเงือกตัวเดียว นั่งพักครึ่งตัวในน้ำข้างเกาะกลางน้ำ ทำท่าทางเดิม */
     var p2=new THREE.Group(),b2=mk();b2.scale.setScalar(1.2);p2.add(b2);p2.position.set(-8.1,-1.05,-3.6);p2.rotation.y=.9;g.add(p2);var m2=new THREE.AnimationMixer(b2),a2=m2.clipAction(A[2]||A[0]);a2.play();
     FK3.X.mer.push({g:p2,b:b2,mx:m2,swim:0,ph:2})},function(){})}
+/* อัปเดต 252: พญานาค + นางเงือกตัวใหม่ ว่ายวนในบึงตกปลา (โมเดลจากผู้ใช้ มีท่าว่ายในตัว · เส้นทางคุมด้วยโค้ด) */
+function fk3SwimAdd(g,ok){FK3.X.sw=[];
+  [["fk_naga",{s:.78,rot:Math.PI/2,cx:1.2,cz:-.6,rx:7.2,rz:4.3,sp:.045,y:-.42,bob:.06,bf:.9,rip:1.1}],
+   ["fk_mermaid2",{s:1.7,rot:-Math.PI/2,cx:2,cz:-1.2,rx:9.6,rz:5.6,sp:-.085,y:1.15*1.7-.12,bob:.05,bf:2,rip:.55,dive:1}]].forEach(function(K){
+    fm3File(K[0]).then(function(G){if(!ok()||!THREE.SkeletonUtils||!G.animations||!G.animations.length)return;var c=K[1],o=THREE.SkeletonUtils.clone(G.scene);
+      o.traverse(function(m){m.userData.shared=1;if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});o.rotation.y=c.rot;var w=new THREE.Group(),b=new THREE.Group();b.scale.setScalar(c.s);b.add(o);w.add(b);g.add(w);
+      var mx=new THREE.AnimationMixer(o);mx.clipAction(G.animations[0]).play();mx.update(Math.random()*5);
+      FK3.X.sw.push(Object.assign({g:w,b:b,mx:mx,a:Math.random()*6.28,nextDive:performance.now()/1000+8+Math.random()*8},c))},function(){})})}
+function fk3SwimUpd(m,t,dt){m.mx.update(Math.min(dt,.1));m.a+=dt*m.sp;var sg=Math.sign(m.sp),x=m.cx+Math.cos(m.a)*m.rx,z=m.cz+Math.sin(m.a)*m.rz,dx=-Math.sin(m.a)*m.rx*sg,dz=Math.cos(m.a)*m.rz*sg;
+  var dv=0;if(m.dive&&t>m.nextDive){if(!m.d0){m.d0=t;fk3Ripple(x,z,1.2,1.4)}var e=(t-m.d0)/4.5;if(e>=1){m.d0=0;m.nextDive=t+12+Math.random()*10;fk3Ripple(x,z,1.3,1.6)}else dv=Math.sin(e*Math.PI)}
+  m.g.position.set(x,m.y-dv*1.2+Math.sin(t*m.bf)*m.bob,z);var ry=Math.atan2(dx,dz),cr=m.g.rotation.y,d=Math.atan2(Math.sin(ry-cr),Math.cos(ry-cr));m.g.rotation.y=cr+d*Math.min(1,dt*3);m.b.rotation.x=dv*.35;
+  if(!dv&&t>(m.nr||0)){m.nr=t+.6;fk3Ripple(x-dx*.02,z-dz*.02,m.rip,1.2)}}
 var FKFISH=["fk_fish","fk_tide","fk_koi","fk_bluefin","fk_tuna","fk_shad","fk_belida","fk_illus","fk_aris"];
 /* อัปเดต 206: นางฟ้า/เทวดาบินในแผนที่ (ฟาร์ม + บึงตกปลา) */
 var FFLY=["fairy","dawn","seraphina","sylvana","guardian"];
@@ -7107,7 +7120,7 @@ function fk3ExtraStep(t,dt){var X=FK3.X;if(!X)return;if(X.siamAura){var pt=FK.pr
     o.rotation.y=Math.atan2(-Math.sin(U.a)*FK3RX*U.sp,Math.cos(U.a)*FK3RZ*U.sp)+Math.sin(t*9+U.k)*.12;o.rotation.z=Math.sin(t*3+U.k)*.08});
   X.fj=X.fj.filter(function(J){var e=(t-J.t0)/J.life;if(e>=1){FK3.g.remove(J.o);fk3Ripple(J.b[0],J.b[1],.6,1);return false}var x=J.a[0]+(J.b[0]-J.a[0])*e,z=J.a[1]+(J.b[1]-J.a[1])*e,h=Math.sin(e*Math.PI)*1.7;
     J.o.position.set(x,.05+h,z);J.o.rotation.set(-Math.cos(e*Math.PI)*1.1,J.yaw,Math.sin(t*20)*.15);return true});
-  X.mer.forEach(function(m){m.mx.update(Math.min(dt,.1));if(!m.swim){m.g.position.y=-1.05+Math.sin(t*1.2+m.ph)*.05;if(Math.random()<dt*.35)fk3Ripple(m.g.position.x+(Math.random()-.5),m.g.position.z+(Math.random()-.5),.7,1.4);return}
+  (X.sw||[]).forEach(function(m){fk3SwimUpd(m,t,dt)});X.mer.forEach(function(m){m.mx.update(Math.min(dt,.1));if(!m.swim){m.g.position.y=-1.05+Math.sin(t*1.2+m.ph)*.05;if(Math.random()<dt*.35)fk3Ripple(m.g.position.x+(Math.random()-.5),m.g.position.z+(Math.random()-.5),.7,1.4);return}
     var sp=m.sp||.075;m.a+=dt*sp;var rx=m.rx||FK3RX*.6,rz=m.rz||FK3RZ*.55,x=Math.cos(m.a)*rx+(m.cx!=null?m.cx:2),z=Math.sin(m.a)*rz+(m.cz!=null?m.cz:-1.2),dx=-Math.sin(m.a)*rx*Math.sign(sp),dz=Math.cos(m.a)*rz*Math.sign(sp);
     /* ดำน้ำเป็นระยะ */
     var dv=0;if(t>m.nextDive){if(!m.d0){m.d0=t;fk3Ripple(x,z,1.2,1.4)}var e=(t-m.d0)/5;if(e>=1){m.d0=0;m.nextDive=t+10+Math.random()*10;fk3Ripple(x,z,1.3,1.6)}else dv=Math.sin(e*Math.PI)}
@@ -7506,7 +7519,7 @@ var FM3M={},FM3MK={pet_bee:"bee",cow:"cow",husky:"husky",dog:"shiba",horse:"hors
 function fm3LoadExtra(){if(THREE.GLTFLoader&&THREE.SkeletonUtils&&window.fflate)return Promise.resolve();if(FM3.ex)return FM3.ex;
   var add=function(src){return new Promise(function(ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})},B="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/";
   FM3.ex=Promise.all([add(B+"loaders/GLTFLoader.js"),add(B+"utils/SkeletonUtils.js"),add(B+"libs/fflate.min.js")]);FM3.ex.catch(function(){FM3.ex=null});return FM3.ex}
-var FM3F={},FMV={x_clift:1,x_kubo:2,x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_watermelon:2,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
+var FM3F={},FMV={x_clift:1,x_kubo:2,x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_watermelon:2,fk_naga:1,fk_mermaid2:1,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
 function fm3File(n){if(!window.fetch)return Promise.reject(new Error("fetch"));if(FM3F[n])return FM3F[n];var base=window.FM3_MODEL_BASE||"models/";
   FM3F[n]=fm3LoadExtra().then(function(){return fetch(base+"fm-"+n+".bin"+(FMV[n]?"?v="+FMV[n]:""))}).then(function(r){if(!r.ok)throw new Error("model");return r.arrayBuffer()}).then(function(ab){var u=new Uint8Array(ab);if(u[0]===0x1f&&u[1]===0x8b)u=fflate.gunzipSync(u);
     return new Promise(function(ok,bad){new THREE.GLTFLoader().parse(u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength),"",ok,bad)})}).then(function(g){g.scene.traverse(function(o){o.userData.shared=1;if(o.isMesh){o.castShadow=true;[].concat(o.material).forEach(function(m){if(m.__c)return;m.__c=1;if(/^d_/.test(n)){m.flatShading=true;m.side=THREE.DoubleSide}if("metalness" in m){m.metalness=0;m.roughness=.9}if(m.color)m.color.convertLinearToSRGB();if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}if(/Leaves/.test(m.name||"")){m.alphaTest=.5;m.transparent=false;m.side=THREE.DoubleSide}})}});return g});
