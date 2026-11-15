@@ -792,6 +792,7 @@ body:not(.tt-full) .mepill{background:var(--surface);color:var(--ink);border-col
 .fmq{display:flex;gap:8px;margin:6px 0 10px}.fmqi{flex:1;border:2px dashed #fcd34d;border-radius:12px;padding:6px;text-align:center;background:#fffbeb;display:grid}.fmqi span{font-size:24px}.fmqi small{font-weight:700;color:#92400e}.fmqi.ok{border-style:solid;border-color:#22c55e;background:#f0fdf4}.fmqi.empty{opacity:.5}
 .frec{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:12px;margin-bottom:6px;background:var(--card)}.frec .em{font-size:28px}.frec .l{flex:1;display:grid;gap:2px}.fings{display:flex;flex-wrap:wrap;gap:4px}.fing{font-size:12px;background:#ecfccb;border-radius:99px;padding:1px 8px;color:#365314}.fing.no{background:#fee2e2;color:#991b1b}
 .fshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.fmats{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.fmat{border:1px solid #fca5a5;background:#fef2f2;color:#991b1b;border-radius:999px;padding:3px 10px;font-size:13px}.fmat.ok{border-color:#86efac;background:#f0fdf4;color:#166534}
 .fitem{border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--card);display:grid;gap:4px;justify-items:center;text-align:center}
 .fitem .em{font-size:34px}.fitem b{font-size:14.5px}.fitem small{color:var(--muted);font-size:12px}.fitem.lock{opacity:.55}
 .fitem button{width:100%}
@@ -5879,7 +5880,7 @@ function fm3Parcels(g,d,own){var o=fmPOwn(d);fmParcels().forEach(function(P){var
       var hit2=fm3Mesh(new THREE.BoxGeometry(W,.3,D),new THREE.MeshBasicMaterial({visible:false}),cx,.15,cz,pg,false);[sg2,hit2].forEach(function(h){h.userData.pick={fmparcel:String(P.id)};FM3.pickD.push(h)})}})}
 function fmParcelHtml(id){var d=FM.d,P=fmParcels().filter(function(z){return z.id===id})[0];if(!P)return "";var o=fmPOwn(d)[id],lv=fmLv(d.xp).l,need=(FM.cat.parcel_lv||5),cost=fmPCost(d,P);
   var info='<p class="sub">ขนาด <b>'+P.w+'×'+P.h+'</b> ช่อง · ปลูกผักได้ '+(P.w*P.h)+' แปลง · หรือคอกสัตว์ '+fmPPens(P)+' คอก · หรือลานของแต่ง '+(P.w*P.h)+' ช่อง</p>';
-  if(!o){var can=fmPCanBuy(d,P);return '<div class="panel"><h3>🗺️ ที่ดินขยาย</h3>'+info+(can?(!S.admin&&lv<need?'<p>🔒 ต้องเลเวล '+need+'</p>':'<button type="button" class="primary" data-fmpbuy="'+id+'"'+(d.coins<cost&&!S.admin?' disabled':'')+'>ซื้อ '+fmc()+' '+num(cost)+'</button>'):'<p>🔒 ต้องซื้อที่ดินที่ติดกับแปลงนี้ก่อน</p>')+'<p class="sub">ยิ่งกว้างยิ่งแพง · ราคาเพิ่ม 12% ทุกครั้งที่ซื้อที่ดินเพิ่ม · มีเกิน 20 แปลง ราคาพุ่งเพิ่มอีก 30% ทุกแปลง 🔥 (ตอนนี้มี '+((d.parcels||[]).length)+' แปลง)</p></div>'}
+  if(!o){var can=fmPCanBuy(d,P),LM=fmLandMatsHtml(d);return '<div class="panel"><h3>🗺️ ที่ดินขยาย</h3>'+info+'<p><b>ต้องใช้ในการซื้อ:</b> '+fmc()+' '+num(cost)+' + วัสดุ</p>'+LM.html+(can?(!S.admin&&lv<need?'<p>🔒 ต้องเลเวล '+need+'</p>':'<button type="button" class="primary" data-fmpbuy="'+id+'"'+((d.coins<cost||!LM.ok)&&!S.admin?' disabled':'')+'>'+(LM.ok?'ซื้อ '+fmc()+' '+num(cost):'วัสดุยังไม่พอ')+'</button>'):'<p>🔒 ต้องซื้อที่ดินที่ติดกับแปลงนี้ก่อน</p>')+'<p class="sub">ยิ่งกว้างยิ่งแพง · ราคาเพิ่ม 12% ทุกครั้งที่ซื้อที่ดินเพิ่ม · มีเกิน 20 แปลง ราคาพุ่งเพิ่มอีก 30% ทุกแปลง 🔥 (ตอนนี้มี '+((d.parcels||[]).length)+' แปลง)</p></div>'}
   return '<div class="panel"><h3>🗺️ ที่ดินของฉัน '+P.w+'×'+P.h+'</h3>'+info+'<p>ตอนนี้ใช้เป็น: <b>'+(o.use?FPUSE[o.use].join(" "):"ยังไม่ได้เลือก")+'</b></p><div class="fpuse">'+Object.keys(FPUSE).map(function(k){return '<button type="button" class="'+(o.use===k?'primary':'')+'" data-fmpuse="'+id+':'+k+'"'+(o.use===k?' disabled':'')+'>'+FPUSE[k][0]+' '+FPUSE[k][1]+'</button>'}).join("")+'</div><p class="sub">เปลี่ยนการใช้งานได้เมื่อพื้นที่ว่าง (เก็บผัก/ย้ายสัตว์ออกก่อน)</p></div>'}
 function fm3RanchPen(g,r,i,t){var a=fm3P(r[0],r[1]),b=fm3P(r[2],r[3]),cx=(a[0]+b[0])/2,cz=(a[1]+b[1])/2,W=b[0]-a[0],D=b[1]-a[1];
   var ST={chicken:{post:0x7c4a1e,rail:0x9ca3af,floor:0xd9b77e,mesh:1},pig:{post:0xa0522d,rail:0x8b3a1e,floor:0xb08a5a},sheep:{post:0xfafaf9,rail:0xfafaf9,floor:0xc9a46a},cow:{post:0xfafaf9,rail:0xfafaf9,floor:0xc9a46a}}[t]||{post:0xe7e5e4,rail:0xe7e5e4,floor:0xa3c46b,empty:1};
@@ -6098,7 +6099,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(a==="cancel"){fmLayEnd(false);return}if(a==="save"){fmLayEnd(true);return}
   if(a==="decor2d"){fmLayEnd(true);setTimeout(function(){var el=document.createElement("button");FM.lay3skip=1;el.setAttribute("data-fmedit","on");(document.querySelector("#v-farm .fgame")||document.body).appendChild(el);el.click();el.remove()},400);return}},true);
 function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;FM3.nearP=[];FM3.pineOn=0;FM3.mv={};var MV=function(k,lab){var g=new THREE.Group();st.add(g);g.userData.mvk=k;FM3.mv[k]={g:g,lab:lab};return g};
-  var gr=fm3Mesh(new THREE.CircleGeometry(60,48),fm3TexMat("field",[22,22]),0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
+  FM3.F=fmFlat();var gr=fm3Mesh(new THREE.PlaneGeometry(FM3.F*2+2,FM3.F*2+2),fm3TexMat("field",[22*FM3.F/60,22*FM3.F/60]),0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
   var farm=fm3Mesh(new THREE.BoxGeometry(24.6,.3,24.6),fm3TexMat("grass",[7,7]),0,-.15,0,st,false);farm.receiveShadow=true;
   (function(){var a=fm3P(12.2,5.85),b=fm3P(15.1,11.6),yd=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0xd6b98c,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,MV("yard","ลานโรงงาน"),false);yd.receiveShadow=true})();
   [[.75,5.15],[8.25,12.65]].forEach(function(r){var a=fm3P(r[0],12.05),b=fm3P(r[1],14.75),lz=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0x86d457,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,st,false);lz.receiveShadow=true});
@@ -6301,20 +6302,21 @@ function fm3TruckStep(){var tk=FM3.truckG;if(!tk)return;if(FM.truck&&FM.truck!==
   else{tk.visible=true;tk.rotation.y=0;tk.position.z=far+(z0-far)*(1-Math.pow(1-(e-3.8)/2.7,2));tk.position.y=e<6.2?bob:0}}
 function fm3DN(){if(!FM3.sun)return;var n=fmIsNight();FM3.sun.intensity=n?.3:1.05;FM3.hemi.intensity=n?.4:.72;if(FM3.skyN!==n){FM3.skyN=n;if(FM3.scene.background&&FM3.scene.background.dispose)FM3.scene.background.dispose();FM3.scene.background=fm3Sky(n)}if(FM3.scene.fog)FM3.scene.fog.color.set(n?0x16234a:0xd3e8ee);fm3AmbNight(n)}
 /* ===================== อัปเดต 125: ฉากรอบฟาร์ม 3D — เนินเขา ภูเขา ท้องฟ้า เมฆ นก บอลลูน หมู่บ้าน ถนน ===================== */
-function fm3TerrH(x,z){var r=Math.hypot(x,z);if(r<58)return 0;var e=(r-58)/10;return Math.pow(e,1.35)*1.7*(1+fk3Noise(x*.03,0,z*.03)*.5)+e*fk3Noise(x*.08,1,z*.08)*1.2}
-function fm3Scenery(st){var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:[],birds:[],sheep:[]};try{A.fly=fm3FlyMk(g,FFLY,3,{r0:13,r1:22,h0:13,h1:17,sc:2.2,ex:1.15})}catch(e){}
+function fm3SqR(x,z){var ax=Math.abs(x),az=Math.abs(z);return Math.pow(Math.pow(ax,8)+Math.pow(az,8),1/8)}
+function fm3TerrH(x,z){var F=FM3.F||58,r=fm3SqR(x,z);if(r<F)return 0;var e=(r-F)/10;return Math.pow(e,1.35)*1.7*(1+fk3Noise(x*.03,0,z*.03)*.5)+e*fk3Noise(x*.08,1,z*.08)*1.2}
+function fm3Scenery(st){var F=FM3.F||58,PS=Math.max(520,Math.ceil((F*2+300)/4)*4),RG=function(a,d){var c=Math.cos(a),s2=Math.sin(a);return (F+d)/fm3SqR(c,s2)};var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:[],birds:[],sheep:[]};try{A.fly=fm3FlyMk(g,FFLY,3,{r0:13,r1:22,h0:13,h1:17,sc:2.2,ex:1.15})}catch(e){}
   /* พื้นดินเป็นเนินคลื่นรอบฟาร์ม */
-  var tg=new THREE.PlaneGeometry(520,520,130,130);tg.rotateX(-Math.PI/2);var P=tg.attributes.position,C=new Float32Array(P.count*3);
-  for(var i=0;i<P.count;i++){var x=P.getX(i),z=P.getZ(i),r=Math.hypot(x,z),h=r<57?-.35:fm3TerrH(x,z);if(Math.abs(x-1)<3.2&&z>50)h=Math.min(h,fm3TerrH(1,z));P.setY(i,h);
-    var w=fk3Noise(x*.05,2,z*.05)*.07,d=Math.min(1,Math.max(0,(r-58)/90)),fl=fk3Noise(x*.2,3,z*.2)>.55?.06:0;C[i*3]=.78+w-d*.12+fl;C[i*3+1]=.9+w-d*.05;C[i*3+2]=.66+w-d*.14+fl*.6}
-  tg.setAttribute("color",new THREE.BufferAttribute(C,3));tg.computeVertexNormals();var gt=fm3Tex("grass").clone();gt.needsUpdate=true;gt.wrapS=gt.wrapT=THREE.RepeatWrapping;gt.repeat.set(70,70);
+  var tg=new THREE.PlaneGeometry(PS,PS,130,130);tg.rotateX(-Math.PI/2);var P=tg.attributes.position,C=new Float32Array(P.count*3);
+  for(var i=0;i<P.count;i++){var x=P.getX(i),z=P.getZ(i),r=fm3SqR(x,z),h=r<F-1?-.35:fm3TerrH(x,z);if(Math.abs(x-1)<3.2&&z>F-8)h=Math.min(h,fm3TerrH(1,z));P.setY(i,h);
+    var w=fk3Noise(x*.05,2,z*.05)*.07,d=Math.min(1,Math.max(0,(r-F)/90)),fl=fk3Noise(x*.2,3,z*.2)>.55?.06:0;C[i*3]=.78+w-d*.12+fl;C[i*3+1]=.9+w-d*.05;C[i*3+2]=.66+w-d*.14+fl*.6}
+  tg.setAttribute("color",new THREE.BufferAttribute(C,3));tg.computeVertexNormals();var gt=fm3Tex("grass").clone();gt.needsUpdate=true;gt.wrapS=gt.wrapT=THREE.RepeatWrapping;gt.repeat.set(70*PS/520,70*PS/520);
   var gr=new THREE.Mesh(tg,new THREE.MeshLambertMaterial({map:gt,vertexColors:true}));gr.receiveShadow=true;g.add(gr);
   /* ภูเขา: วงนอกยอดหิมะ + ภูเขาเขียวด้านหน้า */
-  for(i=0;i<16;i++){var a=i/16*Math.PI*2+frand(i*3)*.25,rr=150+frand(i*7)*35,mx=Math.cos(a)*rr,mz=Math.sin(a)*rr,big=i%3!==1,mr=big?44+frand(i)*14:30+frand(i)*8,mh=big?40+frand(i*5)*18:24+frand(i*5)*8;
+  for(i=0;i<16;i++){var a=i/16*Math.PI*2+frand(i*3)*.25,rr=RG(a,92+frand(i*7)*35),mx=Math.cos(a)*rr,mz=Math.sin(a)*rr,big=i%3!==1,mr=big?44+frand(i)*14:30+frand(i)*8,mh=big?40+frand(i*5)*18:24+frand(i*5)*8;
     var m=fk3Mountain(g,mx,mz,mr,mh,i+1.7,big);m.position.y+=fm3TerrH(mx*.8,mz*.8)-1}
-  for(i=0;i<12;i++){var a2=(i+.5)/12*Math.PI*2,r2=108+frand(i*11)*16,hx=Math.cos(a2)*r2,hz=Math.sin(a2)*r2,m2=fk3Mountain(g,hx,hz,24+frand(i*2)*8,16+frand(i*4)*8,i*3.1,false);m2.position.y+=fm3TerrH(hx*.85,hz*.85)-1.5}
+  for(i=0;i<12;i++){var a2=(i+.5)/12*Math.PI*2,r2=RG(a2,50+frand(i*11)*16),hx=Math.cos(a2)*r2,hz=Math.sin(a2)*r2,m2=fk3Mountain(g,hx,hz,24+frand(i*2)*8,16+frand(i*4)*8,i*3.1,false);m2.position.y+=fm3TerrH(hx*.85,hz*.85)-1.5}
   /* ป่าบนเนินไกล (instanced) */
-  var tP=[];for(i=0;i<420;i++){var ta=frand(i*1.37)*Math.PI*2,tr=62+Math.pow(frand(i*2.11),.7)*48,tx=Math.cos(ta)*tr,tz=Math.sin(ta)*tr;if(Math.abs(tx-1)<6&&tz>40)continue;if(fk3Noise(tx*.04,5,tz*.04)<-.15)continue;tP.push([tx,fm3TerrH(tx,tz),tz,.9+frand(i*3.3)*.9,frand(i*4.1)])}
+  var tP=[];for(i=0;i<420;i++){var ta=frand(i*1.37)*Math.PI*2,tr=RG(ta,4+Math.pow(frand(i*2.11),.7)*48),tx=Math.cos(ta)*tr,tz=Math.sin(ta)*tr;if(Math.abs(tx-1)<6&&tz>F-18)continue;if(fk3Noise(tx*.04,5,tz*.04)<-.15)continue;tP.push([tx,fm3TerrH(tx,tz),tz,.9+frand(i*3.3)*.9,frand(i*4.1)])}
   var trk=new THREE.InstancedMesh(new THREE.CylinderGeometry(.22,.3,1.6,6),fm3Mat(0x7a4f2a),tP.length),cro=new THREE.InstancedMesh(fk3Facet(new THREE.IcosahedronGeometry(1.4,0),function(c,cx,cy,cz,j){var v=frand(j*.7)*.08;c.setRGB(.2+v,.48+v,.2)}),new THREE.MeshLambertMaterial({vertexColors:true}),tP.length),
       pin=new THREE.InstancedMesh(fk3Facet(new THREE.ConeGeometry(1.3,3.4,7),function(c,cx,cy,cz,j){var v=frand(j*.9)*.06;c.setRGB(.15+v,.4+v,.22)}),new THREE.MeshLambertMaterial({vertexColors:true}),tP.length),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Z=new THREE.Matrix4().makeScale(0,0,0);
   tP.forEach(function(p,j){var s=p[3];M.compose(new THREE.Vector3(p[0],p[1]+.8*s,p[2]),Q,new THREE.Vector3(s,s,s));trk.setMatrixAt(j,M);if(p[4]<.45){M.compose(new THREE.Vector3(p[0],p[1]+2.8*s,p[2]),Q,new THREE.Vector3(s,s,s));pin.setMatrixAt(j,M);cro.setMatrixAt(j,Z)}else{M.compose(new THREE.Vector3(p[0],p[1]+2.3*s,p[2]),Q,new THREE.Vector3(s,s*.9,s));cro.setMatrixAt(j,M);pin.setMatrixAt(j,Z)}});
@@ -6324,14 +6326,14 @@ function fm3Scenery(st){var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:
     L.forEach(function(p,i){var sc=p[3]*4.8;Q3.setFromAxisAngle(Y3,p[4]*40);M3.compose(new THREE.Vector3(p[0],p[1]-.1,p[2]),Q3,new THREE.Vector3(sc,sc,sc));im.setMatrixAt(i,M3)});im.frustumCulled=false;g.add(im);
     tP.forEach(function(p,j){if(p[4]<.45)trk.setMatrixAt(j,Z)});trk.instanceMatrix.needsUpdate=true;pin.visible=false},function(){});
   /* ถนนลูกรังออกจากฟาร์ม + เสาไฟ */
-  for(var zz=30;zz<200;zz+=4){var y0=fm3TerrH(1,zz),y1=fm3TerrH(1,zz+4),seg=new THREE.Mesh(new THREE.PlaneGeometry(4,4.3),fm3Mat(0xd9be8a));seg.rotation.x=-Math.PI/2+Math.atan2(y1-y0,4)*-1;seg.position.set(1,(y0+y1)/2+.06,zz+2);seg.receiveShadow=true;g.add(seg);
+  for(var zz=30;zz<F+150;zz+=4){var y0=fm3TerrH(1,zz),y1=fm3TerrH(1,zz+4),seg=new THREE.Mesh(new THREE.PlaneGeometry(4,4.3),fm3Mat(0xd9be8a));seg.rotation.x=-Math.PI/2+Math.atan2(y1-y0,4)*-1;seg.position.set(1,(y0+y1)/2+.06,zz+2);seg.receiveShadow=true;g.add(seg);
     if(zz%16===2){var py=fm3TerrH(4.2,zz);fm3Mesh(new THREE.CylinderGeometry(.09,.12,4.2,6),0x6b4a2b,4.2,py+2.1,zz,g,false);fm3Mesh(new THREE.BoxGeometry(1.2,.1,.1),0x6b4a2b,4.2,py+3.9,zz,g,false)}}
   /* หมู่บ้านไกล ๆ บนเนิน */
-  [[0.6,80],[1.4,86],[2.3,74],[3.0,92],[3.9,78],[4.7,84],[5.5,76]].forEach(function(h,j){var hx=Math.cos(h[0])*h[1],hz=Math.sin(h[0])*h[1],hy=fm3TerrH(hx,hz),hs=new THREE.Group();hs.position.set(hx,hy,hz);hs.rotation.y=h[0]+1.2;hs.scale.setScalar(1.6);g.add(hs);
+  [[0.6,80],[1.4,86],[2.3,74],[3.0,92],[3.9,78],[4.7,84],[5.5,76]].forEach(function(h,j){var hR=RG(h[0],h[1]-58),hx=Math.cos(h[0])*hR,hz=Math.sin(h[0])*hR,hy=fm3TerrH(hx,hz),hs=new THREE.Group();hs.position.set(hx,hy,hz);hs.rotation.y=h[0]+1.2;hs.scale.setScalar(1.6);g.add(hs);
     var wc=[0xf5f0e6,0xfde68a,0xe7e5e4,0xfecaca][j%4],rc=[0xb91c1c,0x7c2d12,0x1e3a8a,0x166534][j%4];fm3Box(hs,2.4,1.6,2,wc,0,.8,0);fm3Roof(hs,2.4,2,1.2,rc,0,1.6,0);fm3Box(hs,.5,.9,.06,0x5b3416,.5,.45,1.02);fm3Box(hs,.5,.4,.06,0x93c5fd,-.6,1,1.02);
     if(j%2===0){fm3Box(hs,1.6,1.2,1.4,0xb91c1c,3,.6,.6);fm3Roof(hs,1.6,1.4,.8,0xf5f5f4,3,1.2,.6)}});
   /* แกะกินหญ้าบนเนิน */
-  for(i=0;i<14;i++){var sa=1.9+frand(i*5.3)*1.4,sr=66+frand(i*2.7)*18,sx=Math.cos(sa)*sr,sz=Math.sin(sa)*sr,sh=new THREE.Group();sh.position.set(sx,fm3TerrH(sx,sz),sz);sh.rotation.y=frand(i)*6;g.add(sh);
+  for(i=0;i<14;i++){var sa=1.9+frand(i*5.3)*1.4,sr=RG(sa,8+frand(i*2.7)*18),sx=Math.cos(sa)*sr,sz=Math.sin(sa)*sr,sh=new THREE.Group();sh.position.set(sx,fm3TerrH(sx,sz),sz);sh.rotation.y=frand(i)*6;g.add(sh);
     fm3Mesh(new THREE.SphereGeometry(.55,10,8),0xfafaf9,0,.6,0,sh,false).scale.set(1.3,.9,1);fm3Mesh(new THREE.SphereGeometry(.24,8,6),0x292524,.7,.75,0,sh,false);A.sheep.push(sh)}
   /* ท้องฟ้า: ดวงอาทิตย์ / พระจันทร์ + ดาว + เมฆ */
   var sun=new THREE.Sprite(new THREE.SpriteMaterial({map:fk3SoftTex(1),transparent:true,depthWrite:false,fog:false,color:0xfff3c4}));sun.position.set(120,110,-160);sun.scale.set(70,70,1);g.add(sun);A.sun=sun;
@@ -6346,7 +6348,7 @@ function fm3Scenery(st){var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:
   [0xfde047,0x3b82f6].forEach(function(cc,j){var bnd=new THREE.Mesh(new THREE.TorusGeometry(3.15,.35,6,24),fm3Mat(cc));bnd.rotation.x=Math.PI/2;bnd.position.y=j?1.1:-.9;bl.add(bnd)});
   fm3Mesh(new THREE.CylinderGeometry(.9,.6,.9,10),0x8b5a2b,0,-5.6,0,bl,false);[[-.6,-.6],[.6,-.6],[-.6,.6],[.6,.6]].forEach(function(q){var ln=fm3Mesh(new THREE.CylinderGeometry(.03,.03,2.4,4),0x3f3f46,q[0]*1.4,-4.2,q[1]*1.4,bl,false);ln.rotation.z=q[0]*.25;ln.rotation.x=-q[1]*.25});
   g.add(bl);A.balloon=bl;
-  if(FM3.scene.fog){FM3.scene.fog.near=90;FM3.scene.fog.far=430}if(FM3.cam){FM3.cam.far=520;FM3.cam.updateProjectionMatrix()}
+  if(FM3.scene.fog){FM3.scene.fog.near=90+(F-58);FM3.scene.fog.far=430+(F-58)*1.5}if(FM3.cam){FM3.cam.far=520+(F-58)*2;FM3.cam.updateProjectionMatrix()}
   return g}
 function fm3AmbStep(t,dt){var A=FM3.amb;if(!A)return;fm3FlyStep(A.fly,t,dt);A.clouds.forEach(function(c){c.position.x+=dt*c.userData.v*1.2;if(c.position.x>230)c.position.x=-230});
   A.birds.forEach(function(b){var D=b.userData,a=t*.05+D.o;b.position.set(Math.cos(a)*D.r+D.dx,D.h+Math.sin(t*.6+D.k)*.8,Math.sin(a)*D.r*.7+D.dx);b.rotation.y=-a;b.children[0].scale.y=Math.sin(t*8+D.k)});
@@ -6375,7 +6377,7 @@ function fm3Mount(){var box=$("fm-world");if(!box)return false;box.innerHTML='<d
     Object.assign(sun.shadow.camera,{left:-20,right:20,top:20,bottom:-20,near:1,far:80});sc.add(sun);FM3.pickables=[];fm3Static();FM3.cam=new THREE.PerspectiveCamera(32,1,.1,560);FM3.cam.position.set(18,24,25)}
   if(FM3.ctl)FM3.ctl.dispose();var ctl=FM3.ctl=new THREE.OrbitControls(FM3.cam,cv);ctl.enableDamping=true;ctl.dampingFactor=.12;ctl.maxPolarAngle=Math.PI*.445;ctl.minPolarAngle=.35;ctl.minDistance=8;ctl.maxDistance=55;
   ctl.target.copy(FM3.target||new THREE.Vector3(-1,0,1));ctl.screenSpacePanning=false;ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
-  ctl.addEventListener("change",function(){FM3.target=ctl.target.clone();var t=ctl.target;t.x=Math.max(-46,Math.min(40,t.x));t.z=Math.max(-46,Math.min(40,t.z));t.y=0/* อัปเดต 261: เลื่อนกล้องไปดูที่ดินใหม่ได้ทั้งแผนที่ */});
+  ctl.addEventListener("change",function(){FM3.target=ctl.target.clone();var t=ctl.target;var L=Math.max(46,(FM3.F||58)-12);t.x=Math.max(-L,Math.min(L,t.x));t.z=Math.max(-L,Math.min(L,t.z));t.y=0/* อัปเดต 261: เลื่อนกล้องไปดูที่ดินใหม่ได้ทั้งแผนที่ */});
   fm3Pointer(cv);fm3Resize();FM3.ready=true;if(!FM3.raf)fm3Loop();return true}
 function fm3Resize(){if(!FM3.renderer)return;var w=$("fm-win");if(!w)return;var W=w.clientWidth,H=w.clientHeight;if(!W||!H)return;FM3.renderer.setSize(W,H,false);FM3.cam.aspect=W/H;FM3.cam.fov=Math.min(50,32*Math.pow(Math.max(1,H/W),.5));FM3.cam.updateProjectionMatrix()}
 function fm3Loop(){FM3.raf=requestAnimationFrame(fm3Loop);if(!FM3.on||FK.on||S.tab!=="farm"||document.hidden||!FM3.renderer)return;var t=performance.now()/1000,dt=Math.min(.05,t-(FM3.lt||t));FM3.lt=t;
@@ -7740,7 +7742,29 @@ function fmLandXY(k){if(k<FLAND.length)return FLAND[k];var r=Math.floor((k-FLAND
 function fmLandInfo(k){var c=FM.cat||{},L=c.land||[];if(k<L.length)return L[k];var m=c.land_more;if(!m)return null;var i=k-L.length+1;return {n:"ที่ดินขยาย แปลงที่ "+(k+1),cost:Math.round(m.base*Math.pow(m.mul,i)/10)*10,lv:m.lv0+m.lvstep*i}}
 function fmLandN(d){var L=(FM.cat&&FM.cat.land)||[],n=(d&&d.land)||0;return n<L.length?L.length:Math.max(FLAND.length,n)}
 /* ---------- อัปเดต 145: ที่ดินขยาย 20 แปลง (ขนาดสุ่ม) ใช้ทำอะไรก็ได้ ---------- */
-function fmParcels(){return (FM.cat&&FM.cat.parcels)||[]}
+/* อัปเดต 262: ที่ดินตารางสี่เหลี่ยม 3×3 ขยายได้ไม่จำกัด (id 100..10099 ตรงกับ farm_parcel_def ในฐานข้อมูล) */
+var FPEX=[[-3.6,-1,16,15],[4,-1000,8.6,.2],[4.6,12,8.6,1000],[-9.6,-.8,-2.4,13.1],[15.2,-.4,28.7,13.6]],FPG={k:null,L:[]};
+function fmPGenOk(x,y,w,h){var m=.15;if(FPEX.some(function(e){return x<e[2]+m&&x+w>e[0]-m&&y<e[3]+m&&y+h>e[1]-m}))return false;
+  return !((FM.cat&&FM.cat.parcels)||[]).some(function(p){return x<p.x+p.w+m&&x+w>p.x-m&&y<p.y+p.h+m&&y+h>p.y-m})}
+function fmPGid(i,j){return 100+(i+50)*100+(j+50)}
+function fmPGen(id){if(id<100||id>10099)return null;var i=Math.floor((id-100)/100)-50,j=(id-100)%100-50,x=Math.round((-3.2+3.3*i)*10)/10,y=Math.round((-6.3+3.3*j)*10)/10;if(!fmPGenOk(x,y,3,3))return null;
+  var adj=[];for(var di=-1;di<=1;di++)for(var dj=-1;dj<=1;dj++)if((di||dj)&&i+di>=-50&&i+di<=49&&j+dj>=-50&&j+dj<=49)adj.push(fmPGid(i+di,j+dj));
+  ((FM.cat&&FM.cat.parcels)||[]).forEach(function(p){if(x<p.x+p.w+.45&&x+3>p.x-.45&&y<p.y+p.h+.45&&y+3>p.y-.45)adj.push(p.id)});
+  return {id:id,x:x,y:y,w:3,h:3,adj:adj,core:false,gen:true}}
+function fmParcels(){var C=(FM.cat&&FM.cat.parcels)||[];if(!C.length)return C;var dd=FM.v||FM.d,own=((dd&&dd.parcels)||[]).map(function(z){return z.pid}).filter(function(id){return id>=100}).sort(function(a,b){return a-b}),k=C.length+":"+own.join(",");
+  if(FPG.k===k)return FPG.L;var G={},base=C.concat(own.map(fmPGen).filter(Boolean)),R=2;
+  base.forEach(function(P){var i0=Math.floor((P.x-3*R-3.3+3.2)/3.3),i1=Math.ceil((P.x+P.w+3.3*R+3.2)/3.3),j0=Math.floor((P.y-3*R-3.3+6.3)/3.3),j1=Math.ceil((P.y+P.h+3.3*R+6.3)/3.3);
+    for(var i=Math.max(-50,i0);i<=Math.min(49,i1);i++)for(var j=Math.max(-50,j0);j<=Math.min(49,j1);j++){var id=fmPGid(i,j);if(G[id]!==undefined)continue;var x=-3.2+3.3*i,y=-6.3+3.3*j;
+      if(x<P.x+P.w+3.3*R&&x+3>P.x-3.3*R&&y<P.y+P.h+3.3*R&&y+3>P.y-3.3*R)G[id]=fmPGen(id)}});
+  own.forEach(function(id){G[id]=fmPGen(id)});
+  FPG.k=k;FPG.L=C.concat(Object.keys(G).map(function(id){return G[id]}).filter(Boolean));return FPG.L}
+/* ขอบเขตพื้นที่ราบสี่เหลี่ยม (หน่วยโลก 3D) ขยายตามที่ดิน */
+function fmFlat(){var e=0;fmParcels().forEach(function(P){var a=fm3P(P.x,P.y),b=fm3P(P.x+P.w,P.y+P.h);e=Math.max(e,Math.abs(a[0]),Math.abs(a[1]),Math.abs(b[0]),Math.abs(b[1]))});return Math.min(220,Math.max(58,e+12))}
+/* วัสดุซื้อที่ดิน: 🪵 ไม้ 🪨 หิน (หาง่าย) 📜 โฉนด (หายาก) */
+function fmLandNeed(d){var n=((d&&d.parcels)||[]).length;return {m_wood:2+n,m_stone:1+n,m_deed:1+Math.floor(n/8)}}
+function fmLandMatsHtml(d){var nd=fmLandNeed(d),it=(d&&d.items)||{},pr=(FM.cat&&FM.cat.products)||{},ok=true;
+  var h=Object.keys(nd).map(function(k){var hv=it[k]||0,g=hv>=nd[k];if(!g)ok=false;var o=pr[k]||{};return '<span class="fmat'+(g?' ok':'')+'">'+(o.e||'')+' '+esc(o.n||k)+' <b>'+hv+'/'+nd[k]+'</b></span>'}).join("");
+  return {ok:ok||S.admin,html:'<div class="fmats">'+h+'</div><p class="sub">หาวัสดุได้จาก เก็บผัก · เก็บผลผลิตสัตว์ · ตัดต้นไม้ · ทำงานเครื่องจักร · กล่องสุ่ม · ส่งออเดอร์ · ตกปลา — 🪵🪨 เจอบ่อย 📜 โฉนดหายาก (8%)</p>'}}
 function fmPOwn(d){var m={};((d&&d.parcels)||[]).forEach(function(x){m[x.pid]=x});return m}
 function fmPCanBuy(d,P){var o=fmPOwn(d);if(o[P.id])return false;return P.core||(P.adj||[]).some(function(a){return o[a]})}
 /* อัปเดต 260: ที่ดินทั่วแผนที่ 65 แปลง · ราคาเดิม ×1.12 ต่อแปลงที่มี และเกิน 20 แปลงคูณเพิ่มอีก ×1.3 ทุกแปลง (แพงขึ้นแบบก้าวกระโดด) */
@@ -8323,9 +8347,9 @@ function fmShop(d,l){var c=FM.cat,cnt={};d.animals.forEach(function(a){cnt[a.ani
   var nl=d.land||0,LDS=[],LC=(c.land||[]).length;for(var lq=0;lq<Math.max(LC,nl);lq++)LDS.push(fmLandInfo(lq));LDS=LDS.filter(Boolean);if(nl>=LC)LDS=[];if(LDS.length)h+='<div class="panel"><h3>🏞️ ซื้อที่ดินขยายฟาร์ม</h3><p class="sub">ขยายได้ไม่จำกัด · ซื้อเรียงทีละแปลง ราคาแพงขึ้นเรื่อย ๆ · ได้แปลงผักเพิ่มแปลงละ '+(c.plots_per_land||4)+' แปลง · มีแล้ว '+nl+' แปลง</p><div class="fshop">'+
     LDS.slice(Math.max(0,LDS.length-4)).map(function(z){var k=LDS.indexOf(z),own2=k<nl,nx=k===nl,lk=!S.admin&&l<z.lv;return '<div class="fitem'+(own2?'':lk?' lock':'')+'"><span class="em">'+(own2?'✅':'🏞️')+'</span><b>'+esc(z.n)+'</b><small>+'+(c.plots_per_land||4)+' แปลงผัก</small>'+
       (own2?'<small>ซื้อแล้ว</small>':lk?'<small>🔒 เลเวล '+z.lv+'</small>':'<button type="button" class="sm primary" data-fmland="1">ซื้อ '+fmc()+' '+num(z.cost)+'</button>')+'</div>'}).join("")+'</div></div>';
-  var PS=fmParcels(),PO=fmPOwn(d);if(PS.length)h+='<div class="panel"><h3>🗺️ ที่ดินขยาย '+PS.length+' แปลง (ขนาดสุ่ม)</h3><p class="sub">ซื้อได้เฉพาะแปลงที่ติดกับพื้นที่บ้าน/แปลงที่ซื้อแล้ว ขยายต่อไปเรื่อย ๆ · ยิ่งกว้างยิ่งแพง · ใช้เป็น 🌱 แปลงผัก 🐄 คอกสัตว์ หรือ 🌳 ลานของแต่ง ก็ได้ · มีแล้ว '+Object.keys(PO).length+'/'+PS.length+' แปลง</p><div class="fshop">'+
-    PS.slice().sort(function(a,b){return (PO[b.id]?2:fmPCanBuy(d,b)?1:0)-(PO[a.id]?2:fmPCanBuy(d,a)?1:0)||a.id-b.id}).map(function(P){var ow=PO[P.id],cb=fmPCanBuy(d,P);return '<div class="fitem'+(ow||cb?'':' lock')+'"><span class="em">'+(ow?(ow.use?FPUSE[ow.use][0]:'🪧'):'🗺️')+'</span><b>ที่ดิน '+P.w+'×'+P.h+'</b><small>'+(P.y<0?'ทิศเหนือ':'ทิศใต้')+' · '+(P.w*P.h)+' ช่อง</small>'+
-      (ow?'<button type="button" class="sm" data-fmparcel="'+P.id+'">'+(ow.use?FPUSE[ow.use][1]:'เลือกใช้งาน')+'</button>':cb?'<button type="button" class="sm primary" data-fmpbuy="'+P.id+'">ซื้อ '+fmc()+' '+num(fmPCost(d,P))+'</button>':'<small>🔒 ต้องติดกับแปลงที่มี</small>')+'</div>'}).join("")+'</div></div>';
+  var PO=fmPOwn(d),PS=fmParcels().filter(function(P){return PO[P.id]||fmPCanBuy(d,P)}),LM2=fmLandMatsHtml(d);if(PS.length)h+='<div class="panel"><h3>🗺️ ที่ดินขยาย (ขยายได้ไม่จำกัด)</h3><p class="sub">ซื้อได้เฉพาะแปลงที่ติดกับพื้นที่บ้าน/แปลงที่ซื้อแล้ว ขยายต่อเป็นตารางสี่เหลี่ยมไปเรื่อย ๆ · ยิ่งมีมากยิ่งแพง · ใช้เป็น 🌱 แปลงผัก 🐄 คอกสัตว์ หรือ 🌳 ลานของแต่ง ก็ได้ · มีแล้ว '+Object.keys(PO).length+' แปลง</p><p><b>วัสดุสำหรับซื้อแปลงถัดไป</b></p>'+LM2.html+'<div class="fshop">'+
+    PS.slice().sort(function(a,b){return (PO[b.id]?2:fmPCanBuy(d,b)?1:0)-(PO[a.id]?2:fmPCanBuy(d,a)?1:0)||a.id-b.id}).map(function(P){var ow=PO[P.id],cb=fmPCanBuy(d,P);return '<div class="fitem'+(ow||cb?'':' lock')+'"><span class="em">'+(ow?(ow.use?FPUSE[ow.use][0]:'🪧'):'🗺️')+'</span><b>ที่ดิน '+P.w+'×'+P.h+'</b><small>'+(P.gen?'ที่ดินตาราง':P.y<0?'ทิศเหนือ':'ทิศใต้')+' · '+(P.w*P.h)+' ช่อง</small>'+
+      (ow?'<button type="button" class="sm" data-fmparcel="'+P.id+'">'+(ow.use?FPUSE[ow.use][1]:'เลือกใช้งาน')+'</button>':cb?'<button type="button" class="sm primary" data-fmpbuy="'+P.id+'"'+(!LM2.ok?' disabled':'')+'>ซื้อ '+fmc()+' '+num(fmPCost(d,P))+'</button>':'<small>🔒 ต้องติดกับแปลงที่มี</small>')+'</div>'}).join("")+'</div></div>';
   h+='<div class="panel"><h3>🔓 ขยายแปลงผัก</h3><p class="sub">ตอนนี้ '+d.plots+'/'+fmCap(d)+' แปลง'+(d.plots>=fmCap(d)?' · ซื้อที่ดินเพิ่มเพื่อขยายต่อ':'')+'</p>'+(d.plots<fmCap(d)?'<button type="button" class="primary slim" data-fmx="1">ขยายแปลงที่ '+(d.plots+1)+' · '+fmc()+' '+(30*(d.plots-3))+'</button>':'<p>ขยายครบแล้ว 🎉</p>')+'</div>';
   return h}
 /* แตะผัก/สัตว์ที่ยังไม่พร้อม → ป้ายบอกเวลาที่เหลือ (นับถอยหลังสด ๆ 4 วินาที) */
