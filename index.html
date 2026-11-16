@@ -1417,6 +1417,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .days i.off{font-size:10px;font-weight:600}.days i.off.lv{background:#e0e7ff;color:#3730a3}.days i.off.abs{background:#fee2e2;color:#b91c1c}.days i.off.hol{background:#f1f5f9;color:#64748b}.days i.off[data-dayadd]:hover{outline:2px solid #6366f1}
 .offline{display:block;color:#4338ca!important}
 .missedit{display:grid;gap:6px;width:100%}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
+.missedit .mrow{position:relative;width:100%!important;max-width:560px;box-sizing:border-box}.missedit .mrow .metx{flex:1}.missedit .mrow .metx{min-width:220px;padding:6px 8px;border:1px solid var(--line);border-radius:8px}.missedit .emob{font-size:20px;line-height:1;padding:4px 8px!important;border:1px solid var(--line);border-radius:8px;background:#f8fafc;min-width:42px}.emopick{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px;padding:6px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;max-width:420px}.emopick button{font-size:20px;padding:4px!important;width:38px;height:38px;border:0;background:#fff;border-radius:8px}.emopick button:hover{background:#e0e7ff}
 
 /* อัปเดต 250: ลิงก์คีย์ลาในระบบ Apex */
 
@@ -9760,21 +9761,28 @@ var MISS_R=[["🔧","เครื่องจักรเสีย/รอซ่�
 var MISS={sel:null};
 /* อัปเดต 247: Admin เพิ่ม/ลบ หัวข้อเหตุผลไม่ถึงเป้าได้ (เก็บใน app_settings: miss_reasons) · "อื่นๆ" อยู่ท้ายเสมอ */
 function missR(){var L=S.settings&&S.settings.miss_reasons&&S.settings.miss_reasons.list,b=(Array.isArray(L)&&L.length?L:MISS_R).filter(function(r){return r&&r[1]&&r[1]!=="อื่นๆ"});return b.concat([["📝","อื่นๆ"]])}
-function missEditHtml(){var D=MISS.draft;return '<div class="missedit">'+D.map(function(r,i){return '<span class="mrow">'+esc(r[0])+' '+esc(r[1])+' <button type="button" class="sm danger" data-missdel="'+i+'" aria-label="ลบ">✕</button></span>'}).join("")+
-  '<div class="mrow add"><input id="me-emo" maxlength="4" placeholder="😀" style="width:52px"><input id="me-txt" maxlength="40" placeholder="หัวข้อใหม่ เช่น ไฟดับ"><button type="button" class="sm" data-missadd>＋ เพิ่ม</button></div>'+
-  '<small class="sub">"📝 อื่นๆ" อยู่ท้ายสุดเสมอ (ลบไม่ได้) · หัวข้อที่ลบแล้ว รายการเก่ายังเก็บชื่อเดิมไว้ในรายงาน</small>'+
+var MISS_EMO="🔧⚙️🛠️🔩🧰⚡🔌💡💻🖥️🖨️📦📋🔄🧪🔬🧩❌⚠️🚫⏰⏳🕐🐢🏃🤝🙋👷🧑‍🔧📚🎓🗓️🏥🤒🚻🍱🧹🌡️💧🔥❄️🚚📉📈🔍🧾✂️🪛🎯👀•".match(/\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*|•/gu);
+/* อัปเดต 265: แก้ไขชื่อ/อีโมจิของหัวข้อเดิมได้ + เลือกอีโมจิจากแผง */
+function missEmoPick(k){return MISS.pick===k?'<div class="emopick">'+MISS_EMO.map(function(e){return '<button type="button" data-missemoset="'+k+'" data-e="'+esc(e)+'">'+esc(e)+'</button>'}).join("")+'</div>':""}
+function missEditHtml(){var D=MISS.draft;return '<div class="missedit"><small class="sub">แตะอีโมจิเพื่อเปลี่ยน · แก้ชื่อหัวข้อในช่องได้เลย · ✕ = ลบ</small>'+D.map(function(r,i){return '<div class="mrow"><button type="button" class="emob" data-missemo="'+i+'" title="เปลี่ยนอีโมจิ">'+esc(r[0]||"•")+'</button><input class="metx" data-missix="'+i+'" maxlength="40" value="'+esc(r[1])+'"><button type="button" class="sm" data-missmv="'+i+'" data-d="-1" title="เลื่อนขึ้น"'+(i?'':' disabled')+'>▲</button><button type="button" class="sm" data-missmv="'+i+'" data-d="1" title="เลื่อนลง"'+(i<D.length-1?'':' disabled')+'>▼</button><button type="button" class="sm danger" data-missdel="'+i+'" aria-label="ลบ">✕</button>'+missEmoPick(String(i))+'</div>'}).join("")+
+  '<div class="mrow add"><button type="button" class="emob" data-missemo="new" title="เลือกอีโมจิ">'+esc(MISS.newE||"😀")+'</button><input id="me-txt" maxlength="40" placeholder="หัวข้อใหม่ เช่น ไฟดับ" value="'+esc(MISS.newT||"")+'"><button type="button" class="sm" data-missadd>＋ เพิ่ม</button>'+missEmoPick("new")+'</div>'+
+  '<small class="sub">"📝 อื่นๆ" อยู่ท้ายสุดเสมอ (ลบไม่ได้) · แก้ชื่อหัวข้อแล้ว รายการที่บันทึกไปก่อนหน้ายังเก็บชื่อเดิมไว้ในรายงาน · อีโมจิพิมพ์เองได้จากคีย์บอร์ด (มือถือกดปุ่ม 😀 บนคีย์บอร์ด / Windows กด ⊞ Win + .)</small>'+
   '<div class="mrow"><button type="button" class="sm good" data-missave>บันทึกหัวข้อ</button><button type="button" class="sm" data-misscancel>ยกเลิก</button></div></div>'}
+document.addEventListener("input",function(ev){var t=ev.target;if(!MISS.draft)return;if(t.dataset&&t.dataset.missix!=null){var r=MISS.draft[+t.dataset.missix];if(r)r[1]=t.value}else if(t.id==="me-txt")MISS.newT=t.value});
 function missCheck(){var bx=$("f-miss");if(!bx)return;var t=parseFloat($("f-target").dataset.v),o=parseFloat($("f-out").value),show=t>0&&!isNaN(o)&&o<t;bx.hidden=!show;
   if(!show)return;$("f-mgap").textContent="ได้ "+num(o)+" จากเป้า "+num(t)+" · ขาดอีก "+num(Math.round((t-o)*100)/100)+" ("+Math.round(o*100/t)+"% ของเป้า)";
   $("f-mreason").innerHTML=missR().map(function(r){return '<button type="button" class="chipsel'+(MISS.sel===r[1]?" on":"")+'" data-missr="'+esc(r[1])+'">'+esc(r[0])+" "+esc(r[1])+'</button>'}).join("");
   $("f-note").placeholder=MISS.sel==="อื่นๆ"?"พิมพ์เหตุผลที่ไม่ได้ตามเป้า (บังคับ)":"รายละเอียดเพิ่มเติม (ไม่บังคับ)"}
 $("f-out").addEventListener("input",missCheck);
-document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-missedit],[data-missdel],[data-missadd],[data-missave],[data-misscancel]");if(!t||!S.admin)return;var dd=t.dataset;
+document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-missedit],[data-missdel],[data-missadd],[data-missave],[data-misscancel],[data-missemo],[data-missemoset],[data-missmv]");if(!t||!S.admin)return;var dd=t.dataset;
+  if("missemo" in dd){MISS.pick=MISS.pick===dd.missemo?null:dd.missemo;missPanel();return}
+  if("missemoset" in dd){var ek=dd.missemoset,ev2=dd.e;if(ek==="new")MISS.newE=ev2;else if(MISS.draft[+ek])MISS.draft[+ek][0]=ev2;MISS.pick=null;missPanel();return}
+  if("missmv" in dd){var a=+dd.missmv,b2=a+(+dd.d);if(b2<0||b2>=MISS.draft.length)return;var tmp=MISS.draft[a];MISS.draft[a]=MISS.draft[b2];MISS.draft[b2]=tmp;MISS.pick=null;missPanel();return}
   if("missedit" in dd)MISS.draft=missR().filter(function(r){return r[1]!=="อื่นๆ"}).map(function(r){return [r[0],r[1]]});
   else if("missdel" in dd)MISS.draft.splice(+dd.missdel,1);
-  else if("missadd" in dd){var tx=$("me-txt").value.trim(),em=$("me-emo").value.trim()||"•";if(!tx){toast("พิมพ์ชื่อหัวข้อก่อน");return}if(tx==="อื่นๆ"||MISS.draft.some(function(r){return r[1]===tx})){toast("มีหัวข้อนี้แล้ว");return}MISS.draft.push([em,tx])}
-  else if("misscancel" in dd){MISS.draft=null;toast("ยกเลิกการแก้ไขแล้ว")}
-  else if("missave" in dd){if(!MISS.draft.length){toast("ต้องมีอย่างน้อย 1 หัวข้อ");return}var v={list:MISS.draft.concat([["📝","อื่นๆ"]])};t.disabled=true;
+  else if("missadd" in dd){var tx=$("me-txt").value.trim(),em=MISS.newE||"•";if(!tx){toast("พิมพ์ชื่อหัวข้อก่อน");return}if(tx==="อื่นๆ"||MISS.draft.some(function(r){return r[1]===tx})){toast("มีหัวข้อนี้แล้ว");return}MISS.draft.push([em,tx]);MISS.newT="";MISS.newE=null;MISS.pick=null}
+  else if("misscancel" in dd){MISS.draft=null;MISS.pick=null;MISS.newT="";MISS.newE=null;toast("ยกเลิกการแก้ไขแล้ว")}
+  else if("missave" in dd){MISS.draft=MISS.draft.map(function(r){return [r[0]||"•",String(r[1]||"").trim()]}).filter(function(r){return r[1]&&r[1]!=="อื่นๆ"});var seen={},dup=MISS.draft.some(function(r){if(seen[r[1]])return true;seen[r[1]]=1});if(dup){toast("มีชื่อหัวข้อซ้ำกัน — แก้ให้ไม่ซ้ำก่อนบันทึก");missPanel();return}if(!MISS.draft.length){toast("ต้องมีอย่างน้อย 1 หัวข้อ");return}MISS.pick=null;var v={list:MISS.draft.concat([["📝","อื่นๆ"]])};t.disabled=true;
     try{await q(db.from("app_settings").upsert({key:"miss_reasons",value:v}));S.settings.miss_reasons=v;MISS.draft=null;toast("บันทึกหัวข้อแล้ว")}catch(e){toast(thErr(e));t.disabled=false;return}}
   missCheck();missPanel()});
 /* อัปเดต 248: ตั้งค่าหัวข้อเหตุผลอยู่ในหน้า "จัดการหน้างาน" (Admin) ไม่ต้องลงยอดก่อน */
