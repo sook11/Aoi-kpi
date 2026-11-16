@@ -1416,7 +1416,9 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 /* อัปเดต 247: ช่องวันที่ลา/ขาด/หยุด + แก้หัวข้อเหตุผล */
 .days i.off{font-size:10px;font-weight:600}.days i.off.lv{background:#e0e7ff;color:#3730a3}.days i.off.abs{background:#fee2e2;color:#b91c1c}.days i.off.hol{background:#f1f5f9;color:#64748b}.days i.off[data-dayadd]:hover{outline:2px solid #6366f1}
 .offline{display:block;color:#4338ca!important}
-.missedit{display:grid;gap:6px;width:100%}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
+.missedit{display:grid;gap:6px;width:100%}
+.fhlock{max-width:560px;margin:60px auto;text-align:center}.fhlock .big{font-size:52px}.fhlock .nx{font-size:18px}.fhlist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}.fhlist span{background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:13px}
+.fhed{display:grid;gap:8px}.fhed .mrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.fht{border-collapse:collapse;width:100%;max-width:640px}.fht td,.fht th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}.fht input{padding:5px 6px;width:100%;box-sizing:border-box}.fht td.m{text-align:center;color:#64748b}.fhppl{display:grid;gap:4px}.fhon{font-weight:600}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
 .missedit .mrow{position:relative;width:100%!important;max-width:560px;box-sizing:border-box}.missedit .mrow .metx{flex:1}.missedit .mrow .metx{min-width:220px;padding:6px 8px;border:1px solid var(--line);border-radius:8px}.missedit .emob{font-size:20px;line-height:1;padding:4px 8px!important;border:1px solid var(--line);border-radius:8px;background:#f8fafc;min-width:42px}.emopick{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px;padding:6px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;max-width:420px}.emopick button{font-size:20px;padding:4px!important;width:38px;height:38px;border:0;background:#fff;border-radius:8px}.emopick button:hover{background:#e0e7ff}
 
 /* อัปเดต 250: ลิงก์คีย์ลาในระบบ Apex */
@@ -2151,6 +2153,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <!-- WORKSTATIONS (Admin) -->
   <section class="view" id="v-kpis" hidden>
     <div><h2>จัดการหน้างาน</h2><p class="sub">เพิ่ม แก้ไข และตั้งเป้าหมายรายวันให้แต่ละหน้างาน</p></div>
+    <div class="panel" id="k-fhp" hidden><h3>⏰ เวลาเปิดฟาร์ม / บึงตกปลา</h3><p class="sub">พนักงานเล่นได้เฉพาะช่วงพักเบรก · วันที่เช็คชื่อเป็น "หยุด" หรือ "ลา…" เล่นได้ทั้งวัน · Admin เปิด/ปิดรายคนได้ · Admin เล่นได้ตลอด</p><div id="k-fhr"></div></div>
     <div class="panel" id="k-missp"><h3>📝 หัวข้อเหตุผล "ยอดไม่ถึงเป้า"</h3><p class="sub">พนักงานทุกคนเลือกจากรายการนี้ตอนลงยอดต่ำกว่าเป้า · เพิ่ม/ลบ แล้วกด "บันทึกหัวข้อ"</p><div id="k-missr"></div></div>
     <div class="panel">
       <h3 id="k-title">เพิ่มหน้างาน</h3>
@@ -2759,6 +2762,7 @@ function fm3ExportGLB(){if(!window.THREE||!FM3.scene){toast("เปิดฟา�
 function toast(m){var t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},3800)}
 function thErr(e){
   var m=(e&&e.message)||String(e||"");
+  if(/FARM_CLOSED:/.test(m))return m.replace(/^.*FARM_CLOSED:\s*/,"⏰ ");
   if(/row-level security|permission denied/i.test(m))return "ไม่มีสิทธิ์ทำรายการนี้";
   if(/Invalid login credentials/i.test(m))return "รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง";
   if(/already registered|Database error saving new user/i.test(m))return "รหัสพนักงานนี้ลงทะเบียนแล้ว ใช้แท็บเข้าสู่ระบบ หรือให้ผู้ดูแลรีเซ็ตรหัสผ่าน";
@@ -3350,7 +3354,7 @@ async function renderAdmin(){
 
 /* ---------- หน้า: จัดการหน้างาน ---------- */
 var KE=null;
-function renderKpis(){try{missPanel()}catch(e){}
+function renderKpis(){try{fhPanel();missPanel()}catch(e){}
   if(!S.admin)return;
   $("k-rows").innerHTML=S.kpis.length?S.kpis.map(function(k){
     return '<tr><td class="nm">'+esc(k.name)+'</td><td>'+esc(deptName(k.department_id)||"ทุกแผนก")+'</td><td class="n"><b>'+(k.target_per_hour==null?"–":num(k.target_per_hour))+'</b></td><td>'+esc(k.unit||"ชิ้น")+'</td><td><div class="acts" style="margin:0"><button class="sm" data-edkpi="'+k.id+'">แก้ไข</button><button class="sm danger" data-rmkpi="'+k.id+'">ลบ</button></div></td></tr>'}).join(""):'<tr><td colspan="5">'+emptyRow("ยังไม่มีหน้างาน")+'</td></tr>';
@@ -5681,7 +5685,44 @@ function fmXpAt(l){return l<=10?5*l*(l-1):10*l*(l-1)-450}
 function fmLv(xp){xp=Math.max(xp||0,0);var l=xp<450?Math.max(1,Math.floor((1+Math.sqrt(1+.8*xp))/2)):Math.floor((1+Math.sqrt(1+.4*(xp+450)))/2);return {l:l,a:fmXpAt(l),b:fmXpAt(l+1)}}
 async function fmLoad(emp){var P=[q(db.rpc("farm_get",emp?{p_emp:emp}:{})),q(db.rpc("farm_plot_info",emp?{p_emp:emp}:{})).catch(function(){return null})];if(!emp){P.push(q(db.rpc("farm_orders")).catch(function(){return null}));P.push(q(db.rpc("farm_gifts_pop")).catch(function(){return null}));P.push(q(db.rpc("farm_visitors")).catch(function(){return null}));P.push(q(db.rpc("farm_quests")).catch(function(){return null}));P.push(q(db.rpc("farm_upgrades")).catch(function(){return null}))}var xi=P.length;P.push(q(db.rpc("farm_ad_get",emp?{p_emp:emp}:{})).catch(function(){return null}));P.push(q(db.rpc(emp?"farm_visitors_of":"farm_guests",emp?{p_emp:emp}:{})).catch(function(){return null}));P.push(q(db.rpc("farm_vehicle_info",emp?{p_emp:emp}:{})).catch(function(){return null}));P.push(emp?null:q(db.rpc("farm_short_today")).catch(function(){return null}));P.push(emp?null:q(db.rpc("farm_stall_info")).catch(function(){return null}));P.push(emp?null:q(db.rpc("farm_pen_info")).catch(function(){return null}));P.push(q(db.rpc("farm_parcels_of",emp?{p_emp:emp}:{})).catch(function(){return null}));P.push(q(db.rpc("farm_layout_of",emp?{p_emp:emp}:{})).catch(function(){return null}));var R0=await Promise.all(P),r=R0[0];r.ad=R0[xi]&&typeof R0[xi]==="object"&&R0[xi].path?R0[xi]:null;if(emp)r.vo=Array.isArray(R0[xi+1])?R0[xi+1]:[];else r.guests=Array.isArray(R0[xi+1])?R0[xi+1]:[];r.veh=R0[xi+2]&&typeof R0[xi+2]==="object"&&R0[xi+2].owned?R0[xi+2]:{active:null,owned:[]};if(Array.isArray(R0[xi+3]))FM.short=R0[xi+3];if(R0[xi+4]&&R0[xi+4].slots)FM.stallInfo=R0[xi+4];if(R0[xi+5]&&R0[xi+5].per_house)FM.penInfo=R0[xi+5];r.parcels=Array.isArray(R0[xi+6])?R0[xi+6]:[];r.layout=R0[xi+7]&&typeof R0[xi+7]==="object"?R0[xi+7]:{};r.pi=R0[1]&&typeof R0[1]==="object"?R0[1]:null;var R=[r].concat(R0.slice(2));if(!emp)r.up=R[5]&&typeof R[5]==="object"&&R[5].decor?R[5]:null;
   if(!emp){if(R[3])FM.vis=R[3];if(R[4]){var qp=fmQList().filter(function(x){return x.k!=="bonus"&&!x.claimed&&x.prog>=x.target}).map(function(x){return x.k}),had=!!FM.qst;FM.qst=R[4];if(had)fmQNotify(qp)}}if(!emp&&R[2]&&R[2].length)fmGiftShow(R[2]);FM.off=new Date(r.now).getTime()-Date.now();if(!emp&&R[1]&&R[1].orders)FM.ord=R[1];return r}
+/* ---------- อัปเดต 266: เวลาเปิดฟาร์ม (เฉพาะช่วงพักเบรก / วันหยุด / วันลา) + Admin เปิดปิดรายคน ---------- */
+var FH_DEF={on:true,grace:5,slots:[{n:"พักเบรกรอบ 1 เช้า",s:"11:15",e:"12:15"},{n:"พักเบรกรอบ 2 เช้า",s:"12:15",e:"13:15"},{n:"พักเบรกเที่ยง",s:"12:00",e:"13:00"},{n:"พักเบรกรอบ 1 เย็น",s:"16:15",e:"16:45"},{n:"พักเบรกรอบ 2 เย็น",s:"17:00",e:"17:30"},{n:"พักเบรกรอบ 1 เที่ยงคืน",s:"23:15",e:"00:15"},{n:"พักเบรกรอบ 2 เที่ยงคืน",s:"00:15",e:"01:15"},{n:"พักเบรกรอบ 1 ดึก",s:"04:15",e:"04:45"},{n:"พักเบรกรอบ 2 ดึก",s:"05:00",e:"05:30"}],ppl:{}},FH={st:null,at:0,warn:0,draft:null};
+function fhCfg(){return (S.settings&&S.settings.farm_hours)||null}
+async function fhState(){var r=await q(db.rpc("farm_open_state"));FH.st=r;FH.at=Date.now();return r}
+function fhMin(m){m=Math.max(0,Math.round(m||0));var h=Math.floor(m/60),x=m%60;return (h?h+" ชม. ":"")+x+" นาที"}
+function fhSlotsHtml(){var c=fhCfg()||FH_DEF;return '<div class="fhlist">'+(c.slots||[]).map(function(z){return '<span>🕐 '+esc(z.n)+' <b>'+esc(z.s)+'–'+esc(z.e)+'</b></span>'}).join("")+'</div>'}
+function fhLocked(st){FM.locked=true;try{if(FK.on)fkClose()}catch(e){}var w=$("fm-world");if(!w)return;var why=st.why==="person_closed"?"Admin ปิดการเล่นฟาร์มสำหรับคุณไว้ — ติดต่อ Admin":"ฟาร์มและบึงตกปลาเปิดให้เล่นเฉพาะ <b>ช่วงพักเบรก</b> · วันหยุด หรือวันลา (ตามสถานะเช็คชื่อ) เล่นได้ทั้งวัน";
+  w.innerHTML='<div class="panel fhlock"><div class="big">⏰🌾</div><h3>ตอนนี้ยังไม่ใช่เวลาเล่นฟาร์ม</h3><p>'+why+'</p>'+(st.next_min!=null&&st.why!=="person_closed"?'<p class="nx">ช่วงพักถัดไปอีก <b>'+fhMin(st.next_min)+'</b></p>':'')+(st.why!=="person_closed"?fhSlotsHtml():'')+'<p class="sub">ผักและสัตว์ยังโตตามเวลาจริงระหว่างที่ปิด กลับมาเก็บได้ตอนพักเบรก</p><button type="button" class="primary" data-fhretry>🔄 ตรวจอีกครั้ง</button></div>'}
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-fhretry]");if(!b)return;FM.locked=false;renderFarm()});
+function fhWatch(){if(Date.now()-FH.at<60000||S.admin)return;FH.at=Date.now();fhState().then(function(st){if(!st)return;
+  if(st.ok===false){if(!FM.locked){toast("⏰ หมดเวลาพักเบรกแล้ว ฟาร์มปิดชั่วคราว — กลับมาเล่นช่วงพักถัดไปนะ");fhLocked(st)}return}
+  if(FM.locked){FM.locked=false;renderFarm();return}
+  if(st.why==="break"&&st.left_min!=null&&st.left_min<=5&&Date.now()-FH.warn>240000){FH.warn=Date.now();toast("⏰ เหลือเวลาพักอีก "+fhMin(st.left_min)+" — รีบเก็บผักนะ")}}).catch(function(){})}
+setInterval(function(){if(FK&&FK.on&&S.tab!=="farm")fhWatch()},15000);
+/* Admin: ตั้งค่าเวลา */
+function fhDraft(){if(!FH.draft){var c=fhCfg();FH.draft=JSON.parse(JSON.stringify(c||FH_DEF));FH.draft.ppl=FH.draft.ppl||{}}return FH.draft}
+function fhPanel(){var el=$("k-fhr");if(!el)return;$("k-fhp").hidden=!S.admin;if(!S.admin)return;var D=fhDraft(),ppl=Object.keys(D.ppl);
+  el.innerHTML='<div class="fhed"><label class="fhon"><input type="checkbox" data-fhon'+(D.on?' checked':'')+'> เปิดใช้การจำกัดเวลา <small class="sub">(ปิด = เล่นได้ตลอดเวลา)</small></label>'+
+  '<table class="fht"><thead><tr><th>ชื่อช่วงเวลา</th><th>เริ่ม</th><th>สิ้นสุด</th><th>นาที</th><th></th></tr></thead><tbody>'+D.slots.map(function(z,i){var a=z.s.split(":"),b=z.e.split(":"),m=((+b[0]*60+ +b[1])-(+a[0]*60+ +a[1])+1440)%1440;return '<tr><td><input data-fhn="'+i+'" value="'+esc(z.n)+'" maxlength="40"></td><td><input type="time" data-fhs="'+i+'" value="'+esc(z.s)+'"></td><td><input type="time" data-fhe="'+i+'" value="'+esc(z.e)+'"></td><td class="m">'+(m||1440)+'</td><td><button type="button" class="sm danger" data-fhdel="'+i+'">✕</button></td></tr>'}).join("")+'</tbody></table>'+
+  '<div class="mrow"><button type="button" class="sm" data-fhadd>＋ เพิ่มช่วงเวลา</button><label class="sub">เผื่อเวลาหลังหมดพัก <input type="number" min="0" max="30" data-fhg value="'+(D.grace||0)+'" style="width:60px"> นาที</label></div>'+
+  '<h4>👤 เปิด/ปิดรายคน</h4><div class="mrow"><input list="fh-emps" id="fh-q" placeholder="พิมพ์ชื่อหรือรหัสพนักงาน" style="min-width:240px"><datalist id="fh-emps">'+(S.emps||[]).filter(function(e){return e.active!==false}).map(function(e){return '<option value="'+esc(e.employee_no+" "+e.display_name)+'">'}).join("")+'</datalist><select id="fh-m"><option value="open">✅ เล่นได้ตลอด</option><option value="closed">⛔ ห้ามเล่น</option></select><button type="button" class="sm" data-fhpadd>＋ เพิ่ม</button></div>'+
+  (ppl.length?'<div class="fhppl">'+ppl.map(function(id){var e=empOf(id)||{};return '<div class="mrow"><span>'+esc((e.employee_no||"")+" "+(e.display_name||id))+'</span><select data-fhpm="'+id+'"><option value="open"'+(D.ppl[id]==="open"?" selected":"")+'>✅ เล่นได้ตลอด</option><option value="closed"'+(D.ppl[id]==="closed"?" selected":"")+'>⛔ ห้ามเล่น</option></select><button type="button" class="sm danger" data-fhpdel="'+id+'">✕</button></div>'}).join("")+'</div>':'<p class="sub">ยังไม่มี — ทุกคนใช้ตามเวลาพักด้านบน</p>')+
+  '<div class="mrow"><button type="button" class="sm good" data-fhsave>บันทึกเวลาเปิดฟาร์ม</button><button type="button" class="sm" data-fhcancel>ยกเลิก</button></div></div>'}
+document.addEventListener("input",function(ev){var t=ev.target,d=t.dataset||{};if(!FH.draft)return;var D=FH.draft;
+  if(d.fhn!=null)D.slots[+d.fhn].n=t.value;else if(d.fhs!=null){D.slots[+d.fhs].s=t.value;fhPanelKeep(t)}else if(d.fhe!=null){D.slots[+d.fhe].e=t.value;fhPanelKeep(t)}else if(d.fhg!=null)D.grace=Math.max(0,Math.min(30,+t.value||0));else if(d.fhon!=null)D.on=t.checked;else if(d.fhpm!=null)D.ppl[d.fhpm]=t.value});
+function fhPanelKeep(t){var r=t.closest("tr");if(!r)return;var i=[].indexOf.call(r.parentNode.children,r),z=FH.draft.slots[i];if(!z||!/^\d\d:\d\d$/.test(z.s)||!/^\d\d:\d\d$/.test(z.e))return;var a=z.s.split(":"),b=z.e.split(":");r.querySelector(".m").textContent=((+b[0]*60+ +b[1])-(+a[0]*60+ +a[1])+1440)%1440||1440}
+document.addEventListener("change",function(ev){var d=(ev.target.dataset)||{};if(FH.draft&&d.fhon!=null)FH.draft.on=ev.target.checked;if(FH.draft&&d.fhpm!=null)FH.draft.ppl[d.fhpm]=ev.target.value});
+document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-fhadd],[data-fhdel],[data-fhpadd],[data-fhpdel],[data-fhsave],[data-fhcancel]");if(!t||!S.admin)return;var d=t.dataset,D=fhDraft();
+  if("fhadd" in d)D.slots.push({n:"พักเบรก",s:"12:00",e:"13:00"});
+  else if("fhdel" in d)D.slots.splice(+d.fhdel,1);
+  else if("fhpdel" in d)delete D.ppl[d.fhpdel];
+  else if("fhpadd" in d){var v=$("fh-q").value.trim(),no=v.split(" ")[0],e=(S.emps||[]).filter(function(x){return x.employee_no===no||x.display_name===v||(x.employee_no+" "+x.display_name)===v})[0];if(!e){toast("ไม่พบพนักงาน — เลือกจากรายชื่อที่ขึ้นมา");return}D.ppl[e.id]=$("fh-m").value}
+  else if("fhcancel" in d){FH.draft=null;toast("ยกเลิกการแก้ไขแล้ว")}
+  else if("fhsave" in d){var bad=D.slots.some(function(z){return !z.n.trim()||!/^\d\d:\d\d$/.test(z.s)||!/^\d\d:\d\d$/.test(z.e)});if(bad){toast("กรอกชื่อและเวลาเริ่ม/สิ้นสุดให้ครบทุกช่วง");return}if(D.on&&!D.slots.length){toast("ต้องมีอย่างน้อย 1 ช่วงเวลา");return}
+    t.disabled=true;try{var v2={on:!!D.on,grace:D.grace||0,slots:D.slots.map(function(z){return {n:z.n.trim(),s:z.s,e:z.e}}),ppl:D.ppl};await q(db.from("app_settings").upsert({key:"farm_hours",value:v2}));S.settings.farm_hours=v2;FH.draft=null;toast("บันทึกเวลาเปิดฟาร์มแล้ว")}catch(e){toast(thErr(e));t.disabled=false;return}}
+  fhPanel()});
 async function renderFarm(){
+  try{var gs=await fhState();if(gs&&gs.ok===false){fhLocked(gs);return}}catch(e){}
   try{if(!FM.cat)FM.cat=fmCatFix(await q(db.rpc("farm_cat")));FM.d=await fmLoad();if(FM.v)FM.v=await fmLoad(FM.v.emp);if(FM.t==="friends")FM.board=await q(db.rpc("farm_board"));FM.keep=!!FM.sx;drawFarm();fmTheftNotify()}
   catch(e){$("fm-world").innerHTML='<div class="panel" style="margin:80px 16px">'+emptyRow(thErr(e))+'</div>'}
   if(!FM.tick)FM.tick=setInterval(fmTick,1000)}
@@ -8413,7 +8454,7 @@ function fmPresence(){var t=Date.now();
   if(FM.v&&S.tab==="farm"&&!document.hidden){if(t-(FM.vhb||0)>60000){FM.vhb=t;q(db.rpc("farm_visit",{p_owner:FM.v.emp})).catch(function(){})}}
   else if(!FM.v&&FM.d&&S.tab==="farm"&&!document.hidden&&t-(FM.ghb||0)>30000){FM.ghb=t;q(db.rpc("farm_guests",{})).then(function(G){if(!Array.isArray(G)||FM.v||!FM.d)return;var a=(FM.d.guests||[]).map(function(x){return x.id}).join(),b=G.map(function(x){return x.id}).join();
     FM.d.guests=G;if(a!==b&&!FM.edit&&!FM.busy&&!FM3.tp){FM.keep=true;drawFarm()}}).catch(function(){})}}
-function fmTick(force){if(S.tab!=="farm"&&!force)return;if(!force)fmPresence();var now=fmNow(),flip=false;
+function fmTick(force){if(S.tab!=="farm"&&!force)return;if(!force)fhWatch();if(!force)fmPresence();var now=fmNow(),flip=false;
   if(!FM3.on&&!force&&!FM.busy&&FM.d&&!FM.panning){var cs2=fmCropSig(FM.v||FM.d,now);if(FM.csig&&FM.csig!==cs2){FM.csig=cs2;FM.keep=true;drawFarm();return}FM.csig=cs2}
   if(!force&&!FM.v&&!FM.busy&&FM.vis){var vc=fmVisNow().length;if(FM.vcnt!=null&&vc!==FM.vcnt&&!FM.panning){FM.vcnt=vc;FM.keep=true;drawFarm();return}FM.vcnt=vc}
   if(FM3.on&&FM3.ready&&!force&&!FM.busy&&FM.d){var dd=FM.v||FM.d,sig=fmCropSig(dd,now)+"|"+dd.animals.map(function(a){return !a.ready_at?0:new Date(a.ready_at).getTime()<=now?2:1}).join("")+"|"+(dd.decor||[]).map(function(x){return x.ready_at&&new Date(x.ready_at).getTime()>now?1:0}).join("")+"|"+(dd.jobs||[]).map(function(j){return new Date(j.ready_at).getTime()<=now?1:0}).join("");
