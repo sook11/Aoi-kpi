@@ -8986,7 +8986,7 @@ document.addEventListener("click",function(ev){
 
 /* ---------- เช็คชื่อของฉัน ---------- */
 async function renderMyAtt(){
-  var me=S.me;$("my-qr").innerHTML=qrSvg(me.employee_no,6);$("my-qrname").textContent=me.display_name;$("my-qrsub").textContent=[me.employee_no,deptName(me.department_id),shiftTxt(me.shift)].join(" · ");
+  var me=S.me;$("my-qr").innerHTML=emptyRow("กำลังสร้าง QR ของวันนี้...");q(db.rpc("my_qr_token")).then(function(r){$("my-qr").innerHTML=qrSvg(r.token,6)},function(e){$("my-qr").innerHTML=emptyRow(esc(thErr(e)))});$("my-qrname").textContent=me.display_name;$("my-qrsub").textContent=[me.employee_no,deptName(me.department_id),shiftTxt(me.shift),"QR ของวันนี้ · เปลี่ยนทุกวัน"].join(" · ");
   var m=$("my-month").value||today().slice(0,7);$("my-month").value=m;
   var r=await Promise.all([q(db.from("attendance").select("*").eq("employee_id",me.id).gte("work_date",m+"-01").lte("work_date",mEnd(m)).order("work_date",{ascending:false})),
     q(db.from("kpi_deductions").select("*").eq("employee_id",me.id).gte("work_date",m+"-01").lte("work_date",mEnd(m)).order("work_date",{ascending:false}))]);
