@@ -1417,6 +1417,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .days i.off{font-size:10px;font-weight:600}.days i.off.lv{background:#e0e7ff;color:#3730a3}.days i.off.abs{background:#fee2e2;color:#b91c1c}.days i.off.hol{background:#f1f5f9;color:#64748b}.days i.off[data-dayadd]:hover{outline:2px solid #6366f1}
 .offline{display:block;color:#4338ca!important}
 .missedit{display:grid;gap:6px;width:100%}
+.myqrbox{max-width:420px}.myqr{background:#fff;padding:10px;border-radius:14px;border:1px solid var(--line);max-width:340px;margin:6px auto}.myqr svg{width:100%;height:auto;display:block}.myqrname{text-align:center;font-size:20px;display:grid}.myqrname span{font-size:16px;color:#64748b;letter-spacing:1px}.myqrday{text-align:center;margin:6px 0;color:#0f172a}.myqrtile{background:linear-gradient(135deg,#1d4ed8,#0ea5e9)!important;color:#fff!important}.myqrtile small,.myqrtile em{color:#e0f2fe!important}.scpaper{font-size:13px}
 .pwbox{display:grid;gap:6px;margin-top:8px;padding:10px;border:1px dashed #93c5fd;border-radius:10px;background:#eff6ff}.pwbox.ok{border-color:#86efac;background:#f0fdf4}.pwbox input{font-size:18px;letter-spacing:2px;padding:6px 8px}.pwbox small{color:#475569}.pwcode{font-size:20px;letter-spacing:3px;background:#fff;border-radius:8px;padding:2px 10px}.pwf{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.7);display:flex;align-items:center;justify-content:center;padding:16px}.pwfc{background:#fff;border-radius:16px;padding:20px;max-width:380px;width:100%;display:grid;gap:10px}.pwfc label{display:grid;gap:4px}.pwfc input{padding:10px;font-size:16px}.pwf-msg{color:#dc2626;margin:0;min-height:1em}
 .dcchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dcchips span{background:#f1f5f9;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px}
 .fhlock{max-width:560px;margin:60px auto;text-align:center}.fhlock .big{font-size:52px}.fhlock .nx{font-size:18px}.fhlist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}.fhlist span{background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:13px}
@@ -1708,7 +1709,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 
   <!-- ATTENDANCE: QR Code พนักงาน -->
   <section class="view" id="v-attqr" hidden>
-    <div><h2>QR Code พนักงาน</h2><p class="sub">พิมพ์ QR Code แจกพนักงานเพื่อสแกนเช็คชื่อ (QR = รหัสพนักงาน ใช้กับบัตรเดิมได้)</p></div>
+    <div><h2>QR Code พนักงาน</h2><p class="sub">⛔ <b>ยกเลิกบัตร QR กระดาษแล้ว</b> — พนักงานเปิดแอปกด <b>📱 QR เข้างาน</b> (เปลี่ยนทุกวัน) แล้วยื่นมือถือให้สแกน · บัตรกระดาษใช้ได้เฉพาะเมื่อติ๊ก "อนุญาตบัตรกระดาษชั่วคราว" ในหน้าสแกน</p></div>
     <div class="filters noprint">
       <label>แผนก<select id="aq-dept"></select></label>
       <label>กะ<select id="aq-shift"><option value="">ทุกกะ</option><option value="A">กะ A</option><option value="B">กะ B</option><option value="D">กะ AA</option></select></label>
@@ -1941,6 +1942,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <section class="view" id="v-menu" hidden>
     <div><h2>เมนู</h2><p class="sub">เลือกหน้าที่ต้องการ</p></div>
     <div class="menugrid">
+      <button data-myqr>📱 QR เข้างาน</button>
       <button data-tab="news">📢 ประชาสัมพันธ์<i class="navdot num" id="nw-dot2" hidden></i></button>
       <button data-tab="ot">⏱️ OT (ล่วงเวลา)</button>
       <button data-tab="staff" class="mgr">พนักงาน</button>
@@ -2589,6 +2591,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="sc-head">
     <div class="headrow"><h3 id="sc-head" style="font-size:18px">สแกน QR Code พนักงาน</h3><button type="button" class="iconbtn" data-close="m-scan" data-ico="x" aria-label="ปิด"></button></div>
     <label>รอบสแกน<select id="sc-round"></select></label>
+    <label class="check scpaper"><input type="checkbox" id="sc-paper"> อนุญาตบัตร QR กระดาษชั่วคราว <small class="sub">(เฉพาะคนที่ไม่มีมือถือ · ปิดเองเมื่อปิดหน้าสแกน)</small></label>
     <div class="scanbox"><video id="sc-video" playsinline muted></video><div class="scanframe"></div><p id="sc-msg" class="scanmsg">กำลังเปิดกล้อง...</p></div>
     <p class="sub" style="text-align:center">สแกนหลังเวลาที่กำหนด → สถานะ <b style="color:var(--bad)">ต่อกะสาย</b> · วันที่ <b id="sc-date"></b></p>
     <div id="sc-result"></div>
@@ -4557,7 +4560,7 @@ async function scStart(){
     $("sc-msg").textContent=e&&e.name==="NotAllowedError"?"ไม่ได้รับอนุญาตใช้กล้อง — กดอนุญาตกล้องในการตั้งค่าเว็บไซต์ของเบราว์เซอร์ แล้วกดลองอีกครั้ง":"เปิดกล้องไม่ได้ ("+(e&&e.message||e)+")";
   }
 }
-function scStop(){clearTimeout(SC.timer);if(SC.stream){SC.stream.getTracks().forEach(function(t){t.stop()});SC.stream=null}var v=$("sc-video");if(v)v.srcObject=null}
+function scStop(){clearTimeout(SC.timer);SC.paper=false;var pcb=$("sc-paper");if(pcb)pcb.checked=false;if(SC.stream){SC.stream.getTracks().forEach(function(t){t.stop()});SC.stream=null}var v=$("sc-video");if(v)v.srcObject=null}
 var SC_CANVAS=document.createElement("canvas");
 async function scLoop(){
   if(!SC.stream||$("m-scan").hidden){scStop();return}
@@ -4574,7 +4577,12 @@ async function scLoop(){
 async function scHit(raw){
   var code=String(raw).trim(),now=Date.now();
   if(code===SC.last.c&&now-SC.last.t<4000)return;SC.last={c:code,t:now};
-  var e=mgrEmps("").filter(function(x){return String(x.employee_no)===code||x.id===code})[0];
+  /* อัปเดต 275: QR ในมือถือ เปลี่ยนทุกวัน (AOI1.รหัส.วันที่.ลายเซ็น) · บัตรกระดาษยกเลิก (เปิดได้ชั่วคราวในหน้าสแกน) */
+  var e=null;
+  if(/^AOI1\./.test(code)){try{var eid=await q(db.rpc("qr_verify",{p_code:code}));e=mgrEmps("").filter(function(x){return x.id===eid})[0];if(!e){beep(false);scShow(false,"พนักงานคนนี้ไม่อยู่ในแผนกที่คุณดูแล",code.split(".")[1]);return}}
+    catch(er){var m=(er&&er.message)||"";beep(false);if(/QR_OLD:/.test(m))scShow(false,"⛔ QR ของวันอื่น ("+m.replace(/^.*QR_OLD:/,"")+") — ให้เปิดแอปเพื่อรับ QR ของวันนี้",code.split(".")[1]);else scShow(false,thErr(er),code.split(".")[1]||"");return}}
+  else{if(!SC.paper){beep(false);scShow(false,"⛔ บัตร QR กระดาษยกเลิกแล้ว — ให้พนักงานเปิดแอป AOI KPI กด 📱 QR เข้างาน แล้วยื่นมือถือให้สแกน",code);return}
+    e=mgrEmps("").filter(function(x){return String(x.employee_no)===code||x.id===code})[0]}
   if(!e){beep(false);scShow(false,"ไม่พบพนักงานรหัสนี้ในแผนกที่คุณดูแล",code);return}
   var date=AT.date||today(),a=AT.map[e.id];
   if(a&&a.scanned&&a.time&&a.saved){beep(true);scShow(true,e.display_name+" สแกนแล้วเมื่อ "+a.time+" น. ("+a.status+")",e.employee_no,"dup");return}
@@ -4990,7 +4998,8 @@ async function renderMeCard(){
         :sc.out&&sc.work_date===today()?'<button type="button" class="metile meclk done" data-tab="ot"><small>⏱️ วันนี้ลงเวลาแล้ว</small><b>'+esc(sc.in)+'–'+esc(sc.out)+'</b><em>'+(otx||"ไม่มี OT")+'</em></button>'
         :'<button type="button" class="metile meclk" data-meclock="in"><small>⏱️ หัวหน้างาน ลงเวลาเอง'+(sc.out?' · ล่าสุด '+esc(sc.in)+'–'+esc(sc.out):'')+'</small><b>▶ ลงเวลาเข้างาน</b><em>กดตอนเริ่มงาน</em></button>')}
     if(sc&&sc.can&&!sc.open&&!(sc.out&&sc.work_date===today())&&new Date().getDay()!==0){var rk="aoi-clk-remind-"+(me.id||"");try{if(localStorage.getItem(rk)!==today()){localStorage.setItem(rk,today());setTimeout(function(){if($("m-bday")&&!$("m-bday").hidden)return;openModal("m-clk")},900)}}catch(e){}}
-    else if(!(sc&&sc.can))t.push(meTile("myatt","เข้างานวันนี้",att,a&&a.status!=="มาทำงาน"&&a.status?esc(a.status):"",a?(a.status==="ขาดงาน"?"bad":ST_LATE.indexOf(a.status)>=0?"warn":""):""));
+    if(me.role==="employee"||!(sc&&sc.can))t.unshift('<button type="button" class="metile myqrtile" data-myqr><small>📱 QR เข้างานวันนี้</small><b>แตะเพื่อแสดง QR</b><em>ยื่นให้หัวหน้าสแกน</em></button>');
+    if(!(sc&&sc.can))t.push(meTile("myatt","เข้างานวันนี้",att,a&&a.status!=="มาทำงาน"&&a.status?esc(a.status):"",a?(a.status==="ขาดงาน"?"bad":ST_LATE.indexOf(a.status)>=0?"warn":""):""));
     var vac=d.bal.filter(function(x){var t2=lvType(x.leave_type_id);return /พักร้อน/.test(t2.name)})[0]||d.bal[0];
     if(vac)t.push(meTile("myleave",(lvType(vac.leave_type_id).name||"วันลา")+" คงเหลือ",num(vac.remaining)+' <small style="font-size:13px">วัน</small>',d.myPending?"รออนุมัติ "+d.myPending+" ใบ":"",d.myPending?"warn":""));
     else t.push(meTile("leave","ขอลางาน","📝","ลาได้ในแอป",""));
@@ -5568,12 +5577,12 @@ function qz3Tick(now,dt){var T=THREE;if(QZ3.st0){var Z=QZ3.st0,bb=Z.b,e0=now-QZ3
   var t=Math.min(1,(now-QZ3.st)/QZ3.dur),p=QZ3SH[QZ3.shot](t);QZ3.cam.position.set(p[0][0],p[0][1],p[0][2]);QZ3.cam.lookAt(p[1][0],p[1][1],p[1][2]);
   QZ3.cam.fov=QZ3.shot==="face"?26:QZ3.shot==="wide"||QZ3.shot==="crane"?44:36;QZ3.cam.updateProjectionMatrix()}
 
-function qzRange(){var td=today(),d=new Date(utcMs(td));if(QZ.per==="day")return [td,td];if(QZ.per==="week"){var w=(d.getUTCDay()+6)%7;return [isoOf(utcMs(td)-w*864e5),td]}return [td.slice(0,8)+"01",td]}
+function qzRange(){var td=today(),d=new Date(utcMs(td));if(QZ.per==="pick"&&QZ.pday)return [QZ.pday,QZ.pday];if(QZ.per==="day")return [td,td];if(QZ.per==="week"){var w=(d.getUTCDay()+6)%7;return [isoOf(utcMs(td)-w*864e5),td]}return [td.slice(0,8)+"01",td]}
 async function qzStats(){var P=$("qz-stats");if(!P)return;var R=qzRange(),st,my=null;try{var pr=await Promise.all([q(db.rpc("quiz_stats",{p_from:R[0],p_to:R[1]})),q(db.rpc("quiz_me",{p_from:R[0],p_to:R[1]})).catch(function(){return null})]);st=pr[0];my=pr[1]}catch(e){P.innerHTML=emptyRow(esc(thErr(e)));return}
   var dv=$("qz-dept")?$("qz-dept").value:QZ.dept;QZ.dept=dv||"";var fd=function(x){return !QZ.dept||x.dept_id===QZ.dept},rows=(st.rows||[]).filter(fd),ab=(st.absent||[]).filter(fd),wr=rows.filter(function(x){return x.wrong>0}).sort(function(a,b){return b.wrong-a.wrong});
   var rg=st.group==="lead"?(QZ.rg||"lead"):"employee",rk=rows.filter(function(x){return rg==="lead"?!!x.lead:!x.lead});
   var mgr=S.admin||S.mgr,row=function(x,i,extra){var e=empOf(x.id)||{display_name:x.name};return '<div class="row qzrow">'+(i!=null?'<span class="grank r'+Math.min(i+1,4)+'">'+(i+1)+'</span>':'')+avatarHtml(e)+'<div class="l"><b>'+esc(x.name)+'</b><small>'+esc(deptName(x.dept_id)||"")+'</small></div>'+extra+'</div>'};
-  P.innerHTML='<div class="headrow"><b>📊 สถิติ H.P.E Champion</b><div class="chips">'+[["day","วันนี้"],["week","สัปดาห์นี้"],["month","เดือนนี้"]].map(function(c){return '<button type="button" class="chipsel'+(QZ.per===c[0]?" on":"")+'" data-qzper="'+c[0]+'">'+c[1]+'</button>'}).join("")+'</div>'+(mgr?'<select id="qz-dept" class="slimsel"><option value="">ทุกแผนก</option>'+(S.depts||[]).map(function(d){return '<option value="'+d.id+'"'+(QZ.dept===d.id?' selected':'')+'>'+esc(d.name)+'</option>'}).join("")+'</select>':'')+'</div>'+
+  P.innerHTML='<div class="headrow"><b>📊 สถิติ H.P.E Champion</b><div class="chips">'+[["day","วันนี้"],["week","สัปดาห์นี้"],["month","เดือนนี้"]].map(function(c){return '<button type="button" class="chipsel'+(QZ.per===c[0]?" on":"")+'" data-qzper="'+c[0]+'">'+c[1]+'</button>'}).join("")+'<label class="chipsel'+(QZ.per==="pick"?" on":"")+'" style="display:inline-flex;align-items:center;gap:4px">📅 วันที่<input type="date" id="qz-pday" max="'+today()+'" value="'+(QZ.pday||today())+'" style="border:0;background:transparent;font:inherit"></label></div>'+(mgr?'<select id="qz-dept" class="slimsel"><option value="">ทุกแผนก</option>'+(S.depts||[]).map(function(d){return '<option value="'+d.id+'"'+(QZ.dept===d.id?' selected':'')+'>'+esc(d.name)+'</option>'}).join("")+'</select>':'')+'</div>'+
     (my?'<div class="qzme"><b>🙋 ของฉัน</b><span>ตอบแล้ว <b>'+my.answered+'</b> ข้อ</span><span>✅ ถูก <b>'+my.correct+'</b></span><span>❌ ผิด <b>'+my.wrong+'</b></span><span>🏅 อันดับ <b>'+(my.rank?my.rank+'</b> / '+my.players:'–</b>')+'</span><span>'+fmc()+' <b>'+num(my.coins)+'</b></span></div>':'')+'<div class="stats st4"><div class="stat good"><small>เข้าเล่น</small><b>'+rows.length+'</b></div><div class="stat"><small>ตอบถูกรวม</small><b>'+num(rows.reduce(function(a,x){return a+x.correct},0))+'</b></div><div class="stat bad"><small>ตอบผิดรวม</small><b>'+num(rows.reduce(function(a,x){return a+x.wrong},0))+'</b></div><div class="stat warn"><small>ยังไม่เข้าเล่น</small><b>'+ab.length+'</b></div></div>'+
     '<div class="g3c qzg"><div class="panel"><h3>🏆 คะแนนสูงสุด'+(st.group==="lead"?'<span class="chips" style="margin-left:8px">'+[["lead","หัวหน้างาน"],["employee","พนักงาน"]].map(function(c){return '<button type="button" class="chipsel'+(rg===c[0]?" on":"")+'" data-qzrg="'+c[0]+'">'+c[1]+'</button>'}).join("")+'</span>':'')+'</h3>'+(rk.length?rk.slice(0,30).map(function(x,i){return row(x,i,'<div class="qzn"><b>'+fmc()+' '+num(x.coins)+'</b><small>ตอบ '+(x.correct+x.wrong)+' · ถูก '+x.correct+' · ผิด '+x.wrong+(x.rounds?' · '+x.rounds+' รอบ':'')+(x.perfect?' · 🏆×'+x.perfect:'')+'</small></div>')}).join(""):emptyRow("ยังไม่มีคนเล่น"))+'</div>'+
     '<div class="panel"><h3>❌ ตอบผิด</h3>'+(wr.length?wr.slice(0,30).map(function(x){return row(x,null,'<div class="qzn bad"><b>ผิด '+x.wrong+'</b><small>ถูก '+x.correct+'</small></div>')}).join(""):emptyRow("ไม่มีคนตอบผิด 🎉"))+'</div>'+
@@ -5618,6 +5627,17 @@ function pwForce(){if($("m-pwf"))return;var d=document.createElement("div");d.id
   $("pwf-go").onclick=async function(){var a=$("pwf-a").value,b2=$("pwf-b").value,m=$("pwf-m");if(a.length<6){m.textContent="รหัสผ่านต้องยาวอย่างน้อย 6 ตัว";return}if(a!==b2){m.textContent="รหัสผ่านทั้งสองช่องไม่ตรงกัน";return}
     var bt=$("pwf-go");bt.disabled=true;m.textContent="กำลังบันทึก...";try{var r=await db.auth.updateUser({password:a});if(r.error)throw r.error;await q(db.rpc("clear_temp_password"));S.me.pw_temp=false;d.remove();toast("ตั้งรหัสผ่านใหม่แล้ว ครั้งต่อไปเข้าสู่ระบบด้วยรหัสใหม่นี้")}
     catch(e){bt.disabled=false;var em=(e&&e.message)||"";m.textContent=/different from the old|same/i.test(em)?"รหัสใหม่ต้องไม่ซ้ำกับรหัสชั่วคราว":thErr(e)}}}
+/* ---------- อัปเดต 275: 📱 QR เข้างานในมือถือ (เปลี่ยนทุกวัน) ---------- */
+document.addEventListener("change",function(ev){if(ev.target&&ev.target.id==="sc-paper"){SC.paper=ev.target.checked;if(SC.paper)toast("เปิดรับบัตรกระดาษชั่วคราว — ใช้เฉพาะคนที่ไม่มีมือถือ")}});
+var MQR={tok:null,day:null,t:null};
+async function myQrOpen(){var M=$("m-myqr");if(!M){M=document.createElement("div");M.className="modal";M.id="m-myqr";M.hidden=true;M.innerHTML='<div class="box myqrbox" role="dialog" aria-modal="true"><div class="headrow"><h3 style="font-size:18px">📱 QR เข้างานของฉัน</h3><button type="button" class="iconbtn" data-close="m-myqr" aria-label="ปิด">✕</button></div><div id="myqr-body"></div></div>';document.body.appendChild(M)}
+  openModal("m-myqr");var B=$("myqr-body");B.innerHTML=emptyRow("กำลังสร้าง QR ของวันนี้...");
+  try{var r=await q(db.rpc("my_qr_token"));MQR.tok=r.token;MQR.day=r.day;var qr=window.qrcode(0,"M");qr.addData(r.token);qr.make();
+    var d=new Date(r.day+"T00:00:00");B.innerHTML='<div class="myqr">'+qr.createSvgTag({cellSize:8,margin:2,scalable:true})+'</div><div class="myqrname"><b>'+esc(r.name)+'</b><span>'+esc(r.no)+'</span></div><div class="myqrday">QR ของวันที่ <b>'+d.getDate()+' '+MONTHS[d.getMonth()]+' '+(d.getFullYear()+543)+'</b> · <span id="myqr-clock"></span></div><p class="sub" style="text-align:center">ยื่นหน้าจอนี้ให้หัวหน้าสแกนตอนเช็คชื่อ · QR เปลี่ยนทุกวัน ภาพแคปของวันก่อนใช้ไม่ได้ · เพิ่มความสว่างหน้าจอถ้าสแกนไม่ติด</p>';
+    clearInterval(MQR.t);MQR.t=setInterval(function(){var c=$("myqr-clock");if(!c||$("m-myqr").hidden){clearInterval(MQR.t);return}c.textContent=new Date().toLocaleTimeString("th-TH");if(today()!==MQR.day){clearInterval(MQR.t);myQrOpen()}},1000)}
+  catch(e){B.innerHTML=emptyRow(esc(thErr(e)))}}
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-myqr]");if(b){ev.preventDefault();myQrOpen()}});
+document.addEventListener("change",function(ev){if(ev.target&&ev.target.id==="qz-pday"&&ev.target.value){QZ.pday=ev.target.value;QZ.per="pick";qzStats()}});
 var LOC={last:0,t:null,deny:0};
 function locKey(){return "aoi-loc-ok-"+(S.me&&S.me.id||"")}
 function locStart(){if(!S.me||!navigator.geolocation)return;var ok=null;try{ok=localStorage.getItem(locKey())}catch(e){ok="1"}
