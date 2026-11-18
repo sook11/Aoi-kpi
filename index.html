@@ -1417,6 +1417,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .days i.off{font-size:10px;font-weight:600}.days i.off.lv{background:#e0e7ff;color:#3730a3}.days i.off.abs{background:#fee2e2;color:#b91c1c}.days i.off.hol{background:#f1f5f9;color:#64748b}.days i.off[data-dayadd]:hover{outline:2px solid #6366f1}
 .offline{display:block;color:#4338ca!important}
 .missedit{display:grid;gap:6px;width:100%}
+.pwbox{display:grid;gap:6px;margin-top:8px;padding:10px;border:1px dashed #93c5fd;border-radius:10px;background:#eff6ff}.pwbox.ok{border-color:#86efac;background:#f0fdf4}.pwbox input{font-size:18px;letter-spacing:2px;padding:6px 8px}.pwbox small{color:#475569}.pwcode{font-size:20px;letter-spacing:3px;background:#fff;border-radius:8px;padding:2px 10px}.pwf{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.7);display:flex;align-items:center;justify-content:center;padding:16px}.pwfc{background:#fff;border-radius:16px;padding:20px;max-width:380px;width:100%;display:grid;gap:10px}.pwfc label{display:grid;gap:4px}.pwfc input{padding:10px;font-size:16px}.pwf-msg{color:#dc2626;margin:0;min-height:1em}
 .dcchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dcchips span{background:#f1f5f9;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px}
 .fhlock{max-width:560px;margin:60px auto;text-align:center}.fhlock .big{font-size:52px}.fhlock .nx{font-size:18px}.fhlist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}.fhlist span{background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:13px}
 .fhed{display:grid;gap:8px}.fhed .mrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.fht{border-collapse:collapse;width:100%;max-width:640px}.fht td,.fht th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}.fht input{padding:5px 6px;width:100%;box-sizing:border-box}.fht td.m{text-align:center;color:#64748b}.fhall{max-height:360px;overflow:auto;border:1px solid var(--line);border-radius:10px;max-width:640px}.fhrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line)}.fhrow small{display:block;color:#64748b;font-size:12px}.fhrow.set-open{background:#f0fdf4}.fhrow.set-closed{background:#fef2f2}.fhrow select{max-width:150px}.fhsum{display:grid;gap:6px;max-width:640px}.fhchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.fhchips span{border-radius:999px;padding:3px 10px;font-size:13px}.fhchips.ok span{background:#dcfce7;color:#166534}.fhchips.no span{background:#fee2e2;color:#991b1b}.fhon{font-weight:600}.missedit .mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px;width:fit-content}.missedit .mrow.add{width:100%}.missedit .mrow.add input{flex:1;min-width:0;padding:6px 8px}.missedit .mrow.add #me-emo{flex:0 0 56px;text-align:center}.missedit .mrow button{padding:2px 8px}
@@ -1477,7 +1478,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
     <p class="sub" style="text-align:center;font-size:11.5px">upload-update-28</p>
-    <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนกให้รีเซ็ต แล้วสมัครใหม่ที่แท็บ “สมัครใช้งาน” ด้วยรหัสพนักงานเดิม</p>
+    <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนก/Admin ให้ตั้ง “รหัสชั่วคราว” แล้วเข้าสู่ระบบด้วยรหัสพนักงาน + รหัสชั่วคราว ระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่)</p>
     <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
 </div>
@@ -3144,10 +3145,12 @@ async function renderStaff(){
     var canEdit=S.admin||e.role==="employee",b="";
     b+='<button class="sm" data-open="'+e.id+'">'+ico("eye")+'ดูรายละเอียด</button>';
     if(S.admin)b+='<button class="sm" data-role="'+e.id+'">'+ico("shield")+'มอบสิทธิ์</button>';
-    if(e.user_id&&canEdit&&e.id!==S.me.id)b+='<button class="sm" data-reset="'+e.id+'">'+ico("key")+'รีเซ็ตรหัสผ่าน</button>';
+    if(canEdit&&e.id!==S.me.id&&e.active)b+='<button class="sm" data-pwset="'+e.id+'">'+ico("key")+'ตั้งรหัสชั่วคราว</button>';
     if(canEdit&&e.id!==S.me.id)b+='<button class="sm'+(e.active?' danger':'')+'" data-active="'+e.id+'">'+(e.active?"ปิดใช้งาน":"เปิดใช้งาน")+'</button>';
     if(S.admin&&e.id!==S.me.id)b+='<button class="sm danger" data-delemp="'+e.id+'">'+ico("trash")+'ลบถาวร</button>';
     var ed="";
+    if(PW.emp===e.id)ed+=PW.done?'<div class="pwbox ok"><b>✅ ตั้งรหัสชั่วคราวแล้ว: <span class="pwcode">'+esc(PW.done)+'</span></b><small>บอกพนักงาน: เข้าแท็บ "เข้าสู่ระบบ" ด้วยรหัสพนักงาน <b>'+esc(e.employee_no)+'</b> + รหัสชั่วคราวนี้ แล้วระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่ · ข้อมูลเดิมอยู่ครบ)</small><div class="acts"><button type="button" class="sm" data-pwcancel>ปิด</button></div></div>':
+      '<div class="pwbox"><label>รหัสชั่วคราว (อย่างน้อย 6 ตัว)<input id="pw-temp" maxlength="20" autocomplete="off" value="'+esc(PW.sug)+'"></label><small>พนักงานจะใช้รหัสนี้เข้าสู่ระบบครั้งเดียว แล้วต้องตั้งรหัสผ่านใหม่เอง'+(e.user_id?'':' · พนักงานคนนี้ยังไม่เคยสมัคร ระบบจะสร้างบัญชีให้เลย')+'</small><div class="acts"><button type="button" class="sm good" data-pwgo="'+e.id+'">บันทึกรหัสชั่วคราว</button><button type="button" class="sm" data-pwcancel>ยกเลิก</button></div></div>';
     if(S.admin&&S.editRole===e.id){
       ed='<div class="roleedit"><label>ระดับสิทธิ์<select id="re-role"><option value="employee">พนักงาน</option><option value="dept_admin">หัวหน้างาน</option><option value="admin">Admin</option></select></label><label class="check"><input type="checkbox" id="re-kpi"'+(e.kpi_required!==false?" checked":"")+'> ต้องลงยอดผลิต (KPI) — เอาเครื่องหมายออกถ้าใช้แค่สินค้า/ติ่งต๊อง/แชต จะไม่ถูกนับว่าขาดลงยอด</label><div><small>แผนกที่ดูแลได้ (ใช้กับผู้ดูแลแผนก)</small>'+
         S.depts.map(function(d){return '<label class="check"><input type="checkbox" class="re-dept" value="'+d.id+'"'+((e.allowed_departments||[]).indexOf(d.id)>=0?" checked":"")+'> '+esc(d.name)+'</label>'}).join("")+
@@ -5606,6 +5609,15 @@ async function qzPull(btn){var u=$("qz-url").value.trim(),m=u.match(/\/d\/([a-zA
     await qzImport(rows,"ลิงก์")}catch(e){$("qz-imp").innerHTML='<p class="sub">'+esc(thErr(e))+'</p>'}btn.disabled=false}
 
 /* ---------- ตำแหน่งพนักงานขณะเปิดแอป (แจ้งพนักงานก่อน) · ส่งทุก ~10 นาที ---------- */
+/* ---------- อัปเดต 273: รหัสชั่วคราว — Admin ตั้งให้ พนักงานเข้าสู่ระบบแล้วต้องตั้งรหัสใหม่ ---------- */
+var PW={emp:null,done:null,sug:""};
+function pwForce(){if($("m-pwf"))return;var d=document.createElement("div");d.id="m-pwf";d.className="pwf";
+  d.innerHTML='<div class="pwfc"><h3>🔐 ตั้งรหัสผ่านใหม่</h3><p class="sub">คุณเข้าสู่ระบบด้วย <b>รหัสชั่วคราว</b> ที่ผู้ดูแลตั้งให้ — ตั้งรหัสผ่านใหม่ของคุณเองก่อนใช้งาน (อย่างน้อย 6 ตัว)</p><label>รหัสผ่านใหม่<input type="password" id="pwf-a" autocomplete="new-password"></label><label>ยืนยันรหัสผ่านใหม่<input type="password" id="pwf-b" autocomplete="new-password"></label><p class="pwf-msg" id="pwf-m"></p><button type="button" class="primary" id="pwf-go">บันทึกรหัสผ่านใหม่</button><button type="button" class="sm" id="pwf-out" style="margin-top:8px">ออกจากระบบ</button></div>';
+  document.body.appendChild(d);setTimeout(function(){$("pwf-a").focus()},50);
+  $("pwf-out").onclick=async function(){await db.auth.signOut();location.reload()};
+  $("pwf-go").onclick=async function(){var a=$("pwf-a").value,b2=$("pwf-b").value,m=$("pwf-m");if(a.length<6){m.textContent="รหัสผ่านต้องยาวอย่างน้อย 6 ตัว";return}if(a!==b2){m.textContent="รหัสผ่านทั้งสองช่องไม่ตรงกัน";return}
+    var bt=$("pwf-go");bt.disabled=true;m.textContent="กำลังบันทึก...";try{var r=await db.auth.updateUser({password:a});if(r.error)throw r.error;await q(db.rpc("clear_temp_password"));S.me.pw_temp=false;d.remove();toast("ตั้งรหัสผ่านใหม่แล้ว ครั้งต่อไปเข้าสู่ระบบด้วยรหัสใหม่นี้")}
+    catch(e){bt.disabled=false;var em=(e&&e.message)||"";m.textContent=/different from the old|same/i.test(em)?"รหัสใหม่ต้องไม่ซ้ำกับรหัสชั่วคราว":thErr(e)}}}
 var LOC={last:0,t:null,deny:0};
 function locKey(){return "aoi-loc-ok-"+(S.me&&S.me.id||"")}
 function locStart(){if(!S.me||!navigator.geolocation)return;var ok=null;try{ok=localStorage.getItem(locKey())}catch(e){ok="1"}
@@ -10188,6 +10200,10 @@ document.addEventListener("click",function(ev){
   if(d.pick){$("f-date").value=d.pick;$("f-out").focus();return}
   if(d.st){act(function(){return q(db.from("work_logs").update({status:d.st}).eq("id",d.id))},d.st==="approved"?"อนุมัติแล้ว":"บันทึกว่าไม่ผ่านแล้ว").then(function(ok){if(ok)dirty(d.d)});return}
   if(d.del){if(!armed(b,"แตะอีกครั้งเพื่อลบ"))return;act(function(){return q(db.from("work_logs").delete().eq("id",d.del))},"ลบรายการแล้ว").then(function(ok){if(ok)dirty(d.d)});return}
+  if(d.pwset){PW.emp=d.pwset;PW.done=null;PW.sug=String(Math.floor(100000+Math.random()*900000));refresh();setTimeout(function(){var i=$("pw-temp");if(i){i.focus();i.select()}},50);return}
+  if("pwcancel" in d){PW.emp=null;PW.done=null;refresh();return}
+  if(d.pwgo){var tp=($("pw-temp").value||"").trim();if(tp.length<6){toast("รหัสชั่วคราวต้องยาวอย่างน้อย 6 ตัว");return}b.disabled=true;
+    q(db.rpc("set_temp_password",{p_employee:d.pwgo,p_temp:tp})).then(async function(){PW.done=tp;await loadBase();toast("ตั้งรหัสชั่วคราวแล้ว");refresh()},function(e){b.disabled=false;toast(thErr(e))});return}
   if(d.reset){if(!armed(b))return;act(async function(){await q(db.rpc("reset_employee_login",{p_employee:d.reset}));await loadBase()},"รีเซ็ตแล้ว ให้พนักงานสมัครใหม่ด้วยรหัสพนักงานเดิม").then(refresh);return}
   if(d.active){var e=empOf(d.active);if(!e||(e.active&&!armed(b)))return;act(async function(){await q(db.from("employees").update({active:!e.active}).eq("id",e.id));await loadBase()},e.active?"ปิดใช้งานแล้ว":"เปิดใช้งานแล้ว").then(refresh);return}
   if(d.role){openPerm(d.role);return}
@@ -10314,7 +10330,7 @@ async function start(){
   if(me.is_guest){S.me=me;S.uid=u.id;S.admin=false;S.mgr=false;S.guest=true;S.cache={};S.depts=[];S.kpis=[];S.emps=[me];S.settings={};S.dir=[];S.myDepts=[];S.leads=[];
     document.body.classList.add("guest");try{localStorage.setItem("aoi-play","1")}catch(e){}document.title="AOI Farm";
     $("auth").hidden=true;$("app").hidden=false;show("farm");return}
-  S.me=me;S.uid=u.id;S.admin=me.role==="admin";S.mgr=can("kpi");S.cache={};
+  S.me=me;S.uid=u.id;S.admin=me.role==="admin";S.mgr=can("kpi");S.cache={};if(me.pw_temp)setTimeout(pwForce,400);
   await loadBase();
   document.querySelectorAll(".mgr").forEach(function(el){el.hidden=!S.mgr});
   document.querySelectorAll(".adm").forEach(function(el){el.hidden=!S.admin});
