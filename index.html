@@ -5030,6 +5030,9 @@ async function renderMeCard(){
     else t.push(meTile("leave","ขอลางาน","📝","ลาได้ในแอป",""));
     if(d.kpi){var km=+d.kpi.month.slice(5,7),ky=+d.kpi.month.slice(0,4),pm=km===12?1:km+1,py=km===12?ky+1:ky,pd=py+"-"+String(pm).padStart(2,"0")+"-05",paid=today()>=pd;
       t.push(meTile("allowance","KPI "+SMON[km-1]+" จ่ายจริง",num(d.kpi.amount)+' <small style="font-size:13px">บาท</small>',(paid?"✓ จ่ายแล้ว ":"⏳ จ่าย ")+"5 "+SMON[pm-1],""))}
+    /* อัปเดต 283: ยอดหัก KPI เดือนนี้บนหน้าแรก */
+    try{var dm=today().slice(0,7),ddr=await q(db.from("kpi_deductions").select("amount").eq("employee_id",me.id).gte("work_date",dm+"-01").lte("work_date",mEnd(dm)));var dsum=ddr.reduce(function(a2,x){return a2+(+x.amount||0)},0);
+      t.push(meTile("myatt","หัก KPI เดือนนี้",ddr.length?num(dsum)+' <small style="font-size:13px">บาท</small>':"0",ddr.length?ddr.length+" รายการ · แตะดูรายละเอียด":"ไม่มีการหัก 👍",ddr.length?"bad":""))}catch(e){}
     try{var otr=await q(db.rpc("ot_report",{p_ym:today().slice(0,7),p_emp:me.id}));if(otr&&otr[0]){var ots=otSum(otr[0]);t.push(meTile("ot","OT เดือนนี้",otH(ots.tot)+' <small style="font-size:13px">ชม.</small>',ots.bg?"งบ "+otH(ots.bg)+" · เหลือ "+otH(ots.bal):"กดดูรายวัน",ots.bg&&ots.pct>100?"warn":""))}}catch(e){}
     try{var qm=await q(db.rpc("quiz_me",{p_from:today().slice(0,8)+"01",p_to:today()})),qs=qm.today||{};t.push(meTile("quiz","🏆 H.P.E Champion · เดือนนี้",qm.rank?'อันดับ '+qm.rank+' <small style="font-size:13px">/ '+qm.players+' คน</small>':(qs.daily_done?"ครบแล้ว ✓":"เล่นวันนี้ ▶"),'ตอบแล้ว '+qm.answered+' ข้อ · ✅ ถูก '+qm.correct+' · ❌ ผิด '+qm.wrong+'<br>วันนี้: '+(qs.daily_done?"รอบประจำวันครบแล้ว ✓"+(qs.round>0?" · เล่นเพิ่ม "+qs.round+" รอบ":""):qs.status==="playing"?"ข้อ "+(qs.step+1)+"/"+(qs.total||5):"ยังไม่เล่น"),qs.daily_done?"":"warn"));qzGateCheck(qm)}catch(e){}
     if(d.pts)t.push(meTile("rewards","แต้มสะสม ⭐",num(d.pts.balance),"กดดูของรางวัล",""));
