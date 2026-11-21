@@ -1461,6 +1461,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .fstd{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.fstd span{aspect-ratio:1;display:grid;place-items:center;border-radius:12px;background:#fff;border:2px dashed #fdba74;font-weight:800;color:#9a3412;font-size:14px}
 .fstd span.on{background:linear-gradient(#fb923c,#ea580c);border:2px solid #c2410c;color:#fff}.fstd span.now{border-style:solid;border-color:#ea580c;animation:fstp 1.2s ease-in-out infinite}
 @keyframes fstp{50%{transform:scale(1.08)}}.fqp .fstk{font-size:11px;margin-left:3px;color:#fdba74;font-weight:800}
+.dkby{display:block;margin-top:2px;color:var(--accent,#2563eb);font-weight:600}
 </style>
 </head>
 <body>
@@ -9189,7 +9190,7 @@ async function renderMyAtt(){
   $("my-stats").innerHTML='<div class="stat good"><small>มาทำงาน</small><b>'+c.in+'</b></div><div class="stat warn"><small>สาย/ต่อกะ</small><b>'+c.late+'</b></div><div class="stat"><small>ลา/หยุด</small><b>'+(c.leave+c.holi)+'</b></div><div class="stat bad"><small>ขาดงาน</small><b>'+c.absent+'</b></div>';
   $("my-rows").innerHTML=r[0].length?r[0].map(function(x){return '<div class="row"><div class="l"><b>'+esc(thLong(x.work_date))+'</b><small>'+esc([x.check_in_time?"สแกน "+x.check_in_time:"",x.note].filter(Boolean).join(" · "))+'</small></div>'+stBadge(x.status,true)+'</div>'}).join(""):emptyRow("ยังไม่มีข้อมูลเดือนนี้");
   var sum=0;r[1].forEach(function(x){sum+=+x.amount});
-  $("my-ded").innerHTML=r[1].length?r[1].map(function(x){return '<div class="row"><div class="l"><b>'+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark].filter(Boolean).join(" · "))+'</small></div><div class="r bad">−'+baht(x.amount)+'</div></div>'}).join("")+'<div class="row"><div class="l"><b>รวมเดือนนี้</b></div><div class="r bad">−'+baht(sum)+'</div></div>':emptyRow("ไม่มีรายการหัก 👍");
+  $("my-ded").innerHTML=r[1].length?r[1].map(function(x){return '<div class="row"><div class="l"><b>'+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark].filter(Boolean).join(" · "))+dedBy(x)+'</small></div><div class="r bad">−'+baht(x.amount)+'</div></div>'}).join("")+'<div class="row"><div class="l"><b>รวมเดือนนี้</b></div><div class="r bad">−'+baht(sum)+'</div></div>':emptyRow("ไม่มีรายการหัก 👍");
 }
 $("my-month").addEventListener("change",refresh);
 
@@ -9240,7 +9241,9 @@ async function renderDeduct(){try{dcPanel()}catch(e){}
   var rec=await q(db.from("kpi_deductions").select("*").order("created_at",{ascending:false}).limit(10));
   $("dd-recent").innerHTML=rec.length?rec.map(dedRow).join(""):emptyRow("ยังไม่มีรายการหัก");
 }
-function dedRow(x){var e=empOf(x.employee_id)||{};(DK.byId=DK.byId||{})[x.id]=x;return '<div class="row dkline" data-dkid="'+x.id+'"><div class="l"><b>'+esc(e.display_name||"-")+' · '+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark,x.auto?"อัตโนมัติ":""].filter(Boolean).join(" · "))+'</small></div><div class="r bad">−'+baht(x.amount)+'</div><button type="button" class="sm" data-dkedit="'+x.id+'" aria-label="แก้ไขรายการหัก">'+ico("edit")+'แก้ไข</button><button type="button" class="sm danger" data-dkdel="'+x.id+'" aria-label="ลบรายการหัก">'+ico("trash")+'</button></div>'}
+/* อัปเดต 284: แสดงชื่อหัวหน้าที่ลงหัก */
+function dedBy(x){var r=x.recorded_by&&empOf(x.recorded_by);return '<span class="dkby">✍️ หักโดย '+esc(r?r.display_name:(x.import_id?"นำเข้าจากระบบเดิม":x.auto?"ระบบ":"-"))+'</span>'}
+function dedRow(x){var e=empOf(x.employee_id)||{};(DK.byId=DK.byId||{})[x.id]=x;return '<div class="row dkline" data-dkid="'+x.id+'"><div class="l"><b>'+esc(e.display_name||"-")+' · '+esc(x.category)+'</b><small>'+esc([thLong(x.work_date),x.remark,x.auto?"อัตโนมัติ":""].filter(Boolean).join(" · "))+dedBy(x)+'</small></div><div class="r bad">−'+baht(x.amount)+'</div><button type="button" class="sm" data-dkedit="'+x.id+'" aria-label="แก้ไขรายการหัก">'+ico("edit")+'แก้ไข</button><button type="button" class="sm danger" data-dkdel="'+x.id+'" aria-label="ลบรายการหัก">'+ico("trash")+'</button></div>'}
 /* อัปเดต 240: แก้ไขรายการหัก KPI ในที่ (วันที่ / ยอด / หมวด / หมายเหตุ) */
 function dedEditHtml(x){var DC=dedCats(),cats=DC.indexOf(x.category)<0?[x.category].concat(DC):DC;
   return '<div class="dkedit"><label>วันที่<input type="date" class="dke-date" value="'+esc(x.work_date)+'"></label><label>ยอดหัก (บาท)<input type="number" class="dke-amt" min="1" step="1" inputmode="numeric" value="'+esc(String(+x.amount))+'"></label>'+
