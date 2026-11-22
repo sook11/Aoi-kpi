@@ -8096,9 +8096,17 @@ function fm3UAttach(pm,k){var f=FUA[k];if(!f||pm.userData.ua)return false;pm.use
   pm.children.forEach(function(c){c.visible=false});pm.add(o)},function(){pm.userData.ua=0});return true}
 function fm3Attach(holder,proc,k,force){if(!force&&FUA[k])return;if(!force&&FCHB[k])return;var pr=fm3Model(k);if(!pr)return;pr.then(function(M){if(!holder.parent||holder.userData.mdl)return;
   var o=THREE.SkeletonUtils.clone(M.g.scene),s=(FM3MH[k]||1)/M.h,w=new THREE.Group();w.add(o);o.rotation.y=k==="flamingo"?Math.PI:Math.PI/2;w.scale.setScalar(s);w.position.y=-M.minY*s;holder.add(w);if(proc)proc.visible=false;
-  var mx=new THREE.AnimationMixer(o),A={};M.g.animations.forEach(function(c){A[c.name]=mx.clipAction(c)});if(!A.Idle&&A.Flamingo_Life)A.Idle=A.Flamingo_Life;if(!A.Idle&&A.Peacock_Display){A.Idle=A.Peacock_Display;A.Eat=A.Peacock_Dance}var md=holder.userData.mdl={mx:mx,A:A,cur:null,legs:[],w:w};
+  var mx=new THREE.AnimationMixer(o),A={};M.g.animations.forEach(function(c){A[c.name]=mx.clipAction(c)});if(!A.Idle&&A.Flamingo_Life)A.Idle=A.Flamingo_Life;if(!A.Idle&&A.Peacock_Display){A.Idle=A.Peacock_Display;A.Eat=A.Peacock_Dance;if(!A.Walk)try{A.Walk=mx.clipAction(fm3PeaWalk(o))}catch(e){}}var md=holder.userData.mdl={mx:mx,A:A,cur:null,legs:[],w:w};
   if(!A.Walk)o.traverse(function(b){if(b.isBone&&/(UpLeg[LR]|^thigh[LR])$/.test(b.name)){b.userData.o=/(FrontUpLegL|BackUpLegR|^thighL)/.test(b.name)?0:Math.PI;b.userData.k=/^thigh/.test(b.name)?.6:1;b.userData.q0=null;md.legs.push(b)}});
   fm3Play(md,"Idle",0)},function(){})}
+/* อัปเดต 289: ท่าเดินนกยูง (ก้าวขา งอเข่า ผงกหัว ตัวกระเด้งเบา ๆ) สร้างจากโครงกระดูก */
+var FPWK=window.FPWK||-1;
+function fm3PeaWalk(o){var T=1,N=17,tm=[],tr=[],X=new THREE.Vector3(1,0,0),q=new THREE.Quaternion(),Bn=function(n){return o.getObjectByName(n)};for(var i=0;i<N;i++)tm.push(i/(N-1)*T);
+  var qt=function(b,fn){if(!b)return;var q0=b.quaternion.clone(),v=[];tm.forEach(function(t){q.setFromAxisAngle(X,fn(t*Math.PI*2/T));var r=q0.clone().multiply(q);v.push(r.x,r.y,r.z,r.w)});tr.push(new THREE.QuaternionKeyframeTrack(b.name+".quaternion",tm,v))};
+  [["L",0],["R",Math.PI]].forEach(function(S){qt(Bn("thigh"+S[0]),function(a){return .42*Math.sin(a+S[1])});qt(Bn("shin"+S[0]),function(a){return FPWK*.75*Math.max(0,Math.cos(a+S[1]))})});
+  qt(Bn("neck"),function(a){return .1*Math.sin(a*2)});qt(Bn("head"),function(a){return -.08*Math.sin(a*2)});
+  var h=Bn("hips");if(h){var p0=h.position.clone(),v=[];tm.forEach(function(t){var a=t*Math.PI*2/T;v.push(p0.x,p0.y+.012*Math.abs(Math.cos(a)),p0.z)});tr.push(new THREE.VectorKeyframeTrack(h.name+".position",tm,v))}
+  return new THREE.AnimationClip("PeaWalk",T,tr)}
 function fm3Play(m,n,f){var a=m.A[n]||m.A.Idle;if(!a||m.cur===a)return;a.reset();a.setLoop(n==="Jump"?THREE.LoopOnce:THREE.LoopRepeat);a.clampWhenFinished=n==="Jump";a.fadeIn(f==null?.25:f).play();if(m.cur)m.cur.fadeOut(f==null?.25:f);m.cur=a}
 function fm3Drive(holder,dt,kk,ph,eat,jump){var m=holder.userData.mdl;if(!m)return false;var now=performance.now()/1000;
   if(jump&&jump!==m.lj&&m.A.Jump){m.lj=jump;fm3Play(m,"Jump",.1);m.lock=now+Math.min(1.2,m.A.Jump.getClip().duration)}
