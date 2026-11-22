@@ -6665,6 +6665,20 @@ function fm3SheepStep(s,t,dt){var D=s.userData.sp;if(!D)return;if(D.dead!=null){
     if(r>F-2||r<F-12){D.dir=Math.atan2(nz,-nx)+(r<F-12?Math.PI:0);D.tt=Math.min(D.tt,1.2)}else{s.position.x=nx;s.position.z=nz}
     if(U){U.uPh.value+=dt*7;U.uK.value=Math.min(1,U.uK.value+dt*3)}s.rotation.z*=Math.max(0,1-dt*4)}
   else{if(U)U.uK.value=Math.max(0,U.uK.value-dt*3);var gz=.5+.5*Math.sin(t*1.1+D.k*2);s.rotation.z+=(-.16*gz-s.rotation.z)*Math.min(1,dt*3)}}
+/* อัปเดต 285: ฝูงนกฟลามิงโก้ (โมเดลจริง มีท่ายืนไซ้ขน + เดินลุยน้ำ) */
+function fm3FlamMk(g,A,RG){var a=3.75,R0=RG(a,-7.5),cx=Math.cos(a)*R0,cz=Math.sin(a)*R0,L=new THREE.Group();L.position.set(cx,0,cz);L.rotation.y=-a+Math.PI/2;g.add(L);A.flam=[];
+  var sand=new THREE.Mesh(new THREE.CircleGeometry(5.4,40),new THREE.MeshLambertMaterial({color:0xb39555}));sand.rotation.x=-Math.PI/2;sand.scale.set(1.25,.62,1);sand.position.y=.025;sand.receiveShadow=true;L.add(sand);
+  var wt=new THREE.Mesh(new THREE.CircleGeometry(4.6,40),new THREE.MeshLambertMaterial({color:0x1f86b8,transparent:true,opacity:.86}));wt.rotation.x=-Math.PI/2;wt.scale.set(1.25,.56,1);wt.position.y=.045;L.add(wt);A.flamW=wt;
+  var rm=new THREE.MeshLambertMaterial({color:0x3d6b1f}),hm=new THREE.MeshLambertMaterial({color:0x5a3414});
+  for(var j=0;j<26;j++){var ra=j/26*Math.PI*2+frand(j*7.1)*.2;if(Math.sin(ra)<-.5)continue;var rr=5.05+frand(j*3.3)*.5,rx=Math.cos(ra)*rr*1.25,rz=Math.sin(ra)*rr*.62,h=.9+frand(j*1.7)*.9;
+    var rd=new THREE.Mesh(new THREE.CylinderGeometry(.025,.04,h,4),rm);rd.position.set(rx,h/2,rz);rd.rotation.z=(frand(j*2.2)-.5)*.3;L.add(rd);if(j%2===0){var ct=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,.26,6),hm);ct.position.set(rx,h-.05,rz);L.add(ct)}}
+  var n=LITE.on?3:6;for(var i=0;i<n;i++){var f=new THREE.Group(),an=i/n*Math.PI*2+frand(i*4.4)*.6,rr2=1+frand(i*9.1)*2.2;f.position.set(Math.cos(an)*rr2*1.1,0,Math.sin(an)*rr2*.45);f.rotation.y=frand(i*5.5)*6.28;f.scale.setScalar(.78+frand(i*6.6)*.14);L.add(f);
+    f.userData.fl={st:0,tt:2+frand(i*3.9)*6,dir:f.rotation.y,k:i,bob:frand(i*8.8)*6};A.flam.push(f);(function(f,i){fm3File("flamingo").then(function(G){if(!f.parent)return;var o=THREE.SkeletonUtils.clone(G.scene);o.rotation.y=Math.PI;o.traverse(function(m){if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});f.add(o);
+      var mx=new THREE.AnimationMixer(o),C={};G.animations.forEach(function(c){C[c.name]=mx.clipAction(c)});var D=f.userData.fl;D.mx=mx;D.life=C.Flamingo_Life||C.FlamingoRigAction;D.walk=C.Walk;if(D.life){D.life.play();D.life.time=frand(i*2.9)*D.life.getClip().duration}D.cur=D.life},function(){})})(f,i)}}
+function fm3FlamStep(f,t,dt){var D=f.userData.fl;if(!D)return;if(D.mx)D.mx.update(dt);D.tt-=dt;
+  if(D.tt<=0){D.st=D.st?0:1;D.tt=D.st?2.5+frand(t+D.k)*3.5:6+frand(t*1.7+D.k)*9;if(D.st)D.dir=f.rotation.y+(frand(t*2.3+D.k)-.5)*2.6;var nx=D.st?D.walk:D.life;if(nx&&D.cur&&nx!==D.cur){nx.reset().play();D.cur.crossFadeTo(nx,.6,false);D.cur=nx}}
+  if(D.st){var r0=Math.atan2(Math.sin(D.dir-f.rotation.y),Math.cos(D.dir-f.rotation.y));f.rotation.y+=r0*Math.min(1,dt*1.5);var sp=.32*dt,nx2=f.position.x+Math.cos(f.rotation.y)*sp,nz2=f.position.z-Math.sin(f.rotation.y)*sp;
+    if((nx2*nx2)/(4.6*4.6)+(nz2*nz2)/(2.0*2.0)>1){D.dir=Math.atan2(nz2,-nx2);D.tt=Math.min(D.tt,1.5)}else{f.position.x=nx2;f.position.z=nz2}}}
 function fm3Scenery(st){var F=FM3.F||58,PS=Math.max(520,Math.ceil((F*2+300)/4)*4),RG=function(a,d){var c=Math.cos(a),s2=Math.sin(a);return (F+d)/fm3SqR(c,s2)};var g=new THREE.Group();st.add(g);var A=FM3.amb={clouds:[],birds:[],sheep:[]};try{A.fly=fm3FlyMk(g,FFLY,3,{r0:13,r1:22,h0:13,h1:17,sc:2.2,ex:1.15})}catch(e){}
   /* พื้นดินเป็นเนินคลื่นรอบฟาร์ม */
   var tg=new THREE.PlaneGeometry(PS,PS,130,130);tg.rotateX(-Math.PI/2);var P=tg.attributes.position,C=new Float32Array(P.count*3);
@@ -6688,6 +6702,8 @@ function fm3Scenery(st){var F=FM3.F||58,PS=Math.max(520,Math.ceil((F*2+300)/4)*4
   /* แกะกินหญ้าริมป่า → โมเดลแกะจริง เดินเล็มหญ้า */
   for(i=0;i<12;i++){var sa=frand(i*5.3)*Math.PI*2,sx0=Math.cos(sa)*RG(sa,-5-frand(i*2.7)*4),sz0=Math.sin(sa)*RG(sa,-5-frand(i*2.7)*4);if(Math.abs(sx0-1)<6&&sz0>0)continue;var sh=new THREE.Group();sh.rotation.order="YXZ";sh.position.set(sx0,0,sz0);sh.rotation.y=frand(i)*6;sh.scale.setScalar(1.05+frand(i*8)*.25);g.add(sh);
     sh.userData.sp={a:sa,st:0,tt:frand(i*3)*6,ph:0,k:i};fm3UAttach(sh,i%3===2?"sheep2":"sheep");var shb=fm3Mesh(new THREE.BoxGeometry(2,1.4,1.4),new THREE.MeshBasicMaterial({visible:false}),0,.7,0,sh,false);shb.userData.pick={fmhunt:String(A.sheep.length)};FM3.pickables=FM3.pickables||[];FM3.pickables.push(shb);A.sheep.push(sh)}
+  /* อัปเดต 285: บึงนกฟลามิงโก้ริมป่า */
+  try{fm3FlamMk(g,A,RG)}catch(e){}
   /* ท้องฟ้า: ดวงอาทิตย์ / พระจันทร์ + ดาว + เมฆ */
   var sun=new THREE.Sprite(new THREE.SpriteMaterial({map:fk3SoftTex(1),transparent:true,depthWrite:false,fog:false,color:0xfff3c4}));sun.position.set(120,110,-160);sun.scale.set(70,70,1);g.add(sun);A.sun=sun;
   var mn=new THREE.Sprite(new THREE.SpriteMaterial({map:fk3SoftTex(1),transparent:true,depthWrite:false,fog:false,color:0xdbeafe}));mn.position.set(-110,100,-150);mn.scale.set(34,34,1);mn.visible=false;g.add(mn);A.moon=mn;
@@ -6707,7 +6723,7 @@ function fm3Scenery(st){var F=FM3.F||58,PS=Math.max(520,Math.ceil((F*2+300)/4)*4
 function fm3AmbStep(t,dt){var A=FM3.amb;if(!A)return;fm3FlyStep(A.fly,t,dt);A.clouds.forEach(function(c){c.position.x+=dt*c.userData.v*1.2;if(c.position.x>230)c.position.x=-230});
   A.birds.forEach(function(b){var D=b.userData,a=t*.05+D.o;b.position.set(Math.cos(a)*D.r+D.dx,D.h+Math.sin(t*.6+D.k)*.8,Math.sin(a)*D.r*.7+D.dx);b.rotation.y=Math.atan2(-Math.cos(a)*.7,-Math.sin(a));b.rotation.z=Math.sin(t*.6+D.k)*.12;var LU=b.children[0].userData.legU;if(LU){LU.uK.value=0;var gl=Math.sin(t*.35+D.k*1.7)>.55;LU.uW.value=gl?.25:1;LU.uWp.value+=dt*(gl?3:15)}});
   if(A.balloon){var ba=t*.012;A.balloon.position.set(Math.cos(ba)*80,38+Math.sin(t*.25)*2.5,Math.sin(ba)*60-20);A.balloon.rotation.y=t*.05}
-  A.sheep.forEach(function(s){fm3SheepStep(s,t,dt)});try{fm3WildStep(t,dt)}catch(e){}}
+  A.sheep.forEach(function(s){fm3SheepStep(s,t,dt)});if(A.flam)A.flam.forEach(function(f){fm3FlamStep(f,t,dt)});try{fm3WildStep(t,dt)}catch(e){}}
 function fm3AmbNight(n){var A=FM3.amb;if(!A)return;A.sun.visible=!n;A.moon.visible=!!n;A.stars.visible=!!n;A.clouds.forEach(function(c){c.material.color.set(n?0x3b4a6b:0xffffff);c.material.opacity=n?.55:.92});if(A.balloon)A.balloon.visible=!n;A.birds.forEach(function(b){b.visible=!n})}
 /* ---------- สร้าง/เปิด ฉาก 3D ---------- */
 /* อัปเดต 233: iPhone จอเขียวว่าง ("getShaderPrecisionFormat … null") — เดิมสร้าง WebGL ใหม่ทุกครั้งที่ฉากถูกวาดใหม่แต่ไม่คืน context เก่า
@@ -8050,7 +8066,7 @@ var FM3M={},FM3MK={pet_bee:"bee",cow:"cow",husky:"husky",dog:"shiba",horse:"hors
 function fm3LoadExtra(){if(THREE.GLTFLoader&&THREE.SkeletonUtils&&window.fflate)return Promise.resolve();if(FM3.ex)return FM3.ex;
   var add=function(src){return new Promise(function(ok,bad){var s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})},B="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/";
   FM3.ex=Promise.all([add(B+"loaders/GLTFLoader.js"),add(B+"utils/SkeletonUtils.js"),add(B+"libs/fflate.min.js")]);FM3.ex.catch(function(){FM3.ex=null});return FM3.ex}
-var FM3F={},FMV={x_clift:1,x_kubo:2,x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_watermelon:2,fk_naga:1,fk_mermaid2:1,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,j_lt_oak:1,j_lt_oak2:1,j_lt_autumn:1,j_lt_apple:1,j_lt_cherry:1,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
+var FM3F={},FMV={flamingo:1,x_clift:1,x_kubo:2,x_isle:1,crop_corn:1,crop_wheat:1,crop_rice:1,crop_cabbage:1,crop_strawberry:1,crop_pumpkin:1,crop_watermelon:2,fk_naga:1,fk_mermaid2:1,crop_chili:1,d_sakura:1,d_yflower:1,u_sheep:2,u_sheep2:1,d_lantern:1,d_primrose:1,d_grass:1,d_tuft:1,d_oak:1,d_guardian:1,d_fountain:1,d_banana:2,crop_sunflower:1,u_horse2:1,u_goldhen:1,u_whitehen:1,u_piglet:2,u_bluejay:1,fk_lotus:1,fk_palm:3,fk_pine:4,j_lt_oak:1,j_lt_oak2:1,j_lt_autumn:1,j_lt_apple:1,j_lt_cherry:1,u_peacock:4,fk_mermaid:2,fk_fish:2,u_cow:3};
 function fm3File(n){if(!window.fetch)return Promise.reject(new Error("fetch"));if(FM3F[n])return FM3F[n];var base=window.FM3_MODEL_BASE||"models/";
   FM3F[n]=fm3LoadExtra().then(function(){return fetch(base+"fm-"+n+".bin"+(FMV[n]?"?v="+FMV[n]:""))}).then(function(r){if(!r.ok)throw new Error("model");return r.arrayBuffer()}).then(function(ab){var u=new Uint8Array(ab);if(u[0]===0x1f&&u[1]===0x8b)u=fflate.gunzipSync(u);
     return new Promise(function(ok,bad){new THREE.GLTFLoader().parse(u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength),"",ok,bad)})}).then(function(g){g.scene.traverse(function(o){o.userData.shared=1;if(o.isMesh){o.castShadow=true;[].concat(o.material).forEach(function(m){if(m.__c)return;m.__c=1;if(/^d_/.test(n)){m.flatShading=true;m.side=THREE.DoubleSide}if("metalness" in m){m.metalness=0;m.roughness=.9}if(m.color)m.color.convertLinearToSRGB();if(m.map){m.map.encoding=THREE.LinearEncoding;m.map.needsUpdate=true}if(/Leaves/.test(m.name||"")){m.alphaTest=.5;m.transparent=false;m.side=THREE.DoubleSide}})}});return g});
