@@ -7803,78 +7803,104 @@ function fkSpr(key,seed){var a=key||"auto";if(a==="auto")a=FKF[fmHash(seed||"x")
 function fkFish(k){var c=FM.cat||{},f=(c.fish||{})[k]||{n:k,e:"🐟",r:1};return f}
 function fkFE(f,sz){return '<span class="fkfe" style="font-size:'+(sz||40)+'px'+(f.hue?';filter:hue-rotate('+f.hue+'deg) saturate(1.3)':'')+'">'+f.e+'</span>'}
 
-/* ===== อัปเดต 291: หุบเขาสายรุ้ง (พื้นที่ลับ ใช้กุญแจจากงานจริง) ===== */
-var VL={on:false,tok:0,run:null,k:null,bag:{}};
-var VLS={k1:["🧰","#f59e0b",[0,7,-46],3],k2:["🧰","#f59e0b",[-14,5,-40],3],k3:["🧰","#f59e0b",[4,7,12],3],s1:["💎","#a78bfa",[-99,48,23],3],
-  d1:["🦌","#84cc16",[90,11,58],2],d2:["🦌","#84cc16",[-102,11,-12],2],b1:["🐻","#b45309",[-79,9,48],2],
-  t1:["🥭","#fb923c",[22,16,14],1],t2:["🥭","#fb923c",[52,15,39],1],t3:["🍌","#facc15",[-8,14,24],1],t4:["🍌","#facc15",[-17,16,58],1],
-  w1:["💧","#38bdf8",[0,8,-33],1],l1:["✨","#fde047",[0,8,20],1]};
+/* ===== อัปเดต 296: เมืองลับ — ล่าสมบัติซ่อน (สุ่มที่ใหม่ทุกรอบ · จำกัด 20 นาที · มองหาแสงทองวาบ ๆ) ===== */
+var VL={on:false,tok:0,run:null,k:null,bag:{},off:0,warn:{}};
 function vlNight(){var h=new Date().getHours();return h>=18||h<6}
 function vlItem(k){var p=((FM.cat||{}).products||{})[k]||{};return {e:p.e||"🎁",n:p.n||k}}
-function vlOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||VL.on)return;if(FM.locked){toast("⏰ ตอนนี้ฟาร์มปิดอยู่ — เข้าหุบเขาได้ช่วงเวลาเล่นฟาร์ม");return}
+function vlOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||VL.on)return;if(FM.locked){toast("⏰ ตอนนี้ฟาร์มปิดอยู่ — เข้าเมืองลับได้ช่วงเวลาเล่นฟาร์ม");return}
   if(!fm3Ok()){toast("เครื่องนี้เปิดฉาก 3D ไม่ได้");return}
-  VL.on=true;VL.bag={};VL.run=null;var el=document.createElement("div");el.id="fm-vl";if(vlNight())el.classList.add("night");box.appendChild(el);
+  VL.on=true;VL.bag={};VL.run=null;VL.warn={};var el=document.createElement("div");el.id="fm-vl";if(vlNight())el.classList.add("night");box.appendChild(el);
   el.innerHTML='<canvas id="vl-cv"></canvas><div class="vlload">🏰 กำลังเปิดประตูเมืองลึกลับ…</div><div class="vlbar"><span class="vlpill t">🏰 ปราสาทหุบผาลับ</span><span class="vlpill" id="vl-en" hidden></span><span class="vlpill k" id="vl-k"></span><button type="button" class="vlx" data-vlx="1">⬅ กลับฟาร์ม</button></div><div class="vlbag" id="vl-bag"></div><div id="vl-gate"></div>';
   sfx("open");vl3Start();vlSync()}
 function vlClose(){if(!VL.on)return;VL.on=false;vl3Stop();var el=$("fm-vl");if(el)el.remove();fmLoad().then(function(d){FM.d=d;FM.keep=true;drawFarm()},function(){})}
-async function vlSync(){try{var r=await q(db.rpc("valley_sync"));if(!VL.on)return;VL.k=r;VL.run=r.run||null;
+function vlSetRun(r){VL.run=r||null;VL.warn={};if(r&&r.now)VL.off=Date.parse(r.now)-Date.now();vlGlints()}
+function vlLeft(){if(!VL.run||!VL.run.deadline)return 0;return Math.max(0,(Date.parse(VL.run.deadline)-(Date.now()+VL.off))/1000)}
+async function vlSync(){try{var r=await q(db.rpc("valley_sync"));if(!VL.on)return;VL.k=r;vlSetRun(r.run);
     (r.got||[]).forEach(function(g){toast(g==="cu_quiz"?"🗝️ ได้กุญแจทองแดง — ตอบคำถามผ่านครบ 7 วัน!":g==="ag_kpi"?"🗝️ ได้กุญแจเงิน — ลง KPI ถึงเป้า 5 วันติด!":"🗝️ ได้กุญแจทอง — เดือนที่แล้วไม่โดนหัก KPI เลย!")});
-    vlHud();if(VL.run)vlGate(false);else vlGate(true)}catch(e){toast(thErr(e));if(/FARM_CLOSED/.test((e&&e.message)||""))vlClose()}}
+    vlHud();vlGate(!VL.run)}catch(e){toast(thErr(e));if(/FARM_CLOSED/.test((e&&e.message)||""))vlClose()}}
 function vlHud(){var k=VL.k||{},en=$("vl-en"),kk=$("vl-k");if(kk)kk.textContent="🗝️ "+(k.cu||0)+" · 🥈 "+(k.ag||0)+" · 🥇 "+(k.au||0);
-  if(en){en.hidden=!VL.run;if(VL.run)en.textContent="⚡ พลังงาน "+VL.run.energy}
-  var b=$("vl-bag");if(b)b.innerHTML=Object.keys(VL.bag).map(function(i){var it=vlItem(i);return '<span>'+it.e+' '+esc(it.n)+' '+VL.bag[i]+'</span>'}).join("");
-  vl3Spots()}
-function vlGate(show){var g=$("vl-gate");if(!g)return;if(!show){g.innerHTML="";return}var k=VL.k||{};
-  g.innerHTML='<div class="vlgate"><h3>🏰 ปราสาทหุบผาลับ</h3><p>หุบเหวลับที่มีปราสาทโบราณ หีบสมบัติ เกาะลอยฟ้า ฝูงกวาง และสวนผลไม้ทอง — ใช้กุญแจ 1 ดอกต่อรอบ แตะจุดเรืองแสงเพื่อเก็บของ (ใช้พลังงาน)</p>'+
+  if(en){en.hidden=!VL.run;if(VL.run)vlClock()}
+  var b=$("vl-bag");if(b)b.innerHTML=Object.keys(VL.bag).map(function(i){var it=vlItem(i);return '<span>'+it.e+' '+esc(it.n)+' '+VL.bag[i]+'</span>'}).join("")}
+function vlClock(){var en=$("vl-en");if(!en||!VL.run)return;var L=vlLeft(),m=Math.floor(L/60),sx=Math.floor(L%60),tot=(VL.run.spots||[]).length,got=(VL.run.taken||[]).length;
+  en.textContent="⏱ "+m+":"+String(sx).padStart(2,"0")+" · 🔎 พบ "+got+"/"+tot;en.style.background=L<=60?"rgba(220,38,38,.85)":L<=300?"rgba(217,119,6,.85)":""}
+function vlGate(show){var g=$("vl-gate");if(!g)return;if(!show){g.innerHTML="";return}var k=VL.k||{},ad=!!k.admin;
+  g.innerHTML='<div class="vlgate"><h3>🏰 ปราสาทหุบผาลับ</h3><p>มี<b>ของหายากซ่อนอยู่</b>ทั่วหุบเหว — โฉนดที่ดิน คริสตัล ทองโบราณ เขากวาง และของอัปเกรดต่าง ๆ <b>สุ่มที่ซ่อนใหม่ทุกรอบ</b></p><p>💡 คำใบ้: ของที่ซ่อนจะมี<b>แสงสีทองวาบ ๆ</b> เดินเข้าไปใกล้ ๆ เพื่อเก็บ · ⏱ <b>รอบละ 20 นาที</b> หมดเวลาจะออกอัตโนมัติ ของที่หาไม่พบจะหายไป</p>'+
   '<div class="vlkeys"><b><i>🗝️</i>ทองแดง '+(k.cu||0)+'</b><b><i>🥈</i>เงิน '+(k.ag||0)+'</b><b><i>🥇</i>ทอง '+(k.au||0)+'</b></div>'+
-  '<button type="button" class="vlgo" data-vlgo="cu"'+((k.cu||0)<1&&!k.admin?' disabled':'')+'>ใช้ 🗝️ กุญแจทองแดง · ⚡ '+(k.admin?'99 · Admin ฟรี':'10')+'</button>'+
-  '<button type="button" class="vlgo ag" data-vlgo="ag"'+((k.ag||0)<1&&!k.admin?' disabled':'')+'>ใช้ 🥈 กุญแจเงิน · ⚡ 15 · ดาวคริสตัลออกง่ายขึ้น</button>'+'<button type="button" class="vlgo au" data-vlgo="au"'+((k.au||0)<1&&!k.admin?' disabled':'')+'>ใช้ 🥇 กุญแจทอง · ⚡ 20 · หีบสมบัติได้ทองเพิ่ม</button>'+
+  '<button type="button" class="vlgo" data-vlgo="cu"'+((k.cu||0)<1&&!ad?' disabled':'')+'>ใช้ 🗝️ กุญแจทองแดง · ซ่อน '+(ad?'12 · Admin ฟรี':'8 ชิ้น')+'</button>'+
+  '<button type="button" class="vlgo ag" data-vlgo="ag"'+((k.ag||0)<1&&!ad?' disabled':'')+'>ใช้ 🥈 กุญแจเงิน · ซ่อน '+(ad?'12':'10')+' ชิ้น · ดาวคริสตัลออกง่ายขึ้น</button>'+'<button type="button" class="vlgo au" data-vlgo="au"'+((k.au||0)<1&&!ad?' disabled':'')+'>ใช้ 🥇 กุญแจทอง · ซ่อน 12 ชิ้น · ของหายากที่สุด</button>'+
   '<div class="vlhow"><b>หากุญแจได้จากงานจริง</b><div><span>✅ งานที่สั่งผ่านการตรวจ</span><em>🗝️ +1 (ตรงเวลา +2)</em></div><div><span>🧠 ตอบคำถามประจำวันผ่าน 7 วัน ('+(k.quiz_run||0)+'/7)</span><em>🗝️ +1</em></div><div><span>📈 ลง KPI ถึงเป้า 5 วันติด ('+(k.kpi_run||0)+'/5)</span><em>🥈 +1</em></div><div><span>🛡️ ทั้งเดือนไม่โดนหัก KPI</span><em>🥇 +1</em></div></div>'+
   '<div class="vlcastle">🌈 <b>หุบเขาสายรุ้ง</b> — กำลังสร้างใหม่ เร็ว ๆ นี้</div></div>'}
-async function vlEnter(key,btn){if(btn)btn.disabled=true;try{var r=await q(db.rpc("valley_enter",{p_map:"castle",p_key:key}));VL.run=r;if(!VL.k.admin)VL.k[key]=Math.max(0,(VL.k[key]||0)-1);VL.bag={};sfx("yay");vlGate(false);vlHud();toast("🏰 เข้าเมืองลึกลับแล้ว — แตะจุดเรืองแสงเพื่อเก็บของ")}catch(e){toast(thErr(e));if(btn)btn.disabled=false}}
-async function vlPick(id,sx,sy){var S0=VLS[id];if(!S0)return;if(!VL.run){vlGate(true);return}
-  if((VL.run.taken||[]).indexOf(id)>=0){toast("จุดนี้เก็บไปแล้ว");return}if(VL.run.energy<S0[3]){toast("⚡ พลังงานไม่พอ (ต้องใช้ "+S0[3]+")");return}if(VL.busy)return;VL.busy=true;
-  try{var r=await q(db.rpc("valley_pick",{p_run:VL.run.id,p_spot:id}));VL.run.energy=r.energy;VL.run.taken=r.taken;VL.run.ended=r.ended;
-    var add=function(i,n){VL.bag[i]=(VL.bag[i]||0)+n;var it=vlItem(i);vlPop(sx,sy,"+"+n+" "+it.e+" "+it.n)};add(r.item,r.n);if(r.n2>0)setTimeout(function(){add(r.item2,r.n2);vlHud()},350);
-    sfx(r.star?"yay":"tap");if(r.star)toast("🌟 โชคดีมาก! ได้ดาวคริสตัล");vlHud();
-    if(r.ended){VL.run=null;setTimeout(function(){if(!VL.on)return;toast("⚡ พลังงานหมดแล้ว — ของทั้งหมดเข้ายุ้งฉาง");vlSync()},1400)}}
-  catch(e){toast(thErr(e));if(/จบแล้ว/.test((e&&e.message)||"")){VL.run=null;vlSync()}}finally{VL.busy=false}}
+async function vlEnter(key,btn){if(btn)btn.disabled=true;try{var r=await q(db.rpc("valley_enter",{p_map:"castle",p_key:key}));if(!VL.k.admin)VL.k[key]=Math.max(0,(VL.k[key]||0)-1);VL.bag={};vlSetRun(r);sfx("yay");vlGate(false);vlHud();toast("🏰 มีของหายากซ่อนอยู่ "+(r.spots||[]).length+" ชิ้น — มองหาแสงทองวาบ ๆ แล้วเดินไปใกล้ ๆ · เวลา 20 นาที!")}catch(e){toast(thErr(e));if(btn)btn.disabled=false}}
+async function vlPick(id){if(!VL.run||VL.busy||(VL.run.taken||[]).indexOf(id)>=0)return;VL.busy=true;var G=VL3.gl&&VL3.gl[id],el=$("fm-vl"),sx=200,sy=200;
+  if(G&&el&&VL3.cam){var r0=el.getBoundingClientRect(),p=G.position.clone().project(VL3.cam);sx=(p.x+1)/2*r0.width;sy=(1-p.y)/2*r0.height}
+  try{var r=await q(db.rpc("valley_pick",{p_run:VL.run.id,p_spot:id}));VL.run.taken=r.taken;var it=vlItem(r.item);VL.bag[r.item]=(VL.bag[r.item]||0)+r.n;vlPop(sx,sy,"+"+r.n+" "+it.e+" "+it.n);vlGlints();
+    sfx(r.star?"yay":"tap");if(r.star)toast("🎉 เจอของหายากมาก! "+it.e+" "+it.n);vlHud();
+    if(r.ended){toast("🏆 หาเจอครบทุกชิ้น! ของทั้งหมดเข้ายุ้งฉางแล้ว");VL.run=null;vlHud();setTimeout(function(){if(VL.on)vlClose()},3500)}}
+  catch(e){toast(thErr(e));if(/จบแล้ว|หมดเวลา/.test((e&&e.message)||""))vlTimeUp(true)}finally{VL.busy=false}}
+function vlTick(){if(!VL.run)return;var L=vlLeft();vlClock();[[300,"⏰ เหลือเวลา 5 นาที!"],[60,"⏰ เหลือ 1 นาทีสุดท้าย! รีบหา!"],[30,"⏰ 30 วินาที!"],[10,"⏰ 10 วินาที!"]].forEach(function(w){if(L<=w[0]&&L>w[0]-5&&!VL.warn[w[0]]){VL.warn[w[0]]=1;toast(w[1]);sfx(w[0]<=30?"error":"tap");if(navigator.vibrate)try{navigator.vibrate(w[0]<=30?[120,80,120]:80)}catch(x){}}});if(L<=0)vlTimeUp()}
+function vlTimeUp(silent){if(!VL.run)return;var tot=(VL.run.spots||[]).length,got=(VL.run.taken||[]).length;VL.run=null;vlGlints();vlHud();if(!silent)toast("⌛ หมดเวลา! หาเจอ "+got+"/"+tot+" ชิ้น — ของที่หาไม่พบหายไปแล้ว");sfx("close");q(db.rpc("valley_leave",{p_run:0})).catch(function(){});setTimeout(function(){if(VL.on)vlClose()},3000)}
 function vlPop(x,y,t){var el=$("fm-vl");if(!el)return;var d=document.createElement("div");d.className="vlpop";d.textContent=t;d.style.left=x+"px";d.style.top=y+"px";el.appendChild(d);setTimeout(function(){d.remove()},1700)}
 document.addEventListener("click",function(ev){var t=ev.target.closest("[data-vlx],[data-vlgo]");if(!t)return;var D=t.dataset;if(D.vlx){sfx("tap");vlClose();return}if(D.vlgo){vlEnter(D.vlgo,t);return}});
 /* ---- 3D ---- */
 var VL3={};
-function vlFile(){if(VL3.file)return VL3.file;VL3.file=fm3LoadExtra().then(function(){return fetch((window.FM3_MODEL_BASE||"models/")+"fm-castle.bin?v=1")}).then(function(r){if(!r.ok)throw new Error("model");var tot=+r.headers.get("content-length")||0;if(!r.body||!r.body.getReader)return r.arrayBuffer();
+function vlFile(){if(VL3.file)return VL3.file;VL3.file=fm3LoadExtra().then(function(){return fetch((window.FM3_MODEL_BASE||"models/")+"fm-castle.bin?v=2")}).then(function(r){if(!r.ok)throw new Error("model");var tot=+r.headers.get("content-length")||0;if(!r.body||!r.body.getReader)return r.arrayBuffer();
     var rd=r.body.getReader(),parts=[],got=0;var pump=function(){return rd.read().then(function(x){if(x.done){var u=new Uint8Array(got),o=0;parts.forEach(function(p){u.set(p,o);o+=p.length});return u.buffer}parts.push(x.value);got+=x.value.length;var ld=document.querySelector("#fm-vl .vlload");if(ld)ld.textContent="🏰 กำลังโหลดเมืองลึกลับ "+(tot?Math.min(99,Math.round(got/tot*100))+"%":(got/1048576).toFixed(1)+" MB");return pump()})};return pump()})
   .then(function(ab){var u=new Uint8Array(ab);if(u[0]===0x1f&&u[1]===0x8b){var ld=document.querySelector("#fm-vl .vlload");if(ld)ld.textContent="🏰 กำลังสร้างเมือง…";u=fflate.gunzipSync(u)}return new Promise(function(ok,bad){new THREE.GLTFLoader().parse(u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength),"",ok,bad)})});VL3.file.catch(function(){VL3.file=null});return VL3.file}
-function vlSpr(e,col,cost){var c=document.createElement("canvas");c.width=c.height=128;var x=c.getContext("2d"),g=x.createRadialGradient(64,58,6,64,58,58);g.addColorStop(0,col+"ff");g.addColorStop(.55,col+"88");g.addColorStop(1,col+"00");x.fillStyle=g;x.fillRect(0,0,128,128);x.font="58px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(e,64,58);
-  x.font="bold 22px sans-serif";x.fillStyle="#fff";x.strokeStyle="rgba(76,29,149,.85)";x.lineWidth=5;x.strokeText("⚡"+cost,64,112);x.fillText("⚡"+cost,64,112);
-  var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}))}
+function vlGlintTex(){if(VL3.gtx)return VL3.gtx;var c=document.createElement("canvas");c.width=c.height=64;var x=c.getContext("2d"),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,"rgba(255,255,255,1)");g.addColorStop(.3,"rgba(255,236,140,.9)");g.addColorStop(1,"rgba(255,200,40,0)");x.fillStyle=g;x.fillRect(0,0,64,64);
+  x.strokeStyle="rgba(255,255,230,.95)";x.lineWidth=2;x.beginPath();x.moveTo(32,2);x.lineTo(32,62);x.moveTo(2,32);x.lineTo(62,32);x.stroke();VL3.gtx=new THREE.CanvasTexture(c);return VL3.gtx}
+function vlGlints(){if(!VL3.on)return;VL3.gl=VL3.gl||{};var want={},tk=(VL.run&&VL.run.taken)||[];(VL.run&&VL.run.spots||[]).forEach(function(s){if(tk.indexOf(s.id)<0)want[s.id]=s});
+  Object.keys(VL3.gl).forEach(function(id){if(!want[id]){VL3.sc.remove(VL3.gl[id]);VL3.gl[id].material.dispose();delete VL3.gl[id]}});
+  Object.keys(want).forEach(function(id){if(VL3.gl[id])return;var s=want[id],m=new THREE.Sprite(new THREE.SpriteMaterial({map:vlGlintTex(),color:0xffc21a,transparent:true,depthWrite:false,opacity:0}));m.position.set(+s.x,vlGroundY(+s.x,+s.z)+1.2,+s.z);m.userData.vl=id;m.userData.ph=Math.random()*20;m.scale.setScalar(2.2);VL3.sc.add(m);VL3.gl[id]=m})}
 function vl3Start(){var tok=++VL.tok;fm3Load().then(function(){return vlFile()}).then(function(G){if(tok!==VL.tok||!VL.on||!$("vl-cv"))return;vl3Build(G);var ld=document.querySelector("#fm-vl .vlload");if(ld)ld.remove()})
-  .catch(function(){if(tok!==VL.tok)return;toast("โหลดหุบเขาไม่สำเร็จ ลองใหม่อีกครั้ง");vlClose()})}
+  .catch(function(){if(tok!==VL.tok)return;toast("โหลดเมืองลับไม่สำเร็จ ลองใหม่อีกครั้ง");vlClose()})}
 function vl3Build(G){var cv=$("vl-cv"),el=$("fm-vl");var R=new THREE.WebGLRenderer({canvas:cv,antialias:!LITE.on});liteApply(R);R.setPixelRatio(Math.min(window.devicePixelRatio||1,LITE.on?1:2));R.outputEncoding=THREE.sRGBEncoding;
   var sc=new THREE.Scene(),nt=vlNight(),bg=new THREE.Color(nt?0x1e2a4a:0x9ccbf0);sc.background=bg;sc.fog=new THREE.Fog(bg,320,760);sc.add(new THREE.HemisphereLight(0xffffff,0x8877aa,nt?.45:1));var dl=new THREE.DirectionalLight(0xfff2e0,nt?.25:.7);dl.position.set(80,150,60);sc.add(dl);
-  var root=G.scene;sc.add(root);var ff=[],cr=[],gi=0;root.children.forEach(function(o){if(LITE.on&&(/^GrassField/.test(o.name)||(/^Grove/.test(o.name)&&(gi++)%2)))o.visible=false});var mx=vlStags(root,G.animations);
-  var cam=new THREE.PerspectiveCamera(50,1,.5,2000);cam.position.set(25,72,115);var ctl=new THREE.OrbitControls(cam,cv);ctl.target.set(0,6,-18);ctl.enablePan=false;ctl.minDistance=40;ctl.maxDistance=170;ctl.maxPolarAngle=1.32;ctl.enableDamping=true;ctl.autoRotate=true;ctl.autoRotateSpeed=.35;ctl.update();
-  var spr={};Object.keys(VLS).forEach(function(id){var d=VLS[id],m=vlSpr(d[0],d[1],d[3]);m.position.set(d[2][0],d[2][1],d[2][2]);m.userData.vl=id;m.userData.y=d[2][1];sc.add(m);spr[id]=m});
-  VL3={on:true,R:R,sc:sc,cam:cam,ctl:ctl,spr:spr,ff:ff,cr:cr,mx:mx,file:VL3.file,t0:performance.now(),idle:0};
+  var root=G.scene;sc.add(root);var gi=0;root.children.forEach(function(o){if(LITE.on&&(/^GrassField/.test(o.name)||(/^Grove/.test(o.name)&&(gi++)%2)))o.visible=false});var mx=vlStags(root,G.animations);var cri=vlCritters(root),gnd=[];root.children.forEach(function(o){if(/^(Ground|Square|Road|WoodenBridge)/.test(o.name))gnd.push(o)});
+  var cam=new THREE.PerspectiveCamera(50,1,.5,2000);cam.position.set(25,72,115);var ctl=new THREE.OrbitControls(cam,cv);ctl.target.set(0,6,-18);ctl.enablePan=false;ctl.maxPolarAngle=1.32;ctl.enableDamping=true;ctl.minDistance=14;ctl.maxDistance=110;ctl.update();
+  VL3={on:true,R:R,sc:sc,cam:cam,ctl:ctl,gl:{},mx:mx,cri:cri,gnd:gnd,file:VL3.file,gtx:VL3.gtx,t0:performance.now()};vlMe();vlGlints();
   var rs=function(){var w=el.clientWidth||1,h=el.clientHeight||1;R.setSize(w,h,false);cam.aspect=w/h;cam.fov=w<h?66:50;cam.updateProjectionMatrix()};VL3.rs=rs;rs();window.addEventListener("resize",rs);
-  ctl.addEventListener("start",function(){ctl.autoRotate=false;VL3.idle=0});
   var down=null;cv.addEventListener("pointerdown",function(e){down=[e.clientX,e.clientY]});cv.addEventListener("pointerup",function(e){if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>8)return;down=null;vl3Tap(e)});
-  vl3Spots();var last=performance.now();var loop=function(){if(!VL3.on)return;VL3.raf=requestAnimationFrame(loop);var now=performance.now(),dt=Math.min(.05,(now-last)/1000),t=(now-VL3.t0)/1000;last=now;
-    VL3.idle+=dt;if(VL3.idle>8)ctl.autoRotate=true;ctl.update();
-    Object.keys(spr).forEach(function(id,i){var m=spr[id];if(!m.visible)return;m.position.y=m.userData.y+Math.sin(t*2+i)*.6;var d=m.position.distanceTo(cam.position);m.scale.setScalar(Math.max(3.2,d*.075)*(1+Math.sin(t*3+i)*.06))});
-    vlStagStep(mx,t,dt);R.render(sc,cam)};loop()}
+  var last=performance.now(),tk=0;var loop=function(){if(!VL3.on)return;VL3.raf=requestAnimationFrame(loop);var now=performance.now(),dt=Math.min(.05,(now-last)/1000),t=(now-VL3.t0)/1000;last=now;
+    vlMeStep(dt);ctl.update();tk+=dt;if(tk>.5){tk=0;vlTick()}
+    var M=VL3.me;Object.keys(VL3.gl).forEach(function(id){var m=VL3.gl[id],u=((t+m.userData.ph)%2.4),f=u<.4?Math.sin(u/.4*Math.PI):0;m.material.opacity=.25+f*.75;m.scale.setScalar(1.8+f*2.2);
+      if(M&&VL.run&&!VL.busy&&Math.hypot(m.position.x-M.x,m.position.z-M.z)<4.5)vlPick(id)});
+    vlStagStep(mx,t,dt);vlCritStep(cri,t,dt);R.render(sc,cam)};loop()}
 /* ฝูงกวางในเมืองลึกลับ: แต่ละตัวมีโครงกระดูกชื่อต่อท้าย _N → แปลงชื่อแทร็กให้ตรงทีละตัว แล้วสลับท่ายืน/ก้มกินหญ้า/เงยหน้า */
 function vlStags(root,anims){var L=[],want=["Idle","Eating","Idle_Headlow","Idle_2"],C={};anims.forEach(function(a){C[a.name]=a});
   root.children.forEach(function(arm){if(!/^AnimalArmature/.test(arm.name))return;var map={};arm.traverse(function(o){var b=o.name.replace(/_\d+$/,"");if(!map[b])map[b]=o.name});var mx=new THREE.AnimationMixer(arm),A={};
     want.forEach(function(w){var c=C[w];if(!c)return;var tr=c.tracks.map(function(t){var i=t.name.indexOf("."),nn=t.name.slice(0,i),m=map[nn];if(!m)return null;var t2=t.clone();t2.name=m+t.name.slice(i);return t2}).filter(Boolean);A[w]=mx.clipAction(new THREE.AnimationClip(w+arm.name,c.duration,tr))});
     var cur=A.Eating||A.Idle;if(cur){cur.play();cur.time=Math.random()*cur.getClip().duration}L.push({mx:mx,A:A,cur:cur,nx:4+Math.random()*8})});return L}
 function vlStagStep(L,t,dt){(L||[]).forEach(function(s){s.mx.update(dt);if(t>s.nx){s.nx=t+6+Math.random()*9;var ks=Object.keys(s.A),n=s.A[ks[Math.floor(Math.random()*ks.length)]];if(n&&n!==s.cur){n.reset().play();if(s.cur)s.cur.crossFadeTo(n,.7,false);s.cur=n}}})}
-function vl3Spots(){if(!VL3.on)return;var tk=(VL.run&&VL.run.taken)||[];Object.keys(VL3.spr).forEach(function(id){var m=VL3.spr[id];m.visible=tk.indexOf(id)<0;m.material.opacity=VL.run?1:.55})}
+
+/* อัปเดต 296: อวตารเดินเก็บของเองในเมืองลับ (แตะพื้น = เดินไป · แตะจุดของ = เดินไปเก็บ) */
+function vlGroundY(x,z){var rc=VL3.gr||(VL3.gr=new THREE.Raycaster());rc.set(new THREE.Vector3(x,200,z),new THREE.Vector3(0,-1,0));var h=rc.intersectObjects(VL3.gnd,true);return h.length?h[0].point.y:0}
+function vlMe(){var V={g:new THREE.Group()};VL3.sc.add(V.g);var ph=new THREE.Group(),m1=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,1.3,12),new THREE.MeshLambertMaterial({color:0x60a5fa}));m1.position.y=.85;ph.add(m1);var m2=new THREE.Mesh(new THREE.SphereGeometry(.3,16,12),new THREE.MeshLambertMaterial({color:0xfcd9b6}));m2.position.y=1.65;ph.add(m2);V.g.add(ph);V.m=ph;
+  try{var a=fkBody(fmAva(),S.me&&S.me.id,!!S.admin);fm3BodyKey(V,a)}catch(e){}V.g.scale.setScalar(2.2);V.x=0;V.z=30;V.hd=-Math.PI/2;V.g.position.set(V.x,vlGroundY(V.x,V.z),V.z);V.g.rotation.y=V.hd;VL3.me=V;
+  var rg=new THREE.Mesh(new THREE.RingGeometry(.8,1.2,24),new THREE.MeshBasicMaterial({color:0xfde047,transparent:true,opacity:.9,depthWrite:false}));rg.rotation.x=-Math.PI/2;rg.visible=false;VL3.sc.add(rg);VL3.mark=rg;
+  VL3.ctl.target.set(V.x,V.g.position.y+3,V.z);VL3.cam.position.set(V.x+18,V.g.position.y+30,V.z+42);VL3.ctl.update()}
+function vlMark(x,z){var m=VL3.mark;if(!m)return;m.visible=true;m.position.set(x,vlGroundY(x,z)+.3,z);m.userData.t=performance.now();sfx("tap")}
+function vlMeStep(dt){var V=VL3.me;if(!V)return;var mv=false;if(V.to){var dx=V.to.x-V.x,dz=V.to.z-V.z,d=Math.hypot(dx,dz),near=.6;
+    if(d>near){var sp=Math.min(d,15*dt);V.x+=dx/d*sp;V.z+=dz/d*sp;V.x=Math.max(-118,Math.min(118,V.x));V.z=Math.max(-128,Math.min(98,V.z));var ta=Math.atan2(-dz,dx);V.hd=fmAng(V.hd,ta,dt*10);mv=true}
+    else{V.to=null;if(VL3.mark)VL3.mark.visible=false}}
+  var y=vlGroundY(V.x,V.z),ox=V.g.position.x,oz=V.g.position.z,oy=V.g.position.y;V.g.position.set(V.x,oy+(y-oy)*Math.min(1,dt*10),V.z);V.g.rotation.y=V.hd;
+  var dx2=V.g.position.x-ox,dz2=V.g.position.z-oz,dy2=V.g.position.y-oy;VL3.cam.position.x+=dx2;VL3.cam.position.y+=dy2;VL3.cam.position.z+=dz2;VL3.ctl.target.set(V.g.position.x,V.g.position.y+3,V.g.position.z);
+  if(VL3.mark&&VL3.mark.visible)VL3.mark.scale.setScalar(1+.25*Math.sin(performance.now()/150));
+  var K=V.kk;if(K){K.lt=performance.now()/1000;fm3KKPlay(K,mv?"Walking_A":"Idle_A");K.mx.update(dt)}}
+/* สัตว์ในเมืองลับ (โมเดลนิ่ง) → ให้เดินเล็มหญ้า บินวน: แกะ ยีราฟ หมีเดินช้า ๆ ในรัศมีบ้าน · ผีเสื้อกระพือวน · ต่อบินจี๋ */
+function vlCritters(root){var L=[];root.children.forEach(function(o,i){var n=o.name,k=/^TP_Sheep/.test(n)?"sh":/^TP_Giraffe/.test(n)?"gi":/^TP_Bear/.test(n)?"be":/^TP_Butterfly/.test(n)?"bf":/^(TP_Wasp|Wasp)/.test(n)?"wa":null;if(!k)return;
+  L.push({o:o,k:k,hx:o.position.x,hz:o.position.z,y:o.position.y,x:o.position.x,z:o.position.z,hd:o.rotation.y,st:0,tt:Math.random()*5,p:Math.random()*6,sc:o.scale.x})});return L}
+function vlCritStep(L,t,dt){(L||[]).forEach(function(c){var o=c.o;
+  if(c.k==="bf"){var r=2.5;o.position.set(c.hx+Math.cos(t*.7+c.p)*r,c.y+1.5+Math.sin(t*1.9+c.p)*1.2,c.hz+Math.sin(t*.7+c.p)*r);o.rotation.y=-(t*.7+c.p);o.scale.x=c.sc*(.55+.45*Math.abs(Math.sin(t*14+c.p)));return}
+  if(c.k==="wa"){o.position.set(c.hx+Math.cos(t*1.6+c.p)*3+Math.sin(t*7+c.p)*.3,c.y+Math.sin(t*3+c.p)*.6,c.hz+Math.sin(t*1.6+c.p)*3);o.rotation.y=Math.atan2(Math.cos(t*1.6+c.p),-Math.sin(t*1.6+c.p));return}
+  var R=c.k==="gi"?9:c.k==="be"?4:6,spd=c.k==="gi"?1.6:c.k==="be"?.9:1.1;c.tt-=dt;if(c.tt<=0){c.st=c.st?0:1;c.tt=c.st?2+Math.random()*4:3+Math.random()*7;if(c.st){var a=Math.random()*6.283,rr=Math.random()*R;c.tx=c.hx+Math.cos(a)*rr;c.tz=c.hz+Math.sin(a)*rr}}
+  if(c.st&&c.tx!=null){var dx=c.tx-c.x,dz=c.tz-c.z,d=Math.hypot(dx,dz);if(d>.3){c.x+=dx/d*spd*dt;c.z+=dz/d*spd*dt;var ta=Math.atan2(dx,dz),df=Math.atan2(Math.sin(ta-c.hd),Math.cos(ta-c.hd));c.hd+=df*Math.min(1,dt*3)}else c.st=0}
+  o.position.set(c.x,c.y+(c.st?Math.abs(Math.sin(t*6+c.p))*.12:0),c.z);o.rotation.y=c.hd;o.rotation.x=c.st?0:(c.k==="sh"?.08+.06*Math.sin(t*2.2+c.p):0)})}
 function vl3Tap(e){var cv=$("vl-cv");if(!cv||!VL3.on)return;var r=cv.getBoundingClientRect(),v=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),rc=new THREE.Raycaster();rc.setFromCamera(v,VL3.cam);
-  var L=Object.keys(VL3.spr).map(function(k){return VL3.spr[k]}).filter(function(m){return m.visible});var h=rc.intersectObjects(L,false);if(!h.length)return;var id=h[0].object.userData.vl,el=$("fm-vl").getBoundingClientRect();vlPick(id,e.clientX-el.left,e.clientY-el.top)}
+  var L=Object.keys(VL3.gl||{}).map(function(k){return VL3.gl[k]});var h=rc.intersectObjects(L,false);var M=VL3.me;
+  if(h.length&&M){var sp=h[0].object.position;M.to={x:sp.x,z:sp.z};vlMark(sp.x,sp.z);return}
+  var g=rc.intersectObjects(VL3.gnd,true);if(g.length&&M){M.to={x:g[0].point.x,z:g[0].point.z};vlMark(g[0].point.x,g[0].point.z)}}
 function vl3Stop(){VL.tok++;if(!VL3.on){return}VL3.on=false;cancelAnimationFrame(VL3.raf);window.removeEventListener("resize",VL3.rs);try{VL3.ctl.dispose()}catch(e){}
-  VL3.sc.traverse(function(o){if(o.isSprite){o.material.map.dispose();o.material.dispose()}});try{VL3.sc.remove(VL3.sc.children.filter(function(o){return o.type==="Group"})[0])}catch(e){}(VL3.mx||[]).forEach(function(m){m.mx.stopAllAction()});try{VL3.R.dispose();VL3.R.forceContextLoss()}catch(e){}var f=VL3.file;VL3={file:f}}
+  VL3.sc.traverse(function(o){if(o.isSprite)o.material.dispose()});try{VL3.sc.remove(VL3.sc.children.filter(function(o){return o.type==="Group"})[0])}catch(e){}(VL3.mx||[]).forEach(function(m){m.mx.stopAllAction()});try{VL3.R.dispose();VL3.R.forceContextLoss()}catch(e){}var f=VL3.file,gt=VL3.gtx;VL3={file:f,gtx:gt}}
 function fkOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||FK.on)return;FK.on=true;FK.st="idle";fkRtOpen();
   var el=document.createElement("div");el.id="fm-lake";box.appendChild(el);fkDraw();fkLoad();fkPres();FK.hb=setInterval(function(){if(!document.hidden)fkPres()},20000);sfx("open")}
 function fkClose(){if(!FK.on)return;FK.on=false;fk3Stop();fkRtClose();cancelAnimationFrame(FK.raf);clearInterval(FK.hb);var el=$("fm-lake");if(el)el.remove();q(db.rpc("fish_leave")).catch(function(){});
