@@ -7827,11 +7827,11 @@ function vlHud(){var k=VL.k||{},en=$("vl-en"),kk=$("vl-k");if(kk)kk.textContent=
 function vlGate(show){var g=$("vl-gate");if(!g)return;if(!show){g.innerHTML="";return}var k=VL.k||{};
   g.innerHTML='<div class="vlgate"><h3>🏰 ปราสาทหุบผาลับ</h3><p>หุบเหวลับที่มีปราสาทโบราณ หีบสมบัติ เกาะลอยฟ้า ฝูงกวาง และสวนผลไม้ทอง — ใช้กุญแจ 1 ดอกต่อรอบ แตะจุดเรืองแสงเพื่อเก็บของ (ใช้พลังงาน)</p>'+
   '<div class="vlkeys"><b><i>🗝️</i>ทองแดง '+(k.cu||0)+'</b><b><i>🥈</i>เงิน '+(k.ag||0)+'</b><b><i>🥇</i>ทอง '+(k.au||0)+'</b></div>'+
-  '<button type="button" class="vlgo" data-vlgo="cu"'+((k.cu||0)<1?' disabled':'')+'>ใช้ 🗝️ กุญแจทองแดง · ⚡ 10</button>'+
-  '<button type="button" class="vlgo ag" data-vlgo="ag"'+((k.ag||0)<1?' disabled':'')+'>ใช้ 🥈 กุญแจเงิน · ⚡ 15 · ดาวคริสตัลออกง่ายขึ้น</button>'+'<button type="button" class="vlgo au" data-vlgo="au"'+((k.au||0)<1?' disabled':'')+'>ใช้ 🥇 กุญแจทอง · ⚡ 20 · หีบสมบัติได้ทองเพิ่ม</button>'+
+  '<button type="button" class="vlgo" data-vlgo="cu"'+((k.cu||0)<1&&!k.admin?' disabled':'')+'>ใช้ 🗝️ กุญแจทองแดง · ⚡ '+(k.admin?'99 · Admin ฟรี':'10')+'</button>'+
+  '<button type="button" class="vlgo ag" data-vlgo="ag"'+((k.ag||0)<1&&!k.admin?' disabled':'')+'>ใช้ 🥈 กุญแจเงิน · ⚡ 15 · ดาวคริสตัลออกง่ายขึ้น</button>'+'<button type="button" class="vlgo au" data-vlgo="au"'+((k.au||0)<1&&!k.admin?' disabled':'')+'>ใช้ 🥇 กุญแจทอง · ⚡ 20 · หีบสมบัติได้ทองเพิ่ม</button>'+
   '<div class="vlhow"><b>หากุญแจได้จากงานจริง</b><div><span>✅ งานที่สั่งผ่านการตรวจ</span><em>🗝️ +1 (ตรงเวลา +2)</em></div><div><span>🧠 ตอบคำถามประจำวันผ่าน 7 วัน ('+(k.quiz_run||0)+'/7)</span><em>🗝️ +1</em></div><div><span>📈 ลง KPI ถึงเป้า 5 วันติด ('+(k.kpi_run||0)+'/5)</span><em>🥈 +1</em></div><div><span>🛡️ ทั้งเดือนไม่โดนหัก KPI</span><em>🥇 +1</em></div></div>'+
   '<div class="vlcastle">🌈 <b>หุบเขาสายรุ้ง</b> — กำลังสร้างใหม่ เร็ว ๆ นี้</div></div>'}
-async function vlEnter(key,btn){if(btn)btn.disabled=true;try{var r=await q(db.rpc("valley_enter",{p_map:"castle",p_key:key}));VL.run=r;VL.k[key]=Math.max(0,(VL.k[key]||0)-1);VL.bag={};sfx("yay");vlGate(false);vlHud();toast("🏰 เข้าเมืองลึกลับแล้ว — แตะจุดเรืองแสงเพื่อเก็บของ")}catch(e){toast(thErr(e));if(btn)btn.disabled=false}}
+async function vlEnter(key,btn){if(btn)btn.disabled=true;try{var r=await q(db.rpc("valley_enter",{p_map:"castle",p_key:key}));VL.run=r;if(!VL.k.admin)VL.k[key]=Math.max(0,(VL.k[key]||0)-1);VL.bag={};sfx("yay");vlGate(false);vlHud();toast("🏰 เข้าเมืองลึกลับแล้ว — แตะจุดเรืองแสงเพื่อเก็บของ")}catch(e){toast(thErr(e));if(btn)btn.disabled=false}}
 async function vlPick(id,sx,sy){var S0=VLS[id];if(!S0)return;if(!VL.run){vlGate(true);return}
   if((VL.run.taken||[]).indexOf(id)>=0){toast("จุดนี้เก็บไปแล้ว");return}if(VL.run.energy<S0[3]){toast("⚡ พลังงานไม่พอ (ต้องใช้ "+S0[3]+")");return}if(VL.busy)return;VL.busy=true;
   try{var r=await q(db.rpc("valley_pick",{p_run:VL.run.id,p_spot:id}));VL.run.energy=r.energy;VL.run.taken=r.taken;VL.run.ended=r.ended;
