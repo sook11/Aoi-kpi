@@ -1480,6 +1480,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .vlkeys{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}.vlkeys b{flex:1;min-width:88px;text-align:center;background:#f5f3ff;border-radius:12px;padding:7px 4px;font-size:13px}
 .vlkeys b i{display:block;font-style:normal;font-size:20px}
 .vlgo{display:block;width:100%;border:0;border-radius:14px;padding:11px;margin:6px 0;font-weight:800;font-size:15px;color:#fff;background:linear-gradient(90deg,#f472b6,#a78bfa,#60a5fa);cursor:pointer}
+.vlnet{position:absolute;right:14px;bottom:62px;z-index:3;width:84px;height:84px;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 35% 30%,#fde68a,#f59e0b);box-shadow:0 6px 18px rgba(0,0,0,.35);font-size:34px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;touch-action:none}.vlnet small{font-size:15px;font-weight:900;color:#7c2d12}.vlnet:active{transform:scale(.92)}
 .vlgo.ag{background:linear-gradient(90deg,#94a3b8,#cbd5e1,#64748b)}.vlgo.au{background:linear-gradient(90deg,#f59e0b,#fde047,#d97706)}.vlgo:disabled{opacity:.4}
 .vlhow{margin-top:8px;border-top:1px dashed #ddd6fe;padding-top:8px;font-size:13px}.vlhow div{display:flex;justify-content:space-between;gap:8px;padding:3px 0}.vlhow em{font-style:normal;color:#7c3aed;font-weight:700;white-space:nowrap}
 .vlcastle{margin-top:8px;background:#f1f5f9;border-radius:12px;padding:8px 10px;font-size:13px;color:#475569}
@@ -7813,7 +7814,7 @@ function vlOpen(){var box=document.querySelector("#v-farm .fgame");if(!box||VL.o
   el.innerHTML='<canvas id="vl-cv"></canvas><div class="vlload">🏰 กำลังเปิดประตูเมืองลึกลับ…</div><div class="vlbar"><span class="vlpill t">🏰 ปราสาทหุบผาลับ</span><span class="vlpill" id="vl-en" hidden></span><span class="vlpill k" id="vl-k"></span><button type="button" class="vlx" data-vlx="1">⬅ กลับฟาร์ม</button></div><div class="vlbag" id="vl-bag"></div><div id="vl-gate"></div>';
   sfx("open");vl3Start();vlSync()}
 function vlClose(){if(!VL.on)return;VL.on=false;vl3Stop();var el=$("fm-vl");if(el)el.remove();fmLoad().then(function(d){FM.d=d;FM.keep=true;drawFarm()},function(){})}
-function vlSetRun(r){VL.run=r||null;VL.warn={};if(r&&r.now)VL.off=Date.parse(r.now)-Date.now();vlGlints()}
+function vlSetRun(r){VL.run=r||null;VL.warn={};if(r&&r.now)VL.off=Date.parse(r.now)-Date.now();vlBfs();vlNetBtn()}
 function vlLeft(){if(!VL.run||!VL.run.deadline)return 0;return Math.max(0,(Date.parse(VL.run.deadline)-(Date.now()+VL.off))/1000)}
 async function vlSync(){try{var r=await q(db.rpc("valley_sync"));if(!VL.on)return;VL.k=r;vlSetRun(r.run);
     (r.got||[]).forEach(function(g){toast(g==="cu_quiz"?"🗝️ ได้กุญแจทองแดง — ตอบคำถามผ่านครบ 7 วัน!":g==="ag_kpi"?"🗝️ ได้กุญแจเงิน — ลง KPI ถึงเป้า 5 วันติด!":"🗝️ ได้กุญแจทอง — เดือนที่แล้วไม่โดนหัก KPI เลย!")});
@@ -7822,48 +7823,72 @@ function vlHud(){var k=VL.k||{},en=$("vl-en"),kk=$("vl-k");if(kk)kk.textContent=
   if(en){en.hidden=!VL.run;if(VL.run)vlClock()}
   var b=$("vl-bag");if(b)b.innerHTML=Object.keys(VL.bag).map(function(i){var it=vlItem(i);return '<span>'+it.e+' '+esc(it.n)+' '+VL.bag[i]+'</span>'}).join("")}
 function vlClock(){var en=$("vl-en");if(!en||!VL.run)return;var L=vlLeft(),m=Math.floor(L/60),sx=Math.floor(L%60),tot=(VL.run.spots||[]).length,got=(VL.run.taken||[]).length;
-  en.textContent="⏱ "+m+":"+String(sx).padStart(2,"0")+" · ✅ เก็บแล้ว "+got+" · 🔎 เหลือ "+(tot-got)+" ชิ้น";en.style.background=L<=60?"rgba(220,38,38,.85)":L<=300?"rgba(217,119,6,.85)":""}
+  en.textContent="⏱ "+m+":"+String(sx).padStart(2,"0")+" · ✅ จับแล้ว "+got+" · 🦋 เหลือ "+(tot-got)+" ตัว";en.style.background=L<=60?"rgba(220,38,38,.85)":L<=300?"rgba(217,119,6,.85)":""}
 function vlGate(show){var g=$("vl-gate");if(!g)return;if(!show){g.innerHTML="";return}var k=VL.k||{},ad=!!k.admin;
-  g.innerHTML='<div class="vlgate"><h3>🏰 ปราสาทหุบผาลับ</h3><p>มี<b>ของหายากซ่อนอยู่</b>ทั่วหุบเหว — โฉนดที่ดิน คริสตัล ทองโบราณ เขากวาง และของอัปเกรดต่าง ๆ <b>สุ่มที่ซ่อนใหม่ทุกรอบ</b></p><p>💡 คำใบ้: ของที่ซ่อนจะมี<b>แสงสีทองวาบ ๆ</b> เดินเข้าไปใกล้ ๆ เพื่อเก็บ · ⏱ <b>รอบละ 20 นาที</b> หมดเวลาจะออกอัตโนมัติ ของที่หาไม่พบจะหายไป</p>'+
+  g.innerHTML='<div class="vlgate"><h3>🏰 ปราสาทหุบผาลับ</h3><p>🦋 <b>ไล่จับผีเสื้อวิเศษด้วยตาข่าย</b> — ผีเสื้อแต่ละตัวพาของรางวัลมา: โฉนดที่ดิน คริสตัล ทองโบราณ เขากวาง และของอัปเกรดต่าง ๆ <b>บินอยู่คนละที่ทุกรอบ</b></p><p>🟡 สีทอง = หายากที่สุด (บินเร็ว) · 🟣 ม่วง = หายาก · 🔵 ฟ้า = ทั่วไป · ผีเสื้อจะ<b>บินหนี</b>เมื่อเข้าใกล้ เดินประชิดแล้วกด <b>🥅 จับ!</b> · ⏱ <b>รอบละ 20 นาที</b> หมดเวลาออกอัตโนมัติ ตัวที่จับไม่ได้จะบินหนีไป</p>'+
   '<div class="vlkeys"><b><i>🗝️</i>ทองแดง '+(k.cu||0)+'</b><b><i>🥈</i>เงิน '+(k.ag||0)+'</b><b><i>🥇</i>ทอง '+(k.au||0)+'</b></div>'+
-  '<button type="button" class="vlgo" data-vlgo="cu"'+((k.cu||0)<1&&!ad?' disabled':'')+'>ใช้ 🗝️ กุญแจทองแดง · ซ่อน '+(ad?'12 · Admin ฟรี':'8 ชิ้น')+'</button>'+
-  '<button type="button" class="vlgo ag" data-vlgo="ag"'+((k.ag||0)<1&&!ad?' disabled':'')+'>ใช้ 🥈 กุญแจเงิน · ซ่อน '+(ad?'12':'10')+' ชิ้น · ดาวคริสตัลออกง่ายขึ้น</button>'+'<button type="button" class="vlgo au" data-vlgo="au"'+((k.au||0)<1&&!ad?' disabled':'')+'>ใช้ 🥇 กุญแจทอง · ซ่อน 12 ชิ้น · ของหายากที่สุด</button>'+
+  '<button type="button" class="vlgo" data-vlgo="cu"'+((k.cu||0)<1&&!ad?' disabled':'')+'>ใช้ 🗝️ กุญแจทองแดง · ผีเสื้อ '+(ad?'12 · Admin ฟรี':'8 ตัว')+'</button>'+
+  '<button type="button" class="vlgo ag" data-vlgo="ag"'+((k.ag||0)<1&&!ad?' disabled':'')+'>ใช้ 🥈 กุญแจเงิน · ผีเสื้อ '+(ad?'12':'10')+' ตัว · ตัวสีทองออกง่ายขึ้น</button>'+'<button type="button" class="vlgo au" data-vlgo="au"'+((k.au||0)<1&&!ad?' disabled':'')+'>ใช้ 🥇 กุญแจทอง · ผีเสื้อ 12 ตัว · ของหายากที่สุด</button>'+
   '<div class="vlhow"><b>หากุญแจได้จากงานจริง</b><div><span>✅ งานที่สั่งผ่านการตรวจ</span><em>🗝️ +1 (ตรงเวลา +2)</em></div><div><span>🧠 ตอบคำถามประจำวันผ่าน 7 วัน ('+(k.quiz_run||0)+'/7)</span><em>🗝️ +1</em></div><div><span>📈 ลง KPI ถึงเป้า 5 วันติด ('+(k.kpi_run||0)+'/5)</span><em>🥈 +1</em></div><div><span>🛡️ ทั้งเดือนไม่โดนหัก KPI</span><em>🥇 +1</em></div></div>'+
   '<div class="vlcastle">🌈 <b>หุบเขาสายรุ้ง</b> — กำลังสร้างใหม่ เร็ว ๆ นี้</div></div>'}
-async function vlEnter(key,btn){if(btn)btn.disabled=true;try{var r=await q(db.rpc("valley_enter",{p_map:"castle",p_key:key}));if(!VL.k.admin)VL.k[key]=Math.max(0,(VL.k[key]||0)-1);VL.bag={};vlSetRun(r);sfx("yay");vlGate(false);vlHud();toast("🏰 มีของหายากซ่อนอยู่ "+(r.spots||[]).length+" ชิ้น — มองหาแสงทองวาบ ๆ แล้วเดินไปใกล้ ๆ · เวลา 20 นาที!")}catch(e){toast(thErr(e));if(btn)btn.disabled=false}}
-async function vlPick(id){if(!VL.run||VL.busy||(VL.run.taken||[]).indexOf(id)>=0)return;VL.busy=true;var G=VL3.gl&&VL3.gl[id],el=$("fm-vl"),sx=200,sy=200;
+async function vlEnter(key,btn){if(btn)btn.disabled=true;try{var r=await q(db.rpc("valley_enter",{p_map:"castle",p_key:key}));if(!VL.k.admin)VL.k[key]=Math.max(0,(VL.k[key]||0)-1);VL.bag={};vlSetRun(r);sfx("yay");vlGate(false);vlHud();toast("🦋 มีผีเสื้อวิเศษ "+(r.spots||[]).length+" ตัวบินอยู่ในหุบเหว — เดินไล่ให้ประชิดแล้วกด 🥅 จับ! · เวลา 20 นาที")}catch(e){toast(thErr(e));if(btn)btn.disabled=false}}
+async function vlPick(id){if(!VL.run||VL.busy||(VL.run.taken||[]).indexOf(id)>=0)return;VL.busy=true;var G0=VL3.bf&&VL3.bf[id],G=G0&&G0.g,el=$("fm-vl"),sx=200,sy=200;
   if(G&&el&&VL3.cam){var r0=el.getBoundingClientRect(),p=G.position.clone().project(VL3.cam);sx=(p.x+1)/2*r0.width;sy=(1-p.y)/2*r0.height}
-  try{var r=await q(db.rpc("valley_pick",{p_run:VL.run.id,p_spot:id}));VL.run.taken=r.taken;var it=vlItem(r.item);VL.bag[r.item]=(VL.bag[r.item]||0)+r.n;vlPop(sx,sy,"+"+r.n+" "+it.e+" "+it.n);vlGlints();
+  try{var r=await q(db.rpc("valley_pick",{p_run:VL.run.id,p_spot:id}));VL.run.taken=r.taken;var it=vlItem(r.item);VL.bag[r.item]=(VL.bag[r.item]||0)+r.n;vlPop(sx,sy,"🦋 จับได้! +"+r.n+" "+it.e+" "+it.n);vlBfs();
     sfx(r.star?"yay":"tap");if(r.star)toast("🎉 เจอของหายากมาก! "+it.e+" "+it.n);vlHud();
-    if(r.ended){toast("🏆 หาเจอครบทุกชิ้น! ของทั้งหมดเข้ายุ้งฉางแล้ว");VL.run=null;vlHud();setTimeout(function(){if(VL.on)vlClose()},3500)}}
-  catch(e){toast(thErr(e));if(/จบแล้ว|หมดเวลา/.test((e&&e.message)||""))vlTimeUp(true)}finally{VL.busy=false}}
+    if(r.ended){toast("🏆 จับผีเสื้อครบทุกตัว! ของทั้งหมดเข้ายุ้งฉางแล้ว");VL.run=null;vlHud();setTimeout(function(){if(VL.on)vlClose()},3500)}}
+  catch(e){toast(thErr(e));var B9=VL3.bf&&VL3.bf[id];if(B9&&B9.caught&&!/เก็บไปแล้ว/.test((e&&e.message)||"")){B9.caught=false;B9.g.scale.setScalar(1)}if(/จบแล้ว|หมดเวลา/.test((e&&e.message)||""))vlTimeUp(true)}finally{VL.busy=false}}
 function vlTick(){if(!VL.run)return;var L=vlLeft();vlClock();[[300,"⏰ เหลือเวลา 5 นาที!"],[60,"⏰ เหลือ 1 นาทีสุดท้าย! รีบหา!"],[30,"⏰ 30 วินาที!"],[10,"⏰ 10 วินาที!"]].forEach(function(w){if(L<=w[0]&&L>w[0]-5&&!VL.warn[w[0]]){VL.warn[w[0]]=1;toast(w[1]);sfx(w[0]<=30?"error":"tap");if(navigator.vibrate)try{navigator.vibrate(w[0]<=30?[120,80,120]:80)}catch(x){}}});if(L<=0)vlTimeUp()}
-function vlTimeUp(silent){if(!VL.run)return;var tot=(VL.run.spots||[]).length,got=(VL.run.taken||[]).length;VL.run=null;vlGlints();vlHud();if(!silent)toast("⌛ หมดเวลา! หาเจอ "+got+"/"+tot+" ชิ้น — ของที่หาไม่พบหายไปแล้ว");sfx("close");q(db.rpc("valley_leave",{p_run:0})).catch(function(){});setTimeout(function(){if(VL.on)vlClose()},3000)}
+function vlTimeUp(silent){if(!VL.run)return;var tot=(VL.run.spots||[]).length,got=(VL.run.taken||[]).length;VL.run=null;vlBfs();vlNetBtn();vlHud();if(!silent)toast("⌛ หมดเวลา! จับได้ "+got+"/"+tot+" ตัว — ผีเสื้อที่เหลือบินหนีไปแล้ว");sfx("close");q(db.rpc("valley_leave",{p_run:0})).catch(function(){});setTimeout(function(){if(VL.on)vlClose()},3000)}
 function vlPop(x,y,t){var el=$("fm-vl");if(!el)return;var d=document.createElement("div");d.className="vlpop";d.textContent=t;d.style.left=x+"px";d.style.top=y+"px";el.appendChild(d);setTimeout(function(){d.remove()},1700)}
 document.addEventListener("click",function(ev){var t=ev.target.closest("[data-vlx],[data-vlgo]");if(!t)return;var D=t.dataset;if(D.vlx){sfx("tap");vlClose();return}if(D.vlgo){vlEnter(D.vlgo,t);return}});
 /* ---- 3D ---- */
 var VL3={};
-function vlFile(){if(VL3.file)return VL3.file;VL3.file=fm3LoadExtra().then(function(){return fetch((window.FM3_MODEL_BASE||"models/")+"fm-castle.bin?v=2")}).then(function(r){if(!r.ok)throw new Error("model");var tot=+r.headers.get("content-length")||0;if(!r.body||!r.body.getReader)return r.arrayBuffer();
+function vlFile(){if(VL3.file)return VL3.file;VL3.file=fm3LoadExtra().then(function(){return fetch((window.FM3_MODEL_BASE||"models/")+"fm-castle.bin?v=3")}).then(function(r){if(!r.ok)throw new Error("model");var tot=+r.headers.get("content-length")||0;if(!r.body||!r.body.getReader)return r.arrayBuffer();
     var rd=r.body.getReader(),parts=[],got=0;var pump=function(){return rd.read().then(function(x){if(x.done){var u=new Uint8Array(got),o=0;parts.forEach(function(p){u.set(p,o);o+=p.length});return u.buffer}parts.push(x.value);got+=x.value.length;var ld=document.querySelector("#fm-vl .vlload");if(ld)ld.textContent="🏰 กำลังโหลดเมืองลึกลับ "+(tot?Math.min(99,Math.round(got/tot*100))+"%":(got/1048576).toFixed(1)+" MB");return pump()})};return pump()})
   .then(function(ab){var u=new Uint8Array(ab);if(u[0]===0x1f&&u[1]===0x8b){var ld=document.querySelector("#fm-vl .vlload");if(ld)ld.textContent="🏰 กำลังสร้างเมือง…";u=fflate.gunzipSync(u)}return new Promise(function(ok,bad){new THREE.GLTFLoader().parse(u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength),"",ok,bad)})});VL3.file.catch(function(){VL3.file=null});return VL3.file}
-function vlGlintTex(){if(VL3.gtx)return VL3.gtx;var c=document.createElement("canvas");c.width=c.height=64;var x=c.getContext("2d"),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,"rgba(255,255,255,1)");g.addColorStop(.3,"rgba(255,236,140,.9)");g.addColorStop(1,"rgba(255,200,40,0)");x.fillStyle=g;x.fillRect(0,0,64,64);
-  x.strokeStyle="rgba(255,255,230,.95)";x.lineWidth=2;x.beginPath();x.moveTo(32,2);x.lineTo(32,62);x.moveTo(2,32);x.lineTo(62,32);x.stroke();VL3.gtx=new THREE.CanvasTexture(c);return VL3.gtx}
-function vlGlints(){if(!VL3.on)return;VL3.gl=VL3.gl||{};var want={},tk=(VL.run&&VL.run.taken)||[];(VL.run&&VL.run.spots||[]).forEach(function(s){if(tk.indexOf(s.id)<0)want[s.id]=s});
-  Object.keys(VL3.gl).forEach(function(id){if(!want[id]){VL3.sc.remove(VL3.gl[id]);VL3.gl[id].material.dispose();delete VL3.gl[id]}});
-  Object.keys(want).forEach(function(id){if(VL3.gl[id])return;var s=want[id],m=new THREE.Sprite(new THREE.SpriteMaterial({map:vlGlintTex(),color:0xffc21a,transparent:true,depthWrite:false,opacity:0}));m.position.set(+s.x,vlGroundY(+s.x,+s.z)+1.2,+s.z);m.userData.vl=id;m.userData.ph=Math.random()*20;m.scale.setScalar(2.2);VL3.sc.add(m);VL3.gl[id]=m})}
+
+/* อัปเดต 299: ไล่จับผีเสื้อวิเศษด้วยตาข่าย 🦋🥅 — สีทอง=หายากสุด ม่วง=หายาก ฟ้า=ทั่วไป · เข้าใกล้แล้วบินหนี */
+var VLBT={gold:[0xffd23f,12,.75],purple:[0xc084fc,10,.65],blue:[0xffffff,8,.6]};
+function vlBfs(){if(!VL3.on||!VL3.bfp)return;var want={},tk=(VL.run&&VL.run.taken)||[];(VL.run&&VL.run.spots||[]).forEach(function(s){if(tk.indexOf(s.id)<0)want[s.id]=s});
+  Object.keys(VL3.bf).forEach(function(id){if(!want[id]){var B=VL3.bf[id];if(B.caught)return;VL3.sc.remove(B.g);delete VL3.bf[id]}});
+  Object.keys(want).forEach(function(id){if(VL3.bf[id])return;var s=want[id],T=VLBT[s.tier]||VLBT.blue,g=new THREE.Group(),m=VL3.bfp.clone(true);m.position.set(0,0,0);m.rotation.set(0,0,0);m.quaternion.identity();m.visible=true;
+    var bb=new THREE.Box3().setFromObject(m),c=bb.getCenter(new THREE.Vector3()),sz=bb.getSize(new THREE.Vector3());m.position.set(-c.x,-c.y,-c.z);var w=new THREE.Group();w.add(m);w.scale.setScalar(1.7/Math.max(sz.x,sz.y,sz.z,.01));g.add(w);
+    if(s.tier!=="blue")m.traverse(function(o){if(o.isMesh){o.material=o.material.clone();o.material.color=new THREE.Color(T[0]);if(o.material.emissive){o.material.emissive=new THREE.Color(s.tier==="gold"?0x5a4100:0x2e1065)}}});
+    if(s.tier==="gold"){var cv=document.createElement("canvas");cv.width=cv.height=64;var x=cv.getContext("2d"),gr=x.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,"rgba(255,240,150,.9)");gr.addColorStop(1,"rgba(255,200,40,0)");x.fillStyle=gr;x.fillRect(0,0,64,64);var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));sp.scale.setScalar(3.2);g.add(sp)}
+    var B={id:id,g:g,w:w,tier:s.tier,hx:+s.x,hz:+s.z,x:+s.x,z:+s.z,tx:+s.x,tz:+s.z,nt:0,ph:Math.random()*6,hd:0,sp:T[1]};g.position.set(B.x,vlGroundY(B.x,B.z)+1.8,B.z);g.userData.vl=id;w.userData.vl=id;VL3.sc.add(g);VL3.bf[id]=B})}
+function vlBfStep(t,dt){var M=VL3.me;Object.keys(VL3.bf).forEach(function(id){var B=VL3.bf[id];
+  if(B.caught){var k=Math.min(1,(Date.now()-B.ct)/500);if(M){B.g.position.lerp(new THREE.Vector3(M.x,M.g.position.y+2.6,M.z),k*.3)}B.g.scale.setScalar(Math.max(.01,1-k));if(k>=1){VL3.sc.remove(B.g);delete VL3.bf[id]}return}
+  var dm=M?Math.hypot(B.x-M.x,B.z-M.z):99,flee=VL.run&&dm<9,spd;
+  if(flee){var ax=B.x-M.x,az=B.z-M.z,l=Math.hypot(ax,az)||1,wob=Math.sin(t*3+B.ph)*.9;B.tx=B.x+(ax/l*cos1(wob)-az/l*Math.sin(wob))*6;B.tz=B.z+(az/l*cos1(wob)+ax/l*Math.sin(wob))*6;spd=B.sp*(dm<5?1:.75)}
+  else{if(t>B.nt){B.nt=t+2+Math.random()*3;var a=Math.random()*6.283,r=Math.random()*8;B.tx=B.hx+Math.cos(a)*r;B.tz=B.hz+Math.sin(a)*r}spd=3}
+  var dhx=B.tx-B.hx,dhz=B.tz-B.hz,dh=Math.hypot(dhx,dhz);if(dh>18){B.tx=B.hx+dhx/dh*18;B.tz=B.hz+dhz/dh*18}
+  var dx=B.tx-B.x,dz=B.tz-B.z,d=Math.hypot(dx,dz);if(d>.2){var st=Math.min(d,spd*dt),nx=B.x+dx/d*st,nz=B.z+dz/d*st;if(vlWalk(nx,nz)){B.x=nx;B.z=nz}else{B.tx=B.hx;B.tz=B.hz}B.hd=Math.atan2(dx,dz)}
+  var gy=vlGroundY(B.x,B.z);B.g.position.set(B.x,gy+1.6+Math.sin(t*2.3+B.ph)*.6,B.z);B.g.rotation.y=B.hd;B.w.scale.x=B.w.scale.y*(.35+.65*Math.abs(Math.sin(t*(flee?22:13)+B.ph)))})}
+function cos1(x){return Math.cos(x)}
+/* ตาข่ายในมือ + ปุ่มจับ */
+function vlNet(){var V=VL3.me;if(!V)return;var n=new THREE.Group(),wd=new THREE.MeshLambertMaterial({color:0x8b5a2b}),rm=new THREE.MeshLambertMaterial({color:0xfacc15});
+  var h=new THREE.Mesh(new THREE.CylinderGeometry(.025,.03,1.1,6),wd);h.position.y=.55;n.add(h);var ring=new THREE.Mesh(new THREE.TorusGeometry(.26,.025,6,18),rm);ring.position.y=1.32;ring.rotation.x=Math.PI/2;n.add(ring);
+  var bag=new THREE.Mesh(new THREE.ConeGeometry(.25,.45,12,1,true),new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.55,side:THREE.DoubleSide}));bag.position.y=1.1;bag.rotation.x=Math.PI;n.add(bag);
+  n.position.set(.15,.65,.32);n.rotation.z=-.35;V.g.add(n);V.net=n;V.sw=0}
+function vlNetStep(dt){var V=VL3.me;if(!V||!V.net)return;if(V.sw>0){V.sw=Math.max(0,V.sw-dt);var u=1-V.sw/.4;V.net.rotation.z=-.35-Math.sin(u*Math.PI)*1.9;V.net.rotation.x=Math.sin(u*Math.PI)*.6}else{V.net.rotation.z=-.35;V.net.rotation.x=0}}
+function vlNetBtn(){var el=$("fm-vl");if(!el)return;var b=$("vl-net");if(!VL.run){if(b)b.remove();return}if(b)return;b=document.createElement("button");b.type="button";b.id="vl-net";b.className="vlnet";b.innerHTML="🥅<small>จับ!</small>";el.appendChild(b);
+  b.addEventListener("pointerdown",function(e){e.preventDefault();e.stopPropagation();vlSwing()})}
+function vlSwing(){var V=VL3.me;if(!V||!VL.run||V.sw>0||VL.busy)return;V.sw=.4;sfx("swish");var best=null,bd=4.8;Object.keys(VL3.bf).forEach(function(id){var B=VL3.bf[id];if(B.caught)return;var d=Math.hypot(B.x-V.x,B.z-V.z);if(d<bd){bd=d;best=B}});
+  if(!best){setTimeout(function(){if(V.sw<.2){var el=$("fm-vl");if(el){var r=el.getBoundingClientRect();vlPop(r.width/2,r.height*.55,"💨 พลาด! เข้าไปใกล้กว่านี้")}}},150);return}
+  V.hd=Math.atan2(-(best.z-V.z),best.x-V.x);best.caught=true;best.ct=Date.now();vlPick(best.id)}
 function vl3Start(){var tok=++VL.tok;fm3Load().then(function(){return vlFile()}).then(function(G){if(tok!==VL.tok||!VL.on||!$("vl-cv"))return;vl3Build(G);var ld=document.querySelector("#fm-vl .vlload");if(ld)ld.remove()})
   .catch(function(){if(tok!==VL.tok)return;toast("โหลดเมืองลับไม่สำเร็จ ลองใหม่อีกครั้ง");vlClose()})}
 function vl3Build(G){var cv=$("vl-cv"),el=$("fm-vl");var R=new THREE.WebGLRenderer({canvas:cv,antialias:!LITE.on});liteApply(R);R.setPixelRatio(Math.min(window.devicePixelRatio||1,LITE.on?1:2));R.outputEncoding=THREE.sRGBEncoding;
   var sc=new THREE.Scene(),nt=vlNight(),bg=new THREE.Color(nt?0x1e2a4a:0x9ccbf0);sc.background=bg;sc.fog=new THREE.Fog(bg,320,760);sc.add(new THREE.HemisphereLight(0xffffff,0x8877aa,nt?.45:1));var dl=new THREE.DirectionalLight(0xfff2e0,nt?.25:.7);dl.position.set(80,150,60);sc.add(dl);
-  var root=G.scene;sc.add(root);var gi=0;root.children.forEach(function(o){if(LITE.on&&(/^GrassField/.test(o.name)||(/^Grove/.test(o.name)&&(gi++)%2)))o.visible=false});var mx=vlStags(root,G.animations);var cri=vlCritters(root),obs=vlObstacles(root),gnd=[];root.children.forEach(function(o){if(/^(Ground|Square|Road|WoodenBridge)/.test(o.name))gnd.push(o)});
+  var root=G.scene;sc.add(root);root.traverse(function(o){if(o.isSkinnedMesh)o.frustumCulled=false});var gi=0;root.children.forEach(function(o){if(/^TP_Butterfly/.test(o.name)){if(!VL3.bfp)VL3.bfp=o;o.visible=false;return}if(LITE.on&&(/^GrassField/.test(o.name)||(/^Grove/.test(o.name)&&(gi++)%2)))o.visible=false});var mx=vlStags(root,G.animations);var cri=vlCritters(root),obs=vlObstacles(root),gnd=[];root.children.forEach(function(o){if(/^(Ground|Square|Road|WoodenBridge)/.test(o.name))gnd.push(o)});
   var cam=new THREE.PerspectiveCamera(50,1,.5,2000);cam.position.set(25,72,115);var ctl=new THREE.OrbitControls(cam,cv);ctl.target.set(0,6,-18);ctl.enablePan=false;ctl.maxPolarAngle=1.32;ctl.enableDamping=true;ctl.minDistance=14;ctl.maxDistance=110;ctl.update();
-  VL3={on:true,R:R,sc:sc,cam:cam,ctl:ctl,gl:{},mx:mx,cri:cri,obs:obs,gnd:gnd,file:VL3.file,gtx:VL3.gtx,t0:performance.now()};vlMe();vlGlints();
+  VL3={on:true,R:R,sc:sc,cam:cam,ctl:ctl,bf:{},bfp:VL3.bfp,mx:mx,cri:cri,obs:obs,gnd:gnd,file:VL3.file,t0:performance.now()};vlMe();vlNet();vlBfs();vlNetBtn();
   var rs=function(){var w=el.clientWidth||1,h=el.clientHeight||1;R.setSize(w,h,false);cam.aspect=w/h;cam.fov=w<h?66:50;cam.updateProjectionMatrix()};VL3.rs=rs;rs();window.addEventListener("resize",rs);
   var down=null;cv.addEventListener("pointerdown",function(e){down=[e.clientX,e.clientY]});cv.addEventListener("pointerup",function(e){if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>8)return;down=null;vl3Tap(e)});
   var last=performance.now(),tk=0;var loop=function(){if(!VL3.on)return;VL3.raf=requestAnimationFrame(loop);var now=performance.now(),dt=Math.min(.05,(now-last)/1000),t=(now-VL3.t0)/1000;last=now;
     vlMeStep(dt);ctl.update();tk+=dt;if(tk>.5){tk=0;vlTick()}
-    var M=VL3.me;Object.keys(VL3.gl).forEach(function(id){var m=VL3.gl[id],u=((t+m.userData.ph)%2.4),f=u<.4?Math.sin(u/.4*Math.PI):0;m.material.opacity=.25+f*.75;m.scale.setScalar(1.8+f*2.2);
-      if(M&&VL.run&&!VL.busy&&Math.hypot(m.position.x-M.x,m.position.z-M.z)<4.5)vlPick(id)});
+    vlBfStep(t,dt);vlNetStep(dt);
     vlStagStep(mx,t,dt);vlCritStep(cri,t,dt);R.render(sc,cam)};loop()}
 /* ฝูงกวางในเมืองลึกลับ: แต่ละตัวมีโครงกระดูกชื่อต่อท้าย _N → แปลงชื่อแทร็กให้ตรงทีละตัว แล้วสลับท่ายืน/ก้มกินหญ้า/เงยหน้า */
 function vlStags(root,anims){var L=[],want=["Idle","Eating","Idle_Headlow","Idle_2"],C={};anims.forEach(function(a){C[a.name]=a});
@@ -7907,13 +7932,13 @@ function vlMeStep(dt){var V=VL3.me;if(!V)return;var mv=false;if(V.to){var dx=V.t
 function vlCritters(root){var L=[];root.children.forEach(function(o,i){var n=o.name,k=/^TP_Sheep/.test(n)?"sh":/^TP_Giraffe/.test(n)?"gi":/^TP_Bear/.test(n)?"be":/^TP_Butterfly/.test(n)?"bf":/^(TP_Wasp|Wasp)/.test(n)?"wa":null;if(!k)return;
   L.push({o:o,k:k,hx:o.position.x,hz:o.position.z,y:o.position.y,x:o.position.x,z:o.position.z,hd:o.rotation.y,st:0,tt:Math.random()*5,p:Math.random()*6,sc:o.scale.x})});return L}
 function vlCritStep(L,t,dt){(L||[]).forEach(function(c){var o=c.o;
-  if(c.k==="bf"){var r=2.5;o.position.set(c.hx+Math.cos(t*.7+c.p)*r,c.y+1.5+Math.sin(t*1.9+c.p)*1.2,c.hz+Math.sin(t*.7+c.p)*r);o.rotation.y=-(t*.7+c.p);o.scale.x=c.sc*(.55+.45*Math.abs(Math.sin(t*14+c.p)));return}
+  if(c.k==="bf"){return;var r=2.5;o.position.set(c.hx+Math.cos(t*.7+c.p)*r,c.y+1.5+Math.sin(t*1.9+c.p)*1.2,c.hz+Math.sin(t*.7+c.p)*r);o.rotation.y=-(t*.7+c.p);o.scale.x=c.sc*(.55+.45*Math.abs(Math.sin(t*14+c.p)));return}
   if(c.k==="wa"){o.position.set(c.hx+Math.cos(t*1.6+c.p)*3+Math.sin(t*7+c.p)*.3,c.y+Math.sin(t*3+c.p)*.6,c.hz+Math.sin(t*1.6+c.p)*3);o.rotation.y=Math.atan2(Math.cos(t*1.6+c.p),-Math.sin(t*1.6+c.p));return}
   var R=c.k==="gi"?9:c.k==="be"?4:6,spd=c.k==="gi"?1.6:c.k==="be"?.9:1.1;c.tt-=dt;if(c.tt<=0){c.st=c.st?0:1;c.tt=c.st?2+Math.random()*4:3+Math.random()*7;if(c.st){var a=Math.random()*6.283,rr=Math.random()*R;c.tx=c.hx+Math.cos(a)*rr;c.tz=c.hz+Math.sin(a)*rr}}
   if(c.st&&c.tx!=null){var dx=c.tx-c.x,dz=c.tz-c.z,d=Math.hypot(dx,dz);if(d>.3){c.x+=dx/d*spd*dt;c.z+=dz/d*spd*dt;var ta=Math.atan2(dx,dz),df=Math.atan2(Math.sin(ta-c.hd),Math.cos(ta-c.hd));c.hd+=df*Math.min(1,dt*3)}else c.st=0}
   o.position.set(c.x,c.y+(c.st?Math.abs(Math.sin(t*6+c.p))*.12:0),c.z);o.rotation.y=c.hd;o.rotation.x=c.st?0:(c.k==="sh"?.08+.06*Math.sin(t*2.2+c.p):0)})}
 function vl3Tap(e){var cv=$("vl-cv");if(!cv||!VL3.on)return;var r=cv.getBoundingClientRect(),v=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),rc=new THREE.Raycaster();rc.setFromCamera(v,VL3.cam);
-  var L=Object.keys(VL3.gl||{}).map(function(k){return VL3.gl[k]});var h=rc.intersectObjects(L,false);var M=VL3.me;
+  var L=Object.keys(VL3.bf||{}).map(function(k){return VL3.bf[k].g});var h=rc.intersectObjects(L,false);var M=VL3.me;
   if(h.length&&M){var sp=h[0].object.position;M.to={x:sp.x,z:sp.z};vlMark(sp.x,sp.z);return}
   var g=rc.intersectObjects(VL3.gnd,true);if(g.length&&M){M.to={x:g[0].point.x,z:g[0].point.z};vlMark(g[0].point.x,g[0].point.z)}}
 function vl3Stop(){VL.tok++;if(!VL3.on){return}VL3.on=false;cancelAnimationFrame(VL3.raf);window.removeEventListener("resize",VL3.rs);try{VL3.ctl.dispose()}catch(e){}
