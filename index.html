@@ -6438,7 +6438,7 @@ function fmDecorCellOK(tx,ty,self){var inPar=fmParcelDecorCells(FM.d).some(funct
   var bad=null;Object.keys(FM3.mv||{}).concat((FM3.dyn?FM3.dyn.children:[]).filter(function(o){return o.userData.mvk&&fmLayKind(o.userData.mvk)!=="decor"}).map(function(o){return o.userData.mvk})).forEach(function(k2){if(bad||k2===self)return;var kd=fmLayKind(k2);if(kd==="decor")return;if(kd==="line"&&!/^t:/.test(k2))return;var ob=fm3LayObj(k2);if(!ob||!ob.visible||fmHid(k2))return;
     var q=fm3LayRect(k2);if(!q)return;var ox=Math.min(r[2],q[2])-Math.max(r[0],q[0]),oy=Math.min(r[3],q[3])-Math.max(r[1],q[1]);if(ox>.05&&oy>.05)bad=k2});
   if(bad)return "ทับกับ "+fmLayName(bad)+" — เลือกช่องอื่น";
-  if(Math.hypot(tx+.5+1.4,ty+.5-6.4)<1)return "ทับกับกังหันลม — เลือกช่องอื่น";if(Math.hypot(tx+.5-PYD.pond[0],ty+.5-PYD.pond[1])<PYD.pond[2]+.3)return "ทับกับบ่อน้ำลานสัตว์ — เลือกช่องอื่น";
+  if(Math.hypot(tx+.5-PYD.pond[0],ty+.5-PYD.pond[1])<PYD.pond[2]+.3)return "ทับกับบ่อน้ำลานสัตว์ — เลือกช่องอื่น";
   return true}
 function fm3LayRay(cx,cy,fb){var cv=FM3.renderer.domElement,rc=cv.getBoundingClientRect(),v=new THREE.Vector2((cx-rc.left)/rc.width*2-1,-(cy-rc.top)/rc.height*2+1);
   FM3.ray=FM3.ray||new THREE.Raycaster();FM3.ray.setFromCamera(v,FM3.cam);var objs=[];Object.keys(FM3.mv||{}).forEach(function(k){if(FM3.mv[k].g.visible)objs.push(FM3.mv[k].g)});(FM3.dyn?FM3.dyn.children:[]).forEach(function(o){if(o.userData.mvk)objs.push(o)});
@@ -8490,7 +8490,7 @@ function fm3FountStep(G,t){var D=G.userData.ffx;
   D.R.forEach(function(R){var u=(t*R.sp+R.ph)%1;R.m.scale.setScalar(R.r*(.35+.65*u));R.m.material.opacity=.7*(1-u)})}
 /* ทุ่งโล่งรอบฟาร์ม: กอดอกไม้ ฟาง ถังไม้ ลังไม้ (instanced เบาเครื่อง) */
 function fm3Meadow(st){var fl=[],hay=[],bar=[],crt=[],i,sd,fx,fy,ok=function(x,y){var ox=Math.max(-.6-x,x-12.6,0),oy=Math.max(-.6-y,y-12.6,0),d=Math.hypot(ox,oy);return d>.4&&d<2.7&&!fmInLand(x,y)&&!fmInYard(x,y)&&!(x>4.9&&x<8.3&&y>12)&&!(x>12.2&&x<15.6&&y>-.6&&y<3.4)&&!(x>-3.2&&x<.3&&y>4.6&&y<8)&&!(x<-2.6&&y>-.6&&y<12.9)&&!fmInParcel(x,y,.4)};
-  for(i=0;i<420;i++){sd=i*977+31;fx=-3.4+frand(sd)*19.8;fy=-3.4+frand(sd+1)*19.8;if(!ok(fx,fy))continue;var r=frand(sd+2);if(r<.78)fl.push([fx,fy,frand(sd+3)]);else if(r<.86)hay.push([fx,fy,frand(sd+4)]);else if(r<.93)bar.push([fx,fy,frand(sd+5)]);else crt.push([fx,fy,frand(sd+6)])}
+  for(i=0;i<420;i++){sd=i*977+31;fx=-3.4+frand(sd)*19.8;fy=-3.4+frand(sd+1)*19.8;if(!ok(fx,fy))continue;var r=frand(sd+2);if(r<.78)fl.push([fx,fy,frand(sd+3)])}/* อัปเดต 327: เอาฟาง/ถัง/ลังที่โรยรอบฟาร์มออก (ไม่ใช่ของแต่ง เคยบังพื้นที่วางของ) */
   var M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),V=new THREE.Vector3(),S=new THREE.Vector3(),put=function(geo,mat,L,f){if(!L.length)return;var im=new THREE.InstancedMesh(geo,mat,L.length);L.forEach(function(p,j){var q=fm3P(p[0],p[1]);f(p,q);im.setMatrixAt(j,M)});im.castShadow=true;im.receiveShadow=false;st.add(im);return im};
   var cols=[0xffffff,0xfde047,0xf9a8d4,0xfb923c,0xc4b5fd];
   cols.forEach(function(c,ci){var L=fl.filter(function(p){return Math.floor(p[2]*cols.length)===ci});put(new THREE.IcosahedronGeometry(.09,0),fm3Mat(c),[].concat.apply([],L.map(function(p){return [0,1,2,3,4].map(function(k){return [p[0]+Math.cos(k*1.3+p[2]*9)*.18,p[1]+Math.sin(k*1.3+p[2]*9)*.12,p[2]]})})),function(p,q){V.set(q[0],.16,q[1]);S.set(1,1,1);M.compose(V,Q.identity(),S)})});
