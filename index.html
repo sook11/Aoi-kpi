@@ -6483,11 +6483,11 @@ function fm3LayDragInit(){if(FM3.layDragOn)return;FM3.layDragOn=1;var box=docume
 /* อัปเดต 325: กดค้างที่สิ่งของ → ยกขึ้นลากย้ายได้ทันที · ปล่อยนิ้ว = วางและบันทึกเอง (ไม่มีแถบ/ข้อความ) */
 (function(){var T=null,st=null;var box=function(){return document.querySelector("#v-farm .fgame")};
   document.addEventListener("pointerdown",function(e){if(FM.lay||FM.v||!FM3.on||!FM3.ready||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0||FM3.tp)return;clearTimeout(T);st={x:e.clientX,y:e.clientY,id:e.pointerId};
-    T=setTimeout(function(){if(!st)return;var R=null;try{R=fm3LayRay(st.x,st.y,true)}catch(x){}var k=R&&R.hk;if(!k||/^p:/.test(k)||(fmLayKind(k)==="line"))return;
+    T=setTimeout(function(){if(!st)return;var R=null;try{R=fm3LayRay(st.x,st.y,true)}catch(x){}var k=R&&R.hk;if(!k||/^p:/.test(k)||/^t:/.test(k))return;
       fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null,quick:1};fmLayRefresh();FM.lay.sel=k;try{fm3LaySel()}catch(x){}
       var o=fm3LayObj(k),r0=fm3LayRect(k);if(!o||!r0){FM.lay=null;fmLayRefresh();return}try{navigator.vibrate&&navigator.vibrate(30)}catch(x){}sfx("tap");
       var R2=fm3LayRay(st.x,st.y);FM3.ctl.enabled=false;FM3.layPt=FM3.layPt||{};FM3.layPt[st.id]=1;FM3.layDrag={k:k,o:o,p0:o.position.clone(),s0:FM3.selBox?FM3.selBox.position.clone():null,x:st.x,y:st.y,ox:(r0[0]+r0[2])/2-R2.gx,oy:(r0[1]+r0[3])/2-R2.gy,mv:0,ev:null,pid:st.id};st=null},450)},true);
-  window.addEventListener("pointermove",function(e){if(st&&e.pointerId===st.id&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>9){clearTimeout(T);st=null}});
+  window.addEventListener("pointermove",function(e){if(st&&e.pointerId===st.id&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>16){clearTimeout(T);st=null}});
   var cancel=function(e){if(st&&e.pointerId===st.id){clearTimeout(T);st=null}};window.addEventListener("pointerup",cancel);window.addEventListener("pointercancel",cancel)})();
 function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
 function fmLayEnd(save){var L=FM.lay;if(!L)return;var bar=$("fm-laybar");if(bar)bar.remove();
