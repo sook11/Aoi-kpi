@@ -8669,7 +8669,7 @@ function fmCap(d){var c=FM.cat||{};return (c.max_plots||12)+(c.plots_per_land||4
 function fmSlots(d){var L=[];for(var i=1;i<=fmCap(d);i++)L.push(i);L=L.concat(fmParcelSlots(d));for(var j=0;j<((d&&d.plot_extra)||0);j++)L.push(FXS+j);return L}
 /* อัปเดต 337: แปลงที่ซื้อทีละแปลงใช้เลขช่อง 5,000,000+ (เดิม 2000+ ชนกับแปลงในที่ดินเก่าเลข 10–19 ทำให้แปลงใหม่มีผักขึ้นเอง) */
 var FXS=5000000;
-function fmPlotXY(i){var po=fmOff("p:"+i),r=fmPlotXY0(i);return [r[0]+po[0],r[1]+po[1]]}
+function fmPlotXY(i){var po=fmOff("p:"+i),r=fmPlotXY0(i);/* อัปเดต 340: แปลงทุกแปลงจับลงตารางช่องเต็ม — แปลงจากที่ดินเก่าเคยเหลื่อม .2/.5/.8 ช่องทำให้ดูซ้อน/ไม่เท่ากัน */return [Math.round(r[0]+po[0]),Math.round(r[1]+po[1])]}
 function fmPlotXY0(i){if(i>=FXS)return [0,0];if(i>=1000){var pid=Math.floor((i-1000)/100),j=(i-1000)%100,P=fmParcels().filter(function(z){return z.id===pid})[0];if(P)return [P.x+j%P.w,P.y+Math.floor(j/P.w)];return [0,0]}if(i<=12)return [1+((i-1)%4),5+Math.floor((i-1)/4)];var z=Math.floor((i-13)/4),j=(i-13)%4,b=fmLandXY(z);return [b[0]+(j%2),b[1]+Math.floor(j/2)]}
 function fmInLand(fx,fy){return fy>11.95&&fy<14.9&&fx>.5&&fx<12.7}
 function fmLandSvg(d,own,add){var L=(FM.cat&&FM.cat.land)||[],n=d.land||0;FLAND.forEach(function(b,k){if(k<n||!L[k])return;var x0=b[0]-.05,y0=b[1]-.1,cx=b[0]+1,cy=b[1]+1;
