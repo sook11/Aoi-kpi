@@ -1498,6 +1498,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .fshinfo{border:0;background:#fff8e1;color:#92400e;border-radius:999px;padding:4px 12px;font:inherit;font-size:12.5px;margin:0 0 6px;cursor:pointer;box-shadow:0 2px 0 #f59e0b}.flvnote{margin:6px 2px 0;font-size:12.5px;color:#92400e}
 .fsheet.fdragging{opacity:.12;pointer-events:none;transition:opacity .15s}.fdragghost{position:fixed;z-index:120;pointer-events:none;transform:translate(-50%,-70%);font-size:46px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35));border-radius:50%;padding:4px;border:3px solid transparent}.fdragghost.ok{border-color:#22c55e;background:#22c55e33}.fdragghost.bad{border-color:#ef4444;background:#ef444433}
 /* อัปเดต 338: กดค้าง/ลากในฟาร์มไม่ให้เบราว์เซอร์คลุมข้อความสีน้ำเงิน */#v-farm .fgame,#v-farm .fgame *,#fm-shopcats,.fdragghost,.fstobub,.fpetchip{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#v-farm .fgame input,#v-farm .fgame textarea,#v-farm .fgame select{-webkit-user-select:text;user-select:text}
+.fstsk{margin:0 0 10px}.fstsk>div{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 6px}.fstsk button{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;border:2px solid #f59e0b55;background:#fff8e1;border-radius:12px;padding:5px 8px;font:inherit;cursor:pointer;min-width:74px}.fstsk button span{font-size:24px}.fstsk button small{font-size:10.5px;color:#92400e;line-height:1.15;text-align:center}.fstsk button.on{border-color:#f59e0b;background:#fde68a;box-shadow:0 2px 0 #d97706}
 .fshwrap{display:flex;gap:8px;align-items:flex-start}.fshmain{flex:1;min-width:0}.fshrail{position:sticky;top:0;display:flex;flex-direction:column;gap:6px;flex:0 0 62px}
 .fshrail button{border:0;border-radius:14px;background:#fef3c7;box-shadow:0 2px 0 #f59e0b;padding:7px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#92400e}.fshrail button span{font-size:22px;line-height:1}.fshrail button small{font-size:9.5px;line-height:1.15;text-align:center;font-weight:600}
 .fshrail button.on{background:linear-gradient(#fbbf24,#f59e0b);color:#fff;box-shadow:0 2px 0 #b45309;transform:translateX(-4px)}
@@ -6444,6 +6445,31 @@ function fm3Windmill(par){var g=new THREE.Group();par.add(g);fm3Mesh(new THREE.C
   var bl=new THREE.Group();bl.position.set(0,4.6,1.3);g.add(bl);for(var i=0;i<4;i++){var arm=new THREE.Group();arm.rotation.z=i*Math.PI/2+.4;bl.add(arm);
     fm3Box(arm,.12,2.7,.08,0x8a5a3b,0,1.4,0);fm3Box(arm,.72,2.05,.03,0xf5ecd7,.38,1.65,-.03);for(var k=0;k<5;k++)fm3Box(arm,.78,.05,.06,0x8a5a3b,.38,.75+k*.46,0);fm3Box(arm,.05,2.05,.06,0x8a5a3b,.76,1.65,0)}
   fm3Mesh(new THREE.SphereGeometry(.2,12,10),0x57534e,0,0,.05,bl);g.userData.blades=bl;return g}
+/* อัปเดต 350: ร้านริมทางหลายแบบ (ธีมเมืองลับ ปราสาท โคมไฟ กระท่อม ฯลฯ) — เลือกได้ในหน้าร้าน เก็บใน layout.sk.stall */
+var FSTALL=[["classic","🍎","ร้านผลไม้ลายแดง"],["castle","🏰","ซุ้มปราสาทเมืองลับ"],["night","🏮","ตลาดโคมแดงยามค่ำ"],["kubo","🛖","กระท่อมไม้ไผ่ริมบึง"],["cart","🛒","รถเข็นผลไม้เขตร้อน"],["ginger","🍪","บ้านขนมปังขิง"],["xmas","🎁","ร้านของขวัญหิมะ"],["flower","🌸","ซุ้มดอกไม้ซากุระ"]];
+function fmStallSkin(){var v=((fmLay().sk||{}).stall)||"classic";return FSTALL.some(function(x){return x[0]===v})?v:"classic"}
+function fm3GlbFit(par,file,node,w,ry,dy){fm3File(file).then(function(G){if(!par.parent&&!par.userData.keep)return;var n=(node&&G.scene.getObjectByName("K_"+node))||G.scene,o=n.clone(true),h=new THREE.Group();h.add(o);o.position.set(0,0,0);o.rotation.set(0,0,0);o.updateMatrixWorld(true);var b=new THREE.Box3().setFromObject(o),sz=b.getSize(new THREE.Vector3()),sc=w/Math.max(sz.x,sz.z,.001);h.scale.setScalar(sc);o.position.set(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);h.rotation.y=ry||0;h.position.y=dy||0;par.add(h)},function(){})}
+function fm3StallBuild(par,k){var g=new THREE.Group();par.add(g);var RB=function(w,h,d,c,x,y,z){return fm3RB(g,w,h,d,.04,c,x,y,z)},M=function(geo,c,x,y,z){return fm3Mesh(geo,c,x,y,z,g)},fruit=function(y){[[0xef4444,-.6],[0xf97316,-.05],[0xfacc15,.5]].forEach(function(f){RB(.46,.22,.42,0xc8955a,f[1],y,.05);for(var q=0;q<4;q++)M(new THREE.SphereGeometry(.09,10,8),f[0],f[1]-.1+(q%2)*.2,y+.15,-.05+Math.floor(q/2)*.18)})};
+  if(k==="castle"){RB(2.1,.95,1.1,0x9ca3af,0,.48,0);for(var i=-2;i<=2;i++)RB(.36,.18,.06,0x6b7280,i*.42,.75,.57);RB(2.25,.12,1.25,0x78716c,0,1,0);
+    [-1.05,1.05].forEach(function(x){M(new THREE.CylinderGeometry(.22,.26,2.3,12),0xd6d3d1,x,1.15,-.35);var cn=M(new THREE.ConeGeometry(.34,.7,12),0x1d4ed8,x,2.65,-.35);M(new THREE.CylinderGeometry(.015,.015,.5,6),0x57534e,x,3.2,-.35);var fl=M(new THREE.BoxGeometry(.32,.18,.02),0xfacc15,x+.17,3.32,-.35)});
+    var bn=RB(1.9,.55,.04,0x7e22ce,0,2.05,-.36);[-.6,0,.6].forEach(function(x){M(new THREE.SphereGeometry(.07,8,6),0xfacc15,x,1.85,-.32)});fruit(1.13)}
+  else if(k==="night"){RB(2,.9,1.1,0x991b1b,0,.45,0);RB(2.15,.1,1.25,0x7f1d1d,0,.95,0);[[-.92,.5],[.92,.5],[-.92,-.5],[.92,-.5]].forEach(function(p){RB(.11,2.1,.11,0x450a0a,p[0],1.05,p[1])});
+    var rf=RB(2.6,.14,1.7,0xb91c1c,0,2.2,0);var rf2=RB(1.8,.12,1.2,0xdc2626,0,2.42,0);[-1.25,1.25].forEach(function(x){M(new THREE.ConeGeometry(.08,.3,6),0xfacc15,x,2.35,.8).rotation.z=x<0?.6:-.6});
+    [-.7,0,.7].forEach(function(x){M(new THREE.CylinderGeometry(.005,.005,.3,4),0x111827,x,1.95,.55);var ln=M(new THREE.SphereGeometry(.17,12,10),new THREE.MeshBasicMaterial({color:0xef4444}),x,1.7,.55);ln.scale.y=1.25;M(new THREE.CylinderGeometry(.08,.08,.05,8),0xfacc15,x,1.92,.55);M(new THREE.CylinderGeometry(.08,.08,.05,8),0xfacc15,x,1.48,.55)});
+    [[0xfde047,-.55],[0xf472b6,.05],[0x34d399,.6]].forEach(function(f){for(var q=0;q<5;q++)M(new THREE.CylinderGeometry(.06,.06,.18,8),f[0],f[1]-.16+(q%3)*.16,1.1,-.1+Math.floor(q/3)*.2)})}
+  else if(k==="kubo"){fm3GlbFit(g,"x_kubo","x_kubo",2.6,0,0);RB(1.4,.6,.6,0xa16207,0,.3,1.1);fruit(.7)}
+  else if(k==="ginger"){fm3GlbFit(g,"gingerhouse","gingerhouse",2.4,0,0)}
+  else if(k==="cart"){RB(2,.55,1.1,0x92400e,0,.75,0);[[-.75,.6],[.75,.6],[-.75,-.6],[.75,-.6]].forEach(function(p){var wh=M(new THREE.CylinderGeometry(.32,.32,.08,16),0x3f2a12,p[0],.33,p[1]);wh.rotation.x=Math.PI/2;M(new THREE.CylinderGeometry(.08,.08,.1,8),0xfacc15,p[0],.33,p[1]).rotation.x=Math.PI/2});
+    [[-.92,.5],[.92,.5],[-.92,-.5],[.92,-.5]].forEach(function(p){RB(.08,1.5,.08,0x78350f,p[0],1.75,p[1])});for(var s2=0;s2<6;s2++){var st=fm3Box(g,.37,.07,1.4,s2%2?0xffffff:0x16a34a,-.93+s2*.372,2.5,0);st.rotation.x=.12}
+    for(var b=0;b<4;b++){var bn2=M(new THREE.TorusGeometry(.14,.045,6,10,Math.PI),0xfde047,-.6+b*.12,1.15,-.1);bn2.rotation.z=Math.PI}[[0xf97316,.2],[0x22c55e,.65]].forEach(function(f){for(var q=0;q<6;q++)M(new THREE.SphereGeometry(.1,10,8),f[0],f[1]-.12+(q%3)*.12,1.13+(q>2?.12:0),-.1+(q%2)*.15)})}
+  else if(k==="xmas"){fm3Stall(g);var RM=fm3Mat(0xe23b3b),GM=fm3Mat(0x15803d);g.traverse(function(o){if(o.isMesh&&(o.material===RM||(o.material&&o.material.color&&o.material.color.r>.6&&o.material.color.g<.35&&o.material.color.b<.35)))o.material=GM});fm3GlbFit(g,"presents","presents",.8,0,.98);var tr=new THREE.Group();tr.position.set(1.4,0,.2);g.add(tr);fm3GlbFit(tr,"xmastree","xmastree",1,0,0);var sn=new THREE.Group();sn.position.set(-1.4,0,.3);g.add(sn);fm3GlbFit(sn,"snowman","snowman",.8,0,0)}
+  else if(k==="flower"){RB(2,.9,1.1,0xfdf2f8,0,.45,0);RB(2.15,.1,1.25,0xf9a8d4,0,.95,0);var ar=M(new THREE.TorusGeometry(1.1,.08,8,24,Math.PI),0x15803d,0,1,-.4);for(var fl2=0;fl2<14;fl2++){var a=fl2/13*Math.PI;M(new THREE.SphereGeometry(.13,8,6),[0xf472b6,0xfbcfe8,0xffffff][fl2%3],Math.cos(a)*1.1,1+Math.sin(a)*1.1,-.4)}
+    [0xf43f5e,0xfde047,0xa855f7,0xfb923c].forEach(function(c,i){M(new THREE.CylinderGeometry(.15,.12,.22,10),0x92400e,-.75+i*.5,1.12,.1);for(var q=0;q<3;q++)M(new THREE.SphereGeometry(.08,8,6),c,-.75+i*.5+(q-1)*.07,1.32,.1+(q%2)*.06)})}
+  else{g.remove(g);par.remove(g);return fm3Stall(par)}return g}
+function fm3StallSync(){var sh=FM3.mv&&FM3.mv.stall&&FM3.mv.stall.g;if(!sh)return;var inner=sh.children[0];if(!inner)return;var k=fmStallSkin();if(inner.userData.sk===k)return;inner.userData.sk=k;
+  inner.children.slice().forEach(function(o){if(o.userData.lbl)return;inner.remove(o)});fm3StallBuild(inner,k)}
+async function fmStallSkinSet(k){if(FM.v||FM.busy)return;var lay=JSON.parse(JSON.stringify(FM.d.layout||{}));lay.m=lay.m||{};lay.h=lay.h||{};lay.sk=lay.sk||{};lay.sk.stall=k;FM.busy=true;try{await q(db.rpc("farm_layout_save",{p_layout:lay}));FM.d.layout=lay;fm3StallSync();sfx("buy");toast("🎨 เปลี่ยนแบบร้านริมทางแล้ว");fmSheet()}catch(e){sfx("error");toast(thErr(e))}finally{FM.busy=false}}
+document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-fmstsk]");if(!t)return;e.stopPropagation();e.preventDefault();fmStallSkinSet(t.getAttribute("data-fmstsk"))},true);
 function fm3Stall(par){var g=new THREE.Group();par.add(g);var WD=0xb7824a,DK=0x8a5a3b;
   fm3RB(g,2,.95,1.15,.08,WD,0,.48,0);for(var i=-2;i<=2;i++)fm3Box(g,.04,.85,.02,DK,i*.4,.48,.58);fm3RB(g,2.15,.1,1.3,.04,DK,0,.98,0);
   [[-.92,.55],[.92,.55],[-.92,-.5],[.92,-.5]].forEach(function(p){fm3RB(g,.11,2.05,.11,.04,DK,p[0],1.03,p[1])});
@@ -6571,12 +6597,12 @@ async function fmDecorBuyAt(key,x,y){if(FM.busy||FM.v)return;var o=(FM.cat.decor
   setInterval(function(){var L=FM.lay;if(!L||!L.quick){FM.qkIdle=0;return}if(FM3.layDrag){FM.qkIdle=0;return}FM.qkIdle=(FM.qkIdle||0)+1;if(FM.qkIdle>=3){FM.qkIdle=0;try{fmLayEnd(true)}catch(e){FM.lay=null;try{fmLayRefresh()}catch(x){}}}},500);
   document.addEventListener("pointerdown",function(e){if(FM.lay&&FM.lay.quick&&!FM3.layDrag){try{fmLayEnd(true)}catch(x){FM.lay=null}}if(FM.lay||FM.v||!FM3.on||!FM3.ready||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0||FM3.tp)return;clearTimeout(T);st={x:e.clientX,y:e.clientY,id:e.pointerId};
     T=setTimeout(function(){if(!st)return;var R=null;try{R=fm3LayRay(st.x,st.y,true)}catch(x){}var k=R&&R.hk;if(!k||/^t:/.test(k))return;if(FM.tool)return;
-      fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{}})),sel:null,quick:1};fmLayRefresh();FM.lay.sel=k;try{fm3LaySel()}catch(x){}
+      fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{},sk:cur.sk||{}})),sel:null,quick:1};fmLayRefresh();FM.lay.sel=k;try{fm3LaySel()}catch(x){}
       var o=fm3LayObj(k),r0=fm3LayRect(k);if(!o||!r0){FM.lay=null;fmLayRefresh();return}try{navigator.vibrate&&navigator.vibrate(30)}catch(x){}sfx("tap");try{fmStoBub(k)}catch(x){}
       var R2=fm3LayRay(st.x,st.y);FM3.ctl.enabled=false;FM3.layPt=FM3.layPt||{};FM3.layPt[st.id]=1;FM3.layDrag={k:k,o:o,p0:o.position.clone(),s0:FM3.selBox?FM3.selBox.position.clone():null,x:st.x,y:st.y,ox:(r0[0]+r0[2])/2-R2.gx,oy:(r0[1]+r0[3])/2-R2.gy,mv:0,ev:null,pid:st.id};st=null},450)},true);
   window.addEventListener("pointermove",function(e){if(st&&e.pointerId===st.id&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>16){clearTimeout(T);st=null}});
   var cancel=function(e){if(st&&e.pointerId===st.id){clearTimeout(T);st=null}};window.addEventListener("pointerup",cancel);window.addEventListener("pointercancel",cancel)})();
-function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
+function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{},sk:cur.sk||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
 function fmLayEnd(save){var L=FM.lay;if(!L||L.ending)return;L.ending=1;var bar=$("fm-laybar");if(bar)bar.remove();
   var done=function(){FM.lay=null;var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.remove("flay");fmLayRefresh();var h=$("fm-hud");if(h)h.innerHTML=fmHud();if(typeof fmDockFit==="function")fmDockFit()};
   if(!save||!L.dirty){done();return}q(db.rpc("farm_layout_save",{p_layout:L.draft})).then(function(){FM.d.layout=L.draft;if(!L.quick){toast("บันทึกผังฟาร์มแล้ว ✨");sfx("buy")}done()},function(e){toast(thErr(e));done()})}
@@ -6588,7 +6614,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(a==="unsel"){L.sel=null;fmLayBar();fm3LaySel();return}
   if(a==="hide"){var h=L.draft.h=L.draft.h||{};if(h[L.sel])delete h[L.sel];else h[L.sel]=1;L.dirty=1;sfx("tap");fmLayRefresh();fmLayBar();return}
   if(a==="back"){delete (L.draft.m||{})[L.sel];L.dirty=1;sfx("tap");fmLayRefresh();fmLayBar();return}
-  if(a==="reset"){if(!armed(t,"แตะอีกครั้ง เพื่อคืนผังเริ่มต้นทั้งหมด")){sfx("tap");return}var keep={};Object.keys(L.draft.m||{}).forEach(function(k){if(/^p:5\d{6}$/.test(k))keep[k]=L.draft.m[k]});L.draft={m:keep,h:{},r:{}};L.sel=null;L.dirty=1;fmLayRefresh();fmLayBar();return}
+  if(a==="reset"){if(!armed(t,"แตะอีกครั้ง เพื่อคืนผังเริ่มต้นทั้งหมด")){sfx("tap");return}var keep={};Object.keys(L.draft.m||{}).forEach(function(k){if(/^p:5\d{6}$/.test(k))keep[k]=L.draft.m[k]});L.draft={m:keep,h:{},r:{},sk:L.draft.sk||{}};L.sel=null;L.dirty=1;fmLayRefresh();fmLayBar();return}
   if(a==="cancel"){fmLayEnd(false);return}if(a==="save"){fmLayEnd(true);return}
   if(a==="decor2d"){fmLayEnd(true);setTimeout(function(){var el=document.createElement("button");FM.lay3skip=1;el.setAttribute("data-fmedit","on");(document.querySelector("#v-farm .fgame")||document.body).appendChild(el);el.click();el.remove()},400);return}},true);
 function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;FM3.nearP=[];FM3.pineOn=0;FM3.mv={};FM3.fenceParts=[];var MV=function(k,lab){var g=new THREE.Group();st.add(g);g.userData.mvk=k;FM3.mv[k]={g:g,lab:lab};return g};
@@ -6616,8 +6642,8 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=
   var wc=fm3P(-1.4,6.4),wm=new THREE.Group();wm.position.set(wc[0],0,wc[1]);MV("mill","กังหันลม").add(wm);var wmm=fm3Windmill(wm);wm.rotation.y=.8;FM3.blades=wmm.userData.blades;
   fm3PetYard(st);
   /* ร้านค้า + ตู้จดหมาย */
-  var sp=fm3P(1.5,10.5),shop=new THREE.Group();shop.position.set(sp[0],0,sp[1]);MV("stall","ร้านริมทาง").add(shop);fm3Stall(shop);
-  var l2=fm3Label("ร้านริมทาง");l2.position.set(0,3.1,0);shop.add(l2);shop.userData.pick={fmt:"stall"};FM3.pickables.push(shop);
+  var sp=fm3P(1.5,10.5),shop=new THREE.Group();shop.position.set(sp[0],0,sp[1]);MV("stall","ร้านริมทาง").add(shop);shop.userData.sk="classic";fm3Stall(shop);
+  var l2=fm3Label("ร้านริมทาง");l2.userData.lbl=1;l2.position.set(0,3.1,0);shop.add(l2);shop.userData.pick={fmt:"stall"};FM3.pickables.push(shop);
   var mp=fm3P(5.5,10.5),mb=new THREE.Group();mb.position.set(mp[0],0,mp[1]);MV("mail","ตู้จดหมายเพื่อน").add(mb);fm3Box(mb,.1,1,.1,0x78350f,0,.5,0);fm3Box(mb,.5,.4,.6,0xef4444,0,1.15,0);var l3=fm3Label("เพื่อน");l3.position.set(0,2.1,0);mb.add(l3);mb.userData.pick={fmt:"friends"};FM3.pickables.push(mb);
   /* คอกสัตว์: ดิน + รั้วขาว + เล้า */
   var PNG=MV("pens","คอกสัตว์"),pc0=fm3P(7,5),pc1=fm3P(11,9),pen=null;
@@ -8456,7 +8482,7 @@ function fmStallT(){var own=!FM.v,key=own?"me":FM.v.emp,st=FM.stT;if(st&&st.k===
 function fmRotInfo(x){var t=fmStallT()[x.id];if(!t||x.sold)return null;var age=fmNow()-new Date(t).getTime();return {rot:age>=86400000,left:86400000-age}}
 function fmHalf(it,q){return Math.max(1,Math.floor((fmIt(it).sell||0)*q/2))}
 function fmStallHtml(){var own=!FM.v,d=FM.v||FM.d,L=d.stall||[],SI=FM.stallInfo||{slots:6},N=own?(SI.slots||6):Math.max(6,L.reduce(function(a,x){return Math.max(a,x.slot)},0)),nm=own?"ร้านริมทางของฉัน":"ร้านริมทางของ"+esc(nick(d.name)||d.name);
-  var top='<div class="fstand"><div class="fawn"><b>🧺 '+nm+'</b></div><div class="fshelf">',bot='</div></div>';
+  var top=(own?'<div class="fstsk"><b>🎨 แบบร้าน</b><div>'+FSTALL.map(function(x){return '<button type="button" data-fmstsk="'+x[0]+'" class="'+(fmStallSkin()===x[0]?'on':'')+'"><span>'+x[1]+'</span><small>'+x[2]+'</small></button>'}).join('')+'</div></div>':'')+'<div class="fstand"><div class="fawn"><b>🧺 '+nm+'</b></div><div class="fshelf">',bot='</div></div>';
   if(!own){var open=L.filter(function(x){return !x.sold}),c='';for(var s1=1;s1<=N;s1++){var x1=open.filter(function(z){return z.slot===s1})[0];
       var rv=x1&&fmRotInfo(x1);c+=x1?(rv&&rv.rot?fmCrate(fmIt(x1.item),x1.qty,'<small>🤢 เน่าแล้ว</small>','rot'):fmCrate(fmIt(x1.item),x1.qty,'<button type="button" class="fcprice" data-fmsb="'+x1.id+'">'+fmc()+' '+num(x1.price)+'</button>','',' title="'+esc(fmIt(x1.item).n)+' · ราคาตลาด '+num(fmIt(x1.item).sell*x1.qty)+'"')):fmCrate(null,0,'<small>ว่าง</small>','empty')}
     return top+c+bot+'<p class="sub" style="text-align:center">แตะราคาเพื่อซื้อ · ของเข้ายุ้งฉางของคุณ</p>'}
@@ -8860,14 +8886,14 @@ function fmCanRot(k){return !!k&&!/^(p|t|f|h):/.test(k)&&k!=="pens"&&k!=="yard"}
 function fm3RotApply(k,o){if(!o||!fmCanRot(k))return;if(o.userData.rb==null)o.userData.rb=o.rotation.y;o.rotation.y=o.userData.rb;var r=fmRot(k);if(!r)return;/* อัปเดต 348: ของแต่งหมุนทีละ 45° เริ่มจากหันหน้าตรง */if(/^d:/.test(k)){o.rotation.y=-(r-1)*Math.PI/4;return}var R=null;try{R=fm3LayRect(k)}catch(e){}if(!R)return;
   var cx=((R[0]+R[2])/2-6)*2,cz=((R[1]+R[3])/2-6)*2,th=-r*Math.PI/2,vx=o.position.x-cx,vz=o.position.z-cz,c=Math.cos(th),sn=Math.sin(th);o.position.x=cx+vx*c+vz*sn;o.position.z=cz-vx*sn+vz*c;o.rotation.y=o.userData.rb+th}
 function fm3RotDyn(){(FM3.dyn?FM3.dyn.children:[]).forEach(function(o){var k=o.userData.mvk;if(k)fm3RotApply(k,o)})}
-function fmRotate(k){if(!fmCanRot(k)||FM.v)return;if(FM.lay&&FM.lay.ending){FM.rotTry=(FM.rotTry||0)+1;if(FM.rotTry<30)setTimeout(function(){fmRotate(k)},150);return}FM.rotTry=0;var tmp=!FM.lay;if(tmp){var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{}})),sel:k,quick:1}}
+function fmRotate(k){if(!fmCanRot(k)||FM.v)return;if(FM.lay&&FM.lay.ending){FM.rotTry=(FM.rotTry||0)+1;if(FM.rotTry<30)setTimeout(function(){fmRotate(k)},150);return}FM.rotTry=0;var tmp=!FM.lay;if(tmp){var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{},sk:cur.sk||{}})),sel:k,quick:1}}
   var L=FM.lay,RR=L.draft.r=L.draft.r||{},old=RR[k]|0;RR[k]=(old+1)%(/^d:/.test(k)?9:4);if(!RR[k])delete RR[k];fmLayRefresh();
   var r=null;try{r=fm3LayRect(k)}catch(e){}var ev=r&&fmLayKind(k)!=="decor"?fmLayEval(k,(r[0]+r[2])/2,(r[1]+r[3])/2):{ok:true};
   if(!ev.ok){if(old)RR[k]=old;else delete RR[k];fmLayRefresh();sfx("error");toast((ev.msg||"หมุนแล้วทับของอื่น").replace(/ — เลือกจุดอื่น$/,"")+" — ขยับออกมาก่อนแล้วค่อยหมุน");if(tmp){FM.lay=null;fmLayRefresh()}return}
   L.dirty=1;sfx("tap");if(tmp||L.quick)fmLayEnd(true);else{fmLayBar();try{fm3LaySel()}catch(e){}}setTimeout(function(){try{fmStoBub(k)}catch(e){}},350)}
 /* อัปเดต 348: กดค้างที่รั้ว/แนวพุ่มไม้เดิมของฟาร์ม → ปุ่ม 🗑️ เอาออก (แตะ 2 ครั้งเพื่อยืนยัน) */
 function fmDelLine(k,btn){if(FM.v)return;if(FM.lay&&FM.lay.ending){setTimeout(function(){fmDelLine(k,btn)},150);return}if(!(FM.dlArm===k&&Date.now()-FM.dlAt<4000)){FM.dlArm=k;FM.dlAt=Date.now();sfx("tap");toast("🗑️ แตะอีกครั้งเพื่อเอา"+fmLayName(k)+"ออก (คืนได้ด้วยปุ่ม 🔄 ผังเริ่มต้นในโหมดจัดฟาร์ม)");return}FM.dlArm=null;
-  var tmp=!FM.lay;if(tmp){var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{}})),sel:null,quick:1}}var L=FM.lay;L.draft.h=L.draft.h||{};L.draft.h[k]=1;L.dirty=1;if(L.sel===k)L.sel=null;var c=$("fm-petchip");if(c)c.remove();sfx("close");if(tmp||L.quick)fmLayEnd(true);else{fmLayRefresh();fmLayBar()}}
+  var tmp=!FM.lay;if(tmp){var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{},sk:cur.sk||{}})),sel:null,quick:1}}var L=FM.lay;L.draft.h=L.draft.h||{};L.draft.h[k]=1;L.dirty=1;if(L.sel===k)L.sel=null;var c=$("fm-petchip");if(c)c.remove();sfx("close");if(tmp||L.quick)fmLayEnd(true);else{fmLayRefresh();fmLayBar()}}
 document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-fmdelline]");if(!t)return;e.stopPropagation();e.preventDefault();fmDelLine(t.getAttribute("data-fmdelline"),t)},true);
 document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-fmrot]");if(!t)return;e.stopPropagation();e.preventDefault();fmRotate(t.getAttribute("data-fmrot"))},true);
 var FROTI='<svg viewBox="0 0 40 40" width="28" height="28" aria-hidden="true"><path d="M30 12 A12 12 0 1 0 32 24" fill="none" stroke="#b45309" stroke-width="5" stroke-linecap="round"/><path d="M24 5 L34 11 L25 17 Z" fill="#b45309"/></svg>';
@@ -11245,7 +11271,7 @@ async function dnCheck(){if(!S.me||S.guest)return;DN.at=Date.now();try{var r=awa
 function dnDone(){var ids=DN.ids;DN.ids=[];closeModal("m-dn");if(ids.length)db.rpc("notify_direct_read",{p_ids:ids}).then(function(){},function(){})}
 $("dn-ok").addEventListener("click",dnDone);$("dn-x").addEventListener("click",dnDone);$("dn-cal").addEventListener("click",function(){dnDone();show("leavecal")});
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&S.me&&Date.now()-DN.at>60000&&$("m-dn").hidden)dnCheck()});
-fm3DynamicO317=fm3Dynamic;fm3Dynamic=function(){var r=fm3DynamicO317.apply(this,arguments);try{fm3RotDyn()}catch(e){}try{fm3FenceClipSoon()}catch(e){}return r};
+fm3DynamicO317=fm3Dynamic;fm3Dynamic=function(){var r=fm3DynamicO317.apply(this,arguments);try{fm3StallSync()}catch(e){}try{fm3RotDyn()}catch(e){}try{fm3FenceClipSoon()}catch(e){}return r};
 start().catch(function(e){$("auth").hidden=false;$("a-msg").textContent=thErr(e)});
 })();
 </script>
