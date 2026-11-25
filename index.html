@@ -6485,7 +6485,9 @@ function fm3LayDragInit(){if(FM3.layDragOn)return;FM3.layDragOn=1;var box=docume
   window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up)}
 /* อัปเดต 325: กดค้างที่สิ่งของ → ยกขึ้นลากย้ายได้ทันที · ปล่อยนิ้ว = วางและบันทึกเอง (ไม่มีแถบ/ข้อความ) */
 (function(){var T=null,st=null;var box=function(){return document.querySelector("#v-farm .fgame")};
-  document.addEventListener("pointerdown",function(e){if(FM.lay||FM.v||!FM3.on||!FM3.ready||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0||FM3.tp)return;clearTimeout(T);st={x:e.clientX,y:e.clientY,id:e.pointerId};
+  /* กันค้าง: ถ้าโหมดยกย้ายด่วนค้างอยู่โดยไม่มีการลาก เกิน 1.5 วิ → วาง/บันทึกแล้วออกเอง */
+  setInterval(function(){var L=FM.lay;if(!L||!L.quick){FM.qkIdle=0;return}if(FM3.layDrag){FM.qkIdle=0;return}FM.qkIdle=(FM.qkIdle||0)+1;if(FM.qkIdle>=3){FM.qkIdle=0;try{fmLayEnd(true)}catch(e){FM.lay=null;try{fmLayRefresh()}catch(x){}}}},500);
+  document.addEventListener("pointerdown",function(e){if(FM.lay&&FM.lay.quick&&!FM3.layDrag){try{fmLayEnd(true)}catch(x){FM.lay=null}}if(FM.lay||FM.v||!FM3.on||!FM3.ready||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0||FM3.tp)return;clearTimeout(T);st={x:e.clientX,y:e.clientY,id:e.pointerId};
     T=setTimeout(function(){if(!st)return;var R=null;try{R=fm3LayRay(st.x,st.y,true)}catch(x){}var k=R&&R.hk;if(!k||/^p:/.test(k)||/^t:/.test(k))return;
       fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null,quick:1};fmLayRefresh();FM.lay.sel=k;try{fm3LaySel()}catch(x){}
       var o=fm3LayObj(k),r0=fm3LayRect(k);if(!o||!r0){FM.lay=null;fmLayRefresh();return}try{navigator.vibrate&&navigator.vibrate(30)}catch(x){}sfx("tap");
@@ -6493,7 +6495,7 @@ function fm3LayDragInit(){if(FM3.layDragOn)return;FM3.layDragOn=1;var box=docume
   window.addEventListener("pointermove",function(e){if(st&&e.pointerId===st.id&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>16){clearTimeout(T);st=null}});
   var cancel=function(e){if(st&&e.pointerId===st.id){clearTimeout(T);st=null}};window.addEventListener("pointerup",cancel);window.addEventListener("pointercancel",cancel)})();
 function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
-function fmLayEnd(save){var L=FM.lay;if(!L)return;var bar=$("fm-laybar");if(bar)bar.remove();
+function fmLayEnd(save){var L=FM.lay;if(!L||L.ending)return;L.ending=1;var bar=$("fm-laybar");if(bar)bar.remove();
   var done=function(){FM.lay=null;var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.remove("flay");fmLayRefresh();var h=$("fm-hud");if(h)h.innerHTML=fmHud();if(typeof fmDockFit==="function")fmDockFit()};
   if(!save||!L.dirty){done();return}q(db.rpc("farm_layout_save",{p_layout:L.draft})).then(function(){FM.d.layout=L.draft;if(!L.quick){toast("บันทึกผังฟาร์มแล้ว ✨");sfx("buy")}done()},function(e){toast(thErr(e));done()})}
 function fmLayBar(){var L=FM.lay;if(!L)return;if(L.quick){var ob=$("fm-laybar");if(ob)ob.remove();return}var box=document.querySelector("#v-farm .fgame");if(!box)return;var b=$("fm-laybar");if(!b){b=document.createElement("div");b.id="fm-laybar";b.className="flaybar";box.appendChild(b)}
