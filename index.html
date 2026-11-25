@@ -6518,7 +6518,7 @@ async function fmDecorBuyAt(key,x,y){if(FM.busy||FM.v)return;var o=(FM.cat.decor
   /* กันค้าง: ถ้าโหมดยกย้ายด่วนค้างอยู่โดยไม่มีการลาก เกิน 1.5 วิ → วาง/บันทึกแล้วออกเอง */
   setInterval(function(){var L=FM.lay;if(!L||!L.quick){FM.qkIdle=0;return}if(FM3.layDrag){FM.qkIdle=0;return}FM.qkIdle=(FM.qkIdle||0)+1;if(FM.qkIdle>=3){FM.qkIdle=0;try{fmLayEnd(true)}catch(e){FM.lay=null;try{fmLayRefresh()}catch(x){}}}},500);
   document.addEventListener("pointerdown",function(e){if(FM.lay&&FM.lay.quick&&!FM3.layDrag){try{fmLayEnd(true)}catch(x){FM.lay=null}}if(FM.lay||FM.v||!FM3.on||!FM3.ready||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0||FM3.tp)return;clearTimeout(T);st={x:e.clientX,y:e.clientY,id:e.pointerId};
-    T=setTimeout(function(){if(!st)return;var R=null;try{R=fm3LayRay(st.x,st.y,true)}catch(x){}var k=R&&R.hk;if(!k||/^p:/.test(k)||/^t:/.test(k))return;
+    T=setTimeout(function(){if(!st)return;var R=null;try{R=fm3LayRay(st.x,st.y,true)}catch(x){}var k=R&&R.hk;if(!k||/^t:/.test(k))return;if(FM.tool)return;
       fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null,quick:1};fmLayRefresh();FM.lay.sel=k;try{fm3LaySel()}catch(x){}
       var o=fm3LayObj(k),r0=fm3LayRect(k);if(!o||!r0){FM.lay=null;fmLayRefresh();return}try{navigator.vibrate&&navigator.vibrate(30)}catch(x){}sfx("tap");try{fmStoBub(k)}catch(x){}
       var R2=fm3LayRay(st.x,st.y);FM3.ctl.enabled=false;FM3.layPt=FM3.layPt||{};FM3.layPt[st.id]=1;FM3.layDrag={k:k,o:o,p0:o.position.clone(),s0:FM3.selBox?FM3.selBox.position.clone():null,x:st.x,y:st.y,ox:(r0[0]+r0[2])/2-R2.gx,oy:(r0[1]+r0[3])/2-R2.gy,mv:0,ev:null,pid:st.id};st=null},450)},true);
@@ -9371,7 +9371,7 @@ function fmRipeAt(e){var w=$("fm-world");if(!w||!w.contains(e.target))return nul
   if(v==null||v==="all")return null;var fp=(FM.d&&FM.d.field||[]).filter(function(p){return p.slot===+v})[0];return fp&&new Date(fp.ready_at).getTime()<=fmNow()?+v:null}
 function fmSickleHold(e,slot){var box=document.querySelector("#v-farm .fgame");if(!box)return;fmToolClose();FM.tool={kind:"sickle",slot:slot};var el=document.createElement("div");el.id="fm-tool";el.className="ftool sickle dragging";
   el.innerHTML='<div class="ftl-row"><button type="button" class="ftl sick" data-tool="sickle"><span>'+FSICKLE+'</span></button></div>';box.appendChild(el);if(FM3.ctl)FM3.ctl.enabled=false;if(navigator.vibrate)try{navigator.vibrate(18)}catch(x){}fmToolDrag(e,el.querySelector("[data-tool]"))}
-document.addEventListener("pointerdown",function(e){if(FM.v||FM.edit||FM.busy||FM.tool||FM.locked||(e.button&&e.button!==0))return;var s0=fmRipeAt(e);if(s0==null)return;var x0=e.clientX,y0=e.clientY,done=false;
+document.addEventListener("pointerdown",function(e){if(FM.v||FM.edit||FM.busy||FM.tool||FM.locked||(e.button&&e.button!==0))return;var s0=null;/* อัปเดต 336: กดค้างที่แปลง = ยกแปลงย้ายทีละแปลง (เก็บผักใช้แตะแล้วลากเคียวแทน) */if(s0==null)return;var x0=e.clientX,y0=e.clientY,done=false;
   var stop=function(){done=true;clearTimeout(tm);window.removeEventListener("pointermove",mv,true);window.removeEventListener("pointerup",stop,true);window.removeEventListener("pointercancel",stop,true)};
   var mv=function(ev){if(ev.pointerId===e.pointerId&&Math.abs(ev.clientX-x0)+Math.abs(ev.clientY-y0)>12)stop()};
   var tm=setTimeout(function(){if(done)return;stop();fmSickleHold(e,s0)},260);
@@ -9595,7 +9595,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(D.fmp){sfx("open");fmToolOpen("seed",+D.fmp,ev);return}
   if(D.fmseed){var cr=FM.cat.crops[D.fmseed],own1=(FM.d.items||{})[D.fmseed]>0;FM.t="farm";FM.snd="plant";fmDo(function(){return q(db.rpc("farm_plant",{p_slot:FM.slot,p_crop:D.fmseed}))},"ปลูก"+cr.n+"แล้ว 🌱 "+(own1?"(ใช้ผลผลิตในยุ้ง 1 ชิ้น) ":"")+"รอ "+fmDur(cr.min));return}
   if(D.fmh){var fp0=D.fmh!=="all"&&FM.d.field.filter(function(p){return p.slot===+D.fmh})[0];if(fp0&&new Date(fp0.ready_at).getTime()>fmNow()){var cr0=FM.cat.crops[fp0.crop]||{};sfx("tap");fmTimeBub(ev,new Date(fp0.ready_at).getTime(),cr0.min,(cr0.e||"🌱")+" "+(cr0.n||""),FM.v?0:fp0.slot);return}
-    if(D.fmh!=="all"){if(Date.now()-(FM.holdT||0)<500)return;if(fmCapInfo().free<1){sfx("error");toast("ยุ้งฉางเต็มแล้ว — ขายของหรือส่งคำสั่งซื้อก่อน");return}fmMark("sickle",+D.fmh);sfx("swish");fmBatch("sickle",null,[+D.fmh]);return}
+    if(D.fmh!=="all"){if(Date.now()-(FM.holdT||0)<500)return;if(fmCapInfo().free<1){sfx("error");toast("ยุ้งฉางเต็มแล้ว — ขายของหรือส่งคำสั่งซื้อก่อน");return}/* อัปเดต 336: แตะผักสุก → เคียวโผล่ แล้วกดลากเคียวผ่านแปลงเพื่อเก็บ (แบบเกมฟาร์ม) */sfx("open");fmToolOpen("sickle",+D.fmh,ev);return}
     FM.snd="harvest";if(D.fmh!=="all")fmFloat(ev,"+1 "+((FM.cat.crops[(FM.d.field.filter(function(p){return p.slot===+D.fmh})[0]||{}).crop]||{}).e||"🌾"));
     fmDo(function(){return q(db.rpc("farm_harvest",D.fmh==="all"?{}:{p_slot:+D.fmh}))},function(n){return "เก็บเกี่ยวแล้ว "+n+" แปลง → ไปขายที่ 🏚️ ยุ้งฉาง"});return}
   if(D.fmplot){if(FM.v)return;fmPlotBuy();return}
