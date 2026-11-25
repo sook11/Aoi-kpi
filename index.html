@@ -6530,13 +6530,13 @@ function fmLayEnd(save){var L=FM.lay;if(!L||L.ending)return;L.ending=1;var bar=$
   if(!save||!L.dirty){done();return}q(db.rpc("farm_layout_save",{p_layout:L.draft})).then(function(){FM.d.layout=L.draft;if(!L.quick){toast("บันทึกผังฟาร์มแล้ว ✨");sfx("buy")}done()},function(e){toast(thErr(e));done()})}
 function fmLayBar(){var L=FM.lay;if(!L)return;if(L.quick){var ob=$("fm-laybar");if(ob)ob.remove();return}var box=document.querySelector("#v-farm .fgame");if(!box)return;var b=$("fm-laybar");if(!b){b=document.createElement("div");b.id="fm-laybar";b.className="flaybar";box.appendChild(b)}
   var k=L.sel,kind=k&&fmLayKind(k);try{if(!FM3.layDrag)fmStoBub(k,!k)}catch(x){}b.innerHTML='<div class="flt"><span>🏗️ '+(k?'ย้าย <b>'+esc(fmLayName(k))+'</b> · ลากจากที่ไหนก็ได้ใกล้ๆ ของ หรือแตะจุดวาง':'แตะ/กดลากของที่จะย้าย · ซูม 🔍 ให้ใกล้ขึ้นได้')+'</span></div><div class="flb"><button type="button" class="fz" data-fmz="in" aria-label="ซูมเข้า">🔍＋</button><button type="button" class="fz" data-fmz="out" aria-label="ซูมออก">🔍－</button>'+
-    (k?'<button type="button" data-fmlay="unsel">✋</button>':'')+(k&&kind==="line"?'<button type="button" data-fmlay="hide">'+(fmHid(k)?'↩️ คืนกลับ':'🗑️ เอาออก')+'</button>':'')+(k&&kind!=="decor"&&!/^p:2\d{3}/.test(k)&&(L.draft.m||{})[k]?'<button type="button" data-fmlay="back">📍 ที่เดิม</button>':'')+
+    (k?'<button type="button" data-fmlay="unsel">✋</button>':'')+(k&&kind==="line"?'<button type="button" data-fmlay="hide">'+(fmHid(k)?'↩️ คืนกลับ':'🗑️ เอาออก')+'</button>':'')+(k&&kind!=="decor"&&!/^p:5\d{6}$/.test(k)&&(L.draft.m||{})[k]?'<button type="button" data-fmlay="back">📍 ที่เดิม</button>':'')+
     '<button type="button" data-fmlay="reset" title="ผังเริ่มต้น">🔄</button><button type="button" data-fmlay="cancel">ยกเลิก</button><button type="button" class="primary" data-fmlay="save">✓ บันทึก</button></div>'}
 document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmlay]");if(!t||!FM.lay)return;var a=t.dataset.fmlay,L=FM.lay;ev.stopPropagation();
   if(a==="unsel"){L.sel=null;fmLayBar();fm3LaySel();return}
   if(a==="hide"){var h=L.draft.h=L.draft.h||{};if(h[L.sel])delete h[L.sel];else h[L.sel]=1;L.dirty=1;sfx("tap");fmLayRefresh();fmLayBar();return}
   if(a==="back"){delete (L.draft.m||{})[L.sel];L.dirty=1;sfx("tap");fmLayRefresh();fmLayBar();return}
-  if(a==="reset"){if(!armed(t,"แตะอีกครั้ง เพื่อคืนผังเริ่มต้นทั้งหมด")){sfx("tap");return}var keep={};Object.keys(L.draft.m||{}).forEach(function(k){if(/^p:2\d{3}/.test(k))keep[k]=L.draft.m[k]});L.draft={m:keep,h:{}};L.sel=null;L.dirty=1;fmLayRefresh();fmLayBar();return}
+  if(a==="reset"){if(!armed(t,"แตะอีกครั้ง เพื่อคืนผังเริ่มต้นทั้งหมด")){sfx("tap");return}var keep={};Object.keys(L.draft.m||{}).forEach(function(k){if(/^p:5\d{6}$/.test(k))keep[k]=L.draft.m[k]});L.draft={m:keep,h:{}};L.sel=null;L.dirty=1;fmLayRefresh();fmLayBar();return}
   if(a==="cancel"){fmLayEnd(false);return}if(a==="save"){fmLayEnd(true);return}
   if(a==="decor2d"){fmLayEnd(true);setTimeout(function(){var el=document.createElement("button");FM.lay3skip=1;el.setAttribute("data-fmedit","on");(document.querySelector("#v-farm .fgame")||document.body).appendChild(el);el.click();el.remove()},400);return}},true);
 function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;FM3.nearP=[];FM3.pineOn=0;FM3.mv={};FM3.fenceParts=[];var MV=function(k,lab){var g=new THREE.Group();st.add(g);g.userData.mvk=k;FM3.mv[k]={g:g,lab:lab};return g};
@@ -8660,9 +8660,11 @@ function fmInParcel(fx,fy,m){m=m==null?.3:m;var dd=FM.v||FM.d,o=fmPOwn(dd);retur
 var FPUSE={crop:["🌱","ปลูกผัก"],pen:["🐄","คอกสัตว์"],decor:["🌳","ลานของแต่ง"]};
 function fmCap(d){var c=FM.cat||{};return (c.max_plots||12)+(c.plots_per_land||4)*((d&&d.land)||0)}
 /* อัปเดต 318: แปลงปลูกซื้อทีละแปลง (slot 2000+) วางได้อิสระบนที่ดินที่เป็นของเรา */
-function fmSlots(d){var L=[];for(var i=1;i<=fmCap(d);i++)L.push(i);L=L.concat(fmParcelSlots(d));for(var j=0;j<((d&&d.plot_extra)||0);j++)L.push(2000+j);return L}
+function fmSlots(d){var L=[];for(var i=1;i<=fmCap(d);i++)L.push(i);L=L.concat(fmParcelSlots(d));for(var j=0;j<((d&&d.plot_extra)||0);j++)L.push(FXS+j);return L}
+/* อัปเดต 337: แปลงที่ซื้อทีละแปลงใช้เลขช่อง 5,000,000+ (เดิม 2000+ ชนกับแปลงในที่ดินเก่าเลข 10–19 ทำให้แปลงใหม่มีผักขึ้นเอง) */
+var FXS=5000000;
 function fmPlotXY(i){var po=fmOff("p:"+i),r=fmPlotXY0(i);return [r[0]+po[0],r[1]+po[1]]}
-function fmPlotXY0(i){if(i>=2000)return [0,0];if(i>=1000){var pid=Math.floor((i-1000)/100),j=(i-1000)%100,P=fmParcels().filter(function(z){return z.id===pid})[0];if(P)return [P.x+j%P.w,P.y+Math.floor(j/P.w)];return [0,0]}if(i<=12)return [1+((i-1)%4),5+Math.floor((i-1)/4)];var z=Math.floor((i-13)/4),j=(i-13)%4,b=fmLandXY(z);return [b[0]+(j%2),b[1]+Math.floor(j/2)]}
+function fmPlotXY0(i){if(i>=FXS)return [0,0];if(i>=1000){var pid=Math.floor((i-1000)/100),j=(i-1000)%100,P=fmParcels().filter(function(z){return z.id===pid})[0];if(P)return [P.x+j%P.w,P.y+Math.floor(j/P.w)];return [0,0]}if(i<=12)return [1+((i-1)%4),5+Math.floor((i-1)/4)];var z=Math.floor((i-13)/4),j=(i-13)%4,b=fmLandXY(z);return [b[0]+(j%2),b[1]+Math.floor(j/2)]}
 function fmInLand(fx,fy){return fy>11.95&&fy<14.9&&fx>.5&&fx<12.7}
 function fmLandSvg(d,own,add){var L=(FM.cat&&FM.cat.land)||[],n=d.land||0;FLAND.forEach(function(b,k){if(k<n||!L[k])return;var x0=b[0]-.05,y0=b[1]-.1,cx=b[0]+1,cy=b[1]+1;
     var sv='';[[.2,.3,"round",.55],[1.6,.25,"pine",.6],[.4,1.6,"dark",.5],[1.7,1.5,"round",.5]].forEach(function(t){sv+=t[2]==="pine"?ftree(iso(x0+t[0],y0+t[1]),t[2],t[3],true):fleafy(iso(x0+t[0],y0+t[1]),t[3]*1.25,k*5+t[0]*3)});
@@ -9067,7 +9069,7 @@ function fmScene(d,own){fmGrassTex();var c=FM.cat,now=fmNow(),F={},G=[],S2=[],T=
   add(5.5,[0,1].map(function(q){return '<g>'+emo(0,8,"🦆",q?22:26,q?' class="iem" transform="scale(-1 1)"':'')+'<animateMotion path="M'+(pc[0]+55)+' '+pc[1]+' a55 22 0 1 0 -110 0 a55 22 0 1 0 110 0" dur="'+(q?26:20)+'s" begin="-'+(q*9)+'s" repeatCount="indefinite"/></g>'}).join(""));add(3.4,emo(pc[0]-80,pc[1]-6,"🌿",24));
   var GS0=G.length;
   /* แปลงผัก */
-  var SL2=fmSlots(d).filter(function(z){return z<1000?z<=d.plots:z>=2000});for(var si2=0;si2<SL2.length;si2++){var i=SL2[si2],pxy=fmPlotXY(i),gx=pxy[0],gy=pxy[1],a=iso(gx,gy),b=iso(gx+1,gy),cc=iso(gx+1,gy+1),dd=iso(gx,gy+1),ctr=iso(gx+.5,gy+.5);
+  var SL2=fmSlots(d).filter(function(z){return z<1000?z<=d.plots:z>=FXS});for(var si2=0;si2<SL2.length;si2++){var i=SL2[si2],pxy=fmPlotXY(i),gx=pxy[0],gy=pxy[1],a=iso(gx,gy),b=iso(gx+1,gy),cc=iso(gx+1,gy+1),dd=iso(gx,gy+1),ctr=iso(gx+.5,gy+.5);
     var ins=function(p,k){return [ctr[0]+(p[0]-ctr[0])*k,ctr[1]+(p[1]-ctr[1])*k]},A=ins(a,.92),B=ins(b,.92),C=ins(cc,.92),D=ins(dd,.92),A2=ins(a,.74),B2=ins(b,.74),C2=ins(cc,.74),D2=ins(dd,.74);
     if(i<1000&&i>d.plots){if(own&&i===d.plots+1)add(gx+gy+.9,'<g class="fhit" data-fmx="1">'+ipoly([A,B,C,D],"rgba(255,255,255,.4)",' stroke="#fff" stroke-dasharray="6 4" stroke-width="2.5"')+emo(ctr[0],ctr[1]+4,"🔒",20)+'<text x="'+ctr[0]+'" y="'+(ctr[1]+20)+'" class="itx" style="font-size:12px">'+(30*(d.plots-3))+'</text></g>');continue}
     var A3=ins(a,.98),B3=ins(b,.98),C3=ins(cc,.98),D3=ins(dd,.98);
