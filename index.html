@@ -8526,7 +8526,7 @@ function ffruit(k,m,rd,o){var fr=o.fruit,C=FFRC[fr]||["#ef4444","#991b1b"],x=m[0
       s+=rd?(fr==="cherry"?'<path d="M'+fN(cx)+' '+fN(cy-6)+' l-2 6 M'+fN(cx)+' '+fN(cy-6)+' l3 5" stroke="#166534" stroke-width="1"/><circle cx="'+fN(cx-2)+'" cy="'+fN(cy)+'" r="2.6" fill="'+C[0]+'" stroke="'+C[1]+'" stroke-width=".7"/><circle cx="'+fN(cx+3)+'" cy="'+fN(cy-1)+'" r="2.6" fill="'+C[0]+'" stroke="'+C[1]+'" stroke-width=".7"/>':'<circle cx="'+fN(cx)+'" cy="'+fN(cy)+'" r="'+(fr==="mango"?3.6:3.3)+'" fill="'+C[0]+'" stroke="'+C[1]+'" stroke-width=".8"/>'):(i<4?'<circle cx="'+fN(cx)+'" cy="'+fN(cy)+'" r="1.8" fill="#bbf7d0"/>':'')})}
   if(rd){var pe=(FM.cat.products[fr]||{}).e||"🍎";s+='<g class="fbub"><circle cx="'+fN(x+20)+'" cy="'+fN(m[1]-62)+'" r="13" fill="#fff" stroke="#16a34a" stroke-width="2.5"/>'+emo(x+20,m[1]-56,pe,15)+'</g>'}
   return s}
-var FPENS={chicken:[7.35,5.45,8.7,6.75],cow:[9.4,5.45,10.75,6.75],pig:[7.35,7.35,8.7,8.7],sheep:[9.35,7.35,10.7,8.7]};
+/* อัปเดต 349: คอกสัตว์ทุกคอกขนาดเท่ากัน 2×2 ช่อง (เดิมคอกแรก 1.35 · คอกเพิ่ม 2.5 · คอกบนที่ดิน 1.76) */var FPENS={chicken:[7.1,5.2,9.1,7.2],cow:[9.2,5.2,11.2,7.2],pig:[7.1,7.3,9.1,9.3],sheep:[9.2,7.3,11.2,9.3]};
 function fmPenSpot(k,i){var b=FPENS[k]||[7.4,5.4,10.6,8.6],cols=k==="cow"?2:3,cx=i%cols,cy=Math.floor(i/cols);return [b[0]+(b[2]-b[0])*(cx+.5)/cols,b[1]+(b[3]-b[1])*((cy%2)+.5)/2]}
 function fmPenIdx(d){var cnt={},out={};d.animals.forEach(function(a){cnt[a.animal]=cnt[a.animal]||0;out[a.id]=cnt[a.animal]++});return out}
 function fm3NewCrop(k,st,p){var green=0x22a34a,m=fm3Mesh;
@@ -8789,8 +8789,8 @@ function fpInit(x,i){var w=FP[x.id];if(w)return w;var m=(FM.cat.decor[x.item]||{
   return FP[x.id]={x:p[0],y:p[1],tx:p[0],ty:p[1],wait:1+Math.random()*4,dir:1,h:0,fly:0,m:m,k:x.item,d0:1,hop:0,jump:0}}
 /* ---------- อัปเดต 141: ลานสัตว์เลี้ยง (แยกจากพื้นที่ปลูก) ทางทิศตะวันตกของฟาร์ม ---------- */
 var PYD={x0:-8.2,x1:-3.4,y0:.5,y1:11.8,gate:3,pond:[-5.3,10.2,1.05]},PYH={h_doghouse:[-7.3,1.7,1],h_cathouse:[-7.3,3.6,1],h_birdhouse:[-7.3,5.5,1],h_stable:[-7,7.6,1.25],h_pond:[-6.75,10.9,1]},PYL={chicken:"h_coop",cow:"h_cowshed",pig:"h_sty",sheep:"h_sheepfold"};
-var FRANCH={x:16.1,y:.6,w:2.5,gx:.35,gy:.55,rows:4};
-function fmRanchRect(i,d){d=d||FM.v||FM.d;var o=fmPOwn(d),R=[];fmParcels().forEach(function(P){if(o[P.id]&&o[P.id].use==="pen")for(var yy=0;yy+2<=P.h;yy+=2)for(var xx=0;xx+2<=P.w;xx+=2)R.push([P.x+xx+.12,P.y+yy+.12,P.x+xx+1.88,P.y+yy+1.88])});if(i<R.length)return R[i];i-=R.length;var B=fmRanchBlk(),n=-1;for(var k=0;k<200;k++){var col=Math.floor(k/FRANCH.rows),row=k%FRANCH.rows,x0=FRANCH.x+col*(FRANCH.w+FRANCH.gx),y0=FRANCH.y+row*(FRANCH.w+FRANCH.gy),rr=[x0,y0,x0+FRANCH.w,y0+FRANCH.w];
+var FRANCH={x:16.1,y:.6,w:2,gx:.35,gy:.55,rows:4};
+function fmRanchRect(i,d){d=d||FM.v||FM.d;var o=fmPOwn(d),R=[];fmParcels().forEach(function(P){if(o[P.id]&&o[P.id].use==="pen")for(var yy=0;yy+2<=P.h;yy+=2)for(var xx=0;xx+2<=P.w;xx+=2)R.push([P.x+xx,P.y+yy,P.x+xx+2,P.y+yy+2])});if(i<R.length)return R[i];i-=R.length;var B=fmRanchBlk(),n=-1;for(var k=0;k<200;k++){var col=Math.floor(k/FRANCH.rows),row=k%FRANCH.rows,x0=FRANCH.x+col*(FRANCH.w+FRANCH.gx),y0=FRANCH.y+row*(FRANCH.w+FRANCH.gy),rr=[x0,y0,x0+FRANCH.w,y0+FRANCH.w];
     if(B.some(function(b){return Math.min(rr[2],b[2])-Math.max(rr[0],b[0])>.1&&Math.min(rr[3],b[3])-Math.max(rr[1],b[1])>.1}))continue;n++;if(n===i)return rr}return [x0,y0,x0+FRANCH.w,y0+FRANCH.w]}
 /* อัปเดต 318: ลานคอกสัตว์ฝั่งตะวันออกวางสิ่งก่อสร้างได้ — คอกที่เพิ่มใหม่จะข้ามช่องที่มีของวางอยู่ */
 function fmRanchBlk(){if(typeof FM3==="undefined"||!FM3.mv||typeof fm3LayRect!=="function")return [];var lay=(FM.v||FM.d||{}).layout||{},key=JSON.stringify(lay.m||{})+"|"+Object.keys(FM3.mv).length;if(FM3.rbk&&FM3.rbk.k===key)return FM3.rbk.L;var L=[];
