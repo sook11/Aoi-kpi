@@ -7121,11 +7121,12 @@ window.addEventListener("resize",function(){if(S.tab!=="farm")return;if(FM3.on&&
 /* อัปเดต 105: เกมฟาร์มเล่นแนวนอนเท่านั้น — ล็อกจอแนวนอน; ถ้าล็อกไม่ได้ (เช่น iPhone) ขึ้นหน้าบอกให้หมุนเครื่อง */
 document.addEventListener("click",function(e){if(e.target.id==="fm-rotbtn")fmLockLand();else if(e.target.id==="fm-rotexit"){var x=document.querySelector("[data-fmexit]");if(x)x.click();else{document.body.classList.remove("farm-on")}}});
 function fmLockLand(){var de=document.documentElement,go=function(){return screen.orientation&&screen.orientation.lock?screen.orientation.lock("landscape"):Promise.reject()};
-  var p=document.fullscreenElement||!de.requestFullscreen?go():de.requestFullscreen({navigationUI:"hide"}).then(go);
+  /* อัปเดต 321: ล็อกแนวนอนตรงๆ ก่อน (แอปที่ติดตั้งบนหน้าจอหลักทำได้โดยไม่ต้องเต็มจอ) · ขอเต็มจอเฉพาะเมื่อจำเป็น และไม่ออกจากเต็มจอตอนออกฟาร์ม — ป้ายเตือนของเบราว์เซอร์จึงขึ้นแค่ครั้งแรก */
+  var p=go().catch(function(){return document.fullscreenElement||!de.requestFullscreen?Promise.reject():de.requestFullscreen({navigationUI:"hide"}).then(go)});
   return p.then(function(){setTimeout(function(){fmLayout();if(FM3.on&&FM3.ready)fm3Resize();else fmCam(true)},250)}).catch(function(){})}
 document.addEventListener("fullscreenchange",function(){if(document.body.classList.contains("farm-on")&&document.fullscreenElement&&screen.orientation&&screen.orientation.lock)screen.orientation.lock("landscape").catch(function(){})});
 function fmEnter(on){faMusic(on);document.body.classList.toggle("farm-on",!!on&&fmIsTouch());try{if(on&&fmIsTouch()){fmLockLand()}
-  else if(!on){if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});if(screen.orientation&&screen.orientation.unlock)try{screen.orientation.unlock()}catch(e){}
+  else if(!on){if(screen.orientation&&screen.orientation.unlock)try{screen.orientation.unlock()}catch(e){}
     document.body.classList.remove("farm-rot");var v=$("v-farm");if(v){v.style.width="";v.style.height=""}}}catch(e){}}
 function fmDecorPos(d){var ok={},used={},out=[],fi=0,FREE=FMAP.free.concat(fmParcelDecorCells(d));FREE.forEach(function(t){ok[t[0]+","+t[1]]=1});var ok0=Object.assign({},ok);
   /* อัปเดต 189: ตำแหน่งที่ผู้เล่นลากวางเองได้ทุกช่องในเขตฟาร์ม (เหมือนที่เซิร์ฟเวอร์อนุญาต) — เดิมรับแค่ช่องว่างผังเก่า ของเลยเด้งกลับ */
