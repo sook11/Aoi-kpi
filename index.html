@@ -6224,12 +6224,29 @@ function fm3RanchPen(g,r,i,t){var a=fm3P(r[0],r[1]),b=fm3P(r[2],r[3]),cx=(a[0]+b
   if(ST.empty){var lb=fm3Label("คอกว่าง "+(i+1));lb.position.set(cx,1.1,cz);lb.scale.multiplyScalar(.6);g.add(lb)}}
 function fmWireTex(){if(FM3.wireTex)return FM3.wireTex;var c=document.createElement("canvas");c.width=c.height=64;var x=c.getContext("2d");x.strokeStyle="rgba(226,232,240,.95)";x.lineWidth=2.5;for(var k=-64;k<128;k+=16){x.beginPath();x.moveTo(k,0);x.lineTo(k+64,64);x.stroke();x.beginPath();x.moveTo(k+64,0);x.lineTo(k,64);x.stroke()}
   var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;FM3.wireTex=t;return t}
+/* อัปเดต 317: รั้วที่พาดผ่านสิ่งก่อสร้าง (เครื่องผลิต บ่อน้ำ บ้าน ฯลฯ) — ซ่อนเสา/ตัดราวช่วงที่ทับ ให้รั้วเว้นช่องรอบตัวอาคาร */
+function fm3FenceObs(){var R=[],add=function(o){if(!o||!o.visible)return;o.updateMatrixWorld(true);var b=new THREE.Box3(),t=new THREE.Box3();o.traverse(function(m){if(!m.isMesh||m.isSprite||m.isInstancedMesh||m.userData.fpost||m.userData.frail||m.userData.fsub)return;var g=m.geometry;if(!g)return;if(!g.boundingBox)g.computeBoundingBox();t.copy(g.boundingBox).applyMatrix4(m.matrixWorld);if(t.max.y<.15)return;b.union(t)});if(!b.isEmpty()&&(b.max.x-b.min.x)<14&&(b.max.z-b.min.z)<14)R.push([b.min.x+.12,b.min.z+.12,b.max.x-.12,b.max.z-.12])};
+  Object.keys(FM3.mv||{}).forEach(function(k){if(k==="pens"||/^[pdfht]:/.test(k))return;add(FM3.mv[k].g)});
+  (FM3.dyn?FM3.dyn.children:[]).forEach(function(o){var k=o.userData.mvk;if(k&&fmLayKind(k)==="bld")add(o)});
+  var pd=FM3.mv&&FM3.mv.pond;if(pd){pd.g.updateMatrixWorld(true);var bb=new THREE.Box3().setFromObject(pd.g);if(!bb.isEmpty())R.push([bb.min.x,bb.min.z,bb.max.x,bb.max.z])}
+  return R}
+function fm3FenceClip(){var P=FM3.fenceParts;if(!P||!P.length)return;var R=fm3FenceObs(),inR=function(x,z){return R.some(function(r){return x>r[0]&&x<r[2]&&z>r[1]&&z<r[3]})},v=new THREE.Vector3();
+  P.forEach(function(o){if(!o.parent)return;
+    if(o.userData.fposts){var M=new THREE.Matrix4(),Q=new THREE.Quaternion(),one=new THREE.Vector3(1,1,1),zero=new THREE.Vector3(0,0,0);o.updateMatrixWorld(true);o.userData.fposts.forEach(function(p,i){v.set(p[0],p[1],p[2]).applyMatrix4(o.matrixWorld);M.compose(new THREE.Vector3(p[0],p[1],p[2]),Q,inR(v.x,v.z)?zero:one);o.setMatrixAt(i,M)});o.instanceMatrix.needsUpdate=true;return}
+    if(o.userData.fpost){o.getWorldPosition(v);o.visible=!inR(v.x,v.z);return}
+    var F=o.userData.frail;if(!F)return;(o.userData.subs||[]).forEach(function(q){o.parent.remove(q);q.geometry.dispose()});o.userData.subs=[];
+    var par=o.parent;par.updateMatrixWorld(true);var A=new THREE.Vector3(F[0],0,F[1]).applyMatrix4(par.matrixWorld),B=new THREE.Vector3(F[2],0,F[3]).applyMatrix4(par.matrixWorld),dx=B.x-A.x,dz=B.z-A.z,cut=[];
+    R.forEach(function(r){var t0=0,t1=1,ok=true;[[-dx,A.x-r[0]],[dx,r[2]-A.x],[-dz,A.z-r[1]],[dz,r[3]-A.z]].forEach(function(c){if(!ok)return;var pp=c[0],qq=c[1];if(Math.abs(pp)<1e-9){if(qq<0)ok=false;return}var tt=qq/pp;if(pp<0){if(tt>t1)ok=false;else if(tt>t0)t0=tt}else{if(tt<t0)ok=false;else if(tt<t1)t1=tt}});if(ok&&t1>t0)cut.push([t0,t1])});
+    if(!cut.length){o.visible=true;return}o.visible=false;cut.sort(function(a,b){return a[0]-b[0]});var segs=[],c0=0;cut.forEach(function(c){if(c[0]>c0)segs.push([c0,c[0]]);c0=Math.max(c0,c[1])});if(c0<1)segs.push([c0,1]);
+    var L=Math.hypot(F[2]-F[0],F[3]-F[1]);segs.forEach(function(sg){var l=(sg[1]-sg[0])*L;if(l<.15)return;var tm=(sg[0]+sg[1])/2,q=new THREE.Mesh(new THREE.BoxGeometry(l,F[5],F[6]),o.material);q.position.set(F[0]+(F[2]-F[0])*tm,F[4],F[1]+(F[3]-F[1])*tm);q.rotation.y=o.rotation.y;q.castShadow=o.castShadow;q.userData.fsub=1;par.add(q);o.userData.subs.push(q)})})}
+var fm3DynamicO317=null;
+function fm3FenceClipSoon(){clearTimeout(FM3.fcT);FM3.fcT=setTimeout(function(){try{fm3FenceClip()}catch(e){}},60);clearTimeout(FM3.fcT2);FM3.fcT2=setTimeout(function(){try{fm3FenceClip()}catch(e){}},1800)}
 function fm3PetYard(st){var a=fm3P(PYD.x0,PYD.y0),b=fm3P(PYD.x1,PYD.y1),cx=(a[0]+b[0])/2,cz=(a[1]+b[1])/2,W=b[0]-a[0],D=b[1]-a[1];
   var gr=fm3Mesh(new THREE.BoxGeometry(W,.26,D),fm3TexMat("grass",[W/6,D/6]),cx,-.1,cz,st,false);gr.receiveShadow=true;
   var post=[],rail=[],gz=fm3P(0,PYD.gate)[1];
   for(var x=a[0];x<=b[0]+.01;x+=1.2){post.push([x,a[1]]);post.push([x,b[1]])}for(var z=a[1];z<=b[1]+.01;z+=1.2){post.push([a[0],z]);if(Math.abs(z-gz)>1.6)post.push([b[0],z])}
-  var M=new THREE.Matrix4(),Q=new THREE.Quaternion(),im=new THREE.InstancedMesh(new THREE.BoxGeometry(.14,.75,.14),fm3Mat(0xfafaf9),post.length);post.forEach(function(p,i){M.compose(new THREE.Vector3(p[0],.37,p[1]),Q,new THREE.Vector3(1,1,1));im.setMatrixAt(i,M)});im.castShadow=true;st.add(im);
-  var R=function(x0,z0,x1,z1){[.28,.58].forEach(function(h){var l=Math.hypot(x1-x0,z1-z0),r=fm3Box(st,l,.07,.05,0xfafaf9,(x0+x1)/2,h,(z0+z1)/2);r.rotation.y=-Math.atan2(z1-z0,x1-x0)})};
+  var M=new THREE.Matrix4(),Q=new THREE.Quaternion(),im=new THREE.InstancedMesh(new THREE.BoxGeometry(.14,.75,.14),fm3Mat(0xfafaf9),post.length);post.forEach(function(p,i){M.compose(new THREE.Vector3(p[0],.37,p[1]),Q,new THREE.Vector3(1,1,1));im.setMatrixAt(i,M)});im.castShadow=true;st.add(im);im.userData.fposts=post.map(function(p){return [p[0],.37,p[1]]});FM3.fenceParts=FM3.fenceParts||[];FM3.fenceParts.push(im);
+  var R=function(x0,z0,x1,z1){[.28,.58].forEach(function(h){var l=Math.hypot(x1-x0,z1-z0),r=fm3Box(st,l,.07,.05,0xfafaf9,(x0+x1)/2,h,(z0+z1)/2);r.rotation.y=-Math.atan2(z1-z0,x1-x0);r.userData.frail=[x0,z0,x1,z1,h,.07,.05];FM3.fenceParts.push(r)})};
   R(a[0],a[1],b[0],a[1]);R(a[0],b[1],b[0],b[1]);R(a[0],a[1],a[0],b[1]);R(b[0],a[1],b[0],gz-1.6);R(b[0],gz+1.6,b[0],b[1]);
   var pth=fm3Mesh(new THREE.BoxGeometry(fm3P(-.5,0)[0]-b[0]+.4,.05,2.4),fm3TexMat("path",[2,.5]),(b[0]+fm3P(-.5,0)[0])/2,.03,gz,st,false);pth.receiveShadow=true;
   var pd=fm3P(PYD.pond[0],PYD.pond[1]),pw=fm3Mesh(new THREE.CylinderGeometry(PYD.pond[2]*2,PYD.pond[2]*2,.06,36),new THREE.MeshLambertMaterial({color:0x38bdf8,transparent:true,opacity:.9}),pd[0],.03,pd[1],st,false);pw.scale.z=.85;
@@ -6431,7 +6448,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fm
   if(a==="reset"){if(!armed(t,"แตะอีกครั้ง เพื่อคืนผังเริ่มต้นทั้งหมด")){sfx("tap");return}L.draft={m:{},h:{}};L.sel=null;L.dirty=1;fmLayRefresh();fmLayBar();return}
   if(a==="cancel"){fmLayEnd(false);return}if(a==="save"){fmLayEnd(true);return}
   if(a==="decor2d"){fmLayEnd(true);setTimeout(function(){var el=document.createElement("button");FM.lay3skip=1;el.setAttribute("data-fmedit","on");(document.querySelector("#v-farm .fgame")||document.body).appendChild(el);el.click();el.remove()},400);return}},true);
-function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;FM3.nearP=[];FM3.pineOn=0;FM3.mv={};var MV=function(k,lab){var g=new THREE.Group();st.add(g);g.userData.mvk=k;FM3.mv[k]={g:g,lab:lab};return g};
+function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;FM3.nearP=[];FM3.pineOn=0;FM3.mv={};FM3.fenceParts=[];var MV=function(k,lab){var g=new THREE.Group();st.add(g);g.userData.mvk=k;FM3.mv[k]={g:g,lab:lab};return g};
   FM3.F=fmFlat();var gr=fm3Mesh(new THREE.PlaneGeometry(FM3.F*2+2,FM3.F*2+2),fm3TexMat("field",[22*FM3.F/60,22*FM3.F/60]),0,-.02,0,st,false);gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;
   var farm=fm3Mesh(new THREE.BoxGeometry(24.6,.3,24.6),fm3TexMat("grass",[7,7]),0,-.15,0,st,false);farm.receiveShadow=true;
   (function(){var a=fm3P(12.2,5.85),b=fm3P(15.1,11.6),yd=fm3Mesh(new THREE.BoxGeometry(b[0]-a[0],.26,b[1]-a[1]),0xd6b98c,(a[0]+b[0])/2,-.12,(a[1]+b[1])/2,MV("yard","ลานโรงงาน"),false);yd.receiveShadow=true})();
@@ -6462,7 +6479,7 @@ function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=
   /* คอกสัตว์: ดิน + รั้วขาว + เล้า */
   var PNG=MV("pens","คอกสัตว์"),pc0=fm3P(7,5),pc1=fm3P(11,9),pen=fm3Mesh(new THREE.BoxGeometry(pc1[0]-pc0[0],.05,pc1[1]-pc0[1]),0xc9a46b,(pc0[0]+pc1[0])/2,.03,(pc0[1]+pc1[1])/2,PNG,false);pen.receiveShadow=true;
   var fenceN=0,fence=function(x0,y0,x1,y1,par){var st=par||MV("f:"+(fenceN++),"รั้ว"),a=fm3P(x0,y0),b=fm3P(x1,y1),len=Math.hypot(b[0]-a[0],b[1]-a[1]),ang=-Math.atan2(b[1]-a[1],b[0]-a[0]),n=Math.round(len/.6);
-    for(var i=0;i<=n;i++){var t=i/n;fm3Box(st,.12,.8,.12,0xfafaf9,a[0]+(b[0]-a[0])*t,.4,a[1]+(b[1]-a[1])*t)}[.3,.6].forEach(function(h){var r=fm3Box(st,len,.08,.06,0xffffff,(a[0]+b[0])/2,h,(a[1]+b[1])/2);r.rotation.y=ang})};
+    FM3.fenceParts=FM3.fenceParts||[];var fpen=!!par;for(var i=0;i<=n;i++){var t=i/n,pm=fm3Box(st,.12,.8,.12,0xfafaf9,a[0]+(b[0]-a[0])*t,.4,a[1]+(b[1]-a[1])*t);if(!fpen){pm.userData.fpost=1;FM3.fenceParts.push(pm)}}[.3,.6].forEach(function(h){var r=fm3Box(st,len,.08,.06,0xffffff,(a[0]+b[0])/2,h,(a[1]+b[1])/2);r.rotation.y=ang;if(!fpen){r.userData.frail=[a[0],a[1],b[0],b[1],h,.08,.06];FM3.fenceParts.push(r)}})};
   fence(7,5,11,5,PNG);fence(7,5,7,9,PNG);fence(7,9,11,9,PNG);fence(11,5,11,9,PNG);fence(9,5,9,9,PNG);fence(7,7,11,7,PNG);fence(.3,11.92,5.8,11.92);fence(7.2,11.92,11.92,11.92);fence(11.92,.4,11.92,11.92);
   /* เล้าไก่วาดจากของที่ผู้เล่นสร้าง (h_coop) — ไม่วาดเล้าตายตัวซ้อน */
   /* ป่ารอบฟาร์ม (หลายต้น แต่วาดเป็นชุดเดียว — เบาสำหรับมือถือ) */
@@ -10997,6 +11014,7 @@ async function dnCheck(){if(!S.me||S.guest)return;DN.at=Date.now();try{var r=awa
 function dnDone(){var ids=DN.ids;DN.ids=[];closeModal("m-dn");if(ids.length)db.rpc("notify_direct_read",{p_ids:ids}).then(function(){},function(){})}
 $("dn-ok").addEventListener("click",dnDone);$("dn-x").addEventListener("click",dnDone);$("dn-cal").addEventListener("click",function(){dnDone();show("leavecal")});
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&S.me&&Date.now()-DN.at>60000&&$("m-dn").hidden)dnCheck()});
+fm3DynamicO317=fm3Dynamic;fm3Dynamic=function(){var r=fm3DynamicO317.apply(this,arguments);try{fm3FenceClipSoon()}catch(e){}return r};
 start().catch(function(e){$("auth").hidden=false;$("a-msg").textContent=thErr(e)});
 })();
 </script>
