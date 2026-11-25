@@ -6444,7 +6444,11 @@ function fmLayName(k){var e=FM3.mv&&FM3.mv[k];if(e)return e.lab;if(/^p:/.test(k)
 /* พื้นที่ที่วางได้: ฟาร์มหลัก + ลานสัตว์เลี้ยง + ลานโรงงาน + ที่ดินขยายที่ซื้อแล้ว */
 function fmLayAllowed(r){/* อัปเดต 328: พื้นที่ฟาร์มเป็นผืนเดียว = ที่ดินเริ่มต้น + ที่ดินที่ซื้อแล้วทุกแปลง (ไม่มีโซนแยก) */var A=[[-8.4,-1,28.4,15]],o=fmPOwn(FM.d);fmParcels().forEach(function(P){if(o[P.id])A.push([P.x-.2,P.y-.2,P.x+P.w+.2,P.y+P.h+.2])});
   for(var i=0;i<(FM.d.land||0);i++){var b=fmLandXY(i);A.push([b[0]-.2,b[1]-.2,b[0]+2.2,b[1]+2.7])}
-  return A.some(function(a){return r[0]>=a[0]-.01&&r[1]>=a[1]-.01&&r[2]<=a[2]+.01&&r[3]<=a[3]+.01})}
+  /* อัปเดต 339: แนวข้างถนนทางเข้า (ช่อง x 4–6 และ 7–8) ใช้ได้เมื่อซื้อที่ดินผืนที่ติดกันแล้ว · ถนนกว้าง 1 ช่อง (x 6–7) ยังวางไม่ได้ */
+  fmParcels().forEach(function(P){if(!o[P.id]||!P.tile)return;if(P.i===2)A.push([4,P.y-.2,6,P.y+P.h+.2]);if(P.i===4)A.push([7,P.y-.2,8.2,P.y+P.h+.2])});
+  /* ของที่คร่อมรอยต่อระหว่างที่ดินหลายผืน — ทุกจุดของของต้องอยู่บนที่ดินของเรา (ไม่ต้องอยู่ในผืนเดียว) */
+  var inA=function(x,y){return A.some(function(a){return x>=a[0]-.01&&y>=a[1]-.01&&x<=a[2]+.01&&y<=a[3]+.01})};
+  var nx=Math.max(1,Math.ceil((r[2]-r[0])/.25)),ny=Math.max(1,Math.ceil((r[3]-r[1])/.25));for(var ix=0;ix<=nx;ix++)for(var iy=0;iy<=ny;iy++)if(!inA(r[0]+(r[2]-r[0])*ix/nx,r[1]+(r[3]-r[1])*iy/ny))return false;return true}
 function fm3LayRect(k){if(/^p:/.test(k)){var pq=fmPlotXY(+k.slice(2));return [pq[0]+.06,pq[1]+.06,pq[0]+.94,pq[1]+.94]}var o=fm3LayObj(k);if(!o)return null;o.updateMatrixWorld(true);var b=new THREE.Box3(),t=new THREE.Box3();var bAll=new THREE.Box3();o.traverse(function(m){if(!m.isMesh||m.isSprite||m.isInstancedMesh)return;var g=m.geometry;if(!g)return;if(!g.boundingBox)g.computeBoundingBox();t.copy(g.boundingBox).applyMatrix4(m.matrixWorld);bAll.union(t);if(t.min.y<.5)b.union(t)});/* อัปเดต 326: ใช้เฉพาะส่วนที่แตะพื้น (ไม่นับหลังคา/ป้ายที่ยื่นเหนือพื้น) */if(b.isEmpty())b.copy(bAll);if(b.isEmpty()){if(/^d:/.test(k)){var gx=o.position.x/2+6,gy=o.position.z/2+6;return [gx-.45,gy-.45,gx+.45,gy+.45]}return null}return [b.min.x/2+6,b.min.z/2+6,b.max.x/2+6,b.max.z/2+6]}
 /* อัปเดต 152: วางของแต่งได้ทุกช่องในเขตฟาร์ม (รวมที่ว่างหลังย้ายยุ้งฉาง/หน้ากังหันลม) ยกเว้นที่ทับสิ่งของ หรือที่ดินที่ยังไม่ซื้อ */
 function fmDecorCellOK(tx,ty,self){var r=[tx+.15,ty+.15,tx+.85,ty+.85];if(!fmLayAllowed(r))return "ยังไม่ได้ซื้อที่ดินตรงนี้ — ซื้อที่ดินขยายก่อน แล้ววางได้ทุกอย่าง";
