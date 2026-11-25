@@ -6459,9 +6459,9 @@ function fmDecorCellOK(tx,ty,self){var r=[tx+.15,ty+.15,tx+.85,ty+.85];if(!fmLay
   return true}
 function fm3LayRay(cx,cy,fb){var cv=FM3.renderer.domElement,rc=cv.getBoundingClientRect(),v=new THREE.Vector2((cx-rc.left)/rc.width*2-1,-(cy-rc.top)/rc.height*2+1);
   FM3.ray=FM3.ray||new THREE.Raycaster();FM3.ray.setFromCamera(v,FM3.cam);var objs=[];Object.keys(FM3.mv||{}).forEach(function(k){if(FM3.mv[k].g.visible)objs.push(FM3.mv[k].g)});(FM3.dyn?FM3.dyn.children:[]).forEach(function(o){if(o.userData.mvk)objs.push(o)});
-  var hits=FM3.ray.intersectObjects(objs,true),hk=null;for(var i=0;i<hits.length&&!hk;i++){var o=hits[i].object;if(FM3.selBox&&o===FM3.selBox)continue;while(o&&!o.userData.mvk)o=o.parent;if(o)hk=o.userData.mvk}
+  var hits=FM3.ray.intersectObjects(objs,true),hk=null;for(var i=0;i<hits.length&&!hk;i++){var o=hits[i].object;if(FM3.selBox&&o===FM3.selBox)continue;while(o&&!o.userData.mvk)o=o.parent;if(o)hk=o.userData.mvk}var direct=!!hk;
   if(!hk&&fb){var best=null,ba=1e12;fm3LayKeys().forEach(function(k){var q=fm3LayScr(k);if(!q)return;var pad=fmLayKind(k)==="line"?6:16;if(cx<q[0]-pad||cx>q[2]+pad||cy<q[1]-pad||cy>q[3]+pad)return;var a=(q[2]-q[0])*(q[3]-q[1])+(fmLayKind(k)==="line"?1e6:0);if(a<ba){ba=a;best=k}});hk=best}
-  var gp=new THREE.Vector3();FM3.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),gp);return {hk:hk,gx:gp.x/2+6,gy:gp.z/2+6}}
+  var gp=new THREE.Vector3();FM3.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),gp);return {hk:hk,direct:direct,gx:gp.x/2+6,gy:gp.z/2+6}}
 function fm3LayKeys(){var K=Object.keys(FM3.mv||{}).filter(function(k){return FM3.mv[k].g.visible});(FM3.dyn?FM3.dyn.children:[]).forEach(function(o){if(o.userData.mvk)K.push(o.userData.mvk)});return K}
 /* กรอบของบนจอ (พิกเซล) — ช่วยให้แตะ/ลากของชิ้นเล็กได้ง่ายแม้ซูมออก */
 function fm3LayScr(k){var o=fm3LayObj(k);if(!o)return null;var b=new THREE.Box3().setFromObject(o);if(b.isEmpty())return null;var rc=FM3.renderer.domElement.getBoundingClientRect(),x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,v=new THREE.Vector3();
@@ -6482,7 +6482,7 @@ function fmLayEval(k,gx,gy){var kind=fmLayKind(k),r0=fm3LayRect(k);if(!r0)return
 function fmLayCommit(k,ev){var L=FM.lay;if(!ev.dx&&!ev.dy)return;if(fmLayKind(k)==="decor"){L.sel=null;fmMoveDecor(ev.id,ev.tx,ev.ty,ev.cx0,ev.cy0);return}
   var m=L.draft.m=L.draft.m||{},o0=fmOff(k);m[k]=[o0[0]+ev.dx,o0[1]+ev.dy];if(!m[k][0]&&!m[k][1])delete m[k];L.dirty=1;sfx("plant");fmLayRefresh();fmLayBar()}
 function fm3LayTap(e){var L=FM.lay;if(FM3.layDragEnd&&Date.now()-FM3.layDragEnd<350)return;var R=fm3LayRay(e.clientX,e.clientY,!L.sel),hk=R.hk;
-  if(!L.sel||(hk&&hk!==L.sel&&!(fmLayKind(L.sel)!=="line"&&fmLayKind(hk)==="line"))){if(!hk){sfx("tap");toast("แตะหรือกดลากสิ่งที่ต้องการย้าย");return}L.sel=hk;sfx("tap");fmLayBar();fm3LaySel();return}
+  if(!L.sel||(hk&&hk!==L.sel&&(R.direct||!(fmLayKind(L.sel)!=="line"&&fmLayKind(hk)==="line")))){if(!hk){sfx("tap");toast("แตะหรือกดลากสิ่งที่ต้องการย้าย");return}L.sel=hk;sfx("tap");fmLayBar();fm3LaySel();return}
   if(hk===L.sel)return;
   var ev=fmLayEval(L.sel,R.gx,R.gy);if(!ev.ok){sfx("error");if(ev.msg)toast(ev.msg);return}fmLayCommit(L.sel,ev)}
 /* กดค้างแล้วลาก: ของเลื่อนตามนิ้ว กรอบเขียว = วางได้ · แดง = วางไม่ได้ (ปล่อยแล้วเด้งกลับที่เดิม) */
@@ -6490,8 +6490,8 @@ function fm3LayDragInit(){if(FM3.layDragOn)return;FM3.layDragOn=1;var box=docume
   FM3.layPt=FM3.layPt||{};
   box.addEventListener("pointerdown",function(e){if(!FM.lay||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0)return;FM3.layPt[e.pointerId]=1;
     if(Object.keys(FM3.layPt).length>1){var D0=FM3.layDrag;if(D0){D0.o.position.copy(D0.p0);if(FM3.selBox&&D0.s0){FM3.selBox.position.copy(D0.s0);FM3.selBox.material.color.setHex(0xfacc15)}FM3.layDrag=null}FM3.ctl.enabled=true;return}
-    var R=fm3LayRay(e.clientX,e.clientY,!FM.lay.sel),sel=FM.lay.sel;if(sel&&(!R.hk||fmLayKind(R.hk)==="line"||R.hk===sel)){var q=fm3LayScr(sel);if(q&&e.clientX>q[0]-60&&e.clientX<q[2]+60&&e.clientY>q[1]-60&&e.clientY<q[3]+60)R.hk=sel}
-    if(!R.hk)return;var k=R.hk;if(fmLayKind(k)==="line"&&FM.lay.sel&&fmLayKind(FM.lay.sel)!=="line"&&FM.lay.sel!==k)k=FM.lay.sel;
+    var R=fm3LayRay(e.clientX,e.clientY,!FM.lay.sel),sel=FM.lay.sel;if(sel&&(!R.hk||(fmLayKind(R.hk)==="line"&&!R.direct)||R.hk===sel)){var q=fm3LayScr(sel);if(q&&e.clientX>q[0]-60&&e.clientX<q[2]+60&&e.clientY>q[1]-60&&e.clientY<q[3]+60)R.hk=sel}
+    if(!R.hk)return;var k=R.hk;/* อัปเดต 341: กดตรงพุ่มไม้/รั้วจริง ๆ = ลากพุ่มไม้ได้ แม้มีของอื่นเลือกค้างอยู่ */if(fmLayKind(k)==="line"&&!R.direct&&FM.lay.sel&&fmLayKind(FM.lay.sel)!=="line"&&FM.lay.sel!==k)k=FM.lay.sel;
     var o=fm3LayObj(k),r0=fm3LayRect(k);if(!o||!r0)return;if(k!==FM.lay.sel){FM.lay.sel=k;fmLayBar();fm3LaySel()}
     FM3.ctl.enabled=false;FM3.layDrag={k:k,o:o,p0:o.position.clone(),s0:FM3.selBox?FM3.selBox.position.clone():null,x:e.clientX,y:e.clientY,ox:(r0[0]+r0[2])/2-R.gx,oy:(r0[1]+r0[3])/2-R.gy,mv:0,ev:null,pid:e.pointerId}},true);
   window.addEventListener("pointermove",function(e){var D=FM3.layDrag;if(!D||e.pointerId!==D.pid)return;if(!D.mv&&Math.hypot(e.clientX-D.x,e.clientY-D.y)<7)return;D.mv=1;try{fmStoBub(null,1)}catch(x){}D.o.position.copy(D.p0);var R=fm3LayRay(e.clientX,e.clientY),ev=fmLayEval(D.k,R.gx+D.ox,R.gy+D.oy);D.ev=ev;
