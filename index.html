@@ -6378,7 +6378,7 @@ function fm3LayObj(k){if(FM3.mv&&FM3.mv[k])return FM3.mv[k].g;var r=null;(FM3.dy
 function fmLayKind(k){return /^p:/.test(k)?"plot":/^d:/.test(k)?"decor":/^[fht]:/.test(k)?"line":"bld"}
 function fmLayName(k){var e=FM3.mv&&FM3.mv[k];if(e)return e.lab;if(/^p:/.test(k))return "แปลงผัก";if(/^d:/.test(k)){var x=(FM.d.decor||[]).filter(function(z){return "d:"+z.id===k})[0];return x?((FM.cat.decor[x.item]||{}).n||"ของแต่ง"):"ของแต่ง"}var DK={bill:"ป้ายโฆษณา",news:"ป้ายตลาด"};return DK[k]||k}
 /* พื้นที่ที่วางได้: ฟาร์มหลัก + ลานสัตว์เลี้ยง + ลานโรงงาน + ที่ดินขยายที่ซื้อแล้ว */
-function fmLayAllowed(r){var A=[[-1,-1,13.3,13.3],[-8.4,.3,-3.2,12],[-4,-1,-.8,13.3],[12,-1,15.8,12.2]],o=fmPOwn(FM.d);fmParcels().forEach(function(P){if(o[P.id])A.push([P.x-.2,P.y-.2,P.x+P.w+.2,P.y+P.h+.2])});
+function fmLayAllowed(r){var A=[[-1,-1,13.3,13.3],[-8.4,.3,-3.2,12],[-4,-1,-.8,13.3],[12,-1,15.8,12.2],[15.6,-.2,28.4,13.3]],o=fmPOwn(FM.d);fmParcels().forEach(function(P){if(o[P.id])A.push([P.x-.2,P.y-.2,P.x+P.w+.2,P.y+P.h+.2])});
   for(var i=0;i<(FM.d.land||0);i++){var b=fmLandXY(i);A.push([b[0]-.2,b[1]-.2,b[0]+2.2,b[1]+2.7])}
   return A.some(function(a){return r[0]>=a[0]-.01&&r[1]>=a[1]-.01&&r[2]<=a[2]+.01&&r[3]<=a[3]+.01})}
 function fm3LayRect(k){if(/^p:/.test(k)){var pq=fmPlotXY(+k.slice(2));return [pq[0]+.06,pq[1]+.06,pq[0]+.94,pq[1]+.94]}var o=fm3LayObj(k);if(!o)return null;o.updateMatrixWorld(true);var b=new THREE.Box3(),t=new THREE.Box3();o.traverse(function(m){if(!m.isMesh||m.isSprite||m.isInstancedMesh)return;var g=m.geometry;if(!g)return;if(!g.boundingBox)g.computeBoundingBox();t.copy(g.boundingBox).applyMatrix4(m.matrixWorld);b.union(t)});if(b.isEmpty())return null;return [b.min.x/2+6,b.min.z/2+6,b.max.x/2+6,b.max.z/2+6]}
@@ -6410,7 +6410,8 @@ function fmLayEval(k,gx,gy){var kind=fmLayKind(k),r0=fm3LayRect(k);if(!r0)return
   var isFH=function(q){return /^[fh]:/.test(q)};if(kind!=="line"||isFH(k)){var bad=null;Object.keys(FM3.mv||{}).concat((FM3.dyn?FM3.dyn.children:[]).filter(function(o){return o.userData.mvk&&fmLayKind(o.userData.mvk)!=="decor"}).map(function(o){return o.userData.mvk})).forEach(function(k2){if(bad||k2===k)return;var k2l=fmLayKind(k2)==="line";if(k2l&&!isFH(k2))return;if(kind==="line"&&k2l)return;if(kind==="plot"&&k2l)return;var ob=fm3LayObj(k2);if(!ob||!ob.visible)return;var r=fm3LayRect(k2);if(!r)return;
       if(kind==="line"||k2l){var A=kind==="line"?r:nr,L=kind==="line"?nr:r,sh=.18;A=[A[0]+sh,A[1]+sh,A[2]-sh,A[3]-sh];if(Math.min(A[2],L[2])-Math.max(A[0],L[0])>0&&Math.min(A[3],L[3])-Math.max(A[1],L[1])>0)bad=k2;return}
       var ox=Math.min(nr[2],r[2])-Math.max(nr[0],r[0]),oy=Math.min(nr[3],r[3])-Math.max(nr[1],r[1]);if(ox>.25&&oy>.25)bad=k2});
-    if(bad)return {ok:false,msg:"ทับกับ "+fmLayName(bad)+" — เลือกจุดอื่น",dx:dx,dy:dy}}
+    if(bad)return {ok:false,msg:"ทับกับ "+fmLayName(bad)+" — เลือกจุดอื่น",dx:dx,dy:dy}
+    if(kind==="bld"&&nr[2]>15.4){FM3.rbk=null;var PL=fmPenLayout(FM.d);for(var ri=0;ri<PL.used;ri++){var rr2=fmRanchRect(ri,FM.d);if(Math.min(nr[2],rr2[2])-Math.max(nr[0],rr2[0])>.1&&Math.min(nr[3],rr2[3])-Math.max(nr[1],rr2[1])>.1)return {ok:false,msg:"ทับกับคอกสัตว์ — เลือกจุดอื่น",dx:dx,dy:dy}}}}
   return {ok:true,msg:"",dx:dx,dy:dy}}
 function fmLayCommit(k,ev){var L=FM.lay;if(!ev.dx&&!ev.dy)return;if(fmLayKind(k)==="decor"){L.sel=null;fmMoveDecor(ev.id,ev.tx,ev.ty,ev.cx0,ev.cy0);return}
   var m=L.draft.m=L.draft.m||{},o0=fmOff(k);m[k]=[o0[0]+ev.dx,o0[1]+ev.dy];if(!m[k][0]&&!m[k][1])delete m[k];L.dirty=1;sfx("plant");fmLayRefresh();fmLayBar()}
@@ -8627,7 +8628,11 @@ function fpInit(x,i){var w=FP[x.id];if(w)return w;var m=(FM.cat.decor[x.item]||{
 /* ---------- อัปเดต 141: ลานสัตว์เลี้ยง (แยกจากพื้นที่ปลูก) ทางทิศตะวันตกของฟาร์ม ---------- */
 var PYD={x0:-8.2,x1:-3.4,y0:.5,y1:11.8,gate:3,pond:[-5.3,10.2,1.05]},PYH={h_doghouse:[-7.3,1.7,1],h_cathouse:[-7.3,3.6,1],h_birdhouse:[-7.3,5.5,1],h_stable:[-7,7.6,1.25],h_pond:[-6.75,10.9,1]},PYL={chicken:"h_coop",cow:"h_cowshed",pig:"h_sty",sheep:"h_sheepfold"};
 var FRANCH={x:16.1,y:.6,w:2.5,gx:.35,gy:.55,rows:4};
-function fmRanchRect(i,d){d=d||FM.v||FM.d;var o=fmPOwn(d),R=[];fmParcels().forEach(function(P){if(o[P.id]&&o[P.id].use==="pen")for(var yy=0;yy+2<=P.h;yy+=2)for(var xx=0;xx+2<=P.w;xx+=2)R.push([P.x+xx+.12,P.y+yy+.12,P.x+xx+1.88,P.y+yy+1.88])});if(i<R.length)return R[i];i-=R.length;var col=Math.floor(i/FRANCH.rows),row=i%FRANCH.rows,x0=FRANCH.x+col*(FRANCH.w+FRANCH.gx),y0=FRANCH.y+row*(FRANCH.w+FRANCH.gy);return [x0,y0,x0+FRANCH.w,y0+FRANCH.w]}
+function fmRanchRect(i,d){d=d||FM.v||FM.d;var o=fmPOwn(d),R=[];fmParcels().forEach(function(P){if(o[P.id]&&o[P.id].use==="pen")for(var yy=0;yy+2<=P.h;yy+=2)for(var xx=0;xx+2<=P.w;xx+=2)R.push([P.x+xx+.12,P.y+yy+.12,P.x+xx+1.88,P.y+yy+1.88])});if(i<R.length)return R[i];i-=R.length;var B=fmRanchBlk(),n=-1;for(var k=0;k<200;k++){var col=Math.floor(k/FRANCH.rows),row=k%FRANCH.rows,x0=FRANCH.x+col*(FRANCH.w+FRANCH.gx),y0=FRANCH.y+row*(FRANCH.w+FRANCH.gy),rr=[x0,y0,x0+FRANCH.w,y0+FRANCH.w];
+    if(B.some(function(b){return Math.min(rr[2],b[2])-Math.max(rr[0],b[0])>.1&&Math.min(rr[3],b[3])-Math.max(rr[1],b[1])>.1}))continue;n++;if(n===i)return rr}return [x0,y0,x0+FRANCH.w,y0+FRANCH.w]}
+/* อัปเดต 318: ลานคอกสัตว์ฝั่งตะวันออกวางสิ่งก่อสร้างได้ — คอกที่เพิ่มใหม่จะข้ามช่องที่มีของวางอยู่ */
+function fmRanchBlk(){if(typeof FM3==="undefined"||!FM3.mv||typeof fm3LayRect!=="function")return [];var lay=(FM.v||FM.d||{}).layout||{},key=JSON.stringify(lay.m||{})+"|"+Object.keys(FM3.mv).length;if(FM3.rbk&&FM3.rbk.k===key)return FM3.rbk.L;var L=[];
+  Object.keys(FM3.mv).forEach(function(k){if(fmLayKind(k)!=="bld"||k==="pens")return;var r=null;try{r=fm3LayRect(k)}catch(e){}if(r&&r[2]>15.4)L.push(r)});FM3.rbk={k:key,L:L};return L}
 function fmPenLayout(d){var c=FM.cat.decor||{},A=FM.cat.animals||{},seen={},r=0,H={},T={},R={};(d.decor||[]).forEach(function(x){var g=(c[x.item]||{}).house;if(!g||!A[g])return;var rect;if(!seen[g]&&FPENS[g])rect=FPENS[g];else{rect=fmRanchRect(r,d);R[r]=g;r++}seen[g]=1;H[x.id]=rect;(T[g]=T[g]||[]).push(rect)});return {H:H,T:T,R:R,used:r}}
 function fmHouseUnit(g){return g==="chicken"?"เล้า":"คอก"}
 function fmHouseCount(d,g){var c=FM.cat.decor||{};return (d.decor||[]).filter(function(x){return (c[x.item]||{}).house===g}).length}
