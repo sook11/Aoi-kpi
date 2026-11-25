@@ -6428,8 +6428,8 @@ function fmLayApply(){if(!FLB.FPENS){FLB.FPENS=JSON.parse(JSON.stringify(FPENS))
   var o=fmOff("pens");Object.keys(FLB.FPENS).forEach(function(k){var b=FLB.FPENS[k];FPENS[k]=[b[0]+o[0],b[1]+o[1],b[2]+o[0],b[3]+o[1]]});
   var y=fmOff("yard");FLB.FMYARD.forEach(function(p,i){FMYARD[i]=[p[0]+y[0],p[1]+y[1]]});
   var bo=fmOff("pond");FBB[0]=FLB.FBB[0]+bo[0];FBB[1]=FLB.FBB[1]+bo[1];var no=fmOff("news");FNB[0]=FLB.FNB[0]+no[0];FNB[1]=FLB.FNB[1]+no[1]}
-function fm3LayStatic(){var M=FM3.mv||{};Object.keys(M).forEach(function(k){var e=M[k],o=fmOff(k),hd=fmHid(k);e.g.position.set(o[0]*2,0,o[1]*2);e.g.visible=!hd||(!!FM.lay&&!/^wt:/.test(k));
-  if(e.x){e.g.remove(e.x);e.x=null}if(hd&&FM.lay){var x=fm3Emoji("❌",.8);var b=new THREE.Box3().setFromObject(e.g),c=b.getCenter(new THREE.Vector3());x.position.set(c.x-e.g.position.x,1.2,c.z-e.g.position.z);e.g.add(x);e.x=x}})}
+function fm3LayStatic(){var M=FM3.mv||{};Object.keys(M).forEach(function(k){var e=M[k],o=fmOff(k),hd=fmHid(k);e.g.position.set(o[0]*2,0,o[1]*2);/* อัปเดต 342: ของที่เอาออกแล้ว ไม่ต้องโชว์กากบาทในโหมดจัดฟาร์ม (หายไปเลย · คืนได้ด้วยปุ่ม 🔄 ผังเริ่มต้น) */e.g.visible=!hd;
+  if(e.x){e.g.remove(e.x);e.x=null}if(false&&hd&&FM.lay){var x=fm3Emoji("❌",.8);var b=new THREE.Box3().setFromObject(e.g),c=b.getCenter(new THREE.Vector3());x.position.set(c.x-e.g.position.x,1.2,c.z-e.g.position.z);e.g.add(x);e.x=x}})}
 function fmLayRefresh(){fmLayApply();fm3LayStatic();FM3.wand={};if(FM3.on&&FM3.ready&&FM.d)fm3Dynamic(FM.v||FM.d,!FM.v);fm3LaySel()}
 if(window.FM3DBG)window.__LAY={e:function(k,x,y){return fmLayEval(k,x,y)},rf:function(){fmLayRefresh()},c:function(x,y){return fmDecorCellOK(x,y)},d:function(X,Z){return [fm3DynHit(X,Z),fmSolidR(X,Z)]},s:function(x,y){return [fmSolid(x,y),FMAP.o[Math.floor(x)+","+Math.floor(y)]]},r:function(k){return fm3LayRect(k)},a:function(r){return fmLayAllowed(r)},o:function(k){return fm3LayObj(k)},fm:function(){return FM}};
 /* กล่องไฮไลต์ของที่เลือก */
