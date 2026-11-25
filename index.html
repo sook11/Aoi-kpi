@@ -7653,13 +7653,18 @@ document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.targe
    อัตโนมัติ: สุ่มรายชั่วโมงแบบเดียวกันทุกเครื่อง ตามฤดูไทย — ฝน พ.ค.–ต.ค. (มีพายุฟ้าคะนอง) · หนาว พ.ย.–ก.พ. (หิมะตกบ้าง) · ร้อน มี.ค.–เม.ย. (ฝนนานๆ ที)
    เลือกเองได้จากปุ่ม (จำต่อเครื่อง) · ฝน/หิมะวาดบนชั้นโปร่งทับฉาก · พายุ: ฟ้าแลบ ฟ้าร้อง และอาจผ่าโดนคนตกปลา (ท่าสุ่ม 3 แบบ ไม่เสียอะไร) */
 var WX={mode:"auto",ord:["auto","clear","rain","storm","snow"],ic:{clear:"☀️",rain:"🌧️",storm:"⛈️",snow:"❄️"},nm:{auto:"อัตโนมัติตามฤดู",clear:"ฟ้าใส",rain:"ฝนตก",storm:"พายุฝนฟ้าคะนอง",snow:"หิมะตก"},P:[],fl:0,nf:0,nh:0,bolt:null};
-try{WX.mode=localStorage.getItem("aoi-wx")||"auto"}catch(e){}
+/* อัปเดต 322: สภาพอากาศเหมือนกันทุกคน — Admin เป็นคนกำหนด (เก็บที่เซิร์ฟเวอร์) · โหมดอัตโนมัติคำนวณจากเวลาเดียวกันทุกเครื่อง */
+try{localStorage.removeItem("aoi-wx")}catch(e){}
+function wxSync(){if(typeof db==="undefined"||!db)return;q(db.rpc("weather_get")).then(function(m){if(m&&WX.ic[m]||m==="auto"){if(WX.mode!==m){WX.mode=m;document.querySelectorAll("[data-wx]").forEach(function(x){x.innerHTML=wxIcon()})}}},function(){})}
+setTimeout(wxSync,1500);setInterval(function(){if(!document.hidden)wxSync()},90000);document.addEventListener("visibilitychange",function(){if(!document.hidden)wxSync()});
 function wxAuto(){var d=new Date(Date.now()+7*3600000),m=d.getUTCMonth()+1,k=Math.floor(Date.now()/3600000),x=Math.sin(k*12.9898+78.233)*43758.5453,r=x-Math.floor(x);
   if(m>=5&&m<=10)return r<.3?"rain":r<.5?"storm":"clear";if(m>=11||m<=2)return r<.3?"snow":r<.38?"rain":"clear";return r<.07?"rain":r<.12?"storm":"clear"}
 function wxNow(){return WX.mode==="auto"?wxAuto():WX.mode}
 function wxIcon(){return WX.ic[wxNow()]+(WX.mode==="auto"?'<small class="wxa">A</small>':'')}
-document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-wx]");if(!b)return;ev.stopPropagation();var i=WX.ord.indexOf(WX.mode);WX.mode=WX.ord[(i+1)%WX.ord.length];try{localStorage.setItem("aoi-wx",WX.mode)}catch(e){}
-  try{sfx("tap")}catch(e){}toast("สภาพอากาศ: "+WX.nm[WX.mode]+(WX.mode==="auto"?" (ตอนนี้ "+WX.nm[wxAuto()]+")":""));document.querySelectorAll("[data-wx]").forEach(function(x){x.innerHTML=wxIcon()})},true);
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-wx]");if(!b)return;ev.stopPropagation();
+  if(!S.admin){try{sfx("tap")}catch(e){}toast("🌤️ สภาพอากาศตอนนี้: "+WX.nm[wxNow()]+" · Admin เป็นผู้กำหนด (ทุกคนเห็นเหมือนกัน)");return}
+  var i=WX.ord.indexOf(WX.mode),nm=WX.ord[(i+1)%WX.ord.length],old=WX.mode;WX.mode=nm;q(db.rpc("weather_set",{p_mode:nm})).catch(function(e){WX.mode=old;document.querySelectorAll("[data-wx]").forEach(function(x){x.innerHTML=wxIcon()});toast(thErr(e))});
+  try{sfx("tap")}catch(e){}toast((S.admin?"👑 ตั้งสภาพอากาศให้ทุกคน: ":"สภาพอากาศ: ")+WX.nm[WX.mode]+(WX.mode==="auto"?" (ตอนนี้ "+WX.nm[wxAuto()]+")":""));document.querySelectorAll("[data-wx]").forEach(function(x){x.innerHTML=wxIcon()})},true);
 function wxHost(){var c=$("fk3-cv");if(c&&FK3&&FK3.on&&c.offsetParent)return c;c=$("fm3-cv");if(c&&c.offsetParent)return c;var w=$("fm-win"),sv=w&&w.querySelector("svg");if(sv&&sv.offsetParent)return sv;var lk=$("fm-lake");if(lk&&lk.offsetParent)return lk.querySelector("canvas,svg");return null}
 function wxThunder(big){try{if(!FA.sfx||!faCtx())return;var C=FA.ctx,n=C.sampleRate*2.4,b=C.createBuffer(1,n,C.sampleRate),d=b.getChannelData(0);for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
   var s=C.createBufferSource(),f=C.createBiquadFilter(),g=C.createGain();s.buffer=b;f.type="lowpass";f.frequency.value=big?420:260;g.gain.value=big?.9:.55;s.connect(f);f.connect(g);g.connect(C.destination);s.start()}catch(e){}}
