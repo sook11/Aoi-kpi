@@ -8754,12 +8754,12 @@ function fpFarmPt(){for(var i=0;i<40;i++){var x=-.5+Math.random()*13.6,y=-.5+Mat
 function fpYardPt(){for(var i=0;i<30;i++){var x=PYD.x0+.6+Math.random()*(PYD.x1-PYD.x0-1.2),y=PYD.y0+.6+Math.random()*(PYD.y1-PYD.y0-1.2);if(Math.hypot(x-PYD.pond[0],y-PYD.pond[1])<PYD.pond[2]+.35)continue;if(fpFree(x,y,.3))return [x,y]}return [(PYD.x0+PYD.x1)/2,(PYD.y0+PYD.y1)/2]}
 var FPR={pet_horse2:.36,pet_piglet:.2,peacock:.42,horse:.32,whorse:.32,donkey:.3,alpaca:.3,deer:.3,pet_pony:.3,cow:.3};
 function fpFree(x,y,r){r=r==null?.12:r;if(typeof fmSolid==="function"&&fmSolid(x,y))return false;return !fpOcc().some(function(c){return Math.hypot(x-c[0],y-c[1])<c[2]+r})}
-function fpPush(w){var r=FPR[w.k]||.15;fpOcc().forEach(function(c){var dx=w.x-c[0],dy=w.y-c[1],d=Math.hypot(dx,dy),mn=c[2]+r;if(d<mn){if(d<.001){dx=1;dy=0;d=1}w.x=c[0]+dx/d*mn;w.y=c[1]+dy/d*mn;if(!fpFree(w.tx,w.ty,r)){w.tx=w.x;w.ty=w.y}}})}
+function fpPush(w){var r=FPR[w.k]||.15;fpOcc().forEach(function(c){var dx=w.x-c[0],dy=w.y-c[1],d=Math.hypot(dx,dy),mn=c[2]+r;if(d<mn){if(d<.001){dx=1;dy=0;d=1}w.x=c[0]+dx/d*mn;w.y=c[1]+dy/d*mn;/* อัปเดต 335: ชนของ (เครื่องผลิต ฯลฯ) → หยุดแล้วเลือกทางใหม่ ไม่ไถลเดินข้างไปตามขอบ */if(!fpFree(w.tx,w.ty,r)||(w.hd!=null&&(Math.cos(w.hd)*dx-Math.sin(w.hd)*dy)/d<.2)){w.tx=w.x;w.ty=w.y;w.spd=0;w.wait=Math.min(w.wait||1,.6+Math.random()*.8)}}})}
 function fpLine(w,tx,ty){var r=FPR[w.k]||.15;for(var i=2;i<=12;i++){var u=i/12,x=w.x+(tx-w.x)*u,y=w.y+(ty-w.y)*u;if(!fpFree(x,y,r))return false}return true}
 function fpTarget(w){var m=w.m,pick;
   if(m==="swim"){pick=fpPond();w.tx=pick[0];w.ty=pick[1];w.fly=0}
   else if(m==="wade"){pick=fpPond(PYD.pond[2]+.2+Math.random()*.3);w.tx=pick[0];w.ty=pick[1];w.fly=0}
-  else if(1){var tries=0;do{pick=fpFarmPt();tries++}while(tries<8&&!fpLine(w,pick[0],pick[1]));w.fly=m==="bird"&&Math.random()<.45?1:0;w.tx=pick[0];w.ty=pick[1]}
+  else if(1){var tries=0,okL=false;do{pick=fpFarmPt();tries++;okL=fpLine(w,pick[0],pick[1])}while(tries<24&&!okL);if(!okL){for(var ai=0;ai<12&&!okL;ai++){var aa=ai*.5236,rr=1+Math.random()*1.5;pick=[w.x+Math.cos(aa)*rr,w.y+Math.sin(aa)*rr];okL=fpFree(pick[0],pick[1],FPR[w.k]||.15)&&fpLine(w,pick[0],pick[1])}if(!okL)pick=[w.x,w.y]}w.fly=m==="bird"&&Math.random()<.45?1:0;w.tx=pick[0];w.ty=pick[1]}
   else{var near=FPW.walk.filter(function(t){return Math.hypot(t[0]+.5-w.x,t[1]+.5-w.y)<(m==="bird"?1.8:3.6)});
     if(m==="bird"&&Math.random()<.45){pick=fpRand(FPW.walk);w.fly=1}else{var ok2=near.filter(function(t){return fpFree(t[0]+.5,t[1]+.5,FPR[w.k])&&fpLine(w,t[0]+.5,t[1]+.5)});if(!ok2.length)ok2=FPW.walk.filter(function(t){return fpFree(t[0]+.5,t[1]+.5,FPR[w.k])&&fpLine(w,t[0]+.5,t[1]+.5)});pick=ok2.length?fpRand(ok2):(near.length?fpRand(near):fpRand(FPW.walk));w.fly=0}
     w.tx=pick[0]+.3+Math.random()*.4;w.ty=pick[1]+.3+Math.random()*.4}
@@ -8776,7 +8776,7 @@ function fmPetStep(dt){var t=performance.now()/1000;Object.keys(FP).forEach(func
     if(w.fly&&d>=.03){var sp=2.2,k=Math.min(1,sp*dt/d);w.x+=dx*k;w.y+=dy*k;w.mv=true;w.spd=0;var want=Math.atan2(-dy,dx),da=Math.atan2(Math.sin(want-(w.hd||0)),Math.cos(want-(w.hd||0)));w.hd=(w.hd||0)+da*Math.min(1,dt*6);
       var pr=1-Math.max(0,d-sp*dt)/w.d0;w.h=Math.sin(Math.PI*Math.min(1,pr))*1.6+.2;if(d-sp*dt<=0)w.fly=0}
     else if(d<.04&&!(w.spd>.004)){w.fly=0;w.wait-=dt;w.h=Math.max(0,w.h-dt*3);if(w.wait<=0){fpTarget(w);w.wait=(w.m==="bird"?1.5:2.5)+Math.random()*(w.m==="swim"?3:5)}}
-    else{w.h=Math.max(0,w.h-dt*3);fmSteer(w,dt,mx,w.m==="swim"?1:w.k==="bunny"||w.m==="bird"?4:2.6);w.mv=w.spd>.02}
+    else{w.h=Math.max(0,w.h-dt*3);var ox0=w.x,oy0=w.y;fmSteer(w,dt,mx,w.m==="swim"?1:w.k==="bunny"||w.m==="bird"?4:2.6);w.mv=w.spd>.02;/* อัปเดต 335: ห้ามเดินทะลุ/ไถลข้างเครื่องผลิต อาคาร — เจอแล้วหยุด เลือกทางใหม่ */if(w.m!=="swim"&&w.m!=="wade"&&typeof fmSolid==="function"&&fmSolid(w.x,w.y)&&!fmSolid(ox0,oy0)){w.x=ox0;w.y=oy0;w.tx=w.x;w.ty=w.y;w.spd=0;w.mv=false;w.wait=.5+Math.random()*.8}}
     if(w.hd!=null){var fx=Math.cos(w.hd)+Math.sin(w.hd);if(Math.abs(fx)>.35)w.dir=fx>0?-1:1}
     var kk=Math.min(1,(w.spd||0)/mx),hop=0;w.tilt=0;
     if(w.mv&&!w.fly){if(w.k==="bunny"||w.m==="bird")hop=Math.abs(Math.sin(w.ph*.5))*.26*kk;else if(w.m!=="swim"){hop=Math.abs(Math.sin(w.ph))*.05*kk;w.tilt=Math.sin(w.ph)*5*kk}}
