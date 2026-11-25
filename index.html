@@ -1509,7 +1509,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 .fmorepop{position:absolute;right:0;bottom:calc(100% + 10px);display:grid;grid-template-columns:repeat(3,56px);gap:8px;padding:10px;border-radius:20px;background:rgba(15,23,42,.55);backdrop-filter:blur(6px);animation:fshpop .2s both}
 .fzoom{flex-direction:column-reverse!important;flex-wrap:nowrap!important;max-height:none!important}.fzoom .fzset{display:none;grid-template-columns:repeat(2,auto);gap:6px}.fzoom.open .fzset{display:grid;animation:fshpop .2s both}.fzset-t{font-size:20px}
 .fkpi2{font-size:11.5px!important;padding:5px 11px!important}
-.fstobub{position:fixed;z-index:70;width:50px;height:50px;border-radius:50%;border:3px solid #fff;background:radial-gradient(circle at 35% 30%,#fffbeb,#fde68a 60%,#f59e0b);box-shadow:0 4px 0 #b45309,0 8px 16px rgba(0,0,0,.3);display:grid;place-items:center;padding:0;cursor:pointer;animation:fshpop .2s both}.fstobub:active{transform:scale(.92)}
+.fstobubs{position:fixed;z-index:70;display:flex;flex-direction:column;gap:8px}.fstobubs .fstobub{position:static}.fstobub{position:fixed;z-index:70;width:50px;height:50px;border-radius:50%;border:3px solid #fff;background:radial-gradient(circle at 35% 30%,#fffbeb,#fde68a 60%,#f59e0b);box-shadow:0 4px 0 #b45309,0 8px 16px rgba(0,0,0,.3);display:grid;place-items:center;padding:0;cursor:pointer;animation:fshpop .2s both}.fstobub:active{transform:scale(.92)}
 .fpetchip{position:fixed;z-index:70;border:0;border-radius:999px;padding:8px 14px;font:700 13px var(--sans,system-ui);background:linear-gradient(#fff7d6,#fde68a);color:#7c2d12;box-shadow:0 3px 0 #d97706,0 6px 14px rgba(0,0,0,.25);animation:fshpop .2s both;cursor:pointer}
 </style>
 </head>
@@ -6474,7 +6474,7 @@ function fmLayApply(){if(!FLB.FPENS){FLB.FPENS=JSON.parse(JSON.stringify(FPENS))
   var o=fmOff("pens");Object.keys(FLB.FPENS).forEach(function(k){var b=FLB.FPENS[k];FPENS[k]=[b[0]+o[0],b[1]+o[1],b[2]+o[0],b[3]+o[1]]});
   var y=fmOff("yard");FLB.FMYARD.forEach(function(p,i){FMYARD[i]=[p[0]+y[0],p[1]+y[1]]});
   var bo=fmOff("pond");FBB[0]=FLB.FBB[0]+bo[0];FBB[1]=FLB.FBB[1]+bo[1];var no=fmOff("news");FNB[0]=FLB.FNB[0]+no[0];FNB[1]=FLB.FNB[1]+no[1]}
-function fm3LayStatic(){var M=FM3.mv||{};Object.keys(M).forEach(function(k){var e=M[k],o=fmOff(k),hd=fmHid(k);e.g.position.set(o[0]*2,0,o[1]*2);/* อัปเดต 342: ของที่เอาออกแล้ว ไม่ต้องโชว์กากบาทในโหมดจัดฟาร์ม (หายไปเลย · คืนได้ด้วยปุ่ม 🔄 ผังเริ่มต้น) */e.g.visible=!hd;
+function fm3LayStatic(){var M=FM3.mv||{};Object.keys(M).forEach(function(k){var e=M[k],o=fmOff(k),hd=fmHid(k);e.g.position.set(o[0]*2,0,o[1]*2);/* อัปเดต 342: ของที่เอาออกแล้ว ไม่ต้องโชว์กากบาทในโหมดจัดฟาร์ม (หายไปเลย · คืนได้ด้วยปุ่ม 🔄 ผังเริ่มต้น) */e.g.visible=!hd;try{fm3RotApply(k,e.g)}catch(x){}
   if(e.x){e.g.remove(e.x);e.x=null}if(false&&hd&&FM.lay){var x=fm3Emoji("❌",.8);var b=new THREE.Box3().setFromObject(e.g),c=b.getCenter(new THREE.Vector3());x.position.set(c.x-e.g.position.x,1.2,c.z-e.g.position.z);e.g.add(x);e.x=x}})}
 function fmLayRefresh(){fmLayApply();fm3LayStatic();FM3.wand={};if(FM3.on&&FM3.ready&&FM.d)fm3Dynamic(FM.v||FM.d,!FM.v);fm3LaySel()}
 if(window.FM3DBG)window.__LAY={e:function(k,x,y){return fmLayEval(k,x,y)},rf:function(){fmLayRefresh()},c:function(x,y){return fmDecorCellOK(x,y)},d:function(X,Z){return [fm3DynHit(X,Z),fmSolidR(X,Z)]},s:function(x,y){return [fmSolid(x,y),FMAP.o[Math.floor(x)+","+Math.floor(y)]]},r:function(k){return fm3LayRect(k)},a:function(r){return fmLayAllowed(r)},o:function(k){return fm3LayObj(k)},fm:function(){return FM}};
@@ -6571,24 +6571,24 @@ async function fmDecorBuyAt(key,x,y){if(FM.busy||FM.v)return;var o=(FM.cat.decor
   setInterval(function(){var L=FM.lay;if(!L||!L.quick){FM.qkIdle=0;return}if(FM3.layDrag){FM.qkIdle=0;return}FM.qkIdle=(FM.qkIdle||0)+1;if(FM.qkIdle>=3){FM.qkIdle=0;try{fmLayEnd(true)}catch(e){FM.lay=null;try{fmLayRefresh()}catch(x){}}}},500);
   document.addEventListener("pointerdown",function(e){if(FM.lay&&FM.lay.quick&&!FM3.layDrag){try{fmLayEnd(true)}catch(x){FM.lay=null}}if(FM.lay||FM.v||!FM3.on||!FM3.ready||!FM3.renderer||e.target!==FM3.renderer.domElement||e.button>0||FM3.tp)return;clearTimeout(T);st={x:e.clientX,y:e.clientY,id:e.pointerId};
     T=setTimeout(function(){if(!st)return;var R=null;try{R=fm3LayRay(st.x,st.y,true)}catch(x){}var k=R&&R.hk;if(!k||/^t:/.test(k))return;if(FM.tool)return;
-      fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null,quick:1};fmLayRefresh();FM.lay.sel=k;try{fm3LaySel()}catch(x){}
+      fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{}})),sel:null,quick:1};fmLayRefresh();FM.lay.sel=k;try{fm3LaySel()}catch(x){}
       var o=fm3LayObj(k),r0=fm3LayRect(k);if(!o||!r0){FM.lay=null;fmLayRefresh();return}try{navigator.vibrate&&navigator.vibrate(30)}catch(x){}sfx("tap");try{fmStoBub(k)}catch(x){}
       var R2=fm3LayRay(st.x,st.y);FM3.ctl.enabled=false;FM3.layPt=FM3.layPt||{};FM3.layPt[st.id]=1;FM3.layDrag={k:k,o:o,p0:o.position.clone(),s0:FM3.selBox?FM3.selBox.position.clone():null,x:st.x,y:st.y,ox:(r0[0]+r0[2])/2-R2.gx,oy:(r0[1]+r0[3])/2-R2.gy,mv:0,ev:null,pid:st.id};st=null},450)},true);
   window.addEventListener("pointermove",function(e){if(st&&e.pointerId===st.id&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>16){clearTimeout(T);st=null}});
   var cancel=function(e){if(st&&e.pointerId===st.id){clearTimeout(T);st=null}};window.addEventListener("pointerup",cancel);window.addEventListener("pointercancel",cancel)})();
-function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
+function fmLayStart(){if(FM.v||!FM3.on||!FM3.ready)return false;fm3LayDragInit();var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{}})),sel:null};var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.add("flay");fmLayRefresh();fmLayBar();return true}
 function fmLayEnd(save){var L=FM.lay;if(!L||L.ending)return;L.ending=1;var bar=$("fm-laybar");if(bar)bar.remove();
   var done=function(){FM.lay=null;var gb=document.querySelector("#v-farm .fgame");if(gb)gb.classList.remove("flay");fmLayRefresh();var h=$("fm-hud");if(h)h.innerHTML=fmHud();if(typeof fmDockFit==="function")fmDockFit()};
   if(!save||!L.dirty){done();return}q(db.rpc("farm_layout_save",{p_layout:L.draft})).then(function(){FM.d.layout=L.draft;if(!L.quick){toast("บันทึกผังฟาร์มแล้ว ✨");sfx("buy")}done()},function(e){toast(thErr(e));done()})}
 function fmLayBar(){var L=FM.lay;if(!L)return;if(L.quick){var ob=$("fm-laybar");if(ob)ob.remove();return}var box=document.querySelector("#v-farm .fgame");if(!box)return;var b=$("fm-laybar");if(!b){b=document.createElement("div");b.id="fm-laybar";b.className="flaybar";box.appendChild(b)}
   var k=L.sel,kind=k&&fmLayKind(k);try{if(!FM3.layDrag)fmStoBub(k,!k)}catch(x){}b.innerHTML='<div class="flt"><span>🏗️ '+(k?'ย้าย <b>'+esc(fmLayName(k))+'</b> · ลากจากที่ไหนก็ได้ใกล้ๆ ของ หรือแตะจุดวาง':'แตะ/กดลากของที่จะย้าย · ซูม 🔍 ให้ใกล้ขึ้นได้')+'</span></div><div class="flb"><button type="button" class="fz" data-fmz="in" aria-label="ซูมเข้า">🔍＋</button><button type="button" class="fz" data-fmz="out" aria-label="ซูมออก">🔍－</button>'+
-    (k?'<button type="button" data-fmlay="unsel">✋</button>':'')+(k&&kind==="line"?'<button type="button" data-fmlay="hide">'+(fmHid(k)?'↩️ คืนกลับ':'🗑️ เอาออก')+'</button>':'')+(k&&kind!=="decor"&&!/^p:5\d{6}$/.test(k)&&(L.draft.m||{})[k]?'<button type="button" data-fmlay="back">📍 ที่เดิม</button>':'')+
+    (k?'<button type="button" data-fmlay="unsel">✋</button>':'')+(k&&fmCanRot(k)?'<button type="button" data-fmrot="'+k+'">🔄 หมุน</button>':'')+(k&&kind==="line"?'<button type="button" data-fmlay="hide">'+(fmHid(k)?'↩️ คืนกลับ':'🗑️ เอาออก')+'</button>':'')+(k&&kind!=="decor"&&!/^p:5\d{6}$/.test(k)&&(L.draft.m||{})[k]?'<button type="button" data-fmlay="back">📍 ที่เดิม</button>':'')+
     '<button type="button" data-fmlay="reset" title="ผังเริ่มต้น">🔄</button><button type="button" data-fmlay="cancel">ยกเลิก</button><button type="button" class="primary" data-fmlay="save">✓ บันทึก</button></div>'}
 document.addEventListener("click",function(ev){var t=ev.target.closest("[data-fmlay]");if(!t||!FM.lay)return;var a=t.dataset.fmlay,L=FM.lay;ev.stopPropagation();
   if(a==="unsel"){L.sel=null;fmLayBar();fm3LaySel();return}
   if(a==="hide"){var h=L.draft.h=L.draft.h||{};if(h[L.sel])delete h[L.sel];else h[L.sel]=1;L.dirty=1;sfx("tap");fmLayRefresh();fmLayBar();return}
   if(a==="back"){delete (L.draft.m||{})[L.sel];L.dirty=1;sfx("tap");fmLayRefresh();fmLayBar();return}
-  if(a==="reset"){if(!armed(t,"แตะอีกครั้ง เพื่อคืนผังเริ่มต้นทั้งหมด")){sfx("tap");return}var keep={};Object.keys(L.draft.m||{}).forEach(function(k){if(/^p:5\d{6}$/.test(k))keep[k]=L.draft.m[k]});L.draft={m:keep,h:{}};L.sel=null;L.dirty=1;fmLayRefresh();fmLayBar();return}
+  if(a==="reset"){if(!armed(t,"แตะอีกครั้ง เพื่อคืนผังเริ่มต้นทั้งหมด")){sfx("tap");return}var keep={};Object.keys(L.draft.m||{}).forEach(function(k){if(/^p:5\d{6}$/.test(k))keep[k]=L.draft.m[k]});L.draft={m:keep,h:{},r:{}};L.sel=null;L.dirty=1;fmLayRefresh();fmLayBar();return}
   if(a==="cancel"){fmLayEnd(false);return}if(a==="save"){fmLayEnd(true);return}
   if(a==="decor2d"){fmLayEnd(true);setTimeout(function(){var el=document.createElement("button");FM.lay3skip=1;el.setAttribute("data-fmedit","on");(document.querySelector("#v-farm .fgame")||document.body).appendChild(el);el.click();el.remove()},400);return}},true);
 function fm3Static(){var sc=FM3.scene,st=new THREE.Group();sc.add(st);FM3.nearT=[];FM3.leafyOn=0;FM3.nearP=[];FM3.pineOn=0;FM3.mv={};FM3.fenceParts=[];var MV=function(k,lab){var g=new THREE.Group();st.add(g);g.userData.mvk=k;FM3.mv[k]={g:g,lab:lab};return g};
@@ -8854,12 +8854,26 @@ FM.plt=0;(function fpLoop(){requestAnimationFrame(fpLoop);var t=performance.now(
 function fmPetChip(id,ev){var o=$("fm-petchip");if(o)o.remove();if(FM.v||!FM.d)return;var x=(FM.d.decor||[]).filter(function(z){return z.id===id})[0];if(!x)return;var nm=(FM.cat.decor[x.item]||{}).n||"สัตว์เลี้ยง";
   var b=document.createElement("button");b.type="button";b.id="fm-petchip";if(nm==="สัตว์เลี้ยง"||!nm)nm="ชิ้นนี้";b.className="fpetchip";b.setAttribute("data-fmsto",id);b.innerHTML="📦 เก็บ "+esc(nm)+" เข้าคลัง";b.style.left=Math.max(8,Math.min(window.innerWidth-200,ev.clientX-90))+"px";b.style.top=Math.max(8,ev.clientY-70)+"px";
   (document.querySelector("#v-farm .fgame")||document.body).appendChild(b);clearTimeout(FM.pcT);FM.pcT=setTimeout(function(){var c=$("fm-petchip");if(c)c.remove()},4000)}
+/* อัปเดต 347: หมุนสิ่งของทีละ 90° (กดค้าง → ปุ่ม 🔄) · เก็บใน layout.r */
+function fmRot(k){return (((fmLay().r||{})[k])|0)%4}
+function fmCanRot(k){return !!k&&!/^(p|t|f|h):/.test(k)&&k!=="pens"&&k!=="yard"}
+function fm3RotApply(k,o){if(!o||!fmCanRot(k))return;if(o.userData.rb==null)o.userData.rb=o.rotation.y;o.rotation.y=o.userData.rb;var r=fmRot(k);if(!r)return;var R=null;try{R=fm3LayRect(k)}catch(e){}if(!R)return;
+  var cx=((R[0]+R[2])/2-6)*2,cz=((R[1]+R[3])/2-6)*2,th=-r*Math.PI/2,vx=o.position.x-cx,vz=o.position.z-cz,c=Math.cos(th),sn=Math.sin(th);o.position.x=cx+vx*c+vz*sn;o.position.z=cz-vx*sn+vz*c;o.rotation.y=o.userData.rb+th}
+function fm3RotDyn(){(FM3.dyn?FM3.dyn.children:[]).forEach(function(o){var k=o.userData.mvk;if(k)fm3RotApply(k,o)})}
+function fmRotate(k){if(!fmCanRot(k)||FM.v)return;if(FM.lay&&FM.lay.ending){FM.rotTry=(FM.rotTry||0)+1;if(FM.rotTry<30)setTimeout(function(){fmRotate(k)},150);return}FM.rotTry=0;var tmp=!FM.lay;if(tmp){var cur=FM.d.layout||{};FM.lay={draft:JSON.parse(JSON.stringify({m:cur.m||{},h:cur.h||{},r:cur.r||{}})),sel:k,quick:1}}
+  var L=FM.lay,RR=L.draft.r=L.draft.r||{},old=RR[k]|0;RR[k]=(old+1)%4;if(!RR[k])delete RR[k];fmLayRefresh();
+  var r=null;try{r=fm3LayRect(k)}catch(e){}var ev=r&&fmLayKind(k)!=="decor"?fmLayEval(k,(r[0]+r[2])/2,(r[1]+r[3])/2):{ok:true};
+  if(!ev.ok){if(old)RR[k]=old;else delete RR[k];fmLayRefresh();sfx("error");toast((ev.msg||"หมุนแล้วทับของอื่น").replace(/ — เลือกจุดอื่น$/,"")+" — ขยับออกมาก่อนแล้วค่อยหมุน");if(tmp){FM.lay=null;fmLayRefresh()}return}
+  L.dirty=1;sfx("tap");if(tmp||L.quick)fmLayEnd(true);else{fmLayBar();try{fm3LaySel()}catch(e){}}setTimeout(function(){try{fmStoBub(k)}catch(e){}},350)}
+document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-fmrot]");if(!t)return;e.stopPropagation();e.preventDefault();fmRotate(t.getAttribute("data-fmrot"))},true);
+var FROTI='<svg viewBox="0 0 40 40" width="28" height="28" aria-hidden="true"><path d="M30 12 A12 12 0 1 0 32 24" fill="none" stroke="#b45309" stroke-width="5" stroke-linecap="round"/><path d="M24 5 L34 11 L25 17 Z" fill="#b45309"/></svg>';
 /* อัปเดต 332: กดค้างที่ของแต่ง → มีปุ่มกล่อง 📦 ลอยข้างของ (แบบเกมฟาร์ม) แตะกล่อง = เก็บเข้าคลังทันที */
 var FBOXI='<svg viewBox="0 0 40 40" width="30" height="30" aria-hidden="true"><path d="M6 15 L20 9 L34 15 L20 21 Z" fill="#fde047"/><path d="M6 15 L20 21 L20 35 L6 29 Z" fill="#f59e0b"/><path d="M34 15 L20 21 L20 35 L34 29 Z" fill="#d97706"/><path d="M14 4 L26 4 L26 11 L30 11 L20 19 L10 11 L14 11 Z" fill="#fff" stroke="#b45309" stroke-width="1.6" stroke-linejoin="round"/></svg>';
-function fmStoBub(k,hide){var o=$("fm-petchip");if(o)o.remove();clearTimeout(FM.pcT);if(hide||FM.v||!FM.d||!/^d:/.test(k||""))return;var id=k.slice(2),x=(FM.d.decor||[]).filter(function(z){return z.id===id})[0];if(!x)return;var q=null;try{q=fm3LayScr(k)}catch(e){}if(!q)return;
-  var b=document.createElement("button");b.type="button";b.id="fm-petchip";b.className="fstobub";b.setAttribute("data-fmsto",id);b.setAttribute("aria-label","เก็บเข้าคลัง");b.title="เก็บ "+((FM.cat.decor[x.item]||{}).n||"")+" เข้าคลัง";b.innerHTML=FBOXI;
-  b.style.left=Math.max(6,Math.min(window.innerWidth-56,q[0]-54))+"px";b.style.top=Math.max(6,Math.min(window.innerHeight-56,(q[1]+q[3])/2-24))+"px";
-  (document.querySelector("#v-farm .fgame")||document.body).appendChild(b);FM.pcT=setTimeout(function(){var c=$("fm-petchip");if(c&&c.className==="fstobub")c.remove()},6000)}
+function fmStoBub(k,hide){var o=$("fm-petchip");if(o)o.remove();clearTimeout(FM.pcT);if(hide||FM.v||!FM.d||!k)return;var isD=/^d:/.test(k),x=null;if(isD){x=(FM.d.decor||[]).filter(function(z){return z.id===k.slice(2)})[0];if(!x)return}if(!isD&&!fmCanRot(k))return;var q=null;try{q=fm3LayScr(k)}catch(e){}if(!q)return;
+  var w=document.createElement("div");w.id="fm-petchip";w.className="fstobubs";
+  w.innerHTML=(isD?'<button type="button" class="fstobub" data-fmsto="'+x.id+'" aria-label="เก็บเข้าคลัง" title="เก็บ '+esc((FM.cat.decor[x.item]||{}).n||"")+' เข้าคลัง">'+FBOXI+'</button>':'')+(fmCanRot(k)?'<button type="button" class="fstobub frotb" data-fmrot="'+k+'" aria-label="หมุน" title="หมุน 90°">'+FROTI+'</button>':'');
+  w.style.left=Math.max(6,Math.min(window.innerWidth-56,q[0]-58))+"px";w.style.top=Math.max(6,Math.min(window.innerHeight-112,(q[1]+q[3])/2-50))+"px";
+  (document.querySelector("#v-farm .fgame")||document.body).appendChild(w);FM.pcT=setTimeout(function(){var c=$("fm-petchip");if(c&&c.className==="fstobubs")c.remove()},6000)}
 function fmPetLove(id,ev){try{fmPetChip(id,ev)}catch(e){}var w=FP[id];if(w){w.jump=performance.now()/1000;if(!w.mv)w.wait=Math.max(w.wait,1.2)}sfx("like");
   try{for(var i=0;i<3;i++){var h=document.createElement("div");h.className="fpheart";h.textContent=["❤️","💕","💖"][i];h.style.left=(ev.clientX-10+(i-1)*16)+"px";h.style.top=(ev.clientY-24)+"px";h.style.animationDelay=(i*.12)+"s";document.body.appendChild(h);setTimeout(function(e){e.remove()}.bind(null,h),1500)}}catch(e){}}
 /* โมเดล 3D ของสัตว์เลี้ยง (หันหน้าไปทาง +x) */
@@ -11227,7 +11241,7 @@ async function dnCheck(){if(!S.me||S.guest)return;DN.at=Date.now();try{var r=awa
 function dnDone(){var ids=DN.ids;DN.ids=[];closeModal("m-dn");if(ids.length)db.rpc("notify_direct_read",{p_ids:ids}).then(function(){},function(){})}
 $("dn-ok").addEventListener("click",dnDone);$("dn-x").addEventListener("click",dnDone);$("dn-cal").addEventListener("click",function(){dnDone();show("leavecal")});
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&S.me&&Date.now()-DN.at>60000&&$("m-dn").hidden)dnCheck()});
-fm3DynamicO317=fm3Dynamic;fm3Dynamic=function(){var r=fm3DynamicO317.apply(this,arguments);try{fm3FenceClipSoon()}catch(e){}return r};
+fm3DynamicO317=fm3Dynamic;fm3Dynamic=function(){var r=fm3DynamicO317.apply(this,arguments);try{fm3RotDyn()}catch(e){}try{fm3FenceClipSoon()}catch(e){}return r};
 start().catch(function(e){$("auth").hidden=false;$("a-msg").textContent=thErr(e)});
 })();
 </script>
