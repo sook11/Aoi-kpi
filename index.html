@@ -2856,7 +2856,7 @@ function thErr(e){
   var m=(e&&e.message)||String(e||"");
   if(/FARM_CLOSED:/.test(m))return m.replace(/^.*FARM_CLOSED:\s*/,"⏰ ");
   if(/row-level security|permission denied/i.test(m))return "ไม่มีสิทธิ์ทำรายการนี้";
-  if(/Invalid login credentials/i.test(m))return "รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง";
+  if(/Invalid login credentials/i.test(m))return PLAY?"ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง — ถ้าเป็นพนักงานบริษัท ให้กดลิงก์ “พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่” ด้านล่าง":"รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง";
   if(/already registered|Database error saving new user/i.test(m))return "รหัสพนักงานนี้ลงทะเบียนแล้ว ใช้แท็บเข้าสู่ระบบ หรือให้ผู้ดูแลรีเซ็ตรหัสผ่าน";
   if(/duplicate key/i.test(m))return "มีข้อมูลนี้อยู่แล้ว (ชื่อหรือรหัสซ้ำ)";
   if(/Password should be/i.test(m))return "รหัสผ่านต้องยาวอย่างน้อย 6 ตัว";
