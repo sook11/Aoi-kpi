@@ -3237,7 +3237,7 @@ async function renderStaff(){
     }
     var canEdit=S.admin||e.role==="employee",b="";
     b+='<button class="sm" data-open="'+e.id+'">'+ico("eye")+'ดูรายละเอียด</button>';
-    if(S.admin)b+='<button class="sm" data-role="'+e.id+'">'+ico("shield")+'มอบสิทธิ์</button>';
+    if(S.admin&&!e.is_guest)b+='<button class="sm" data-role="'+e.id+'">'+ico("shield")+'มอบสิทธิ์</button>';
     if(canEdit&&e.id!==S.me.id&&e.active)b+='<button class="sm" data-pwset="'+e.id+'">'+ico("key")+'ตั้งรหัสชั่วคราว</button>';
     if(canEdit&&e.id!==S.me.id)b+='<button class="sm'+(e.active?' danger':'')+'" data-active="'+e.id+'">'+(e.active?"ปิดใช้งาน":"เปิดใช้งาน")+'</button>';
     if(S.admin&&e.id!==S.me.id)b+='<button class="sm danger" data-delemp="'+e.id+'">'+ico("trash")+'ลบถาวร</button>';
@@ -3250,7 +3250,7 @@ async function renderStaff(){
         '</div><button class="sm good" data-saverole="'+e.id+'">บันทึกสิทธิ์</button></div>';
     }
     return '<div class="emp"><div class="emphead" data-open="'+e.id+'" title="ดูรายละเอียด"><span class="avatar">'+(okAvatar(e.avatar)?'<img alt="" src="'+okAvatar(e.avatar)+'">':esc(String(e.display_name).trim().charAt(0)))+'</span><div><b>'+esc(e.display_name)+(e.active?"":" (ปิดใช้งาน)")+(e.is_guest?'':' '+etBadge(e))+'</b><small>'+esc([e.employee_no,SHIFT[e.shift],kpiName(e.workstation_id),e.phone,e.role!=="employee"?ROLE[e.role]:null,e.user_id?null:"ยังไม่สมัครใช้งาน"].filter(Boolean).join(" · "))+'</small></div></div>'+
-      (e.kpi_required===false?'<small class="okline">ไม่ต้องลงยอดผลิต (ใช้สินค้า / ติ่งต๊อง / แชต)</small>':
+      (e.is_guest?'<small class="okline">🎮 ผู้เล่นภายนอก · เล่นได้เฉพาะเกมฟาร์ม ไม่เห็นข้อมูลบริษัท</small>':e.kpi_required===false?'<small class="okline">ไม่ต้องลงยอดผลิต (ใช้สินค้า / ติ่งต๊อง / แชต)</small>':
       '<small>บันทึกยอดผลิต '+(sm===tm?'— ถึงวันที่ '+td:'เดือน '+MONTHS[mo]+' '+(y+543))+' ('+logged+' วัน)</small><div class="days">'+cells+'</div>'+
       (missIn.length?'<small class="missline">มาทำงานแต่ไม่ได้ลงยอด: วันที่ '+missIn.join(", ")+'</small>':'')+
       (missNo.length?'<small class="missline">ไม่ได้ลงยอด (ไม่มีข้อมูลเช็คชื่อ): วันที่ '+missNo.join(", ")+'</small>':'')+
