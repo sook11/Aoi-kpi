@@ -11241,7 +11241,7 @@ $("sh-q").addEventListener("input",function(){if(S.tab==="shop")drawShop()});
 /* ---------- เข้าสู่ระบบ ---------- */
 var mode="in";
 /* อัปเดต 232: ลิงก์เกมสำหรับผู้เล่นภายนอก (?play หรือ /play/) — สมัครด้วยชื่อผู้ใช้ + ชื่อในเกม เล่นได้เฉพาะฟาร์ม/ตกปลา */
-var PLAY=/[?&]play\b/.test(location.search);try{if(PLAY)localStorage.setItem("aoi-play","1");else if(localStorage.getItem("aoi-play")==="1")PLAY=true}catch(e){}
+var PLAY=/[?&]play\b/.test(location.search);try{if(/[?&]staff\b/.test(location.search)){localStorage.removeItem("aoi-play");PLAY=false}else if(PLAY)localStorage.setItem("aoi-play","1");else if(localStorage.getItem("aoi-play")==="1")PLAY=true}catch(e){}
 function playUI(){if(!PLAY)return;PUB=false;var c=document.querySelector("#auth .card");if(!c)return;
   var h=c.querySelector(".applogo h1"),sb=c.querySelector(".applogo .sub");if(h)h.textContent="AOI Farm";if(sb)sb.textContent="เกมฟาร์ม & ตกปลา · สมัครเล่นได้ฟรี";
   var ln=$("a-no").closest("label");if(ln&&ln.firstChild&&ln.firstChild.nodeType===3)ln.firstChild.textContent="ชื่อผู้ใช้ (อังกฤษ/ตัวเลข)";$("a-no").setAttribute("inputmode","text");$("a-no").placeholder="เช่น farmking99";
