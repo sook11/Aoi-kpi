@@ -1576,7 +1576,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 <div class="wrap">
   <header class="top">
     <div class="brand"><img class="brandimg" src="icon-192.png?v=5" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><i hidden>KPI</i><div><b>AOI KPI</b><small id="hdate"></small></div></div>
-    <div class="whobox"><div class="who"><b id="who"></b><span id="whorole"></span></div><span class="avatar hdr" id="who-av" data-tab="settings" role="button" tabindex="0" title="โปรไฟล์ของฉัน"></span></div>
+    <div class="whobox"><div class="who notranslate" translate="no"><b id="who"></b><span id="whorole"></span></div><span class="avatar hdr" id="who-av" data-tab="settings" role="button" tabindex="0" title="โปรไฟล์ของฉัน"></span></div>
   </header>
   <div class="marquee" id="mq" hidden role="status" aria-live="polite"><span class="mqbadge" id="mq-badge">ประกาศ</span><div class="mqwin"><div class="mqtrack" id="mq-track"></div></div></div>
 
@@ -11317,9 +11317,14 @@ var MMD={"ภาพรวม":"အကျဉ်းချုပ်","บันท�
 var LANG=(function(){try{return localStorage.getItem("aoi-lang")||""}catch(e){return ""}})();
 function i18nNode(n){if(LANG!=="my")return;var w=document.createTreeWalker(n.nodeType===3?n.parentNode||n:n,NodeFilter.SHOW_TEXT,null),t;while((t=w.nextNode())){var v=t.nodeValue,k=v&&v.trim();if(!k||t.__mm===v)continue;var p=t.parentNode;if(p&&/^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName))continue;if(MMD[k]){var nv=v.replace(k,MMD[k]);t.nodeValue=nv;t.__mm=nv}}}
 var I18Q=[],I18T=0;function i18nKick(){if(LANG!=="my"||I18T)return;I18T=setTimeout(function(){I18T=0;var q=I18Q.splice(0);if(q.length>200)q=[document.body];q.forEach(function(n){try{if(n.isConnected)i18nNode(n)}catch(e){}})},60)}
-function i18nStart(){if(LANG!=="my")return;document.documentElement.classList.add("lang-my");i18nNode(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==="characterData")I18Q.push(m.target.parentNode||m.target);else m.addedNodes.forEach(function(a){if(a.nodeType===1||a.nodeType===3)I18Q.push(a)})});i18nKick()}).observe(document.body,{childList:true,subtree:true,characterData:true})}
-if(LANG==="my")setTimeout(function(){try{i18nStart()}catch(e){}},0);
-function langSet(l){try{localStorage.setItem("aoi-lang",l)}catch(e){}location.reload()}
+/* อัปเดต 354: ข้อความที่ไม่มีในพจนานุกรม → ให้ Google แปลทั้งหน้า ไทย→พม่า อัตโนมัติ (ครอบคลุมทุกหน้า รวมข้อความที่สร้างทีหลัง) */
+function gtCookie(v){var h=location.hostname,ds=["",h,"."+h.split(".").slice(-2).join(".")];ds.forEach(function(d){document.cookie="googtrans="+(v||"")+";path=/"+(d?";domain="+d:"")+(v?"":";expires=Thu, 01 Jan 1970 00:00:00 GMT")})}
+function gtStart(){if(document.getElementById("gt-s"))return;gtCookie("/th/my");var el=document.createElement("div");el.id="gt-el";el.style.display="none";document.body.appendChild(el);
+  window.gtInit=function(){try{new google.translate.TranslateElement({pageLanguage:"th",includedLanguages:"my",autoDisplay:false},"gt-el")}catch(e){}};var sc=document.createElement("script");sc.id="gt-s";sc.src="https://translate.google.com/translate_a/element.js?cb=gtInit";sc.async=true;document.head.appendChild(sc);
+  var st=document.createElement("style");st.textContent=".goog-te-banner-frame,iframe.skiptranslate,.goog-te-balloon-frame,#goog-gt-tt,.goog-tooltip,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf{display:none!important}body{top:0!important;position:static!important}.goog-text-highlight{background:none!important;box-shadow:none!important}font{background:none!important;box-shadow:none!important}";document.head.appendChild(st)}
+function i18nStart(){if(LANG!=="my")return;document.documentElement.classList.add("lang-my");try{gtStart()}catch(e){}i18nNode(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==="characterData")I18Q.push(m.target.parentNode||m.target);else m.addedNodes.forEach(function(a){if(a.nodeType===1||a.nodeType===3)I18Q.push(a)})});i18nKick()}).observe(document.body,{childList:true,subtree:true,characterData:true})}
+if(LANG==="my")setTimeout(function(){try{i18nStart()}catch(e){}},0);else if(/googtrans=/.test(document.cookie))try{gtCookie("")}catch(e){}
+function langSet(l){try{localStorage.setItem("aoi-lang",l)}catch(e){}if(l!=="my")gtCookie("");location.reload()}
 function langBtn(){var b=$("lang-btn");if(!b){b=document.createElement("button");b.type="button";b.id="lang-btn";b.className="langbtn";b.addEventListener("click",function(){langSet(LANG==="my"?"th":"my")});var wb=document.querySelector(".whobox");if(wb)wb.insertBefore(b,wb.firstChild)}
   var show=LANG==="my"||(S.me&&(S.me.emp_type==="mm"||S.admin));b.hidden=!show;b.textContent=LANG==="my"?"🇹🇭 ไทย":"🇲🇲 မြန်မာ";b.title=LANG==="my"?"เปลี่ยนเป็นภาษาไทย":"ပြောင်းရန် — မြန်မာဘာသာ"}
 function paintWho(){
