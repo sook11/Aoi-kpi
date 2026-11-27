@@ -378,12 +378,28 @@ nav.tabs .navsub{display:none}
 .modal .box.wide{max-width:560px}
 .trrow{width:100%;background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 2px;text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:0}
 .trrow:hover{background:rgba(31,79,224,.05)}
+#tr-body .trrow[data-tremp]{flex-wrap:wrap}#tr-body .trrow[data-tremp] .trbadges{flex-basis:100%;justify-content:flex-start;padding-left:46px;margin-top:-2px}
 .trbadges,.trsum{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}.trsum{justify-content:flex-start;margin-bottom:8px}
 .trb{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;white-space:nowrap}
 .trb.pass{background:#dcfce7;color:#166534}.trb.fail{background:#fee2e2;color:#991b1b}.trb.wait{background:#fef3c7;color:#92400e}.trb.done{background:#e0f2fe;color:#075985}.trb.none{background:#f1f5f9;color:#64748b;font-weight:500}
+.trsc{display:block;color:#1e3a8a!important;font-weight:600}.trb.pct{font-size:13px}
 .trico{font-size:22px}.trbar{height:5px;border-radius:9px;background:#e5e7eb;margin-top:5px;overflow:hidden}.trbar i{display:block;height:100%;background:#22c55e}
 .trrec{align-items:flex-start}.trmiss{margin-top:10px}.trmiss summary{cursor:pointer;font-weight:700}
-.tracts{gap:6px;flex-wrap:wrap}.tracts .filebtn{display:inline-flex;align-items:center}
+.tracts{gap:6px;flex-wrap:wrap}.trpacts{gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.trkpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px}.trkpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}.trkpi small{display:block;color:var(--muted,#64748b);font-size:12px}.trkpi b{font-size:24px}.trkpi b small{display:inline;font-size:13px}
+.trcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.trcard{display:flex;flex-direction:column;gap:6px;text-align:left;align-items:stretch!important;justify-content:flex-start!important;min-height:0;height:auto;white-space:normal;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;font:inherit;color:inherit;cursor:pointer}.trcard:hover{border-color:#93c5fd}
+.trct{font-size:15px}.trbig{display:flex;align-items:baseline;gap:8px}.trbig span{font-size:30px;font-weight:800;color:#16a34a}.trbig span small{font-size:16px}
+.trstack{display:flex;width:100%;flex:0 0 10px;height:10px;border-radius:9px;background:#e5e7eb;overflow:hidden}.trstack i{display:block;height:100%}.trstack .p,.trlg .p{background:#22c55e}.trstack .f,.trlg .f{background:#ef4444}.trstack .w,.trlg .w{background:#f59e0b}.trlg .n{background:#cbd5e1}
+.trlg{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;font-size:12px}.trlg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px}
+#trprint{display:none}
+@media print{body.printtr{background:#fff!important;padding:0!important;margin:0!important}body.printtr>*:not(#trprint){display:none!important}body.printtr #trprint{display:block}
+#trprint .tp{font-family:"Sarabun","Noto Sans Thai",sans-serif;color:#111;font-size:10.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#trprint .tph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #1f4fe0;padding-bottom:3mm;margin-bottom:4mm}#trprint h1{margin:0;font-size:18pt;color:#1e3a8a}#trprint .tph p{margin:0;color:#555}#trprint .tpd{color:#555;font-size:9.5pt}
+#trprint .tpp{display:flex;gap:6mm;align-items:flex-start;margin-bottom:4mm}#trprint .tpimg{width:32mm;height:40mm;border:1px solid #cbd5e1;border-radius:2mm;overflow:hidden;flex:0 0 auto;display:grid;place-items:center;background:#f1f5f9}#trprint .tpimg img{width:100%;height:100%;object-fit:cover}#trprint .tpimg span{font-size:28pt;color:#94a3b8}
+#trprint .tpi{border-collapse:collapse;flex:1}#trprint .tpi th{text-align:left;color:#555;font-weight:600;padding:1mm 4mm 1mm 0;width:32mm;white-space:nowrap}#trprint .tpi td{padding:1mm 0;border-bottom:1px dotted #cbd5e1}
+#trprint .tps{display:flex;flex-wrap:wrap;gap:3mm;margin-bottom:3mm}#trprint .tps span{border:1px solid #cbd5e1;border-radius:9mm;padding:1mm 3mm}#trprint .tps .p{border-color:#86efac;background:#f0fdf4}#trprint .tps .f{border-color:#fca5a5;background:#fef2f2}
+#trprint .tpt{width:100%;border-collapse:collapse;font-size:9.5pt}#trprint .tpt th{background:#1f4fe0;color:#fff;padding:1.5mm;text-align:left}#trprint .tpt td{border-bottom:1px solid #e2e8f0;padding:1.5mm;vertical-align:top}#trprint .tpt tr{break-inside:avoid}#trprint .tpt .r.pass{color:#15803d;font-weight:700}#trprint .tpt .r.fail{color:#b91c1c;font-weight:700}#trprint .tpt .t{font-size:8.5pt;color:#444}#trprint .tpt .e{text-align:center;color:#777;padding:6mm}
+#trprint .tpm{margin:3mm 0;font-size:9.5pt}#trprint .tpsig{display:grid;grid-template-columns:repeat(3,1fr);gap:8mm;margin-top:14mm;text-align:center;break-inside:avoid}#trprint .tpsig i{display:block;border-bottom:1px solid #333;height:10mm;margin-bottom:1.5mm}#trprint .tpsig small{color:#555}}.tracts .filebtn{display:inline-flex;align-items:center}
 .pdmain{aspect-ratio:1/1;width:100%;max-width:100%;border-radius:12px;overflow:hidden;background:var(--off-bg);display:grid;place-items:center;color:var(--off-ink)}
 .pdmain img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 .pdthumbs{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
@@ -10856,16 +10872,21 @@ function trRes(r){var c=trCo(r.course_id)||{max_score:100,pass_pct:70};
 function trScope(){return (S.emps||[]).filter(function(e){return e.active&&!e.is_guest&&(S.admin||e.id===S.me.id||(S.me.allowed_departments||[]).indexOf(e.department_id)>=0)})}
 async function trLoad(){var r=await Promise.all([q(db.from("train_courses").select("*").order("name")),q(db.from("train_records").select("*").order("train_date",{ascending:false}).limit(10000))]);TR.courses=r[0]||[];TR.recs=r[1]||[];TR.loaded=Date.now()}
 async function renderTrain(){
-  if(!TR.view)TR.view=trSeeAll()?"emp":"mine";
+  if(!TR.view)TR.view=trSeeAll()?"dash":"mine";
   $("tr-body").innerHTML='<p class="sub">กำลังโหลด…</p>';
   try{await trLoad()}catch(e){$("tr-body").innerHTML=emptyRow(thErr(e));return}
   trDraw()}
 function trDraw(){
-  var tabs=(trSeeAll()?[["emp","👤 รายคน"],["course","📘 หลักสูตร"]]:[]).concat([["mine","🙋 ของฉัน"]]);
+  var tabs=(trSeeAll()?[["dash","📊 ภาพรวม"],["emp","👤 รายคน"],["course","📘 หลักสูตร"]]:[]).concat([["mine","🙋 ของฉัน"]]);
   if(!tabs.some(function(t){return t[0]===TR.view}))TR.view=tabs[0][0];
   $("tr-tabs").innerHTML=tabs.map(function(t){return '<button type="button" class="chipsel'+(TR.view===t[0]?" on":"")+'" data-trv="'+t[0]+'">'+t[1]+'</button>'}).join("");
   $("tr-acts").innerHTML=(trAdm()?'<button type="button" class="sm" data-tradd="course">＋ หลักสูตร</button><label class="filebtn sm" style="cursor:pointer">📥 นำเข้า Excel<input type="file" id="tr-file" accept=".xlsx,.xls,.csv" hidden></label>':'')+(trSeeAll()?'<button type="button" class="sm" data-trexp>⬇️ Excel</button>':'');
-  $("tr-body").innerHTML=TR.view==="emp"?trEmpHtml():TR.view==="course"?trCourseHtml():trPersonHtml(S.me,true)}
+  $("tr-body").innerHTML=TR.view==="dash"?trDashHtml():TR.view==="emp"?trEmpHtml():TR.view==="course"?trCourseHtml():trPersonHtml(S.me,true)}
+function trPct(r){var c=trCo(r.course_id);return c&&r.post_score!=null?Math.round(+r.post_score*1000/(+c.max_score))/10:null}
+function trSc(r){var c=trCo(r.course_id)||{max_score:100},m=num(c.max_score),t=[];
+  if(r.pre_score!=null)t.push("ก่อน "+num(r.pre_score)+"/"+m);
+  if(r.post_score!=null)t.push("หลัง "+num(r.post_score)+"/"+m+" ("+trPct(r)+"%)");
+  var o=t.join(" → ");if(r.pre_score!=null&&r.post_score!=null){var d=+r.post_score-(+r.pre_score);o+=d>0?" ▲ +"+num(d):d<0?" ▼ "+num(d):" (เท่าเดิม)"}return o}
 function trStat(list){var s={n:0,pass:0,fail:0,wait:0,done:0,co:{}};list.forEach(function(r){s.n++;s[trRes(r).k]++;s.co[r.course_id]=1});s.courses=Object.keys(s.co).length;return s}
 function trEmpHtml(){
   var ds=S.myDepts||[],emps=trScope().filter(function(e){return (!TR.dept||e.department_id===TR.dept)&&(!TR.q||(String(e.display_name)+" "+String(e.employee_no)).toLowerCase().indexOf(TR.q.toLowerCase())>=0)});
@@ -10876,7 +10897,9 @@ function trEmpHtml(){
   return '<div class="filters"><label>แผนก<select id="tr-dept"><option value="">'+(ds.length>1?"ทุกแผนกที่ดูแล":"ทั้งหมด")+'</option>'+ds.map(function(d){return '<option value="'+d.id+'"'+(TR.dept===d.id?" selected":"")+'>'+esc(d.name)+'</option>'}).join("")+'</select></label><label>ค้นหา<input type="search" id="tr-q" value="'+esc(TR.q)+'" placeholder="ชื่อ / รหัส"></label></div>'+
   '<div class="panel"><p class="sub">'+emps.length+' คน · อบรมแล้วอย่างน้อย 1 หลักสูตร '+trained+' คน · หลักสูตรที่เปิดอยู่ '+act+' หลักสูตร</p><div class="rows">'+
   (emps.length?emps.map(function(e){var L=by[e.id]||[],s=trStat(L);
-    return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div><div class="trbadges">'+
+    var ps=L.map(trPct).filter(function(x){return x!=null}),avg=ps.length?Math.round(ps.reduce(function(a,b){return a+b},0)*10/ps.length)/10:null;
+    var sl=L.length===1?trSc(L[0]):L.length?(avg!=null?"คะแนนหลังอบรมเฉลี่ย "+avg+"% · ":"")+L.length+" รายการ":"";
+    return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small>'+(sl?'<small class="trsc">'+esc(sl)+'</small>':'')+'</div><div class="trbadges">'+(avg!=null?'<span class="trb pct'+(avg>=70?' pass':' fail')+'">'+avg+'%</span>':'')+
       (L.length?'<span class="trb">📚 '+s.courses+(act?'/'+act:'')+'</span>'+(s.pass?'<span class="trb pass">ผ่าน '+s.pass+'</span>':'')+(s.fail?'<span class="trb fail">ไม่ผ่าน '+s.fail+'</span>':'')+(s.wait?'<span class="trb wait">รอผล '+s.wait+'</span>':''):'<span class="trb none">ยังไม่มีประวัติอบรม</span>')+'</div></button>'}).join(""):emptyRow("ไม่พบพนักงาน"))+'</div></div>'}
 function trCourseHtml(){
   var emps=trScope(),ids={};emps.forEach(function(e){ids[e.id]=1});
@@ -10885,11 +10908,11 @@ function trCourseHtml(){
     var L=TR.recs.filter(function(r){return r.course_id===c.id&&ids[r.employee_id]}),s=trStat(L),who={};L.forEach(function(r){who[r.employee_id]=1});var n=Object.keys(who).length,pct=emps.length?Math.round(n*100/emps.length):0;
     return '<button type="button" class="row trrow" data-trco="'+c.id+'"><span class="trico">📘</span><div class="l"><b>'+esc(c.name)+(c.active?'':' <small>(ปิดแล้ว)</small>')+'</b><small>'+esc([c.category,c.hours?c.hours+" ชม.":"","เต็ม "+num(c.max_score)+" · ผ่าน "+num(c.pass_pct)+"%"].filter(Boolean).join(" · "))+'</small><div class="trbar"><i style="width:'+pct+'%"></i></div></div><div class="trbadges"><span class="trb">'+n+'/'+emps.length+' คน</span>'+(s.pass?'<span class="trb pass">ผ่าน '+s.pass+'</span>':'')+(s.fail?'<span class="trb fail">ไม่ผ่าน '+s.fail+'</span>':'')+'</div></button>'}).join("")+'</div></div>'}
 function trRecHtml(r,ed){var c=trCo(r.course_id)||{name:"(หลักสูตรถูกลบ)",max_score:100},x=trRes(r);
-  return '<div class="row trrec"><div class="l"><b>'+esc(c.name)+'</b><small>'+esc(["📅 "+trD(r.train_date),r.pre_score!=null?"ก่อน "+num(r.pre_score)+"/"+num(c.max_score):"",r.post_score!=null?"หลัง "+num(r.post_score)+"/"+num(c.max_score):"",r.trainer?"ผู้สอน "+r.trainer:"",r.note||""].filter(Boolean).join(" · "))+'</small></div><span class="trb '+x.k+'">'+x.t+'</span>'+(ed?'<button type="button" class="iconbtn" data-trrec="'+r.id+'" aria-label="แก้ไข">✏️</button>':'')+'</div>'}
+  return '<div class="row trrec"><div class="l"><b>'+esc(c.name)+'</b><small>'+esc("📅 "+trD(r.train_date))+'</small>'+(trSc(r)?'<small class="trsc">'+esc(trSc(r))+'</small>':'')+'<small>'+esc([r.trainer?"ผู้สอน "+r.trainer:"",r.note||""].filter(Boolean).join(" · "))+'</small></div><span class="trb '+x.k+'">'+x.t+'</span>'+(ed?'<button type="button" class="iconbtn" data-trrec="'+r.id+'" aria-label="แก้ไข">✏️</button>':'')+'</div>'}
 function trPersonHtml(e,inline){var L=TR.recs.filter(function(r){return r.employee_id===e.id}),s=trStat(L),ed=trEdit(e);
   var miss=TR.courses.filter(function(c){return c.active&&!L.some(function(r){return r.course_id===c.id})});
   return (inline?'<div class="panel">':'')+'<div class="trsum"><span class="trb">📚 อบรมแล้ว '+s.courses+' หลักสูตร</span>'+(s.pass?'<span class="trb pass">ผ่าน '+s.pass+'</span>':'')+(s.fail?'<span class="trb fail">ไม่ผ่าน '+s.fail+'</span>':'')+(s.wait?'<span class="trb wait">รอผล '+s.wait+'</span>':'')+'</div>'+
-    (ed?'<button type="button" class="primary slim" data-tradd="rec" data-emp="'+e.id+'">＋ บันทึกการอบรม</button>':'')+
+    '<div class="inline trpacts">'+(ed?'<button type="button" class="primary slim" data-tradd="rec" data-emp="'+e.id+'">＋ บันทึกการอบรม</button>':'')+'<button type="button" class="sm" data-trprint="'+e.id+'">🖨️ พิมพ์สมุดพก (PDF)</button></div>'+
     '<div class="rows">'+(L.length?L.map(function(r){return trRecHtml(r,ed)}).join(""):emptyRow("ยังไม่มีประวัติการอบรม"))+'</div>'+
     (miss.length?'<details class="trmiss"><summary>ยังไม่ได้อบรม '+miss.length+' หลักสูตร</summary><p class="sub">'+miss.map(function(c){return esc(c.name)}).join(" · ")+'</p></details>':'')+(inline?'</div>':'')}
 function trEmpOpen(id){var e=empOf(id);if(!e)return;TR.cur=id;
@@ -10900,7 +10923,7 @@ function trCourseOpen(id){var c=trCo(id);if(!c)return;TR.cur=null;var emps=trSco
   var done=emps.filter(function(e){return by[e.id]}),not=emps.filter(function(e){return !by[e.id]});
   $("tr-det").innerHTML='<div class="headrow"><div style="flex:1;min-width:0"><h3 style="margin:0">📘 '+esc(c.name)+'</h3><small class="sub">'+esc([c.category,c.hours?c.hours+" ชม.":"","คะแนนเต็ม "+num(c.max_score),"ผ่านเมื่อได้ ≥ "+num(c.pass_pct)+"%"].filter(Boolean).join(" · "))+'</small></div><button type="button" class="iconbtn" data-close="m-train" aria-label="ปิด">✕</button></div>'+
     (c.note?'<p class="sub">'+esc(c.note)+'</p>':'')+(trAdm()?'<div class="inline"><button type="button" class="sm" data-tredco="'+c.id+'">✏️ แก้ไขหลักสูตร</button></div>':'')+
-    '<b>✅ อบรมแล้ว '+done.length+' คน</b><div class="rows">'+(done.length?done.map(function(e){var r=by[e.id],x=trRes(r);return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(deptName(e.department_id)+" · "+trD(r.train_date))+'</small></div><span class="trb '+x.k+'">'+x.t+'</span></button>'}).join(""):emptyRow("ยังไม่มี"))+'</div>'+
+    '<b>✅ อบรมแล้ว '+done.length+' คน</b><div class="rows">'+(done.length?done.map(function(e){var r=by[e.id],x=trRes(r);return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(deptName(e.department_id)+" · "+trD(r.train_date))+'</small>'+(trSc(r)?'<small class="trsc">'+esc(trSc(r))+'</small>':'')+'</div><span class="trb '+x.k+'">'+x.t+'</span></button>'}).join(""):emptyRow("ยังไม่มี"))+'</div>'+
     '<details class="trmiss"'+(not.length&&not.length<=30?" open":"")+'><summary>⏳ ยังไม่อบรม '+not.length+' คน</summary><div class="rows">'+not.map(function(e){return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(deptName(e.department_id))+'</small></div></button>'}).join("")+'</div></details>';
   openModal("m-train")}
 function trForm(kind,rec,empId){var f=$("tr-form"),h;
@@ -10982,6 +11005,40 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-tr
   else if(d.trexp!==undefined){trExport()}});
 document.addEventListener("change",function(ev){var t=ev.target;if(t.id==="tr-dept"){TR.dept=t.value;trDraw()}else if(t.id==="tr-file"&&t.files[0]){trImport(t.files[0]);t.value=""}});
 document.addEventListener("input",function(ev){if(ev.target.id==="tr-q"){TR.q=ev.target.value;clearTimeout(TR.qt);TR.qt=setTimeout(function(){var p=ev.target.selectionStart;trDraw();var i=$("tr-q");if(i){i.focus();try{i.setSelectionRange(p,p)}catch(e){}}},250)}});
+
+/* อัปเดต 363: ภาพรวมสถิติอบรมรายหลักสูตร + พิมพ์สมุดพกการอบรม (PDF) */
+function trLatest(empIds,cid){var m={};TR.recs.forEach(function(r){if(r.course_id!==cid||!empIds[r.employee_id])return;var o=m[r.employee_id];if(!o||r.train_date>o.train_date)m[r.employee_id]=r});return m}
+function trDashHtml(){
+  var emps=trScope(),ids={};emps.forEach(function(e){ids[e.id]=1});var N=emps.length;
+  var any={},tot={pass:0,fail:0,wait:0,done:0};TR.recs.forEach(function(r){if(ids[r.employee_id])any[r.employee_id]=1});
+  var cs=TR.courses.filter(function(c){return c.active});
+  var cards=cs.map(function(c){var L=trLatest(ids,c.id),s={pass:0,fail:0,wait:0,done:0};Object.keys(L).forEach(function(k){s[trRes(L[k]).k]++});
+    var tr=Object.keys(L).length,none=N-tr;Object.keys(s).forEach(function(k){tot[k]+=s[k]});
+    var pc=function(n){return N?Math.round(n*1000/N)/10:0},seg=function(n,cl){return n?'<i class="'+cl+'" style="width:'+(n*100/N)+'%"></i>':''};
+    return '<button type="button" class="trcard" data-trco="'+c.id+'"><b class="trct">📘 '+esc(c.name)+'</b><small class="sub">'+esc([c.category,"เต็ม "+num(c.max_score),"ผ่าน ≥ "+num(c.pass_pct)+"%"].filter(Boolean).join(" · "))+'</small>'+
+      '<div class="trbig"><span>'+pc(s.pass)+'<small>%</small></span><small>ผ่านแล้ว จากพนักงาน '+N+' คน</small></div>'+
+      '<div class="trstack">'+seg(s.pass,"p")+seg(s.fail,"f")+seg(s.wait+s.done,"w")+'</div>'+
+      '<div class="trlg"><span><i class="p"></i>ผ่าน '+s.pass+' ('+pc(s.pass)+'%)</span><span><i class="f"></i>ไม่ผ่าน '+s.fail+' ('+pc(s.fail)+'%)</span><span><i class="w"></i>ไม่มีผลสอบ '+(s.wait+s.done)+' ('+pc(s.wait+s.done)+'%)</span><span><i class="n"></i>ยังไม่อบรม '+none+' ('+pc(none)+'%)</span></div></button>'}).join("");
+  var nAny=Object.keys(any).length;
+  return '<div class="trkpis"><div class="trkpi"><small>พนักงานในขอบเขต</small><b>'+N+'</b></div><div class="trkpi"><small>อบรมแล้วอย่างน้อย 1 หลักสูตร</small><b>'+nAny+'<small> ('+(N?Math.round(nAny*100/N):0)+'%)</small></b></div><div class="trkpi"><small>หลักสูตรที่เปิดอยู่</small><b>'+cs.length+'</b></div><div class="trkpi g"><small>ผลอบรม ผ่าน / ไม่ผ่าน / ไม่มีผลสอบ</small><b>'+tot.pass+' <small>/ '+tot.fail+' / '+(tot.wait+tot.done)+'</small></b></div></div>'+
+    (cs.length?'<p class="sub">แตะการ์ดเพื่อดูรายชื่อคนที่อบรมแล้ว / ยังไม่อบรม · นับผลล่าสุดของแต่ละคน</p><div class="trcards">'+cards+'</div>':'<div class="panel">'+emptyRow("ยังไม่มีหลักสูตร")+'</div>')}
+function trPrint(id){var e=empOf(id);if(!e)return;
+  var L=TR.recs.filter(function(r){return r.employee_id===e.id}).sort(function(a,b){return a.train_date<b.train_date?-1:1}),s=trStat(L),hrs=0,seen={};
+  L.forEach(function(r){var c=trCo(r.course_id);if(c&&c.hours&&!seen[c.id]){hrs+=+c.hours;seen[c.id]=1}});
+  var miss=TR.courses.filter(function(c){return c.active&&!L.some(function(r){return r.course_id===c.id})}),av=okAvatar(e.avatar),et=ETYPE[e.emp_type||"apex"];
+  var row=function(k,v){return v?'<tr><th>'+k+'</th><td>'+esc(v)+'</td></tr>':''};
+  var h='<div class="tp"><div class="tph"><div><h1>สมุดพกการอบรมพนักงาน</h1><p>Training Record · AOI KPI</p></div><div class="tpd">พิมพ์เมื่อ '+trD(today())+'</div></div>'+
+    '<div class="tpp"><div class="tpimg">'+(av?'<img alt="" src="'+av+'">':'<span>'+esc(String(e.display_name||"?").charAt(0))+'</span>')+'</div><table class="tpi">'+
+      row("ชื่อ-นามสกุล",e.display_name)+row("รหัสพนักงาน",e.employee_no)+row("แผนก",deptName(e.department_id))+row("ตำแหน่ง",e.position)+row("กะ",e.shift?shiftTxt(e.shift):"")+row("ประเภทพนักงาน",et?et[1]:"")+row("วันเริ่มงาน",e.start_date?trD(e.start_date):"")+row("อายุงาน",e.start_date?svcAge(e.start_date):"")+'</table></div>'+
+    '<div class="tps"><span>อบรมแล้ว <b>'+s.courses+'</b> หลักสูตร</span><span>รวม <b>'+num(hrs)+'</b> ชม.</span><span class="p">ผ่าน <b>'+s.pass+'</b></span><span class="f">ไม่ผ่าน <b>'+s.fail+'</b></span><span>ไม่มีผลสอบ <b>'+(s.wait+s.done)+'</b></span></div>'+
+    '<table class="tpt"><thead><tr><th>#</th><th>หลักสูตร</th><th>วันที่อบรม</th><th>ชม.</th><th>ก่อน</th><th>หลัง</th><th>เต็ม</th><th>ผล</th><th>ผู้สอน</th></tr></thead><tbody>'+
+    (L.length?L.map(function(r,i){var c=trCo(r.course_id)||{name:"-",max_score:""},x=trRes(r);return '<tr><td>'+(i+1)+'</td><td>'+esc(c.name)+'</td><td>'+trD(r.train_date)+'</td><td>'+(c.hours?num(c.hours):"-")+'</td><td>'+(r.pre_score!=null?num(r.pre_score):"-")+'</td><td>'+(r.post_score!=null?num(r.post_score):"-")+'</td><td>'+num(c.max_score)+'</td><td class="r '+x.k+'">'+esc(x.t.replace(/^\S+\s/,""))+'</td><td class="t">'+esc(r.trainer||"-")+'</td></tr>'}).join(""):'<tr><td colspan="9" class="e">ยังไม่มีประวัติการอบรม</td></tr>')+'</tbody></table>'+
+    (miss.length?'<p class="tpm"><b>หลักสูตรที่ยังไม่ได้อบรม:</b> '+miss.map(function(c){return esc(c.name)}).join(" · ")+'</p>':'')+
+    '<div class="tpsig"><div><i></i>พนักงาน<br><small>วันที่ ____/____/______</small></div><div><i></i>หัวหน้างาน<br><small>วันที่ ____/____/______</small></div><div><i></i>ฝ่ายบุคคล / ผู้อบรม<br><small>วันที่ ____/____/______</small></div></div></div>';
+  var el=$("trprint");if(!el){el=document.createElement("div");el.id="trprint";document.body.appendChild(el)}el.innerHTML=h;
+  document.body.classList.add("printtr");var done=function(){document.body.classList.remove("printtr");window.removeEventListener("afterprint",done)};window.addEventListener("afterprint",done);
+  setTimeout(function(){window.print()},120)}
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-trprint]");if(t)trPrint(t.dataset.trprint)});
 
 var RENDER={train:renderTrain,task:renderTask,missan:renderMissAn,dtv:renderDtv,dtvadm:renderDtvAdm,quiz:renderQuiz,locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
