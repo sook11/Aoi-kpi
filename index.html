@@ -314,7 +314,9 @@ nav.tabs button[aria-current="page"] .ico{background:rgba(255,255,255,.18);trans
 @media (prefers-color-scheme:dark){.otbase{background:#1e293b}.otef{background:#0f172a;border-color:#334155}.otr{border-color:#334155}}
 .nwfeed{display:grid;gap:16px}.nwcard{background:var(--surface,#fff);border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(15,23,42,.1);cursor:pointer;border:1px solid rgba(148,163,184,.25);transition:transform .15s}.nwcard:active{transform:scale(.99)}.nwcard.draft{opacity:.65;border-style:dashed}
 .nwcar{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:#0f172a}.nwcar::-webkit-scrollbar{display:none}.nwsl{flex:0 0 100%;scroll-snap-align:center;position:relative;aspect-ratio:16/9;display:grid;place-items:center}.nwcar.big .nwsl{aspect-ratio:auto;min-height:200px;max-height:70vh}
-.nwsl img,.nwsl video{width:100%;height:100%;object-fit:cover;display:block}.nwcar.big .nwsl img,.nwcar.big .nwsl video{object-fit:contain;max-height:70vh}.nwsl iframe{width:100%;aspect-ratio:16/9;border:0}
+.nwsl img,.nwsl video{width:100%;height:100%;object-fit:cover;display:block}
+.nwsl{overflow:hidden}.nwsl img:not(.nwbg){object-fit:contain;position:relative;z-index:1}.nwsl .nwbg{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(18px) brightness(.85);transform:scale(1.05)}
+.nwb,.nwb *{overflow-wrap:anywhere;word-break:break-word}.nwb{min-width:0}.nwcar.big .nwsl img,.nwcar.big .nwsl video{object-fit:contain;max-height:70vh}.nwsl iframe{width:100%;aspect-ratio:16/9;border:0}
 .nwplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;font-style:normal;font-size:22px}.nwplay.yt{background:#dc2626}
 .nwdots{display:flex;justify-content:center;gap:6px;padding:7px 0 0}.nwdots i{width:7px;height:7px;border-radius:50%;background:#cbd5e1}.nwdots i.on{background:#2563eb;width:18px;border-radius:4px}
 .nwb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:5px}.nwtags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.nwcat{font-size:12px;font-weight:800;padding:2px 9px;border-radius:10px;background:#e0e7ff;color:#3730a3}.nwcat.c-event{background:#fce7f3;color:#9d174d}.nwcat.c-learn{background:#dcfce7;color:#166534}
@@ -1586,7 +1588,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v371</span></p>
+    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v372</span></p>
     <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนก/Admin ให้ตั้ง “รหัสชั่วคราว” แล้วเข้าสู่ระบบด้วยรหัสพนักงาน + รหัสชั่วคราว ระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่)</p>
     <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
@@ -2487,7 +2489,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v371</span></p>
+    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v372</span></p>
   </section>
 </div>
 
@@ -7134,7 +7136,7 @@ function glMake(o){glFix();var r=null;if(LITE.on&&o)o.antialias=false;try{r=new 
   if(!r)throw new Error("GL");return r}
 /* อัปเดต 364: วาดใหม่หลังกราฟิกกลับมา (restored) ไม่ใช่ตอนเพิ่งหาย — กันพื้น/กระเบื้องเป็นสีดำหลังสลับแอป */
 /* อัปเดต 365: ตรวจเวอร์ชันใหม่อัตโนมัติ — แท็บที่เปิดค้างไว้จะขึ้นปุ่มให้โหลดใหม่ */
-var APPV="371";
+var APPV="372";
 function verBar(){if($("verbar"))return;var b=document.createElement("button");b.type="button";b.id="verbar";b.className="verbar notranslate";b.textContent="🔄 มีเวอร์ชันใหม่ — แตะเพื่อโหลดใหม่";b.addEventListener("click",function(){b.textContent="กำลังโหลด…";location.reload()});document.body.appendChild(b)}
 function verCheck(){if(document.hidden||verCheck.busy||Date.now()-(verCheck.t||0)<240000)return;verCheck.busy=1;verCheck.t=Date.now();
   fetch("index.html?vc="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var m=t.match(/var APPV="(\d+)"/);if(m&&+m[1]>+APPV)verBar()}).catch(function(){}).then(function(){verCheck.busy=0})}
@@ -10708,7 +10710,7 @@ async function nwLoad(){var r=await Promise.all([q(db.from("news_posts").select(
 async function renderNews(){var f=$("nw-feed");if(!NW.list)f.innerHTML='<p class="sub">กำลังโหลด…</p>';$("nw-new").hidden=!S.admin;try{await nwLoad()}catch(e){f.innerHTML=emptyRow("โหลดข่าวไม่สำเร็จ: "+esc(thErr(e)));return}nwDraw()}
 function nwSlides(p,big){var M=(p.media||[]).filter(function(m){return m.t!=="file"&&m.t!=="link"});if(!M.length)return '';
   return '<div class="nwcar'+(big?' big':'')+'">'+M.map(function(m){var u=nwU(m.p);
-    if(m.t==="img")return '<div class="nwsl"><img alt="" loading="lazy" src="'+esc(u)+'"></div>';
+    if(m.t==="img")return '<div class="nwsl">'+(big?'':'<img class="nwbg" alt="" aria-hidden="true" loading="lazy" src="'+esc(u)+'">')+'<img alt="" loading="lazy" src="'+esc(u)+'"></div>';
     if(m.t==="vid")return '<div class="nwsl"><video src="'+esc(u)+'#t=0.5" preload="metadata" playsinline'+(big?' controls':' muted')+'></video>'+(big?'':'<i class="nwplay">▶</i>')+'</div>';
     if(m.t==="yt"){var id=nwYT(m.u);return '<div class="nwsl">'+(big?'<iframe src="https://www.youtube-nocookie.com/embed/'+id+'" allow="accelerometer;encrypted-media;gyroscope;picture-in-picture;fullscreen" allowfullscreen loading="lazy"></iframe>':'<img alt="" loading="lazy" src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg"><i class="nwplay yt">▶</i>')+'</div>'}
     return ''}).join("")+'</div>'+(M.length>1?'<div class="nwdots">'+M.map(function(m,i){return '<i'+(i?'':' class="on"')+'></i>'}).join("")+'</div>':'')}
