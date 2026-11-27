@@ -383,7 +383,8 @@ nav.tabs .navsub{display:none}
 .trb{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;white-space:nowrap}
 .trb.pass{background:#dcfce7;color:#166534}.trb.fail{background:#fee2e2;color:#991b1b}.trb.wait{background:#fef3c7;color:#92400e}.trb.done{background:#e0f2fe;color:#075985}.trb.none{background:#f1f5f9;color:#64748b;font-weight:500}
 .trsc{display:block;color:#1e3a8a!important;font-weight:600}.trb.pct{font-size:13px}
-.trico{font-size:22px}.trbar{height:5px;border-radius:9px;background:#e5e7eb;margin-top:5px;overflow:hidden}.trbar i{display:block;height:100%;background:#22c55e}
+.trico{font-size:22px}
+.verbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:9999;border:0;border-radius:999px;padding:11px 18px;background:#1f4fe0;color:#fff;font:inherit;font-weight:800;box-shadow:0 8px 24px rgba(15,23,42,.35);cursor:pointer;white-space:nowrap}.trbar{height:5px;border-radius:9px;background:#e5e7eb;margin-top:5px;overflow:hidden}.trbar i{display:block;height:100%;background:#22c55e}
 .trrec{align-items:flex-start}.trmiss{margin-top:10px}.trmiss summary{cursor:pointer;font-weight:700}
 .tracts{gap:6px;flex-wrap:wrap}.trpacts{gap:8px;flex-wrap:wrap;margin-bottom:6px}
 .trkpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px}.trkpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}.trkpi small{display:block;color:var(--muted,#64748b);font-size:12px}.trkpi b{font-size:24px}.trkpi b small{display:inline;font-size:13px}
@@ -1571,7 +1572,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px">upload-update-28</p>
+    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v365</span></p>
     <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนก/Admin ให้ตั้ง “รหัสชั่วคราว” แล้วเข้าสู่ระบบด้วยรหัสพนักงาน + รหัสชั่วคราว ระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่)</p>
     <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
@@ -2471,7 +2472,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · upload-update-28 · 11/10/2569</p>
+    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v365</span></p>
   </section>
 </div>
 
@@ -7116,6 +7117,12 @@ function glMake(o){glFix();var r=null;if(LITE.on&&o)o.antialias=false;try{r=new 
   if(!glOk(r)){glKill(r);r=null;var o2=Object.assign({},o,{antialias:false,powerPreference:"default"});try{r=new THREE.WebGLRenderer(o2)}catch(e){r=null}if(r&&!glOk(r)){glKill(r);r=null}}
   if(!r)throw new Error("GL");return r}
 /* อัปเดต 364: วาดใหม่หลังกราฟิกกลับมา (restored) ไม่ใช่ตอนเพิ่งหาย — กันพื้น/กระเบื้องเป็นสีดำหลังสลับแอป */
+/* อัปเดต 365: ตรวจเวอร์ชันใหม่อัตโนมัติ — แท็บที่เปิดค้างไว้จะขึ้นปุ่มให้โหลดใหม่ */
+var APPV="365";
+function verBar(){if($("verbar"))return;var b=document.createElement("button");b.type="button";b.id="verbar";b.className="verbar notranslate";b.textContent="🔄 มีเวอร์ชันใหม่ — แตะเพื่อโหลดใหม่";b.addEventListener("click",function(){b.textContent="กำลังโหลด…";location.reload()});document.body.appendChild(b)}
+function verCheck(){if(document.hidden||verCheck.busy||Date.now()-(verCheck.t||0)<240000)return;verCheck.busy=1;verCheck.t=Date.now();
+  fetch("index.html?vc="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var m=t.match(/var APPV="(\d+)"/);if(m&&+m[1]>+APPV)verBar()}).catch(function(){}).then(function(){verCheck.busy=0})}
+setTimeout(verCheck,20000);setInterval(verCheck,600000);document.addEventListener("visibilitychange",function(){if(!document.hidden)verCheck()});
 function glWatch(cv,fn){if(!cv||cv.__aoiGlw)return;cv.__aoiGlw=1;var t=null,go=function(){clearTimeout(t);t=null;try{if(typeof FM3==="object"&&FM3){FM3.tex={};FM3.pvm={};FM3.wireTex=null}}catch(e){}fn()};
   cv.addEventListener("webglcontextlost",function(ev){ev.preventDefault();clearTimeout(t);t=setTimeout(go,5000)},false);
   cv.addEventListener("webglcontextrestored",function(){clearTimeout(t);t=setTimeout(go,150)},false)}
