@@ -384,6 +384,7 @@ nav.tabs .navsub{display:none}
 .trb.pass{background:#dcfce7;color:#166534}.trb.fail{background:#fee2e2;color:#991b1b}.trb.wait{background:#fef3c7;color:#92400e}.trb.done{background:#e0f2fe;color:#075985}.trb.none{background:#f1f5f9;color:#64748b;font-weight:500}
 .trsc{display:block;color:#1e3a8a!important;font-weight:600}.trb.pct{font-size:13px}
 .trico{font-size:22px}
+@keyframes flashedit{0%,100%{box-shadow:none}25%,75%{box-shadow:0 0 0 4px rgba(59,130,246,.55)}}#kpiform,.view{scroll-margin-top:110px}.flashedit{animation:flashedit 1.4s ease 1;border-radius:14px}
 .mytrain .mtbar{height:8px;border-radius:9px;background:#e5e7eb;overflow:hidden;margin:4px 0 6px}.mytrain .mtbar i{display:block;height:100%;background:#22c55e}.mtleft{color:#b45309}
 .mtrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1fr);gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .mtn b{display:block}.mtn small{color:var(--muted,#64748b);font-size:12px}.mtl{display:flex;flex-direction:column;gap:6px}
@@ -1583,7 +1584,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v368</span></p>
+    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v369</span></p>
     <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนก/Admin ให้ตั้ง “รหัสชั่วคราว” แล้วเข้าสู่ระบบด้วยรหัสพนักงาน + รหัสชั่วคราว ระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่)</p>
     <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
@@ -2484,7 +2485,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v368</span></p>
+    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v369</span></p>
   </section>
 </div>
 
@@ -3499,6 +3500,7 @@ async function renderAdmin(){
   }).join("")||emptyRow("ยังไม่ได้รับมอบหมายแผนก ให้ Admin กำหนดสิทธิ์ก่อน");
 }
 
+function viewTop(){window.scrollTo(0,0);try{var v=$("v-"+S.tab);if(v)v.scrollIntoView({block:"start"})}catch(e){}}
 /* ---------- หน้า: จัดการหน้างาน ---------- */
 var KE=null;
 function renderKpis(){try{vlAdmin()}catch(e){}try{fhPanel();missPanel()}catch(e){}
@@ -3509,7 +3511,7 @@ function renderKpis(){try{vlAdmin()}catch(e){}try{fhPanel();missPanel()}catch(e)
 function kpiEdit(k){
   KE=k?k.id:null;$("k-title").textContent=k?"แก้ไขหน้างาน: "+k.name:"เพิ่มหน้างาน";$("k-submit").textContent=k?"บันทึกการแก้ไข":"เพิ่มหน้างาน";$("k-cancel").hidden=!k;
   $("k-name").value=k?k.name:"";$("k-dept").value=k&&k.department_id?k.department_id:"";$("k-target").value=k&&k.target_per_hour!=null?k.target_per_hour:"";$("k-unit").value=k?(k.unit||"ชิ้น"):"ชิ้น";
-  if(k)window.scrollTo(0,0);
+  if(k){var f=$("kpiform");try{f.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){window.scrollTo(0,0)}f.classList.remove("flashedit");void f.offsetWidth;f.classList.add("flashedit");setTimeout(function(){try{$("k-name").focus({preventScroll:true})}catch(e){}},350)}
 }
 $("k-cancel").addEventListener("click",function(){kpiEdit(null)});
 $("kpiform").addEventListener("submit",function(ev){
@@ -5012,8 +5014,8 @@ document.addEventListener("change",async function(ev){var t=ev.target;if(!t)retu
   if(t.dataset&&t.dataset.dtvup&&t.files.length){var target=$(t.dataset.dtvup),fs=[].slice.call(t.files),msg=$("dtv-msg");t.value="";try{for(var i=0;i<fs.length;i++){if(msg)msg.textContent="⏳ กำลังอัปโหลด "+(i+1)+"/"+fs.length+" · "+fs[i].name;var u=await dtvUpload(fs[i]);if(t.dataset.multi){target.value=(target.value.trim()?target.value.trim()+"\n":"")+u;var th=$(t.dataset.dtvup+"-th");if(th)th.insertAdjacentHTML("beforeend",'<img src="'+esc(u)+'" alt="">')}else target.value=u}if(msg)msg.textContent="✅ อัปโหลดแล้ว อย่าลืมกดบันทึก"}catch(e){if(msg)msg.textContent="❌ "+thErr(e)}}});
 document.addEventListener("click",async function(ev){var t=ev.target.closest&&ev.target.closest("[data-dtvsec],[data-dtvnew],[data-dtved],[data-dtvdel],[data-dtvsave],[data-dtvcancel],[data-dtvcfg],[data-dtvtest]");if(!t)return;var D=t.dataset,sec=DT.admSec,F=DTF[sec];
   if(D.dtvsec){DT.admSec=D.dtvsec;DT.edit=null;dtvAdmDraw();return}
-  if(D.dtvnew){DT.edit={sec:sec,row:null};dtvAdmDraw();window.scrollTo(0,0);return}
-  if(D.dtved){DT.edit={sec:sec,row:(DT.data[sec]||[]).filter(function(x){return x.id===D.dtved})[0]};dtvAdmDraw();window.scrollTo(0,0);return}
+  if(D.dtvnew){DT.edit={sec:sec,row:null};dtvAdmDraw();viewTop();return}
+  if(D.dtved){DT.edit={sec:sec,row:(DT.data[sec]||[]).filter(function(x){return x.id===D.dtved})[0]};dtvAdmDraw();viewTop();return}
   if(D.dtvcancel){DT.edit=null;dtvAdmDraw();return}
   if(D.dtvdel){if(!armed(t,"แตะอีกครั้ง เพื่อลบ"))return;try{await q(db.from(F.t).delete().eq("id",D.dtvdel));toast("ลบแล้ว");await renderDtvAdm()}catch(e){toast(thErr(e))}return}
   if(D.dtvsave){var msg=$("dtv-msg");t.disabled=true;try{var o=dtvRead(sec),id=DT.edit&&DT.edit.row&&DT.edit.row.id;if(id)await q(db.from(F.t).update(o).eq("id",id));else await q(db.from(F.t).insert(o));DT.edit=null;toast("บันทึกแล้ว");await renderDtvAdm()}catch(e){if(msg)msg.textContent="❌ "+thErr(e)}t.disabled=false;return}
@@ -7130,7 +7132,7 @@ function glMake(o){glFix();var r=null;if(LITE.on&&o)o.antialias=false;try{r=new 
   if(!r)throw new Error("GL");return r}
 /* อัปเดต 364: วาดใหม่หลังกราฟิกกลับมา (restored) ไม่ใช่ตอนเพิ่งหาย — กันพื้น/กระเบื้องเป็นสีดำหลังสลับแอป */
 /* อัปเดต 365: ตรวจเวอร์ชันใหม่อัตโนมัติ — แท็บที่เปิดค้างไว้จะขึ้นปุ่มให้โหลดใหม่ */
-var APPV="368";
+var APPV="369";
 function verBar(){if($("verbar"))return;var b=document.createElement("button");b.type="button";b.id="verbar";b.className="verbar notranslate";b.textContent="🔄 มีเวอร์ชันใหม่ — แตะเพื่อโหลดใหม่";b.addEventListener("click",function(){b.textContent="กำลังโหลด…";location.reload()});document.body.appendChild(b)}
 function verCheck(){if(document.hidden||verCheck.busy||Date.now()-(verCheck.t||0)<240000)return;verCheck.busy=1;verCheck.t=Date.now();
   fetch("index.html?vc="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var m=t.match(/var APPV="(\d+)"/);if(m&&+m[1]>+APPV)verBar()}).catch(function(){}).then(function(){verCheck.busy=0})}
