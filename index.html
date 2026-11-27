@@ -7115,7 +7115,10 @@ function glOk(r){try{var g=r&&r.getContext();return !!g&&!g.isContextLost()}catc
 function glMake(o){glFix();var r=null;if(LITE.on&&o)o.antialias=false;try{r=new THREE.WebGLRenderer(o)}catch(e){r=null}if(r)liteApply(r);
   if(!glOk(r)){glKill(r);r=null;var o2=Object.assign({},o,{antialias:false,powerPreference:"default"});try{r=new THREE.WebGLRenderer(o2)}catch(e){r=null}if(r&&!glOk(r)){glKill(r);r=null}}
   if(!r)throw new Error("GL");return r}
-function glWatch(cv,fn){if(!cv||cv.__aoiGlw)return;cv.__aoiGlw=1;cv.addEventListener("webglcontextlost",function(ev){ev.preventDefault();setTimeout(fn,600)},false)}
+/* อัปเดต 364: วาดใหม่หลังกราฟิกกลับมา (restored) ไม่ใช่ตอนเพิ่งหาย — กันพื้น/กระเบื้องเป็นสีดำหลังสลับแอป */
+function glWatch(cv,fn){if(!cv||cv.__aoiGlw)return;cv.__aoiGlw=1;var t=null,go=function(){clearTimeout(t);t=null;try{if(typeof FM3==="object"&&FM3){FM3.tex={};FM3.pvm={};FM3.wireTex=null}}catch(e){}fn()};
+  cv.addEventListener("webglcontextlost",function(ev){ev.preventDefault();clearTimeout(t);t=setTimeout(go,5000)},false);
+  cv.addEventListener("webglcontextrestored",function(){clearTimeout(t);t=setTimeout(go,150)},false)}
 function fm3GlFail(box){if(box)box.innerHTML='<div class="fm3err"><b>🖥️ ฉาก 3D เปิดไม่ได้ชั่วคราว</b><small>เครื่องหน่วยความจำกราฟิกเต็ม — ปิดแท็บอื่น/แอปอื่นแล้วกดลองใหม่</small><button type="button" onclick="location.reload()">↻ ลองใหม่</button></div>'}
 function fm3Mount(){var box=$("fm-world");if(!box)return false;box.innerHTML='<div class="fwin f3win" id="fm-win"><canvas id="fm3-cv"></canvas></div>';var cv=$("fm3-cv");
   var old=FM3.renderer;FM3.renderer=null;glKill(old);try{FM3.renderer=glMake({canvas:cv,antialias:true,powerPreference:"high-performance"})}catch(e){FM3.ready=false;fm3GlFail(box);return false}
