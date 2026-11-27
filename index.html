@@ -385,6 +385,7 @@ nav.tabs .navsub{display:none}
 .trsc{display:block;color:#1e3a8a!important;font-weight:600}.trb.pct{font-size:13px}
 .trico{font-size:22px}
 @keyframes flashedit{0%,100%{box-shadow:none}25%,75%{box-shadow:0 0 0 4px rgba(59,130,246,.55)}}#kpiform,.view{scroll-margin-top:110px}#toast{z-index:10001}#tr-form label.inline{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;grid-template-columns:none}#tr-form label.inline input{width:auto!important;flex:none!important;min-height:0;margin:0}
+.trlink{margin:10px 0;padding:10px;border:1px dashed #93c5fd;border-radius:12px;background:#eff6ff;display:flex;flex-direction:column;gap:6px}.trlink small{color:#475569;line-height:1.5}
 .flashedit{animation:flashedit 1.4s ease 1;border-radius:14px}
 .mytrain .mtbar{height:8px;border-radius:9px;background:#e5e7eb;overflow:hidden;margin:4px 0 6px}.mytrain .mtbar i{display:block;height:100%;background:#22c55e}.mtleft{color:#b45309}
 .mtrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1fr);gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
@@ -1585,7 +1586,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v370</span></p>
+    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v371</span></p>
     <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนก/Admin ให้ตั้ง “รหัสชั่วคราว” แล้วเข้าสู่ระบบด้วยรหัสพนักงาน + รหัสชั่วคราว ระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่)</p>
     <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
@@ -2486,7 +2487,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v370</span></p>
+    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v371</span></p>
   </section>
 </div>
 
@@ -7133,7 +7134,7 @@ function glMake(o){glFix();var r=null;if(LITE.on&&o)o.antialias=false;try{r=new 
   if(!r)throw new Error("GL");return r}
 /* อัปเดต 364: วาดใหม่หลังกราฟิกกลับมา (restored) ไม่ใช่ตอนเพิ่งหาย — กันพื้น/กระเบื้องเป็นสีดำหลังสลับแอป */
 /* อัปเดต 365: ตรวจเวอร์ชันใหม่อัตโนมัติ — แท็บที่เปิดค้างไว้จะขึ้นปุ่มให้โหลดใหม่ */
-var APPV="370";
+var APPV="371";
 function verBar(){if($("verbar"))return;var b=document.createElement("button");b.type="button";b.id="verbar";b.className="verbar notranslate";b.textContent="🔄 มีเวอร์ชันใหม่ — แตะเพื่อโหลดใหม่";b.addEventListener("click",function(){b.textContent="กำลังโหลด…";location.reload()});document.body.appendChild(b)}
 function verCheck(){if(document.hidden||verCheck.busy||Date.now()-(verCheck.t||0)<240000)return;verCheck.busy=1;verCheck.t=Date.now();
   fetch("index.html?vc="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var m=t.match(/var APPV="(\d+)"/);if(m&&+m[1]>+APPV)verBar()}).catch(function(){}).then(function(){verCheck.busy=0})}
@@ -10948,11 +10949,73 @@ function trPersonHtml(e,inline){var L=TR.recs.filter(function(r){return r.employ
 function trEmpOpen(id){var e=empOf(id);if(!e)return;TR.cur=id;
   $("tr-det").innerHTML='<div class="headrow"><div style="display:flex;gap:10px;align-items:center">'+avatarHtml(e)+'<div><h3 style="margin:0">📚 '+esc(e.display_name)+'</h3><small class="sub">'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div></div><button type="button" class="iconbtn" data-close="m-train" aria-label="ปิด">✕</button></div>'+trPersonHtml(e,false);
   openModal("m-train")}
+function trScript(c,kind,key){var K=kind==="pre"?"ก่อนอบรม":"หลังอบรม";return [
+'/**',
+' * ส่งคะแนนแบบทดสอบ "'+String(c.name).replace(/\*\//g,"")+'" ('+K+') เข้าแอป AOI KPI อัตโนมัติ',
+' * วิธีติดตั้ง: เปิดชีตคำตอบของฟอร์ม'+K+' > ส่วนขยาย > Apps Script > ลบโค้ดเดิม วางโค้ดนี้ > บันทึก',
+' *            เลือกฟังก์ชัน aoiInstall > เรียกใช้ > อนุญาตสิทธิ์ > สลับไปแท็บชีตแล้วกด ตกลง',
+' * ส่งไปเฉพาะ: รหัสพนักงาน, คะแนน, วันที่อบรม, ผู้สอน, ชั่วโมง  (ไม่ส่งชื่อหรือคำตอบรายข้อ)',
+' * ห้ามแชร์โค้ดนี้ให้คนนอก (มีรหัสลับสำหรับส่งคะแนน)',
+' */',
+'var AOI = {',
+'  url: "'+SB_URL+'/rest/v1/rpc/train_ingest",',
+'  key: "'+SB_KEY+'",',
+'  token: "'+key+'",',
+'  course: "'+c.id+'",   // '+String(c.name).replace(/[\r\n]/g," "),
+'  kind: "'+kind+'"      // '+K,
+'};',
+'',
+'function aoiCols_(head) {',
+'  function find(re) { for (var i = 0; i < head.length; i++) if (re.test(String(head[i]))) return i; return -1; }',
+'  return { code: find(/รหัส|ร[ห]้ส/), score: find(/^\\s*คะแนน\\s*$/), date: find(/วันที่อบรม|วันที่/),',
+'           trainer: find(/ผู้สอน|วิทยากร/), hours: find(/ชั่วโมง/) };',
+'}',
+'function aoiRow_(r, c) {',
+'  return { code: String(r[c.code] || "").trim(), score: String(r[c.score] || ""), date: String(r[c.date] || "").trim(),',
+'           trainer: c.trainer >= 0 ? String(r[c.trainer] || "") : "", hours: c.hours >= 0 ? String(r[c.hours] || "") : "" };',
+'}',
+'function aoiSend_(rows) {',
+'  var res = UrlFetchApp.fetch(AOI.url, { method: "post", contentType: "application/json", muteHttpExceptions: true,',
+'    headers: { apikey: AOI.key, Authorization: "Bearer " + AOI.key },',
+'    payload: JSON.stringify({ p_key: AOI.token, p_course: AOI.course, p_kind: AOI.kind, p_rows: rows }) });',
+'  if (res.getResponseCode() >= 300) throw new Error("AOI KPI ตอบกลับ " + res.getResponseCode() + ": " + res.getContentText());',
+'  return JSON.parse(res.getContentText());',
+'}',
+'function aoiOnSubmit(e) {',
+'  var sh = e.range.getSheet(), w = sh.getLastColumn();',
+'  var head = sh.getRange(1, 1, 1, w).getDisplayValues()[0], row = sh.getRange(e.range.getRow(), 1, 1, w).getDisplayValues()[0];',
+'  aoiSend_([aoiRow_(row, aoiCols_(head))]);',
+'}',
+'function aoiSendAll() {',
+'  var sh = SpreadsheetApp.getActive().getSheets()[0], v = sh.getDataRange().getDisplayValues(), c = aoiCols_(v[0]);',
+'  if (c.code < 0 || c.score < 0 || c.date < 0) throw new Error("ไม่พบคอลัมน์ รหัสพนักงาน / คะแนน / วันที่อบรม (ฟอร์มต้องเป็นแบบทดสอบที่มีคะแนน)");',
+'  var rows = v.slice(1).map(function (r) { return aoiRow_(r, c); }).filter(function (r) { return r.code; });',
+'  var sum = { saved: 0, not_in_app: 0, skipped_bad: 0 };',
+'  for (var i = 0; i < rows.length; i += 500) { var r = aoiSend_(rows.slice(i, i + 500)); for (var k in sum) sum[k] += r[k] || 0; }',
+'  var msg = "ส่งแล้ว " + rows.length + " แถว\\nบันทึกในแอป " + sum.saved + " · ไม่มีบัญชีในแอป " + sum.not_in_app + " · ข้อมูลผิดรูปแบบ " + sum.skipped_bad;',
+'  try { SpreadsheetApp.getUi().alert(msg); } catch (x) { Logger.log(msg); }',
+'}',
+'function aoiInstall() {',
+'  var ss = SpreadsheetApp.getActive();',
+'  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === "aoiOnSubmit") ScriptApp.deleteTrigger(t); });',
+'  ScriptApp.newTrigger("aoiOnSubmit").forSpreadsheet(ss).onFormSubmit().create();',
+'  aoiSendAll();',
+'}',
+'function onOpen() {',
+'  SpreadsheetApp.getUi().createMenu("📚 AOI KPI").addItem("ติดตั้งส่งอัตโนมัติ (ทำครั้งเดียว)", "aoiInstall")',
+'    .addItem("ส่งทุกแถวเข้าแอปตอนนี้", "aoiSendAll").addToUi();',
+'}',''].join("\n")}
+async function trCopyScript(id,kind){var c=trCo(id);if(!c)return;var key;try{key=await q(db.rpc("train_script_key"))}catch(e){toast(thErr(e));return}
+  var t=trScript(c,kind,key),ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){}
+  if(ok){toast("คัดลอกสคริปต์"+(kind==="pre"?"ก่อนอบรม":"หลังอบรม")+"แล้ว ✅ ไปวางใน Apps Script ของชีตคำตอบ");return}
+  var w=$("tr-scbox");if(w){w.hidden=false;var ta=w.querySelector("textarea");ta.value=t;ta.focus();ta.select();toast("กด Ctrl+C เพื่อคัดลอก")}}
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-trscript]");if(!t)return;var a=t.dataset.trscript.split("|");trCopyScript(a[0],a[1])});
 function trCourseOpen(id){var c=trCo(id);if(!c)return;TR.cur=null;var emps=trScope().filter(function(e){return trEmpOk(c,e)}),by={};
   TR.recs.forEach(function(r){if(r.course_id===id&&!by[r.employee_id])by[r.employee_id]=r});
   var done=emps.filter(function(e){return by[e.id]}),not=emps.filter(function(e){return !by[e.id]});
   $("tr-det").innerHTML='<div class="headrow"><div style="flex:1;min-width:0"><h3 style="margin:0">📘 '+esc(c.name)+'</h3><small class="sub">'+esc([c.category,c.hours?c.hours+" ชม.":"","คะแนนเต็ม "+num(c.max_score),"ผ่านเมื่อได้ ≥ "+num(c.pass_pct)+"%",trTgt(c)].filter(Boolean).join(" · "))+'</small></div><button type="button" class="iconbtn" data-close="m-train" aria-label="ปิด">✕</button></div>'+
-    (c.note?'<p class="sub">'+esc(c.note)+'</p>':'')+(trAdm()?'<div class="inline"><button type="button" class="sm" data-tredco="'+c.id+'">✏️ แก้ไขหลักสูตร</button></div>':'')+
+    (c.note?'<p class="sub">'+esc(c.note)+'</p>':'')+(trAdm()?'<div class="inline"><button type="button" class="sm" data-tredco="'+c.id+'">✏️ แก้ไขหลักสูตร</button></div>'+
+      '<div class="trlink"><b>🔗 ดึงคะแนนจาก Google Form เข้าหลักสูตรนี้</b><small>1) กดคัดลอกสคริปต์ของชีตที่ต้องการ 2) เปิดชีตคำตอบของฟอร์มนั้น › ส่วนขยาย › Apps Script › ลบโค้ดเดิม วางแล้วบันทึก 3) เลือก aoiInstall › เรียกใช้ › อนุญาต — คะแนนเดิมจะถูกส่งเข้าทันที และคนที่ส่งฟอร์มหลังจากนี้จะเข้าเอง · ฟอร์มต้องเป็นแบบทดสอบ (มีคอลัมน์ คะแนน) และมีคอลัมน์ รหัสพนักงาน, วันที่อบรม</small><div class="inline"><button type="button" class="sm" data-trscript="'+c.id+'|pre">📋 คัดลอกสคริปต์ ชีตก่อนอบรม</button><button type="button" class="sm" data-trscript="'+c.id+'|post">📋 คัดลอกสคริปต์ ชีตหลังอบรม</button></div><div id="tr-scbox" hidden><textarea rows="6" readonly style="font-family:monospace;font-size:11px"></textarea></div></div>':'')+
     '<b>✅ อบรมแล้ว '+done.length+' คน</b><div class="rows">'+(done.length?done.map(function(e){var r=by[e.id],x=trRes(r);return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(deptName(e.department_id)+" · "+trD(r.train_date))+'</small>'+(trSc(r)?'<small class="trsc">'+esc(trSc(r))+'</small>':'')+'</div><span class="trb '+x.k+'">'+x.t+'</span></button>'}).join(""):emptyRow("ยังไม่มี"))+'</div>'+
     '<details class="trmiss"'+(not.length&&not.length<=30?" open":"")+'><summary>⏳ ยังไม่อบรม '+not.length+' คน</summary><div class="rows">'+not.map(function(e){return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(deptName(e.department_id))+'</small></div></button>'}).join("")+'</div></details>';
   openModal("m-train")}
