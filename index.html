@@ -376,6 +376,14 @@ nav.tabs .navsub{display:none}
 .photos .ph button{position:absolute;top:3px;right:3px;width:22px;height:22px;padding:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:0;font-size:13px}
 .photos .ph i{position:absolute;left:0;right:0;bottom:0;background:rgba(29,78,216,.85);color:#fff;font-size:11px;text-align:center;font-style:normal}
 .modal .box.wide{max-width:560px}
+.trrow{width:100%;background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 2px;text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:0}
+.trrow:hover{background:rgba(31,79,224,.05)}
+.trbadges,.trsum{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}.trsum{justify-content:flex-start;margin-bottom:8px}
+.trb{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;white-space:nowrap}
+.trb.pass{background:#dcfce7;color:#166534}.trb.fail{background:#fee2e2;color:#991b1b}.trb.wait{background:#fef3c7;color:#92400e}.trb.done{background:#e0f2fe;color:#075985}.trb.none{background:#f1f5f9;color:#64748b;font-weight:500}
+.trico{font-size:22px}.trbar{height:5px;border-radius:9px;background:#e5e7eb;margin-top:5px;overflow:hidden}.trbar i{display:block;height:100%;background:#22c55e}
+.trrec{align-items:flex-start}.trmiss{margin-top:10px}.trmiss summary{cursor:pointer;font-weight:700}
+.tracts{gap:6px;flex-wrap:wrap}.tracts .filebtn{display:inline-flex;align-items:center}
 .pdmain{aspect-ratio:1/1;width:100%;max-width:100%;border-radius:12px;overflow:hidden;background:var(--off-bg);display:grid;place-items:center;color:var(--off-ink)}
 .pdmain img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 .pdthumbs{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
@@ -2015,6 +2023,13 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
     <div class="nwfeed" id="nw-feed"></div>
   </section>
 
+  <!-- อัปเดต 362: การอบรมพนักงาน -->
+  <section class="view" id="v-train" hidden>
+    <div class="nwhead"><div><h2>📚 การอบรม</h2><p class="sub">พนักงานแต่ละคนอบรมหลักสูตรอะไรแล้ว · คะแนนก่อน/หลัง · ผ่าน/ไม่ผ่าน · ใครยังไม่อบรม</p></div><div class="inline tracts" id="tr-acts"></div></div>
+    <div class="chips" id="tr-tabs"></div>
+    <div id="tr-body"></div>
+  </section>
+
   <!-- MENU (มือถือ) -->
   <section class="view" id="v-menu" hidden>
     <div><h2>เมนู</h2><p class="sub">เลือกหน้าที่ต้องการ</p></div>
@@ -2023,6 +2038,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <button data-myqr>📱 QR เข้างาน</button>
       <button data-tab="news">📢 ประชาสัมพันธ์<i class="navdot num" id="nw-dot2" hidden></i></button>
       <button data-tab="ot">⏱️ OT (ล่วงเวลา)</button>
+      <button data-tab="train">📚 การอบรม</button>
       <button data-tab="staff" class="mgr">พนักงาน</button>
       <button data-tab="top" class="mgr">Top 5 ยอดผลิต</button>
       <button data-tab="missan" class="mgr">📉 วิเคราะห์ไม่ถึงเป้า</button>
@@ -2461,6 +2477,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
   <button data-tab="shop" class="navx">สินค้า</button>
   <button data-tab="news" class="navx">📢 ประชาสัมพันธ์<i class="navdot num" id="nw-dot" hidden></i></button>
   <button data-tab="ot" class="navx">⏱️ OT (ล่วงเวลา)</button>
+  <button data-tab="train" class="navx">📚 การอบรม</button>
   <button data-tab="tt" class="navx">ติ่งต๊อง</button>
   <button data-tab="chat" class="navx">แชต<i class="navdot" id="chat-dot" hidden></i></button>
   <button data-tab="ideas" class="navx">ไอเดียปรับปรุงงาน</button>
@@ -2507,6 +2524,8 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
 <div id="rc" class="rc" hidden><div class="rcbg" data-rcclose="1"></div><div class="rcwrap" id="rc-wrap"></div></div>
 <div id="stage" class="stage" hidden><div class="curtain l"></div><div class="curtain r"></div><div class="spot"></div><div class="stbody" id="st-body"></div>
   <div class="stbtns"><button type="button" class="primary" id="st-again">🎲 สุ่มคนต่อไป</button><button type="button" id="st-close">ปิด</button></div></div>
+<div class="modal" id="m-train" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="tr-det"></div></div>
+<div class="modal" id="m-trform" hidden><div class="box" role="dialog" aria-modal="true" id="tr-form"></div></div>
 <div class="modal" id="m-ot" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="ot-det"></div></div>
 <div class="modal" id="m-dn" hidden><div class="box nwbox" role="dialog" aria-modal="true"><div class="headrow"><h3 style="font-size:18px">📬 แจ้งเตือนถึงคุณ</h3><button type="button" class="iconbtn" id="dn-x" data-ico="x" aria-label="ปิด"></button></div><div id="dn-list" class="dnlist"></div><div class="inline" style="gap:8px;margin-top:12px;flex-wrap:wrap"><button type="button" class="primary" id="dn-ok">รับทราบ</button><button type="button" id="dn-cal">📅 ดูในปฏิทินลา</button></div></div></div>
 <div class="modal" id="m-news" hidden><div class="box nwbox" role="dialog" aria-modal="true" id="nw-view"></div></div>
@@ -2914,7 +2933,8 @@ var PERMS=[["งานผลิต / KPI","kpi","ดูแลยอดผลิ�
   ["หัก KPI","deduct","หัก KPI","บันทึกหัก KPI และรายงานหัก KPI"],
   ["การลา","leave_view","ดูใบลาของแผนก","เห็นรายการขอลา แต่กดอนุมัติไม่ได้"],
   ["การลา","leave_appr","อนุมัติการลา","อนุมัติ / ไม่อนุมัติ / ยกเลิกใบลา, คีย์ลาแทนพนักงาน"],
-  ["การลา","leave_admin","จัดการวันลา","ตั้งสิทธิ์วันลารายคน, ส่งออกรายงาน/ปฏิทินลา"]];
+  ["การลา","leave_admin","จัดการวันลา","ตั้งสิทธิ์วันลารายคน, ส่งออกรายงาน/ปฏิทินลา"],
+  ["การอบรม","train","จัดการการอบรม","บันทึก/แก้ไข/นำเข้าผลอบรมของพนักงานในแผนก, เพิ่ม/แก้ไขหลักสูตร"]];
 var PERMN={};PERMS.forEach(function(x){PERMN[x[1]]=x[2]});
 var PERM_IMPL={att_view:["att_check"],leave_view:["leave_appr","leave_admin"]};
 var PERM_PRE={all:PERMS.map(function(x){return x[1]}),leader:["leave_view","leave_appr"],check:["att_check"],none:[]};
@@ -9910,7 +9930,7 @@ document.addEventListener("click",function(ev){
 });
 
 /* ---------- สถิติการใช้งาน ---------- */
-var TABNAME={home:"ภาพรวม",log:"บันทึกผลงาน",daily:"รายวัน",monthly:"รายเดือน",staff:"พนักงาน",top:"Top 5",allowance:"KPI / Allowance",install:"ติดตั้งแอป",admin:"Admin Dashboard",targets:"เป้าหมายรายวัน",kpis:"จัดการหน้างาน",allowmgr:"จัดการ KPI/Allowance",telegram:"Telegram",settings:"ตั้งค่า",menu:"เมนู",emp:"ข้อมูลพนักงาน",shop:"สินค้า",tt:"ติ่งต๊อง",chat:"แชต",announce:"ประกาศ",att:"เช็ครายชื่อ",attdash:"แดชบอร์ดเช็คชื่อ",atthist:"ประวัติเช็คชื่อ",attqr:"QR Code",myatt:"เช็คชื่อของฉัน",game:"เกมพนักงาน",deduct:"หัก KPI",dedrep:"รายงานหัก KPI",tv:"หน้าจอ TV",leave:"ขอลางาน",myleave:"วันลาของฉัน",leavecal:"ปฏิทินลา",leaveappr:"อนุมัติการลา",leaveadmin:"จัดการวันลา",empmgr:"จัดการพนักงาน",perms:"สิทธิ์ผู้ใช้",rewards:"แลกรางวัล",rewardadm:"จัดการรางวัล",ideas:"ไอเดียปรับปรุงงาน",farm:"ฟาร์มของฉัน",usage:"สถิติการใช้งาน"};
+var TABNAME={train:"การอบรม",home:"ภาพรวม",log:"บันทึกผลงาน",daily:"รายวัน",monthly:"รายเดือน",staff:"พนักงาน",top:"Top 5",allowance:"KPI / Allowance",install:"ติดตั้งแอป",admin:"Admin Dashboard",targets:"เป้าหมายรายวัน",kpis:"จัดการหน้างาน",allowmgr:"จัดการ KPI/Allowance",telegram:"Telegram",settings:"ตั้งค่า",menu:"เมนู",emp:"ข้อมูลพนักงาน",shop:"สินค้า",tt:"ติ่งต๊อง",chat:"แชต",announce:"ประกาศ",att:"เช็ครายชื่อ",attdash:"แดชบอร์ดเช็คชื่อ",atthist:"ประวัติเช็คชื่อ",attqr:"QR Code",myatt:"เช็คชื่อของฉัน",game:"เกมพนักงาน",deduct:"หัก KPI",dedrep:"รายงานหัก KPI",tv:"หน้าจอ TV",leave:"ขอลางาน",myleave:"วันลาของฉัน",leavecal:"ปฏิทินลา",leaveappr:"อนุมัติการลา",leaveadmin:"จัดการวันลา",empmgr:"จัดการพนักงาน",perms:"สิทธิ์ผู้ใช้",rewards:"แลกรางวัล",rewardadm:"จัดการรางวัล",ideas:"ไอเดียปรับปรุงงาน",farm:"ฟาร์มของฉัน",usage:"สถิติการใช้งาน"};
 async function renderUsage(){
   if(!S.admin)return;var n=+$("us-days").value||30;
   var r=await Promise.all([q(db.rpc("usage_daily",{p_days:n})),q(db.rpc("usage_tabs",{p_days:n}))]),D=r[0],T=r[1];
@@ -10450,7 +10470,7 @@ $("lx-go").addEventListener("click",async function(){
 });
 
 /* ---------- สีหมวดเมนู (จำง่าย) ---------- */
-var NAVG={task:"kpi",quiz:"soc",home:"kpi",log:"kpi",daily:"kpi",monthly:"kpi",staff:"kpi",top:"kpi",allowance:"kpi",shop:"soc",tt:"soc",chat:"soc",install:"soc",
+var NAVG={train:"att",task:"kpi",quiz:"soc",home:"kpi",log:"kpi",daily:"kpi",monthly:"kpi",staff:"kpi",top:"kpi",allowance:"kpi",shop:"soc",tt:"soc",chat:"soc",install:"soc",
   leave:"lv",apexlv:"lv",myleave:"lv",leavecal:"lv",leaveappr:"lv",leaveadmin:"lv",empmgr:"att",myatt:"att",game:"att",att:"att",attdash:"att",atthist:"att",attqr:"att",deduct:"att",dedrep:"att",tv:"att",
   admin:"adm",perms:"adm",rewardadm:"adm",usage:"adm",rewards:"att",ideas:"soc",farm:"soc",targets:"adm",kpis:"adm",allowmgr:"adm",telegram:"adm",announce:"adm",settings:"adm"};
 var NAVGT={kpi:"📊 งานผลิต · KPI",soc:"🛍️ ร้านค้า · ติ่งต๊อง · แชต",lv:"🌴 การลา",att:"✅ เช็คชื่อ",adm:"⚙️ Admin · ตั้งค่า"};
@@ -10823,10 +10843,150 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-ot
   if(t.id==="ot-rsave"){var R={work:{},hol_monthly:{},hol_daily:{},sunday:$("ot-sun").checked};document.querySelectorAll("[data-otr]").forEach(function(i){var p=i.dataset.otr.split(":"),v=parseFloat(i.value);if(v>0)R[p[0]][p[1]]=v});t.disabled=true;
     q(db.from("app_settings").upsert({key:"ot_rules",value:R})).then(function(){S.settings.ot_rules=R;t.disabled=false;toast("บันทึกกฎ OT แล้ว — ใช้กับการสแกนครั้งต่อไป")},function(e){t.disabled=false;toast(thErr(e))});return}});
 
-var RENDER={task:renderTask,missan:renderMissAn,dtv:renderDtv,dtvadm:renderDtvAdm,quiz:renderQuiz,locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
+/* อัปเดต 362: 📚 การอบรมพนักงาน — หลักสูตร · ผลอบรมรายคน · ผ่าน/ไม่ผ่าน · นำเข้า/ส่งออก Excel */
+var TR={view:null,dept:"",q:"",courses:[],recs:[],loaded:0,course:""};
+function trAdm(){return S.admin||(S.me&&S.me.role==="dept_admin"&&(S.me.perms||[]).indexOf("train")>=0)}
+function trEdit(e){return !!e&&!e.is_guest&&can("train",e.department_id)}
+function trSeeAll(){return S.mgr||trAdm()}
+function trD(d){return d?d.slice(8,10)+"/"+d.slice(5,7)+"/"+(+d.slice(0,4)+543):""}
+function trCo(id){return TR.courses.filter(function(c){return c.id===id})[0]}
+function trRes(r){var c=trCo(r.course_id)||{max_score:100,pass_pct:70};
+  if(r.post_score==null||r.post_score===""){return r.pre_score==null?{k:"done",t:"✅ อบรมแล้ว"}:{k:"wait",t:"⏳ รอผลหลังอบรม"}}
+  return +r.post_score>=(+c.max_score)*(+c.pass_pct)/100?{k:"pass",t:"🟢 ผ่าน"}:{k:"fail",t:"🔴 ไม่ผ่าน"}}
+function trScope(){return (S.emps||[]).filter(function(e){return e.active&&!e.is_guest&&(S.admin||e.id===S.me.id||(S.me.allowed_departments||[]).indexOf(e.department_id)>=0)})}
+async function trLoad(){var r=await Promise.all([q(db.from("train_courses").select("*").order("name")),q(db.from("train_records").select("*").order("train_date",{ascending:false}).limit(10000))]);TR.courses=r[0]||[];TR.recs=r[1]||[];TR.loaded=Date.now()}
+async function renderTrain(){
+  if(!TR.view)TR.view=trSeeAll()?"emp":"mine";
+  $("tr-body").innerHTML='<p class="sub">กำลังโหลด…</p>';
+  try{await trLoad()}catch(e){$("tr-body").innerHTML=emptyRow(thErr(e));return}
+  trDraw()}
+function trDraw(){
+  var tabs=(trSeeAll()?[["emp","👤 รายคน"],["course","📘 หลักสูตร"]]:[]).concat([["mine","🙋 ของฉัน"]]);
+  if(!tabs.some(function(t){return t[0]===TR.view}))TR.view=tabs[0][0];
+  $("tr-tabs").innerHTML=tabs.map(function(t){return '<button type="button" class="chipsel'+(TR.view===t[0]?" on":"")+'" data-trv="'+t[0]+'">'+t[1]+'</button>'}).join("");
+  $("tr-acts").innerHTML=(trAdm()?'<button type="button" class="sm" data-tradd="course">＋ หลักสูตร</button><label class="filebtn sm" style="cursor:pointer">📥 นำเข้า Excel<input type="file" id="tr-file" accept=".xlsx,.xls,.csv" hidden></label>':'')+(trSeeAll()?'<button type="button" class="sm" data-trexp>⬇️ Excel</button>':'');
+  $("tr-body").innerHTML=TR.view==="emp"?trEmpHtml():TR.view==="course"?trCourseHtml():trPersonHtml(S.me,true)}
+function trStat(list){var s={n:0,pass:0,fail:0,wait:0,done:0,co:{}};list.forEach(function(r){s.n++;s[trRes(r).k]++;s.co[r.course_id]=1});s.courses=Object.keys(s.co).length;return s}
+function trEmpHtml(){
+  var ds=S.myDepts||[],emps=trScope().filter(function(e){return (!TR.dept||e.department_id===TR.dept)&&(!TR.q||(String(e.display_name)+" "+String(e.employee_no)).toLowerCase().indexOf(TR.q.toLowerCase())>=0)});
+  var by={};TR.recs.forEach(function(r){(by[r.employee_id]||(by[r.employee_id]=[])).push(r)});
+  var act=TR.courses.filter(function(c){return c.active}).length;
+  emps.sort(function(a,b){return String(a.display_name).localeCompare(String(b.display_name),"th")});
+  var trained=emps.filter(function(e){return by[e.id]}).length;
+  return '<div class="filters"><label>แผนก<select id="tr-dept"><option value="">'+(ds.length>1?"ทุกแผนกที่ดูแล":"ทั้งหมด")+'</option>'+ds.map(function(d){return '<option value="'+d.id+'"'+(TR.dept===d.id?" selected":"")+'>'+esc(d.name)+'</option>'}).join("")+'</select></label><label>ค้นหา<input type="search" id="tr-q" value="'+esc(TR.q)+'" placeholder="ชื่อ / รหัส"></label></div>'+
+  '<div class="panel"><p class="sub">'+emps.length+' คน · อบรมแล้วอย่างน้อย 1 หลักสูตร '+trained+' คน · หลักสูตรที่เปิดอยู่ '+act+' หลักสูตร</p><div class="rows">'+
+  (emps.length?emps.map(function(e){var L=by[e.id]||[],s=trStat(L);
+    return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div><div class="trbadges">'+
+      (L.length?'<span class="trb">📚 '+s.courses+(act?'/'+act:'')+'</span>'+(s.pass?'<span class="trb pass">ผ่าน '+s.pass+'</span>':'')+(s.fail?'<span class="trb fail">ไม่ผ่าน '+s.fail+'</span>':'')+(s.wait?'<span class="trb wait">รอผล '+s.wait+'</span>':''):'<span class="trb none">ยังไม่มีประวัติอบรม</span>')+'</div></button>'}).join(""):emptyRow("ไม่พบพนักงาน"))+'</div></div>'}
+function trCourseHtml(){
+  var emps=trScope(),ids={};emps.forEach(function(e){ids[e.id]=1});
+  if(!TR.courses.length)return '<div class="panel">'+emptyRow(trAdm()?"ยังไม่มีหลักสูตร — กด \"＋ หลักสูตร\" เพื่อเพิ่ม หรือ \"📥 นำเข้า Excel\"":"ยังไม่มีหลักสูตร")+'</div>';
+  return '<div class="panel"><p class="sub">แตะหลักสูตรเพื่อดูว่าใครอบรมแล้ว / ยังไม่อบรม</p><div class="rows">'+TR.courses.map(function(c){
+    var L=TR.recs.filter(function(r){return r.course_id===c.id&&ids[r.employee_id]}),s=trStat(L),who={};L.forEach(function(r){who[r.employee_id]=1});var n=Object.keys(who).length,pct=emps.length?Math.round(n*100/emps.length):0;
+    return '<button type="button" class="row trrow" data-trco="'+c.id+'"><span class="trico">📘</span><div class="l"><b>'+esc(c.name)+(c.active?'':' <small>(ปิดแล้ว)</small>')+'</b><small>'+esc([c.category,c.hours?c.hours+" ชม.":"","เต็ม "+num(c.max_score)+" · ผ่าน "+num(c.pass_pct)+"%"].filter(Boolean).join(" · "))+'</small><div class="trbar"><i style="width:'+pct+'%"></i></div></div><div class="trbadges"><span class="trb">'+n+'/'+emps.length+' คน</span>'+(s.pass?'<span class="trb pass">ผ่าน '+s.pass+'</span>':'')+(s.fail?'<span class="trb fail">ไม่ผ่าน '+s.fail+'</span>':'')+'</div></button>'}).join("")+'</div></div>'}
+function trRecHtml(r,ed){var c=trCo(r.course_id)||{name:"(หลักสูตรถูกลบ)",max_score:100},x=trRes(r);
+  return '<div class="row trrec"><div class="l"><b>'+esc(c.name)+'</b><small>'+esc(["📅 "+trD(r.train_date),r.pre_score!=null?"ก่อน "+num(r.pre_score)+"/"+num(c.max_score):"",r.post_score!=null?"หลัง "+num(r.post_score)+"/"+num(c.max_score):"",r.trainer?"ผู้สอน "+r.trainer:"",r.note||""].filter(Boolean).join(" · "))+'</small></div><span class="trb '+x.k+'">'+x.t+'</span>'+(ed?'<button type="button" class="iconbtn" data-trrec="'+r.id+'" aria-label="แก้ไข">✏️</button>':'')+'</div>'}
+function trPersonHtml(e,inline){var L=TR.recs.filter(function(r){return r.employee_id===e.id}),s=trStat(L),ed=trEdit(e);
+  var miss=TR.courses.filter(function(c){return c.active&&!L.some(function(r){return r.course_id===c.id})});
+  return (inline?'<div class="panel">':'')+'<div class="trsum"><span class="trb">📚 อบรมแล้ว '+s.courses+' หลักสูตร</span>'+(s.pass?'<span class="trb pass">ผ่าน '+s.pass+'</span>':'')+(s.fail?'<span class="trb fail">ไม่ผ่าน '+s.fail+'</span>':'')+(s.wait?'<span class="trb wait">รอผล '+s.wait+'</span>':'')+'</div>'+
+    (ed?'<button type="button" class="primary slim" data-tradd="rec" data-emp="'+e.id+'">＋ บันทึกการอบรม</button>':'')+
+    '<div class="rows">'+(L.length?L.map(function(r){return trRecHtml(r,ed)}).join(""):emptyRow("ยังไม่มีประวัติการอบรม"))+'</div>'+
+    (miss.length?'<details class="trmiss"><summary>ยังไม่ได้อบรม '+miss.length+' หลักสูตร</summary><p class="sub">'+miss.map(function(c){return esc(c.name)}).join(" · ")+'</p></details>':'')+(inline?'</div>':'')}
+function trEmpOpen(id){var e=empOf(id);if(!e)return;TR.cur=id;
+  $("tr-det").innerHTML='<div class="headrow"><div style="display:flex;gap:10px;align-items:center">'+avatarHtml(e)+'<div><h3 style="margin:0">📚 '+esc(e.display_name)+'</h3><small class="sub">'+esc([e.employee_no,deptName(e.department_id)].filter(Boolean).join(" · "))+'</small></div></div><button type="button" class="iconbtn" data-close="m-train" aria-label="ปิด">✕</button></div>'+trPersonHtml(e,false);
+  openModal("m-train")}
+function trCourseOpen(id){var c=trCo(id);if(!c)return;TR.cur=null;var emps=trScope(),by={};
+  TR.recs.forEach(function(r){if(r.course_id===id&&!by[r.employee_id])by[r.employee_id]=r});
+  var done=emps.filter(function(e){return by[e.id]}),not=emps.filter(function(e){return !by[e.id]});
+  $("tr-det").innerHTML='<div class="headrow"><div style="flex:1;min-width:0"><h3 style="margin:0">📘 '+esc(c.name)+'</h3><small class="sub">'+esc([c.category,c.hours?c.hours+" ชม.":"","คะแนนเต็ม "+num(c.max_score),"ผ่านเมื่อได้ ≥ "+num(c.pass_pct)+"%"].filter(Boolean).join(" · "))+'</small></div><button type="button" class="iconbtn" data-close="m-train" aria-label="ปิด">✕</button></div>'+
+    (c.note?'<p class="sub">'+esc(c.note)+'</p>':'')+(trAdm()?'<div class="inline"><button type="button" class="sm" data-tredco="'+c.id+'">✏️ แก้ไขหลักสูตร</button></div>':'')+
+    '<b>✅ อบรมแล้ว '+done.length+' คน</b><div class="rows">'+(done.length?done.map(function(e){var r=by[e.id],x=trRes(r);return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(deptName(e.department_id)+" · "+trD(r.train_date))+'</small></div><span class="trb '+x.k+'">'+x.t+'</span></button>'}).join(""):emptyRow("ยังไม่มี"))+'</div>'+
+    '<details class="trmiss"'+(not.length&&not.length<=30?" open":"")+'><summary>⏳ ยังไม่อบรม '+not.length+' คน</summary><div class="rows">'+not.map(function(e){return '<button type="button" class="row trrow" data-tremp="'+e.id+'">'+avatarHtml(e)+'<div class="l"><b>'+esc(e.display_name)+'</b><small>'+esc(deptName(e.department_id))+'</small></div></button>'}).join("")+'</div></details>';
+  openModal("m-train")}
+function trForm(kind,rec,empId){var f=$("tr-form"),h;
+  if(kind==="course"){var c=rec||{max_score:100,pass_pct:70,active:true};
+    h='<div class="headrow"><h3 style="margin:0">'+(rec?"✏️ แก้ไขหลักสูตร":"＋ เพิ่มหลักสูตร")+'</h3><button type="button" class="iconbtn" data-close="m-trform" aria-label="ปิด">✕</button></div>'+
+      '<label>ชื่อหลักสูตร<input id="tf-name" maxlength="200" value="'+esc(c.name||"")+'" placeholder="เช่น ความปลอดภัยในการทำงาน"></label>'+
+      '<label>หมวด (ไม่บังคับ)<input id="tf-cat" value="'+esc(c.category||"")+'" placeholder="เช่น Safety, ISO, ทักษะงาน"></label>'+
+      '<div class="g2"><label>คะแนนเต็ม<input id="tf-max" type="number" min="1" step="any" value="'+esc(c.max_score)+'"></label><label>ผ่านเมื่อได้ (%)<input id="tf-pass" type="number" min="0" max="100" step="any" value="'+esc(c.pass_pct)+'"></label></div>'+
+      '<label>จำนวนชั่วโมง (ไม่บังคับ)<input id="tf-hrs" type="number" min="0" step="any" value="'+esc(c.hours==null?"":c.hours)+'"></label>'+
+      '<label>รายละเอียด<textarea id="tf-note" rows="2">'+esc(c.note||"")+'</textarea></label>'+
+      '<label class="inline"><input type="checkbox" id="tf-act"'+(c.active?" checked":"")+'> เปิดใช้หลักสูตรนี้</label>'+
+      '<div class="inline" style="justify-content:space-between">'+(rec?'<button type="button" class="danger sm" data-trdelco="'+c.id+'">🗑️ ลบหลักสูตร</button>':'<span></span>')+'<button type="button" class="primary slim" data-trsave="course" data-id="'+(rec?c.id:"")+'">บันทึก</button></div>'}
+  else{var r=rec||{train_date:today()},e=empOf(rec?rec.employee_id:empId),cs=TR.courses.filter(function(c){return c.active||c.id===r.course_id});
+    if(!cs.length){toast(trAdm()?"ยังไม่มีหลักสูตร — เพิ่มหลักสูตรก่อน":"ยังไม่มีหลักสูตร ให้ผู้ดูแลเพิ่มหลักสูตรก่อน");return}
+    h='<div class="headrow"><div><h3 style="margin:0">'+(rec?"✏️ แก้ไขผลอบรม":"＋ บันทึกการอบรม")+'</h3><small class="sub">'+esc(e?e.display_name:"")+'</small></div><button type="button" class="iconbtn" data-close="m-trform" aria-label="ปิด">✕</button></div>'+
+      '<label>หลักสูตร<select id="tf-co">'+cs.map(function(c){return '<option value="'+c.id+'"'+(c.id===r.course_id?" selected":"")+'>'+esc(c.name)+' (เต็ม '+num(c.max_score)+')</option>'}).join("")+'</select></label>'+
+      '<label>วันที่อบรม<input id="tf-date" type="date" value="'+esc(r.train_date)+'"></label>'+
+      '<div class="g2"><label>คะแนนก่อนอบรม<input id="tf-pre" type="number" min="0" step="any" value="'+esc(r.pre_score==null?"":r.pre_score)+'" placeholder="ไม่บังคับ"></label><label>คะแนนหลังอบรม<input id="tf-post" type="number" min="0" step="any" value="'+esc(r.post_score==null?"":r.post_score)+'" placeholder="ไม่บังคับ"></label></div>'+
+      '<p class="sub">ไม่มีสอบ เว้นคะแนนว่างได้ จะขึ้นว่า "อบรมแล้ว" · มีคะแนนหลังอบรม ระบบตัดสินผ่าน/ไม่ผ่านให้</p>'+
+      '<label>ผู้สอน (ไม่บังคับ)<input id="tf-tr" value="'+esc(r.trainer||"")+'"></label><label>หมายเหตุ<input id="tf-note" value="'+esc(r.note||"")+'"></label>'+
+      '<div class="inline" style="justify-content:space-between">'+(rec?'<button type="button" class="danger sm" data-trdelrec="'+r.id+'">🗑️ ลบ</button>':'<span></span>')+'<button type="button" class="primary slim" data-trsave="rec" data-id="'+(rec?r.id:"")+'" data-emp="'+(e?e.id:"")+'">บันทึก</button></div>'}
+  f.innerHTML=h;openModal("m-trform")}
+function trNumV(id){var v=$(id).value.trim();return v===""?null:+v}
+async function trSave(kind,id,emp){var ok;
+  if(kind==="course"){var row={name:$("tf-name").value.trim(),category:$("tf-cat").value.trim()||null,max_score:+$("tf-max").value||100,pass_pct:$("tf-pass").value===""?70:+$("tf-pass").value,hours:trNumV("tf-hrs"),note:$("tf-note").value.trim()||null,active:$("tf-act").checked};
+    if(!row.name){toast("กรอกชื่อหลักสูตร");return}
+    ok=await act(function(){return id?q(db.from("train_courses").update(row).eq("id",id)):q(db.from("train_courses").insert(Object.assign({created_by:S.me.id},row)))},"บันทึกหลักสูตรแล้ว")}
+  else{var c=trCo($("tf-co").value),row2={course_id:$("tf-co").value,train_date:$("tf-date").value||today(),pre_score:trNumV("tf-pre"),post_score:trNumV("tf-post"),trainer:$("tf-tr").value.trim()||null,note:$("tf-note").value.trim()||null,updated_at:new Date().toISOString()};
+    if(c&&((row2.pre_score!=null&&row2.pre_score>+c.max_score)||(row2.post_score!=null&&row2.post_score>+c.max_score))){toast("คะแนนเกินคะแนนเต็ม ("+num(c.max_score)+")");return}
+    ok=await act(function(){return id?q(db.from("train_records").update(row2).eq("id",id)):q(db.from("train_records").insert(Object.assign({employee_id:emp,created_by:S.me.id},row2)))},"บันทึกผลอบรมแล้ว")}
+  if(ok){closeModal("m-trform");await trReload()}}
+async function trReload(){try{await trLoad()}catch(e){}trDraw();if(!$("m-train").hidden){if(TR.cur)trEmpOpen(TR.cur);else closeModal("m-train")}}
+function trXDate(v){if(v==null||v==="")return null;if(typeof v==="number"){var d=new Date(Math.round((v-25569)*864e5));return d.toISOString().slice(0,10)}
+  var s=String(v).trim(),m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);if(m){var y=+m[3];if(y<100)y+=2000;if(y>2400)y-=543;return y+"-"+pad(+m[2])+"-"+pad(+m[1])}
+  m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m){var y2=+m[1];if(y2>2400)y2-=543;return y2+"-"+pad(+m[2])+"-"+pad(+m[3])}return null}
+async function trImport(file){
+  try{var wb=XLSX.read(await file.arrayBuffer(),{type:"array"}),A=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:""})}catch(e){toast("อ่านไฟล์ไม่ได้");return}
+  var h=-1;for(var i=0;i<Math.min(A.length,15);i++){if(A[i].some(function(x){return /รหัส/.test(String(x))})&&A[i].some(function(x){return /หลักสูตร|course/i.test(String(x))})){h=i;break}}
+  if(h<0){toast("ไม่พบหัวคอลัมน์ ต้องมีอย่างน้อย \"รหัสพนักงาน\" และ \"หลักสูตร\"");return}
+  var H=A[h].map(function(x){return String(x).trim()}),col=function(re){for(var j=0;j<H.length;j++)if(re.test(H[j]))return j;return -1};
+  var cE=col(/รหัส/),cC=col(/หลักสูตร|course/i),cD=col(/วัน/),cPre=col(/ก่อน|pre/i),cPost=col(/หลัง|post/i),cT=col(/ผู้สอน|วิทยากร|trainer/i),cN=col(/หมายเหตุ|note/i),cM=col(/เต็ม|max/i);
+  var byNo={};(S.emps||[]).forEach(function(e){if(!e.is_guest)byNo[String(e.employee_no).trim()]=e});
+  var coBy={};TR.courses.forEach(function(c){coBy[c.name.trim().toLowerCase()]=c});
+  var rows=[],bad=[],newCo={},noPerm=0;
+  for(i=h+1;i<A.length;i++){var R=A[i],no=String(R[cE]==null?"":R[cE]).trim(),cn=String(R[cC]==null?"":R[cC]).trim();if(!no&&!cn)continue;
+    var e=byNo[no];if(!e){bad.push("แถว "+(i+1)+": ไม่พบรหัส "+no);continue}if(!cn){bad.push("แถว "+(i+1)+": ไม่มีชื่อหลักสูตร");continue}
+    if(!trEdit(e)){noPerm++;continue}
+    if(!coBy[cn.toLowerCase()])newCo[cn.toLowerCase()]={name:cn,max_score:cM>=0&&+R[cM]>0?+R[cM]:100};
+    var pre=cPre>=0&&R[cPre]!==""?+R[cPre]:null,post=cPost>=0&&R[cPost]!==""?+R[cPost]:null;
+    rows.push({no:no,e:e,cn:cn.toLowerCase(),d:(cD>=0?trXDate(R[cD]):null)||today(),pre:isNaN(pre)?null:pre,post:isNaN(post)?null:post,tr:cT>=0?String(R[cT]).trim()||null:null,note:cN>=0?String(R[cN]).trim()||null:null})}
+  var nc=Object.keys(newCo);
+  if(!rows.length){toast(bad[0]||(noPerm?"ไม่มีสิทธิ์บันทึกผลอบรมของพนักงานในไฟล์":"ไม่มีข้อมูลที่นำเข้าได้"));return}
+  if(!confirm("นำเข้าผลอบรม "+rows.length+" รายการ"+(nc.length?"\nสร้างหลักสูตรใหม่ "+nc.length+" หลักสูตร: "+nc.map(function(k){return newCo[k].name}).join(", "):"")+(bad.length?"\nข้าม "+bad.length+" แถว: "+bad.slice(0,3).join(", ")+(bad.length>3?" …":""):"")+(noPerm?"\nข้าม "+noPerm+" แถว (นอกแผนกที่ดูแล)":"")+"\n\nรายการเดิม (คน+หลักสูตร+วันที่ ตรงกัน) จะถูกอัปเดต"))return;
+  $("tr-body").insertAdjacentHTML("afterbegin",'<p class="sub" id="tr-impst">กำลังนำเข้า…</p>');
+  try{
+    if(nc.length){var made=await q(db.from("train_courses").insert(nc.map(function(k){return {name:newCo[k].name,max_score:newCo[k].max_score,created_by:S.me.id}})).select("*"));made.forEach(function(c){coBy[c.name.trim().toLowerCase()]=c})}
+    var up={};rows.forEach(function(r){var c=coBy[r.cn];if(!c)return;up[r.e.id+"|"+c.id+"|"+r.d]={employee_id:r.e.id,course_id:c.id,train_date:r.d,pre_score:r.pre,post_score:r.post,trainer:r.tr,note:r.note,created_by:S.me.id,updated_at:new Date().toISOString()}});
+    var U=Object.keys(up).map(function(k){return up[k]});
+    for(var k=0;k<U.length;k+=500)await q(db.from("train_records").upsert(U.slice(k,k+500),{onConflict:"employee_id,course_id,train_date"}));
+    toast("นำเข้าแล้ว "+U.length+" รายการ"+(bad.length?" · ข้าม "+bad.length+" แถว":""));if(bad.length)console.log("train import skipped",bad)
+  }catch(e){toast(thErr(e))}
+  await trReload()}
+function trExport(){var emps=trScope(),ids={};emps.forEach(function(e){ids[e.id]=e});
+  var rows=TR.recs.filter(function(r){return ids[r.employee_id]}).map(function(r){var e=ids[r.employee_id],c=trCo(r.course_id)||{};return {"รหัสพนักงาน":e.employee_no,"ชื่อ":e.display_name,"แผนก":deptName(e.department_id),"หลักสูตร":c.name||"","หมวด":c.category||"","วันที่อบรม":r.train_date,"คะแนนก่อน":r.pre_score,"คะแนนหลัง":r.post_score,"คะแนนเต็ม":c.max_score,"ผล":trRes(r).t.replace(/^\S+\s/,""),"ผู้สอน":r.trainer||"","หมายเหตุ":r.note||""}});
+  var mx=emps.map(function(e){var o={"รหัสพนักงาน":e.employee_no,"ชื่อ":e.display_name,"แผนก":deptName(e.department_id)};TR.courses.forEach(function(c){var r=TR.recs.filter(function(x){return x.employee_id===e.id&&x.course_id===c.id})[0];o[c.name]=r?trRes(r).t.replace(/^\S+\s/,"")+" ("+trD(r.train_date)+")":"-"});return o});
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows.length?rows:[{"ไม่มีข้อมูล":""}]),"ประวัติอบรม");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(mx.length?mx:[{"ไม่มีข้อมูล":""}]),"ตารางรายคน");
+  XLSX.writeFile(wb,"การอบรมพนักงาน-"+today()+".xlsx")}
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-trv],[data-tremp],[data-trco],[data-tradd],[data-trrec],[data-tredco],[data-trsave],[data-trdelrec],[data-trdelco],[data-trexp]");if(!t)return;var d=t.dataset;
+  if(d.trv){TR.view=d.trv;trDraw()}
+  else if(d.tremp){trEmpOpen(d.tremp)}
+  else if(d.trco){trCourseOpen(d.trco)}
+  else if(d.tradd==="course"){trForm("course")}
+  else if(d.tradd==="rec"){trForm("rec",null,d.emp)}
+  else if(d.trrec){trForm("rec",TR.recs.filter(function(r){return r.id===d.trrec})[0])}
+  else if(d.tredco){trForm("course",trCo(d.tredco))}
+  else if(d.trsave){trSave(d.trsave,d.id,d.emp)}
+  else if(d.trdelrec){if(confirm("ลบผลอบรมรายการนี้?"))act(function(){return q(db.from("train_records").delete().eq("id",d.trdelrec))},"ลบแล้ว").then(function(ok){if(ok){closeModal("m-trform");trReload()}})}
+  else if(d.trdelco){var n=TR.recs.filter(function(r){return r.course_id===d.trdelco}).length;if(confirm("ลบหลักสูตรนี้"+(n?" และผลอบรมที่ผูกอยู่ "+n+" รายการ":"")+"? ลบแล้วกู้คืนไม่ได้\n(ถ้าแค่ไม่ใช้แล้ว ให้เอาเครื่องหมาย \"เปิดใช้\" ออกแทน)"))act(function(){return q(db.from("train_courses").delete().eq("id",d.trdelco))},"ลบหลักสูตรแล้ว").then(function(ok){if(ok){closeModal("m-trform");closeModal("m-train");trReload()}})}
+  else if(d.trexp!==undefined){trExport()}});
+document.addEventListener("change",function(ev){var t=ev.target;if(t.id==="tr-dept"){TR.dept=t.value;trDraw()}else if(t.id==="tr-file"&&t.files[0]){trImport(t.files[0]);t.value=""}});
+document.addEventListener("input",function(ev){if(ev.target.id==="tr-q"){TR.q=ev.target.value;clearTimeout(TR.qt);TR.qt=setTimeout(function(){var p=ev.target.selectionStart;trDraw();var i=$("tr-q");if(i){i.focus();try{i.setSelectionRange(p,p)}catch(e){}}},250)}});
+
+var RENDER={train:renderTrain,task:renderTask,missan:renderMissAn,dtv:renderDtv,dtvadm:renderDtvAdm,quiz:renderQuiz,locmap:renderLocMap,ot:renderOT,news:renderNews,farm:renderFarm,ideas:renderIdeas,usage:renderUsage,rewards:renderRewards,rewardadm:renderRewardAdm,perms:renderPerms,home:renderHome,log:renderLog,daily:renderDaily,monthly:renderMonthly,staff:renderStaff,settings:renderSettings,top:renderTop,allowance:renderAllowance,install:renderInstall,targets:renderTargets,allowmgr:renderAllowMgr,admin:renderAdmin,kpis:renderKpis,emp:renderEmp,shop:renderShop,tt:renderTT,chat:renderChat,announce:renderAnnounce,telegram:renderTelegram,att:renderAtt,attdash:renderAttDash,atthist:renderAttHist,attqr:renderAttQr,myatt:renderMyAtt,game:renderGame,deduct:renderDeduct,dedrep:renderDedRep,tv:renderTV,leave:renderLeave,myleave:renderMyLeave,leavecal:renderLeaveCal,leaveappr:renderLeaveAppr,leaveadmin:renderLeaveAdmin,empmgr:renderEmpMgr,menu:function(){}};
 async function refresh(){try{await RENDER[S.tab]()}catch(e){toast(thErr(e))}}
 function dirty(date){if(date)delete S.cache[date.slice(0,7)];else S.cache={};return refresh()}
-var TABS=["task","missan","quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm","dtv","dtvadm"];
+var TABS=["train","task","missan","quiz","locmap","ot","news","home","log","daily","monthly","staff","top","allowance","install","admin","targets","kpis","allowmgr","telegram","settings","menu","emp","shop","tt","chat","announce","att","attdash","atthist","attqr","myatt","game","deduct","dedrep","tv","leave","myleave","leavecal","leaveappr","leaveadmin","empmgr","perms","rewards","rewardadm","ideas","usage","farm","dtv","dtvadm"];
 var MAIN=["home","log","daily","monthly"];
 function show(tab){
   if(S.guest&&tab!=="farm")tab="farm";
