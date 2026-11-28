@@ -1612,7 +1612,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v376</span></p>
+    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v377</span></p>
     <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนก/Admin ให้ตั้ง “รหัสชั่วคราว” แล้วเข้าสู่ระบบด้วยรหัสพนักงาน + รหัสชั่วคราว ระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่)</p>
     <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
@@ -2515,7 +2515,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v376</span></p>
+    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v377</span></p>
   </section>
 </div>
 
@@ -7214,7 +7214,7 @@ function glMake(o){glFix();var r=null;if(LITE.on&&o)o.antialias=false;try{r=new 
   if(!r)throw new Error("GL");return r}
 /* อัปเดต 364: วาดใหม่หลังกราฟิกกลับมา (restored) ไม่ใช่ตอนเพิ่งหาย — กันพื้น/กระเบื้องเป็นสีดำหลังสลับแอป */
 /* อัปเดต 365: ตรวจเวอร์ชันใหม่อัตโนมัติ — แท็บที่เปิดค้างไว้จะขึ้นปุ่มให้โหลดใหม่ */
-var APPV="376";
+var APPV="377";
 function verBar(){if($("verbar"))return;var b=document.createElement("button");b.type="button";b.id="verbar";b.className="verbar notranslate";b.textContent="🔄 มีเวอร์ชันใหม่ — แตะเพื่อโหลดใหม่";b.addEventListener("click",function(){b.textContent="กำลังโหลด…";location.reload()});document.body.appendChild(b)}
 function verCheck(){if(document.hidden||verCheck.busy||Date.now()-(verCheck.t||0)<240000)return;verCheck.busy=1;verCheck.t=Date.now();
   fetch("index.html?vc="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var m=t.match(/var APPV="(\d+)"/);if(m&&+m[1]>+APPV)verBar()}).catch(function(){}).then(function(){verCheck.busy=0})}
@@ -10969,7 +10969,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-ot
     q(db.from("app_settings").upsert({key:"ot_rules",value:R})).then(function(){S.settings.ot_rules=R;t.disabled=false;toast("บันทึกกฎ OT แล้ว — ใช้กับการสแกนครั้งต่อไป")},function(e){t.disabled=false;toast(thErr(e))});return}});
 
 /* อัปเดต 362: 📚 การอบรมพนักงาน — หลักสูตร · ผลอบรมรายคน · ผ่าน/ไม่ผ่าน · นำเข้า/ส่งออก Excel */
-var TRCOLS="id,name,category,max_score,pass_pct,hours,note,active,created_by,created_at,show_home,target_positions";
+var TRCOLS="id,name,category,max_score,pass_pct,hours,note,active,created_by,created_at,show_home,target_positions,target_departments";
 var TR={view:null,dept:"",q:"",courses:[],recs:[],loaded:0,course:""};
 function trAdm(){return S.admin||(S.me&&S.me.role==="dept_admin"&&(S.me.perms||[]).indexOf("train")>=0)}
 function trEdit(e){return !!e&&!e.is_guest&&can("train",e.department_id)}
@@ -10983,8 +10983,8 @@ function trScope(){return (S.emps||[]).filter(function(e){return e.active&&!e.is
 async function trLoad(){var r=await Promise.all([q(db.from("train_courses").select(TRCOLS).order("name")),q(db.from("train_records").select("*").order("train_date",{ascending:false}).limit(10000))]);TR.courses=r[0]||[];TR.recs=r[1]||[];TR.loaded=Date.now();try{var lk=await q(db.rpc("train_links"));trMergeLinks(lk)}catch(e){}}
 function trMergeLinks(lk){(lk||[]).forEach(function(l){var c=TR.courses.filter(function(x){return x.id===l.id})[0];if(c){c.pre_url=l.pre_url;c.post_url=l.post_url}})}
 function trNorm(x){return String(x||"").trim().toLowerCase()}
-function trEmpOk(c,e){var t=c&&c.target_positions;return !t||!t.length||!!e&&t.map(trNorm).indexOf(trNorm(e.position))>=0}
-function trTgt(c){var t=c&&c.target_positions;return t&&t.length?"หน้างาน: "+t.join(", "):"ทุกหน้างาน"}
+function trEmpOk(c,e){var t=c&&c.target_positions,d=c&&c.target_departments;if(d&&d.length&&!(e&&d.indexOf(e.department_id)>=0))return false;return !t||!t.length||!!e&&t.map(trNorm).indexOf(trNorm(e.position))>=0}
+function trTgt(c){var t=c&&c.target_positions,d=c&&c.target_departments,o=[];o.push(d&&d.length?"แผนก: "+d.map(function(x){return deptName(x)||"?"}).join(", "):"ทุกแผนก");o.push(t&&t.length?"หน้างาน: "+t.join(", "):"ทุกหน้างาน");return o.join(" · ")}
 async function renderTrain(){
   if(!TR.view)TR.view=trSeeAll()?"dash":"mine";
   $("tr-body").innerHTML='<p class="sub">กำลังโหลด…</p>';
@@ -11109,7 +11109,7 @@ function trForm(kind,rec,empId){var f=$("tr-form"),h;
       '<label>หมวด (ไม่บังคับ)<input id="tf-cat" value="'+esc(c.category||"")+'" placeholder="เช่น Safety, ISO, ทักษะงาน"></label>'+
       '<div class="g2"><label>คะแนนเต็ม<input id="tf-max" type="number" min="1" step="any" value="'+esc(c.max_score)+'"></label><label>ผ่านเมื่อได้ (%)<input id="tf-pass" type="number" min="0" max="100" step="any" value="'+esc(c.pass_pct)+'"></label></div>'+
       '<label>จำนวนชั่วโมง (ไม่บังคับ)<input id="tf-hrs" type="number" min="0" step="any" value="'+esc(c.hours==null?"":c.hours)+'"></label>'+
-      trPosPick(c)+
+      trDeptPick(c)+trPosPick(c)+
       '<label>ลิงก์แบบทดสอบก่อนอบรม (ไม่บังคับ)<input id="tf-pre-url" type="url" inputmode="url" value="'+esc(c.pre_url||"")+'" placeholder="https://forms.gle/..."></label>'+
       '<label>ลิงก์แบบทดสอบหลังอบรม (ไม่บังคับ)<input id="tf-post-url" type="url" inputmode="url" value="'+esc(c.post_url||"")+'" placeholder="https://forms.gle/..."></label>'+
       '<label>รายละเอียด<textarea id="tf-note" rows="2">'+esc(c.note||"")+'</textarea></label>'+
@@ -11126,6 +11126,10 @@ function trForm(kind,rec,empId){var f=$("tr-form"),h;
       '<label>ผู้สอน (ไม่บังคับ)<input id="tf-tr" value="'+esc(r.trainer||"")+'"></label><label>หมายเหตุ<input id="tf-note" value="'+esc(r.note||"")+'"></label>'+
       '<div class="inline" style="justify-content:space-between">'+(rec?'<button type="button" class="danger sm" data-trdelrec="'+r.id+'">🗑️ ลบ</button>':'<span></span>')+'<button type="button" class="primary slim" data-trsave="rec" data-id="'+(rec?r.id:"")+'" data-emp="'+(e?e.id:"")+'">บันทึก</button></div>'}
   f.innerHTML=h;openModal("m-trform")}
+function trDeptPick(c){var cnt={},sel={};(S.emps||[]).forEach(function(e){if(e.active&&!e.is_guest&&e.department_id)cnt[e.department_id]=(cnt[e.department_id]||0)+1});(c.target_departments||[]).forEach(function(d){sel[d]=1});
+  var ds=(S.depts||[]).filter(function(d){return cnt[d.id]||sel[d.id]}).sort(function(a,b){return (cnt[b.id]||0)-(cnt[a.id]||0)});
+  return '<fieldset class="trpos" id="tf-dep"><legend>หลักสูตรนี้สำหรับแผนก</legend><small class="sub">ไม่ติ๊กเลย = ทุกแผนก · ใช้คู่กับหน้างานด้านล่างได้ (ต้องตรงทั้งแผนกและหน้างาน)</small><div>'+
+    (ds.length?ds.map(function(d){return '<label class="chk"><input type="checkbox" value="'+esc(d.id)+'"'+(sel[d.id]?" checked":"")+'> '+esc(d.name)+' <small>('+(cnt[d.id]||0)+')</small></label>'}).join(""):'<small class="sub">ยังไม่มีแผนก</small>')+'</div></fieldset>'}
 function trPosPick(c){var cnt={},lab={},sel={};(S.emps||[]).forEach(function(e){if(!e.active||e.is_guest)return;var k=trNorm(e.position);if(!k)return;cnt[k]=(cnt[k]||0)+1;if(!lab[k])lab[k]=String(e.position).trim()});
   (c.target_positions||[]).forEach(function(p){var k=trNorm(p);sel[k]=1;if(!lab[k]){lab[k]=p;cnt[k]=0}});
   var ks=Object.keys(lab).sort(function(a,b){return (cnt[b]||0)-(cnt[a]||0)});
@@ -11135,6 +11139,7 @@ function trNumV(id){var v=$(id).value.trim();return v===""?null:+v}
 async function trSave(kind,id,emp){var ok;
   if(kind==="course"){var row={name:$("tf-name").value.trim(),category:$("tf-cat").value.trim()||null,max_score:+$("tf-max").value||100,pass_pct:$("tf-pass").value===""?70:+$("tf-pass").value,hours:trNumV("tf-hrs"),note:$("tf-note").value.trim()||null,active:$("tf-act").checked,pre_url:$("tf-pre-url").value.trim()||null,post_url:$("tf-post-url").value.trim()||null,show_home:$("tf-home").checked,target_positions:[].slice.call(document.querySelectorAll("#tf-pos input:checked")).map(function(x){return x.value})};
     if(!row.target_positions.length)row.target_positions=null;
+    row.target_departments=[].slice.call(document.querySelectorAll("#tf-dep input:checked")).map(function(x){return x.value});if(!row.target_departments.length)row.target_departments=null;
     if(!row.name){toast("กรอกชื่อหลักสูตร");return}
     if((row.pre_url&&!trUrl(row.pre_url))||(row.post_url&&!trUrl(row.post_url))){toast("ลิงก์ต้องขึ้นต้นด้วย https://");return}
     ok=await act(function(){return id?q(db.from("train_courses").update(row).eq("id",id)):q(db.from("train_courses").insert(Object.assign({created_by:S.me.id},row)))},"บันทึกหลักสูตรแล้ว")}
