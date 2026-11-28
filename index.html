@@ -410,6 +410,7 @@ nav.tabs .navsub{display:none}
 .mabtip>b{display:block;font-size:14px;margin-bottom:4px}.mabtip .mtr{display:flex;justify-content:space-between;gap:12px;padding:2px 0}.mabtip .mtr i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
 .mablg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12px;color:#475569}.mablg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}.mablg i.ln{height:3px;width:16px;background:#1e3a8a;border-radius:2px}.mablg i.av{height:0;width:16px;border-top:2px dashed #ef4444;border-radius:0}
 @media (prefers-reduced-motion:reduce){.mabar,.maline,.maarea,.madotl,.mapk{animation:none!important;opacity:1!important;stroke-dashoffset:0!important}}
+.gpush{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:9998;width:min(92vw,380px);background:#fff;color:#0f172a;border-radius:16px;padding:12px 14px;box-shadow:0 14px 40px rgba(15,23,42,.35);display:flex;flex-direction:column;gap:4px;animation:gpin .35s ease}.gpush small{color:#475569}.gpush div{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}@keyframes gpin{from{transform:translate(-50%,30px);opacity:0}}
 .flashedit{animation:flashedit 1.4s ease 1;border-radius:14px}
 .mytrain .mtbar{height:8px;border-radius:9px;background:#e5e7eb;overflow:hidden;margin:4px 0 6px}.mytrain .mtbar i{display:block;height:100%;background:#22c55e}.mtleft{color:#b45309}
 .mtrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1fr);gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
@@ -1612,7 +1613,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       <div class="msg" id="a-msg" role="alert"></div>
       <button class="primary" type="submit" id="a-submit">เข้าสู่ระบบ</button>
     </form>
-    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v377</span></p>
+    <p class="sub" style="text-align:center;font-size:11.5px"><span class="appv">v378</span></p>
     <p class="sub" id="a-forgot">ลืมรหัสผ่าน: แจ้งผู้ดูแลแผนก/Admin ให้ตั้ง “รหัสชั่วคราว” แล้วเข้าสู่ระบบด้วยรหัสพนักงาน + รหัสชั่วคราว ระบบจะให้ตั้งรหัสผ่านใหม่ทันที (ไม่ต้องสมัครใหม่)</p>
     <p class="sub" id="g-staff" hidden style="text-align:center"><a href="./" id="g-staffa">พนักงานบริษัท? เข้าสู่ระบบด้วยรหัสพนักงานที่นี่</a></p>
   </div>
@@ -2515,7 +2516,7 @@ body.guest nav.tabs,body.guest header.top,body.guest .fkpi2{display:none!importa
       </div>
     </div>
     <button type="button" id="logout" class="danger">ออกจากระบบ</button>
-    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v377</span></p>
+    <p class="sub" style="text-align:center">AOI KPI · <span class="appv">v378</span></p>
   </section>
 </div>
 
@@ -4515,6 +4516,13 @@ async function ntSave(){
   var r=await db.from("notify_settings").upsert({employee_id:S.me.id,chat:NT.set.chat,products:NT.set.products,muted_rooms:NT.set.muted_rooms,updated_at:new Date().toISOString()});
   if(r.error)toast(thErr(r.error));ntDraw();
 }
+/* อัปเดต 378: ชวนผู้เล่นภายนอกเปิดแจ้งเตือน (ผักโต / ของขวัญ / ชวนกลับมาเล่น — วันละไม่เกิน 1 ครั้ง) */
+async function guestPushAsk(){try{if(!S.guest||!NT.ok||$("gpush"))return;if(Notification.permission==="denied")return;
+  var k="aoi-gpush-ask",v=+(localStorage.getItem(k)||0);if(v&&Date.now()-v<7*864e5)return;
+  var reg=await ntReg();if(reg){await navigator.serviceWorker.ready;var sub=await reg.pushManager.getSubscription();if(sub&&Notification.permission==="granted")return}
+  var d=document.createElement("div");d.id="gpush";d.className="gpush";d.innerHTML='<b>🔔 รับแจ้งเตือนจาก AOI Farm?</b><small>บอกเมื่อผักโต มีของขวัญ หรือสัตว์มีผลผลิต · ไม่เกินวันละ 1 ครั้ง</small><div><button type="button" class="sm" data-gp="0">ไม่ตอนนี้</button><button type="button" class="sm primary" data-gp="1">เปิดแจ้งเตือน</button></div>';
+  d.addEventListener("click",async function(ev){var b=ev.target.closest("[data-gp]");if(!b)return;try{localStorage.setItem(k,String(Date.now()))}catch(e){}d.remove();if(b.dataset.gp==="1")await ntEnable()});
+  document.body.appendChild(d)}catch(e){}}
 async function ntEnable(){
   if(!NT.ok){ntDraw();toast($("nt-status").textContent);return}
   var perm=await Notification.requestPermission();if(perm!=="granted"){ntDraw();toast("ยังไม่ได้อนุญาตการแจ้งเตือน");return}
@@ -7214,7 +7222,7 @@ function glMake(o){glFix();var r=null;if(LITE.on&&o)o.antialias=false;try{r=new 
   if(!r)throw new Error("GL");return r}
 /* อัปเดต 364: วาดใหม่หลังกราฟิกกลับมา (restored) ไม่ใช่ตอนเพิ่งหาย — กันพื้น/กระเบื้องเป็นสีดำหลังสลับแอป */
 /* อัปเดต 365: ตรวจเวอร์ชันใหม่อัตโนมัติ — แท็บที่เปิดค้างไว้จะขึ้นปุ่มให้โหลดใหม่ */
-var APPV="377";
+var APPV="378";
 function verBar(){if($("verbar"))return;var b=document.createElement("button");b.type="button";b.id="verbar";b.className="verbar notranslate";b.textContent="🔄 มีเวอร์ชันใหม่ — แตะเพื่อโหลดใหม่";b.addEventListener("click",function(){b.textContent="กำลังโหลด…";location.reload()});document.body.appendChild(b)}
 function verCheck(){if(document.hidden||verCheck.busy||Date.now()-(verCheck.t||0)<240000)return;verCheck.busy=1;verCheck.t=Date.now();
   fetch("index.html?vc="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var m=t.match(/var APPV="(\d+)"/);if(m&&+m[1]>+APPV)verBar()}).catch(function(){}).then(function(){verCheck.busy=0})}
@@ -11810,7 +11818,7 @@ async function start(){
   $("setup").hidden=true;
   if(me.is_guest){S.me=me;S.uid=u.id;S.admin=false;S.mgr=false;S.guest=true;S.cache={};S.depts=[];S.kpis=[];S.emps=[me];S.settings={};S.dir=[];S.myDepts=[];S.leads=[];
     document.body.classList.add("guest");try{localStorage.setItem("aoi-play","1")}catch(e){}document.title="AOI Farm";
-    $("auth").hidden=true;$("app").hidden=false;show("farm");return}
+    $("auth").hidden=true;$("app").hidden=false;show("farm");setTimeout(guestPushAsk,9000);return}
   S.me=me;S.uid=u.id;S.admin=me.role==="admin";S.mgr=can("kpi");S.cache={};if(me.pw_temp)setTimeout(pwForce,400);
   await loadBase();
   document.querySelectorAll(".mgr").forEach(function(el){el.hidden=!S.mgr});
